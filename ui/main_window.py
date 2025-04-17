@@ -50,30 +50,14 @@ class MainWindow(QMainWindow):
             pass  # No icon available, use default
     
     def init_fonts(self):
-        """Initialize and load McCain brand fonts."""
-        # Load brand fonts if available
-        # This requires the fonts to be installed on the system or available in the assets folder
-        
-        # Attempt to load Red Hat Display for titles
+        """Initialize and load McCain brand fonts for titles only."""
+        # Load only Red Hat Display for titles
         try:
             QFontDatabase.addApplicationFont("ui/common/RedHatDisplay-Black.ttf")
             QFontDatabase.addApplicationFont("ui/common/RedHatDisplay-Bold.ttf")
             QFontDatabase.addApplicationFont("ui/common/RedHatDisplay-Regular.ttf")
         except:
             print("Red Hat Display font not available, using fallback")
-        
-        # Attempt to load Montserrat for body text
-        try:
-            QFontDatabase.addApplicationFont("ui/common/Montserrat-Medium.ttf")
-            QFontDatabase.addApplicationFont("ui/common/Montserrat-Regular.ttf")
-        except:
-            print("Montserrat font not available, using fallback")
-            
-        # Set Century Gothic for general text if available
-        try:
-            QFontDatabase.addApplicationFont("ui/common/GOTHIC.ttf")
-        except:
-            print("Century Gothic font not available, using fallback")
     
     def init_ui(self):
         """Initialize the UI components."""

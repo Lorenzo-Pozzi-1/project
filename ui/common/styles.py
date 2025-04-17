@@ -3,6 +3,7 @@ Common styles for the LORENZO POZZI Pesticide App - Updated with McCain branding
 
 This module provides consistent styling across the application including
 colors, fonts, and dimensions based on McCain brand guidelines.
+Modified to use default system font for body text while preserving custom title fonts.
 """
 
 from PySide6.QtGui import QFont, QColor, QPalette
@@ -47,7 +48,7 @@ BUTTON_MIN_WIDTH = 120
 BUTTON_MIN_HEIGHT = 40
 FEATURE_BUTTON_SIZE = 180       # Size for large feature buttons on home page
 
-# Font configurations - updated to McCain brand fonts
+# Font configurations - Keep Red Hat Display for titles but use default font for body
 def get_title_font(size=24, bold=True):
     """Returns a font configured for titles - Red Hat Display Black."""
     font = QFont("Red Hat Display")
@@ -64,16 +65,17 @@ def get_subtitle_font(size=18, bold=True):
     return font
 
 def get_body_font(size=11, bold=False):
-    """Returns a font configured for body text - Montserrat Medium."""
-    font = QFont("Montserrat")
+    """Returns a default system font for body text."""
+    # Use default system font instead of Montserrat
+    font = QFont()
     font.setPointSize(size)
     font.setBold(bold)
-    font.setWeight(QFont.Medium)
     return font
 
 def get_small_font(size=9, bold=False):
-    """Returns a font configured for small text."""
-    font = QFont("Montserrat")
+    """Returns a default system font for small text."""
+    # Use default system font instead of Montserrat
+    font = QFont()
     font.setPointSize(size)
     font.setBold(bold)
     return font
