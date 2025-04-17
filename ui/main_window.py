@@ -56,22 +56,22 @@ class MainWindow(QMainWindow):
         
         # Attempt to load Red Hat Display for titles
         try:
-            QFontDatabase.addApplicationFont("assets/fonts/RedHatDisplay-Black.ttf")
-            QFontDatabase.addApplicationFont("assets/fonts/RedHatDisplay-Bold.ttf")
-            QFontDatabase.addApplicationFont("assets/fonts/RedHatDisplay-Regular.ttf")
+            QFontDatabase.addApplicationFont("ui/common/RedHatDisplay-Black.ttf")
+            QFontDatabase.addApplicationFont("ui/common/RedHatDisplay-Bold.ttf")
+            QFontDatabase.addApplicationFont("ui/common/RedHatDisplay-Regular.ttf")
         except:
             print("Red Hat Display font not available, using fallback")
         
         # Attempt to load Montserrat for body text
         try:
-            QFontDatabase.addApplicationFont("assets/fonts/Montserrat-Medium.ttf")
-            QFontDatabase.addApplicationFont("assets/fonts/Montserrat-Regular.ttf")
+            QFontDatabase.addApplicationFont("ui/common/Montserrat-Medium.ttf")
+            QFontDatabase.addApplicationFont("ui/common/Montserrat-Regular.ttf")
         except:
             print("Montserrat font not available, using fallback")
             
         # Set Century Gothic for general text if available
         try:
-            QFontDatabase.addApplicationFont("assets/fonts/CenturyGothic.ttf")
+            QFontDatabase.addApplicationFont("ui/common/GOTHIC.ttf")
         except:
             print("Century Gothic font not available, using fallback")
     
