@@ -3,7 +3,6 @@ Home page for the LORENZO POZZI Pesticide App
 
 This module defines the HomePage class which serves as the main navigation
 screen for the application.
-Updated with McCain branding elements.
 """
 
 from PySide6.QtWidgets import (
@@ -43,22 +42,11 @@ class HomePage(QWidget):
         main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
         main_layout.setSpacing(SPACING_LARGE)
         
-        # Title with McCain styling - yellow period at the end
-        title_layout = QHBoxLayout()
+        # Title without yellow period
         title_label = QLabel("LORENZO POZZI Pesticide App")
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setFont(get_title_font(size=24))
-        
-        # Add yellow period/full stop
-        yellow_dot = QLabel(".")
-        yellow_dot.setStyleSheet(f"color: {PRIMARY_COLOR}; font-size: 24pt; font-weight: bold;")
-        yellow_dot.setFont(get_title_font(size=24))
-        
-        title_layout.addWidget(title_label)
-        title_layout.addWidget(yellow_dot, alignment=Qt.AlignBottom)
-        title_layout.setAlignment(Qt.AlignCenter)
-        
-        main_layout.addLayout(title_layout)
+        main_layout.addWidget(title_label)
         
         # Region selection area
         region_frame = QFrame()
@@ -112,25 +100,14 @@ class HomePage(QWidget):
         
         main_layout.addLayout(buttons_layout)
         
-        # EIQ info section at the bottom with McCain styling
+        # EIQ info section at the bottom without yellow period
         info_frame = ContentFrame()
         info_layout = QVBoxLayout()
         
-        # Title with yellow period
-        info_title_layout = QHBoxLayout()
+        # Title without yellow period
         info_title = QLabel("About Environmental Impact Quotient (EIQ)")
         info_title.setFont(get_subtitle_font(size=16))
-        
-        # Add yellow period/full stop
-        info_yellow_dot = QLabel(".")
-        info_yellow_dot.setStyleSheet(f"color: {PRIMARY_COLOR}; font-size: 16pt; font-weight: bold;")
-        info_yellow_dot.setFont(get_subtitle_font(size=16))
-        
-        info_title_layout.addWidget(info_title)
-        info_title_layout.addWidget(info_yellow_dot, alignment=Qt.AlignBottom)
-        info_title_layout.addStretch(1)
-        
-        info_layout.addLayout(info_title_layout)
+        info_layout.addWidget(info_title)
         
         info_text = QLabel(
             "<b>Environmental Impact Quotient (EIQ)</b>, developed by the <b>NYSIPM Program at Cornell University</b>, is a tool used to assess the potential risks of pesticide active ingredients. "

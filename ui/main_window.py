@@ -3,7 +3,6 @@ Main application window for the LORENZO POZZI Pesticide App
 
 This module defines the MainWindow class which serves as the container
 for all pages in the application.
-Updated with McCain branding elements.
 """
 
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget
@@ -21,7 +20,7 @@ class MainWindow(QMainWindow):
     Main application window that manages all pages.
     
     The MainWindow uses a QStackedWidget to switch between different pages
-    of the application. McCain branding elements are applied.
+    of the application.
     """
     def __init__(self, config=None):
         """Initialize the main window with configuration."""
@@ -50,7 +49,7 @@ class MainWindow(QMainWindow):
             pass  # No icon available, use default
     
     def init_fonts(self):
-        """Initialize and load McCain brand fonts for titles only."""
+        """Initialize and load fonts for titles only."""
         # Load only Red Hat Display for titles
         try:
             QFontDatabase.addApplicationFont("ui/common/RedHatDisplay-Black.ttf")
@@ -91,7 +90,7 @@ class MainWindow(QMainWindow):
         self.eiq_calculator_page = EiqCalculatorPage(self)
         self.stacked_widget.addWidget(self.eiq_calculator_page)
         
-        # Add McCain yellow bar at the bottom
+        # Add yellow bar at the bottom
         self.yellow_bar = QFrame()
         self.yellow_bar.setStyleSheet(YELLOW_BAR_STYLE)
         main_layout.addWidget(self.yellow_bar)

@@ -19,33 +19,11 @@ from ui.common.styles import (
     MARGIN_MEDIUM, SPACING_MEDIUM
 )
 
-from PySide6.QtWidgets import (
-    QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QSizePolicy
-)
-from PySide6.QtCore import Qt
-
-from ui.common.styles import (
-    PRIMARY_COLOR, SECONDARY_COLOR, FEATURE_BUTTON_STYLE,
-    get_title_font, get_body_font, MARGIN_MEDIUM, SPACING_MEDIUM
-)
-
-from PySide6.QtWidgets import (
-    QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, 
-    QSizePolicy, QWidget, QSpacerItem
-)
-from PySide6.QtCore import Qt, Signal
-
-from ui.common.styles import (
-    PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_BUTTON_STYLE, PRIMARY_BUTTON_STYLE,
-    get_title_font, get_body_font, MARGIN_MEDIUM, SPACING_MEDIUM
-)
-
 class HeaderWithBackButton(QWidget):
     """
     A header widget with a title and back button.
     
     This widget is used at the top of pages to provide a consistent navigation.
-    Updated with McCain branding elements.
     """
     back_clicked = Signal()  # Signal emitted when back button is clicked
     
@@ -67,25 +45,11 @@ class HeaderWithBackButton(QWidget):
         self.back_button.clicked.connect(self.back_clicked.emit)
         layout.addWidget(self.back_button)
         
-        # Title with McCain styling - yellow period at the end
-        title_container = QWidget()
-        title_layout = QHBoxLayout(title_container)
-        title_layout.setContentsMargins(0, 0, 0, 0)
-        
+        # Title without yellow period
         self.title_label = QLabel(self.title)
         self.title_label.setAlignment(Qt.AlignCenter)
         self.title_label.setFont(get_title_font(size=20))
-        
-        # Add yellow period/full stop
-        yellow_dot = QLabel(".")
-        yellow_dot.setStyleSheet(f"color: {PRIMARY_COLOR}; font-size: 20pt; font-weight: bold;")
-        yellow_dot.setFont(get_title_font(size=20))
-        
-        title_layout.addWidget(self.title_label)
-        title_layout.addWidget(yellow_dot, alignment=Qt.AlignBottom)
-        title_layout.setAlignment(Qt.AlignCenter)
-        
-        layout.addWidget(title_container)
+        layout.addWidget(self.title_label)
         
         # Add a spacer to balance the layout
         layout.addItem(QSpacerItem(150, 0))
@@ -96,7 +60,6 @@ class FeatureButton(QPushButton):
     A custom button for feature selection on the home page.
     
     Features a title, description, and consistent styling.
-    Updated with McCain branding elements.
     """
     def __init__(self, title, description, parent=None):
         """Initialize with the given title and description."""
@@ -116,30 +79,18 @@ class FeatureButton(QPushButton):
         layout.setContentsMargins(MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM)
         layout.setSpacing(SPACING_MEDIUM)
         
-        # Title label with yellow period/full stop
-        title_layout = QHBoxLayout()
-        
+        # Title without yellow period
         title_label = QLabel(self.title)
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setFont(get_title_font(size=14))
         title_label.setWordWrap(True)
-        
-        # Add yellow period/full stop
-        yellow_dot = QLabel(".")
-        yellow_dot.setStyleSheet(f"color: {PRIMARY_COLOR}; font-size: 14pt; font-weight: bold;")
-        yellow_dot.setFont(get_title_font(size=14))
-        
-        title_layout.addWidget(title_label)
-        title_layout.addWidget(yellow_dot, alignment=Qt.AlignBottom)
-        title_layout.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title_label)
         
         # Description label
         desc_label = QLabel(self.description)
         desc_label.setAlignment(Qt.AlignCenter)
         desc_label.setFont(get_body_font())
         desc_label.setWordWrap(True)
-        
-        layout.addLayout(title_layout)
         layout.addWidget(desc_label)
 
 
