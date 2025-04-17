@@ -4,6 +4,7 @@ Common styles for the LORENZO POZZI Pesticide App - Updated with McCain branding
 This module provides consistent styling across the application including
 colors, fonts, and dimensions based on McCain brand guidelines.
 Modified to use default system font for body text while preserving custom title fonts.
+Background color changed to white instead of light gray.
 """
 
 from PySide6.QtGui import QFont, QColor, QPalette
@@ -13,7 +14,7 @@ from PySide6.QtCore import Qt
 PRIMARY_COLOR = "#fee000"       # McCain Yellow
 SECONDARY_COLOR = "#000000"     # Black
 TEXT_COLOR = "#000000"          # Black for text
-LIGHT_BG_COLOR = "#F5F5F5"      # Light background
+LIGHT_BG_COLOR = "#FFFFFF"      # White (changed from #F5F5F5 light gray)
 WHITE = "#FFFFFF"               # White
 RED_HIGHLIGHT = "#EC3400"       # McCain Red for warnings/high values
 YELLOW_MEDIUM = "#fee000"       # McCain Yellow for medium values
@@ -144,7 +145,7 @@ FRAME_STYLE = f"""
 
 FILTER_FRAME_STYLE = f"""
     QFrame {{
-        background-color: {LIGHT_BG_COLOR};
+        background-color: {WHITE};  /* Changed from LIGHT_BG_COLOR to WHITE */
         border: 1px solid #DDDDDD;
         border-radius: 4px;
         padding: 10px;
@@ -165,13 +166,13 @@ def setup_app_palette(app):
     """Configure the application-wide color palette."""
     palette = QPalette()
     
-    # Set up the color palette
-    palette.setColor(QPalette.Window, QColor(LIGHT_BG_COLOR))
+    # Set up the color palette with white background
+    palette.setColor(QPalette.Window, QColor(WHITE))  # Changed from LIGHT_BG_COLOR
     palette.setColor(QPalette.WindowText, QColor(TEXT_COLOR))
     palette.setColor(QPalette.Base, QColor(WHITE))
-    palette.setColor(QPalette.AlternateBase, QColor(LIGHT_BG_COLOR))
+    palette.setColor(QPalette.AlternateBase, QColor(LIGHT_BG_COLOR))  # Kept as LIGHT_BG_COLOR for alternating table rows
     palette.setColor(QPalette.Text, QColor(TEXT_COLOR))
-    palette.setColor(QPalette.Button, QColor(LIGHT_BG_COLOR))
+    palette.setColor(QPalette.Button, QColor(WHITE))  # Changed from LIGHT_BG_COLOR
     palette.setColor(QPalette.ButtonText, QColor(TEXT_COLOR))
     palette.setColor(QPalette.Link, QColor(PRIMARY_COLOR))
     palette.setColor(QPalette.Highlight, QColor(PRIMARY_COLOR))
