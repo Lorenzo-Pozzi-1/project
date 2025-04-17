@@ -1,40 +1,27 @@
 """
-Common styles for the LORENZO POZZI Pesticide App - Updated with McCain branding
+Common styles for the LORENZO POZZI Pesticide App
 
 This module provides consistent styling across the application including
-colors, fonts, and dimensions based on McCain brand guidelines.
-Modified to use default system font for body text while preserving custom title fonts.
-Background color changed to white instead of light gray.
+colors, fonts, and dimensions.
 """
 
 from PySide6.QtGui import QFont, QColor, QPalette
 from PySide6.QtCore import Qt
 
-# Primary color palette based on McCain brand guidelines
-PRIMARY_COLOR = "#fee000"       # McCain Yellow
+# Primary color palette 
+PRIMARY_COLOR = "#fee000"       # Yellow
 SECONDARY_COLOR = "#000000"     # Black
 TEXT_COLOR = "#000000"          # Black for text
-LIGHT_BG_COLOR = "#FFFFFF"      # White (changed from #F5F5F5 light gray)
+LIGHT_BG_COLOR = "F5F5F5"       # Light gray
 WHITE = "#FFFFFF"               # White
-RED_HIGHLIGHT = "#EC3400"       # McCain Red for warnings/high values
-YELLOW_MEDIUM = "#fee000"       # McCain Yellow for medium values
-GREEN_GOOD = "#009863"          # McCain Green for good/low values
-
-# Secondary colors from McCain palette
-MCCAIN_GREEN = "#009863"        # RGB: 0, 152, 99
-MCCAIN_LIGHT_BLUE = "#5D89E9"   # RGB: 93, 137, 233
-MCCAIN_ORANGE = "#EA7603"       # RGB: 234, 118, 3
-MCCAIN_TURQUOISE = "#86CAC6"    # RGB: 134, 202, 198
-MCCAIN_DARK_BLUE = "#003B75"    # RGB: 0, 59, 117
-MCCAIN_RED = "#EC3400"          # RGB: 236, 52, 0
-MCCAIN_BEIGE = "#C9BFB0"        # RGB: 201, 191, 176
-MCCAIN_DARK_GREY = "#434043"    # RGB: 67, 64, 67
-MCCAIN_LIGHT_GREY = "#D9DAE4"   # RGB: 217, 218, 228
+RED_HIGHLIGHT = "#EC3400"       # Red for warnings/high values
+YELLOW_MEDIUM = "#fee000"       # Yellow for medium values
+GREEN_GOOD = "#009863"          # Green for good/low values
 
 # EIQ color coding
-EIQ_LOW_COLOR = QColor(0, 152, 99, 100)    # Light green for low EIQ (McCain Green)
-EIQ_MEDIUM_COLOR = QColor(254, 224, 0, 100)  # Light yellow for medium EIQ (McCain Yellow)
-EIQ_HIGH_COLOR = QColor(236, 52, 0, 100)   # Light red for high EIQ (McCain Red)
+EIQ_LOW_COLOR = QColor(0, 152, 99, 100)    # Light green for low EIQ
+EIQ_MEDIUM_COLOR = QColor(254, 224, 0, 100)  # Light yellow for medium EIQ
+EIQ_HIGH_COLOR = QColor(236, 52, 0, 100)   # Light red for high EIQ
 
 # Spacing and sizes
 MARGIN_SMALL = 5
