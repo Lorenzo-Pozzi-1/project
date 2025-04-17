@@ -1,27 +1,38 @@
 """
-Common styles for the LORENZO POZZI Pesticide App
+Common styles for the LORENZO POZZI Pesticide App - Updated with McCain branding
 
 This module provides consistent styling across the application including
-colors, fonts, and dimensions.
+colors, fonts, and dimensions based on McCain brand guidelines.
 """
 
 from PySide6.QtGui import QFont, QColor, QPalette
 from PySide6.QtCore import Qt
 
-# Primary color palette
-PRIMARY_COLOR = "#007C3E"       # Green
-SECONDARY_COLOR = "#FFD100"     # Yellow accent
-TEXT_COLOR = "#333333"          # Dark gray for text
+# Primary color palette based on McCain brand guidelines
+PRIMARY_COLOR = "#fee000"       # McCain Yellow
+SECONDARY_COLOR = "#000000"     # Black
+TEXT_COLOR = "#000000"          # Black for text
 LIGHT_BG_COLOR = "#F5F5F5"      # Light background
 WHITE = "#FFFFFF"               # White
-RED_HIGHLIGHT = "#FF5252"       # Red for warnings/high values
-YELLOW_MEDIUM = "#FFC107"       # Yellow for medium values
-GREEN_GOOD = "#4CAF50"          # Green for good/low values
+RED_HIGHLIGHT = "#EC3400"       # McCain Red for warnings/high values
+YELLOW_MEDIUM = "#fee000"       # McCain Yellow for medium values
+GREEN_GOOD = "#009863"          # McCain Green for good/low values
+
+# Secondary colors from McCain palette
+MCCAIN_GREEN = "#009863"        # RGB: 0, 152, 99
+MCCAIN_LIGHT_BLUE = "#5D89E9"   # RGB: 93, 137, 233
+MCCAIN_ORANGE = "#EA7603"       # RGB: 234, 118, 3
+MCCAIN_TURQUOISE = "#86CAC6"    # RGB: 134, 202, 198
+MCCAIN_DARK_BLUE = "#003B75"    # RGB: 0, 59, 117
+MCCAIN_RED = "#EC3400"          # RGB: 236, 52, 0
+MCCAIN_BEIGE = "#C9BFB0"        # RGB: 201, 191, 176
+MCCAIN_DARK_GREY = "#434043"    # RGB: 67, 64, 67
+MCCAIN_LIGHT_GREY = "#D9DAE4"   # RGB: 217, 218, 228
 
 # EIQ color coding
-EIQ_LOW_COLOR = QColor(200, 255, 200)     # Light green for low EIQ
-EIQ_MEDIUM_COLOR = QColor(255, 255, 200)  # Light yellow for medium EIQ
-EIQ_HIGH_COLOR = QColor(255, 200, 200)    # Light red for high EIQ
+EIQ_LOW_COLOR = QColor(0, 152, 99, 100)    # Light green for low EIQ (McCain Green)
+EIQ_MEDIUM_COLOR = QColor(254, 224, 0, 100)  # Light yellow for medium EIQ (McCain Yellow)
+EIQ_HIGH_COLOR = QColor(236, 52, 0, 100)   # Light red for high EIQ (McCain Red)
 
 # Spacing and sizes
 MARGIN_SMALL = 5
@@ -36,30 +47,34 @@ BUTTON_MIN_WIDTH = 120
 BUTTON_MIN_HEIGHT = 40
 FEATURE_BUTTON_SIZE = 180       # Size for large feature buttons on home page
 
-# Font configurations
+# Font configurations - updated to McCain brand fonts
 def get_title_font(size=24, bold=True):
-    """Returns a font configured for titles."""
-    font = QFont()
+    """Returns a font configured for titles - Red Hat Display Black."""
+    font = QFont("Red Hat Display")
     font.setPointSize(size)
     font.setBold(bold)
+    font.setWeight(QFont.Black)
     return font
 
 def get_subtitle_font(size=18, bold=True):
     """Returns a font configured for subtitles."""
-    font = QFont()
+    font = QFont("Red Hat Display")
     font.setPointSize(size)
     font.setBold(bold)
     return font
 
 def get_body_font(size=11, bold=False):
-    """Returns a font configured for body text."""
-    font = QFont("Arial", size)
+    """Returns a font configured for body text - Montserrat Medium."""
+    font = QFont("Montserrat")
+    font.setPointSize(size)
     font.setBold(bold)
+    font.setWeight(QFont.Medium)
     return font
 
 def get_small_font(size=9, bold=False):
     """Returns a font configured for small text."""
-    font = QFont("Arial", size)
+    font = QFont("Montserrat")
+    font.setPointSize(size)
     font.setBold(bold)
     return font
 
@@ -72,28 +87,28 @@ FEATURE_BUTTON_STYLE = f"""
         padding: 10px;
     }}
     QPushButton:hover {{
-        background-color: #E6F2EA;
+        background-color: #FFF8D9;
         border: 2px solid {PRIMARY_COLOR};
     }}
     QPushButton:pressed {{
-        background-color: #D6EAE0;
+        background-color: #FFF2B3;
     }}
 """
 
 PRIMARY_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {PRIMARY_COLOR};
-        color: {WHITE};
+        color: {SECONDARY_COLOR};
         border: none;
         border-radius: 4px;
         padding: 8px 16px;
         font-weight: bold;
     }}
     QPushButton:hover {{
-        background-color: #006633;
+        background-color: #ffea66;
     }}
     QPushButton:pressed {{
-        background-color: #005729;
+        background-color: #e6ca00;
     }}
     QPushButton:disabled {{
         background-color: #CCCCCC;
@@ -104,16 +119,16 @@ PRIMARY_BUTTON_STYLE = f"""
 SECONDARY_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {WHITE};
-        color: {PRIMARY_COLOR};
-        border: 1px solid {PRIMARY_COLOR};
+        color: {SECONDARY_COLOR};
+        border: 1px solid {SECONDARY_COLOR};
         border-radius: 4px;
         padding: 8px 16px;
     }}
     QPushButton:hover {{
-        background-color: #E6F2EA;
+        background-color: #F5F5F5;
     }}
     QPushButton:pressed {{
-        background-color: #D6EAE0;
+        background-color: #E0E0E0;
     }}
 """
 
@@ -134,6 +149,15 @@ FILTER_FRAME_STYLE = f"""
     }}
 """
 
+# Yellow bar style for bottom of pages
+YELLOW_BAR_STYLE = f"""
+    QFrame {{
+        background-color: {PRIMARY_COLOR};
+        min-height: 10px;
+        max-height: 10px;
+    }}
+"""
+
 # Function to set up application-wide palette
 def setup_app_palette(app):
     """Configure the application-wide color palette."""
@@ -149,7 +173,7 @@ def setup_app_palette(app):
     palette.setColor(QPalette.ButtonText, QColor(TEXT_COLOR))
     palette.setColor(QPalette.Link, QColor(PRIMARY_COLOR))
     palette.setColor(QPalette.Highlight, QColor(PRIMARY_COLOR))
-    palette.setColor(QPalette.HighlightedText, QColor(WHITE))
+    palette.setColor(QPalette.HighlightedText, QColor(SECONDARY_COLOR))
     
     # Apply the palette
     app.setPalette(palette)
