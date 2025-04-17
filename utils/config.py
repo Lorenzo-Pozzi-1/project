@@ -10,14 +10,10 @@ from pathlib import Path
 
 # Default configuration
 DEFAULT_CONFIG = {
-    "region": "North America",
-    "units": "imperial",  # or "metric"
     "data_directory": "data",
-    "user_data_directory": "data/user_data",
     "theme": "light",
     "auto_save": True,
     "backup_count": 5,
-    "default_crop": "Potatoes",
     "last_view": "products"
 }
 

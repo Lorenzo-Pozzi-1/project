@@ -22,9 +22,7 @@ print("\033c", end="")
 
 def setup_environment():
     """Setup the application environment."""
-    # Ensure necessary directories exist
-    os.makedirs('data/user_data', exist_ok=True)
-    
+        
     # Set the current working directory to the application's directory
     # This ensures relative paths work correctly
     app_dir = os.path.dirname(os.path.abspath(__file__))
