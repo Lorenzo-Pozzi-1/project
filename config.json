@@ -1,0 +1,9 @@
+{
+    "region": "North America",
+    "units": "imperial",
+    "data_directory": "data",
+    "theme": "light",
+    "auto_save": true,
+    "backup_count": 5,
+    "last_view": "products"
+}
