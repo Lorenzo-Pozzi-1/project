@@ -107,15 +107,17 @@ class ProductsListTab(QWidget):
                 self.products_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
             
             # Columns to hide (case-insensitive matching to handle potential variations)
+            # Updated to handle the new concentration columns format
             columns_to_hide = [
-                "region", "number of ai", "ai1 eiq", "ai1concentration", "uom",
-                "ai2", "ai2 eiq", "ai2 group", "ai2concentration", "uom.1",
-                "ai3", "ai3 eiq", "ai3 group", "ai3concentration", "uom.2",
-                "ai4", "ai4 eiq", "ai4 group", "ai4concentration", "uom.3",
+                "region", "number of ai", "ai1 eiq", "ai1_concentration_%", "uom",
+                "ai2", "ai2 eiq", "ai2 group", "ai2_concentration_%", "uom.1",
+                "ai3", "ai3 eiq", "ai3 group", "ai3_concentration_%", "uom.2",
+                "ai4", "ai4 eiq", "ai4 group", "ai4_concentration_%", "uom.3",
             ]
             
             # Hide specified columns
             for col, key in enumerate(self.column_keys, start=1):
+                # Check if the key matches any of the hide keys in a case-insensitive manner
                 if any(hide_key.lower() == key.lower() for hide_key in columns_to_hide):
                     self.products_table.setColumnHidden(col, True)
 

@@ -34,6 +34,19 @@ def csv_to_dict(csv_file):
             for row in reader:
                 # Clean the row keys to handle potential whitespace in headers
                 cleaned_row = {k.strip(): v for k, v in row.items()}
+                
+                # Map old column names to new format if necessary
+                mapping = {
+                    'AI1concentration': 'AI1_concentration_%',
+                    'AI2concentration': 'AI2_concentration_%',
+                    'AI3concentration': 'AI3_concentration_%',
+                    'AI4concentration': 'AI4_concentration_%'
+                }
+                
+                for old_key, new_key in mapping.items():
+                    if old_key in cleaned_row and new_key not in cleaned_row:
+                        cleaned_row[new_key] = cleaned_row.pop(old_key)
+                
                 product_data.append(cleaned_row)
         
         return product_data
@@ -155,6 +168,18 @@ def load_products():
         with open(CSV_FILE, newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
+                # Map old column names to new format if necessary
+                mapping = {
+                    'AI1concentration': 'AI1_concentration_%',
+                    'AI2concentration': 'AI2_concentration_%',
+                    'AI3concentration': 'AI3_concentration_%',
+                    'AI4concentration': 'AI4_concentration_%'
+                }
+                
+                for old_key, new_key in mapping.items():
+                    if old_key in row and new_key not in row:
+                        row[new_key] = row.pop(old_key)
+                
                 product = Product.from_dict(row)
                 products.append(product)
         return products

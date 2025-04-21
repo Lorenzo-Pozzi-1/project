@@ -53,7 +53,9 @@ def get_product_info(product_name):
     if product:
         # Now using AI1 EIQ instead of base EIQ
         ai1_eiq = product.ai1_eiq if product.ai1_eiq is not None else 0.0
-        ai_percent = product.ai1_concentration if product.ai1_concentration is not None else 0.0
+        
+        # Updated from ai1_concentration to ai1_concentration_percent
+        ai_percent = product.ai1_concentration_percent if product.ai1_concentration_percent is not None else 0.0
         
         if product.label_suggested_rate is not None:
             rate = product.label_suggested_rate
@@ -65,7 +67,7 @@ def get_product_info(product_name):
         unit = product.rate_uom or "lbs/acre"
         
         return {
-            "ai1_eiq": ai1_eiq,  # Changed from base_eiq to ai1_eiq
+            "ai1_eiq": ai1_eiq,
             "ai_percent": ai_percent,
             "default_rate": rate,
             "default_unit": unit
@@ -73,7 +75,7 @@ def get_product_info(product_name):
     
     # Default values if product not found
     return {
-        "ai1_eiq": 0.0,  # Changed from base_eiq to ai1_eiq
+        "ai1_eiq": 0.0,
         "ai_percent": 0.0,
         "default_rate": 0.0,
         "default_unit": "lbs/acre"
@@ -84,7 +86,7 @@ def calculate_field_eiq(ai1_eiq, ai_percent, rate, unit, applications=1):
     Calculate Field EIQ based on product data and application parameters.
     
     Args:
-        ai1_eiq (float): AI1 EIQ value (changed from base_eiq)
+        ai1_eiq (float): AI1 EIQ value
         ai_percent (float): Active ingredient percentage (0-100)
         rate (float): Application rate
         unit (str): Unit of measure for rate
