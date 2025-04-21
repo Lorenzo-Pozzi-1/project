@@ -164,7 +164,7 @@ class SingleProductCalculator(QWidget):
         # Initialize UI elements to avoid AttributeError
         self.product_type_combo = None
         self.product_search = None
-        self.eiq_total_label = None
+        self.ai1_eiq_label = None  # Changed from eiq_total_label
         self.ai_percent_spin = None
         self.rate_spin = None
         self.rate_unit_combo = None
@@ -208,10 +208,10 @@ class SingleProductCalculator(QWidget):
         self.product_search.product_selected.connect(self.update_product_info)
         product_layout.addRow("Product:", self.product_search)
         
-        # AI1 EIQ Total - Changed from "EIQ Total" to "AI1 EIQ"
-        self.eiq_total_label = QLabel("--")
-        self.eiq_total_label.setFont(get_body_font())
-        product_layout.addRow("AI1 EIQ:", self.eiq_total_label)
+        # AI1 EIQ - Changed from "EIQ Total" to "AI1 EIQ"
+        self.ai1_eiq_label = QLabel("--")
+        self.ai1_eiq_label.setFont(get_body_font())
+        product_layout.addRow("AI1 EIQ:", self.ai1_eiq_label)
         
         # Active ingredient percentage
         self.ai_percent_spin = QDoubleSpinBox()
@@ -333,7 +333,7 @@ class SingleProductCalculator(QWidget):
                 self.product_search.clear()
                 
                 # Reset fields
-                self.eiq_total_label.setText("--")
+                self.ai1_eiq_label.setText("--")  # Changed from eiq_total_label
                 self.ai_percent_spin.setValue(0.0)
                 self.rate_spin.setValue(0.0)
                 self.impact_gauge.set_value(0, "Select a product")
@@ -348,12 +348,12 @@ class SingleProductCalculator(QWidget):
     
     def update_product_info(self, product_name):
         """Update product information when a product is selected."""
-        if not all([self.eiq_total_label, self.ai_percent_spin, self.rate_spin, self.rate_unit_combo]):
+        if not all([self.ai1_eiq_label, self.ai_percent_spin, self.rate_spin, self.rate_unit_combo]):
             return
             
         if not product_name:
             # Clear fields if no product is selected
-            self.eiq_total_label.setText("--")
+            self.ai1_eiq_label.setText("--")  # Changed from eiq_total_label
             self.ai_percent_spin.setValue(0.0)
             self.rate_spin.setValue(0.0)
             self.impact_gauge.set_value(0, "No product selected")
@@ -363,8 +363,8 @@ class SingleProductCalculator(QWidget):
             # Get product info from CSV data
             product_info = get_product_info(product_name)
             
-            # Update fields with product data - Changed from base_eiq to ai1 eiq
-            self.eiq_total_label.setText(str(product_info["AI1 eiq"]))
+            # Update fields with product data - Changed from base_eiq to ai1_eiq
+            self.ai1_eiq_label.setText(str(product_info["ai1_eiq"]))
             self.ai_percent_spin.setValue(product_info["ai_percent"])
             self.rate_spin.setValue(product_info["default_rate"])
             
@@ -380,23 +380,23 @@ class SingleProductCalculator(QWidget):
         except Exception as e:
             print(f"Error loading product info for '{product_name}': {e}")
             # Clear fields on error
-            self.eiq_total_label.setText("--")
+            self.ai1_eiq_label.setText("--")  # Changed from eiq_total_label
             self.ai_percent_spin.setValue(0.0)
             self.rate_spin.setValue(0.0)
             self.impact_gauge.set_value(0, "Error loading product")
     
     def calculate_single_eiq(self):
         """Calculate the Field EIQ for a single product."""
-        if not all([self.eiq_total_label, self.field_eiq_result, self.impact_gauge]):
+        if not all([self.ai1_eiq_label, self.field_eiq_result, self.impact_gauge]):
             return
             
         # Check if a product is selected and has valid EIQ value
-        if self.eiq_total_label.text() == "--":
+        if self.ai1_eiq_label.text() == "--":
             return
         
         try:
             # Get values - ai1_eiq is now used instead of base_eiq
-            ai1_eiq = float(self.eiq_total_label.text())
+            ai1_eiq = float(self.ai1_eiq_label.text())
             ai_percent = self.ai_percent_spin.value()
             rate = self.rate_spin.value()
             applications = self.applications_spin.value()

@@ -45,14 +45,14 @@ def get_product_info(product_name):
         product_name (str): Name of the product
         
     Returns:
-        dict: Product data containing base_eiq, ai_percent, etc.
+        dict: Product data containing ai1_eiq, ai_percent, etc.
     """
     # First try to get product from CSV
     product = get_product_by_name(product_name.split(" (")[0])
     
     if product:
-        # Use data from CSV
-        base_eiq = product.eiq_total if product.eiq_total is not None else 0.0
+        # Now using AI1 EIQ instead of base EIQ
+        ai1_eiq = product.ai1_eiq if product.ai1_eiq is not None else 0.0
         ai_percent = product.ai1_concentration if product.ai1_concentration is not None else 0.0
         
         if product.label_suggested_rate is not None:
@@ -65,7 +65,7 @@ def get_product_info(product_name):
         unit = product.rate_uom or "lbs/acre"
         
         return {
-            "base_eiq": base_eiq,
+            "ai1_eiq": ai1_eiq,  # Changed from base_eiq to ai1_eiq
             "ai_percent": ai_percent,
             "default_rate": rate,
             "default_unit": unit
@@ -73,18 +73,18 @@ def get_product_info(product_name):
     
     # Default values if product not found
     return {
-        "base_eiq": 0.0,
+        "ai1_eiq": 0.0,  # Changed from base_eiq to ai1_eiq
         "ai_percent": 0.0,
         "default_rate": 0.0,
         "default_unit": "lbs/acre"
     }
 
-def calculate_field_eiq(base_eiq, ai_percent, rate, unit, applications=1):
+def calculate_field_eiq(ai1_eiq, ai_percent, rate, unit, applications=1):
     """
     Calculate Field EIQ based on product data and application parameters.
     
     Args:
-        base_eiq (float): Base EIQ value
+        ai1_eiq (float): AI1 EIQ value (changed from base_eiq)
         ai_percent (float): Active ingredient percentage (0-100)
         rate (float): Application rate
         unit (str): Unit of measure for rate
@@ -105,7 +105,7 @@ def calculate_field_eiq(base_eiq, ai_percent, rate, unit, applications=1):
             rate_in_pounds = rate
         
         # Calculate Field EIQ
-        field_eiq = base_eiq * ai_decimal * rate_in_pounds * applications
+        field_eiq = ai1_eiq * ai_decimal * rate_in_pounds * applications
         return field_eiq
     
     except (ValueError, ZeroDivisionError, TypeError) as e:
