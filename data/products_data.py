@@ -29,7 +29,8 @@ def csv_to_dict(csv_file):
     
     try:
         with open(csv_file, 'r', newline='', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
+            # Explicitly set quoting parameters to handle strings with commas
+            reader = csv.DictReader(file, quotechar='"', skipinitialspace=True)
             for row in reader:
                 # Clean the row keys to handle potential whitespace in headers
                 cleaned_row = {k.strip(): v for k, v in row.items()}
