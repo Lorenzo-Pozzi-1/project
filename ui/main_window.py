@@ -120,7 +120,8 @@ class MainWindow(QMainWindow):
         Handle the close event for the main window.
         
         This is called when the application is being closed.
-        It deletes the products.json file to prevent it from becoming too large.
+        It deletes the products.json file to prevent it from becoming too large
+        and attempts to clean up __pycache__ directories with Windows compatibility.
         """
         # Clean up the products.json file
         try:
@@ -129,6 +130,49 @@ class MainWindow(QMainWindow):
                 print(f"Successfully deleted {DB_FILE}")
         except Exception as e:
             print(f"Error deleting products.json file: {e}")
+        
+        # Clean up all __pycache__ directories - Windows compatible approach
+        try:
+            # Start at the root directory of the application
+            app_dir = os.path.dirname(os.path.abspath(__file__))
+            root_dir = os.path.dirname(app_dir)  # Go up one level to get the project root
+            
+            # Keep track of files successfully deleted
+            deleted_files = 0
+            total_files = 0
+            
+            # Walk through all directories
+            for dirpath, dirnames, filenames in os.walk(root_dir):
+                # Check if the current directory is a __pycache__ directory
+                if os.path.basename(dirpath) == "__pycache__":
+                    # First try to delete all files in the directory
+                    for file in filenames:
+                        total_files += 1
+                        file_path = os.path.join(dirpath, file)
+                        try:
+                            if file.endswith('.pyc') or file.endswith('.pyo'):
+                                os.remove(file_path)
+                                deleted_files += 1
+                        except Exception as e:
+                            # Just continue with the next file
+                            pass
+                    
+                    # Only try to remove the directory if we're confident it's empty
+                    # Don't try to force directory removal as it may cause errors on Windows
+                    try:
+                        # Check if directory is empty now
+                        remaining_files = os.listdir(dirpath)
+                        if not remaining_files:
+                            os.rmdir(dirpath)
+                            print(f"Removed empty __pycache__ directory: {dirpath}")
+                    except Exception:
+                        # Ignore directory removal errors
+                        pass
+            
+            if deleted_files > 0:
+                print(f"Cleanup complete: Deleted {deleted_files} of {total_files} cached Python files")
+        except Exception as e:
+            print(f"Error during cache cleanup: {e}")
         
         # Accept the close event to continue with application shutdown
         event.accept()
