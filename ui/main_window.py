@@ -5,6 +5,7 @@ This module defines the MainWindow class which serves as the container
 for all pages in the application.
 """
 
+import os
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QFontDatabase, QFont
@@ -14,6 +15,8 @@ from ui.products_page import ProductsPage
 from ui.season_planner import SeasonPlannerPage
 from ui.eiq import EiqCalculatorPage
 from ui.common.styles import YELLOW_BAR_STYLE
+from data.products_data import DB_FILE  # Import the database file path
+
 
 class MainWindow(QMainWindow):
     """
@@ -29,7 +32,7 @@ class MainWindow(QMainWindow):
         self.config = config or {}
         self.selected_country = None
         self.setup_window()
-        self.init_fonts()
+        # self.init_fonts()
         self.init_ui()
 
         # Connect the region_changed signal to methods that need to be updated
@@ -111,3 +114,21 @@ class MainWindow(QMainWindow):
     def go_home(self):
         """Navigate back to the home page."""
         self.stacked_widget.setCurrentIndex(0)
+    
+    def closeEvent(self, event):
+        """
+        Handle the close event for the main window.
+        
+        This is called when the application is being closed.
+        It deletes the products.json file to prevent it from becoming too large.
+        """
+        # Clean up the products.json file
+        try:
+            if os.path.exists(DB_FILE):
+                os.remove(DB_FILE)
+                print(f"Successfully deleted {DB_FILE}")
+        except Exception as e:
+            print(f"Error deleting products.json file: {e}")
+        
+        # Accept the close event to continue with application shutdown
+        event.accept()
