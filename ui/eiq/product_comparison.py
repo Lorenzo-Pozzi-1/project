@@ -10,19 +10,18 @@ from PySide6.QtWidgets import (
     QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox,
     QFrame, QGridLayout
 )
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QBrush
 
 from ui.common.styles import (
-    get_subtitle_font, get_body_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE,
-    EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
+    get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE,
 )
-from ui.common.widgets import ContentFrame, ColorCodedTableItem
+from ui.common.widgets import ContentFrame
 
-# Import EIQ utilities
-from ui.eiq.eiq_utils import (
-    get_products_from_csv, get_product_display_names, get_product_info, 
-    calculate_field_eiq, get_impact_category
+# Import shared EIQ utilities and components
+from ui.eiq.eiq_utils_and_components import (
+    get_products_from_csv, calculate_field_eiq, 
+    ColorCodedEiqItem, format_eiq_result
 )
 
 
@@ -306,8 +305,8 @@ class ProductComparisonCalculator(QWidget):
                 rate_spin = self.comparison_selection_table.cellWidget(row, 3)
                 if rate_spin:
                     rate_spin.setValue(product.label_suggested_rate or 
-                                       product.label_maximum_rate or 
-                                       product.label_minimum_rate or 0.0)
+                                      product.label_maximum_rate or 
+                                      product.label_minimum_rate or 0.0)
                 
                 # Try to set rate unit if available in product data
                 unit_combo = self.comparison_selection_table.cellWidget(row, 4)
@@ -367,7 +366,7 @@ class ProductComparisonCalculator(QWidget):
                     ai_eiq = float(ai["eiq"])
                     ai_percent = float(ai["percent"]) if isinstance(ai["percent"], (int, float)) else float(ai["percent"].replace("%", ""))
                     
-                    # Calculate Field EIQ for this AI
+                    # Calculate Field EIQ for this AI using the shared utility function
                     ai_field_eiq = calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications)
                     total_field_eiq += ai_field_eiq
                 
@@ -387,24 +386,18 @@ class ProductComparisonCalculator(QWidget):
                     )
                     
                     # Field EIQ / acre with color coding
-                    eiq_acre_item = ColorCodedTableItem(
+                    eiq_acre_item = ColorCodedEiqItem(
                         total_field_eiq, 
                         low_threshold=20, 
-                        high_threshold=40,
-                        low_color=EIQ_LOW_COLOR,
-                        medium_color=EIQ_MEDIUM_COLOR,
-                        high_color=EIQ_HIGH_COLOR
+                        high_threshold=40
                     )
                     self.comparison_results_table.setItem(result_row, 1, eiq_acre_item)
                     
                     # Field EIQ / ha with color coding
-                    eiq_ha_item = ColorCodedTableItem(
+                    eiq_ha_item = ColorCodedEiqItem(
                         field_eiq_per_ha, 
                         low_threshold=50, 
-                        high_threshold=100,
-                        low_color=EIQ_LOW_COLOR,
-                        medium_color=EIQ_MEDIUM_COLOR,
-                        high_color=EIQ_HIGH_COLOR
+                        high_threshold=100
                     )
                     self.comparison_results_table.setItem(result_row, 2, eiq_ha_item)
                 

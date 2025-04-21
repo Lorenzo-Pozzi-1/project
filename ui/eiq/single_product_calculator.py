@@ -8,148 +8,21 @@ It supports displaying multiple active ingredients (up to 4).
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, 
-    QFormLayout, QDoubleSpinBox, QLineEdit, QListWidget, QFrame, QScrollArea,
-    QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy
+    QFormLayout, QDoubleSpinBox, QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy
 )
-from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtGui import QFont, QColor, QPalette, QBrush
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor, QBrush
 
 from ui.common.styles import (
-    get_title_font, get_subtitle_font, get_body_font, PRIMARY_BUTTON_STYLE, 
-    SECONDARY_BUTTON_STYLE, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
+    PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE, get_body_font
 )
-from ui.common.widgets import ContentFrame, GaugeWidget
+from ui.common.widgets import ContentFrame
 
-# Import EIQ utilities
-from ui.eiq.eiq_utils import (
-    get_products_from_csv, get_product_info, 
-    calculate_field_eiq, get_impact_category
+# Import common utilities and components from consolidated module
+from ui.eiq.eiq_utils_and_components import (
+    get_products_from_csv, get_product_info, calculate_field_eiq,
+    ProductSearchField, EiqResultDisplay 
 )
-from data.products_data import load_products
-
-
-class ProductSearchField(QWidget):
-    """A custom search field with suggestions displayed underneath."""
-    
-    # Signal emitted when a product is selected
-    product_selected = Signal(str)
-    
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.all_items = []  # All available products
-        self.filtered_items = []  # Filtered products based on search
-        self.setup_ui()
-    
-    def setup_ui(self):
-        """Set up the UI components."""
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-        
-        # Search field
-        self.search_field = QLineEdit()
-        self.search_field.setPlaceholderText("Type to search products...")
-        self.search_field.setFont(get_body_font())
-        self.search_field.textChanged.connect(self.update_suggestions)
-        layout.addWidget(self.search_field)
-        
-        # Suggestions container
-        self.suggestions_container = QFrame()
-        self.suggestions_container.setFrameStyle(QFrame.StyledPanel)
-        self.suggestions_container.setStyleSheet("""
-            QFrame {
-                border: 1px solid #CCCCCC;
-                border-top: none;
-                background-color: white;
-            }
-        """)
-        
-        # Scroll area for suggestions to handle large lists
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setFrameStyle(QFrame.NoFrame)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        
-        # Suggestions list
-        self.suggestions_list = QListWidget()
-        self.suggestions_list.setFrameStyle(QFrame.NoFrame)
-        self.suggestions_list.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.suggestions_list.setStyleSheet("""
-            QListWidget {
-                border: none;
-                outline: none;
-            }
-            QListWidget::item {
-                padding: 5px;
-            }
-            QListWidget::item:hover {
-                background-color: #F5F5F5;
-            }
-            QListWidget::item:selected {
-                background-color: #E0E0E0;
-            }
-        """)
-        self.suggestions_list.itemClicked.connect(self.select_suggestion)
-        scroll_area.setWidget(self.suggestions_list)
-        
-        # Add scroll area to suggestions container
-        suggestions_layout = QVBoxLayout(self.suggestions_container)
-        suggestions_layout.setContentsMargins(0, 0, 0, 0)
-        suggestions_layout.addWidget(scroll_area)
-        
-        # Add suggestions container to main layout
-        layout.addWidget(self.suggestions_container)
-        
-        # Initially hide suggestions
-        self.suggestions_container.setVisible(False)
-    
-    def update_suggestions(self, text):
-        """Update suggestions based on input text."""
-        # Clear selection when search text changes
-        self.suggestions_list.clearSelection()
-        
-        if not text:
-            # Hide suggestions when search field is empty
-            self.suggestions_container.setVisible(False)
-            return
-        
-        # Filter items based on search text
-        self.filtered_items = [
-            item for item in self.all_items 
-            if text.lower() in item.lower()
-        ]
-        
-        # Update suggestions list
-        self.suggestions_list.clear()
-        self.suggestions_list.addItems(self.filtered_items)
-        
-        # Show suggestions if there are any matches
-        has_suggestions = len(self.filtered_items) > 0
-        self.suggestions_container.setVisible(has_suggestions)
-        
-        # Set fixed height based on number of items
-        if has_suggestions:
-            item_height = self.suggestions_list.sizeHintForRow(0)
-            num_visible_items = min(8, len(self.filtered_items))
-            list_height = item_height * num_visible_items + 4
-            self.suggestions_list.setFixedHeight(list_height)
-    
-    def select_suggestion(self, item):
-        """Handle selection of a suggestion."""
-        selected_text = item.text()
-        self.search_field.setText(selected_text)
-        self.suggestions_container.setVisible(False)
-        self.product_selected.emit(selected_text)
-    
-    def set_items(self, items):
-        """Set the full list of available items."""
-        self.all_items = items
-        self.update_suggestions(self.search_field.text())
-    
-    def clear(self):
-        """Clear the search field and hide suggestions."""
-        self.search_field.clear()
-        self.suggestions_container.setVisible(False)
 
 
 class SingleProductCalculator(QWidget):
@@ -170,8 +43,7 @@ class SingleProductCalculator(QWidget):
         self.rate_spin = None
         self.rate_unit_combo = None
         self.applications_spin = None
-        self.field_eiq_result = None
-        self.impact_gauge = None
+        self.eiq_results_display = None
         
         # Currently selected product data
         self.current_product = None
@@ -189,10 +61,6 @@ class SingleProductCalculator(QWidget):
         product_frame = ContentFrame()
         product_layout = QFormLayout()
         product_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        
-        # Region selection
-        self.region_combo = QComboBox()
-        self.region_combo.setFont(get_body_font())
         
         # Load products data
         self.all_products = get_products_from_csv()
@@ -270,41 +138,10 @@ class SingleProductCalculator(QWidget):
         product_frame.layout.addLayout(product_layout)
         layout.addWidget(product_frame)
         
-        # Results area
+        # Results area using the EiqResultDisplay component
         results_frame = ContentFrame()
-        results_layout = QVBoxLayout()
-        results_layout.setContentsMargins(5, 5, 5, 5)
-        results_layout.setAlignment(Qt.AlignCenter)
-        
-        results_title = QLabel("EIQ Results")
-        results_title.setFont(get_subtitle_font(size=16))
-        results_layout.addWidget(results_title)
-        
-        # Field EIQ result - now using a single label with consistent formatting
-        field_eiq_layout = QHBoxLayout()
-        field_eiq_label = QLabel("Field EIQ:")
-        field_eiq_label.setFont(get_body_font(size=14, bold=True))
-        
-        # Single label for the entire result with consistent formatting
-        self.field_eiq_result = QLabel("-- acre = -- ha")
-        self.field_eiq_result.setFont(get_body_font(size=16, bold=True))
-        
-        field_eiq_layout.addWidget(field_eiq_label)
-        field_eiq_layout.addWidget(self.field_eiq_result)
-        field_eiq_layout.addStretch(1)
-        
-        results_layout.addLayout(field_eiq_layout)
-        
-        # Impact rating gauge
-        self.impact_gauge = GaugeWidget(
-            min_value=0,
-            max_value=100,
-            critical_threshold=50,  # Adjust based on your EIQ thresholds
-            warning_threshold=20    # Adjust based on your EIQ thresholds
-        )
-        results_layout.addWidget(self.impact_gauge)
-        
-        results_frame.layout.addLayout(results_layout)
+        self.eiq_results_display = EiqResultDisplay()
+        results_frame.layout.addWidget(self.eiq_results_display)
         layout.addWidget(results_frame)
         
         # Save and Export buttons
@@ -353,7 +190,7 @@ class SingleProductCalculator(QWidget):
                 # Reset fields
                 self.clear_ai_table()
                 self.rate_spin.setValue(0.0)
-                self.impact_gauge.set_value(0, "Select a product")
+                self.eiq_results_display.update_result(0)
             else:
                 # Handle case where no products are loaded
                 self.product_search.setEnabled(False)
@@ -373,7 +210,7 @@ class SingleProductCalculator(QWidget):
             # Clear fields if no product is selected
             self.clear_ai_table()
             self.rate_spin.setValue(0.0)
-            self.impact_gauge.set_value(0, "No product selected")
+            self.eiq_results_display.update_result(0)
             return
             
         try:
@@ -446,8 +283,8 @@ class SingleProductCalculator(QWidget):
             
             # Update application rate
             self.rate_spin.setValue(self.current_product.label_suggested_rate or 
-                                    self.current_product.label_maximum_rate or 
-                                    self.current_product.label_minimum_rate or 0.0)
+                                   self.current_product.label_maximum_rate or 
+                                   self.current_product.label_minimum_rate or 0.0)
             
             # Try to set rate unit if available in product data
             unit = self.current_product.rate_uom or ""
@@ -464,7 +301,7 @@ class SingleProductCalculator(QWidget):
             # Clear fields on error
             self.clear_ai_table()
             self.rate_spin.setValue(0.0)
-            self.impact_gauge.set_value(0, "Error loading product")
+            self.eiq_results_display.update_result(0)
     
     def calculate_single_eiq(self):
         """Calculate the Field EIQ for a single product."""
@@ -500,20 +337,12 @@ class SingleProductCalculator(QWidget):
                 except (ValueError, TypeError) as e:
                     print(f"Error calculating EIQ for AI row {row}: {e}")
             
-            # Calculate hectare value (1 hectare = 2.47 acres)
-            field_eiq_per_ha = total_field_eiq * 2.47
-            
-            # Update result display with consistent formatting
-            self.field_eiq_result.setText(f"{total_field_eiq:.2f} /acre = {field_eiq_per_ha:.2f} /ha")
-            
-            # Update impact rating gauge
-            rating, _ = get_impact_category(total_field_eiq)
-            self.impact_gauge.set_value(total_field_eiq, rating)
+            # Update result display with the new EIQ value
+            self.eiq_results_display.update_result(total_field_eiq)
             
         except (ValueError, ZeroDivisionError, AttributeError) as e:
             print(f"Error calculating EIQ: {e}")
-            self.field_eiq_result.setText("Error calculating EIQ")
-            self.impact_gauge.set_value(0, "Error in calculation")
+            self.eiq_results_display.update_result(0)
     
     def save_calculation(self):
         """Save the current calculation to history."""

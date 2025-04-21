@@ -18,7 +18,7 @@ from ui.common.styles import (
 from ui.common.widgets import ContentFrame, ColorCodedTableItem
 
 # Import EIQ utilities
-from ui.eiq.eiq_utils import (
+from ui.eiq.eiq_utils_and_components import (
     get_products_from_csv, get_product_display_names, get_product_info, 
     calculate_field_eiq, get_impact_category
 )
