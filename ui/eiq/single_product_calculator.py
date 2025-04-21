@@ -165,12 +165,15 @@ class SingleProductCalculator(QWidget):
         self.product_type_combo = None
         self.product_search = None
         self.ai1_eiq_label = None
-        self.ai_percent_spin = None
+        self.ai_percent_label = None  # Changed from ai_percent_spin to label
         self.rate_spin = None
         self.rate_unit_combo = None
         self.applications_spin = None
         self.field_eiq_result = None
         self.impact_gauge = None
+        
+        # Default AI percentage for placeholder (development only)
+        self.DEFAULT_AI_PERCENT = 15.0
         
         self.setup_ui()
     
@@ -213,13 +216,10 @@ class SingleProductCalculator(QWidget):
         self.ai1_eiq_label.setFont(get_body_font())
         product_layout.addRow("AI1 EIQ:", self.ai1_eiq_label)
         
-        # Active ingredient percentage - Updated for consistency with CSV column change
-        self.ai_percent_spin = QDoubleSpinBox()
-        self.ai_percent_spin.setRange(0.1, 100.0)
-        self.ai_percent_spin.setValue(0.0)
-        self.ai_percent_spin.setSuffix("%")
-        self.ai_percent_spin.valueChanged.connect(self.calculate_single_eiq)
-        product_layout.addRow("Active Ingredient %:", self.ai_percent_spin)
+        # Active ingredient percentage - Changed to label from spin box
+        self.ai_percent_label = QLabel("--")
+        self.ai_percent_label.setFont(get_body_font())
+        product_layout.addRow("Active Ingredient %:", self.ai_percent_label)
         
         # Application rate
         rate_layout = QHBoxLayout()
@@ -334,7 +334,7 @@ class SingleProductCalculator(QWidget):
                 
                 # Reset fields
                 self.ai1_eiq_label.setText("--")
-                self.ai_percent_spin.setValue(0.0)
+                self.ai_percent_label.setText("--")  # Updated for label instead of spin box
                 self.rate_spin.setValue(0.0)
                 self.impact_gauge.set_value(0, "Select a product")
             else:
@@ -348,13 +348,13 @@ class SingleProductCalculator(QWidget):
     
     def update_product_info(self, product_name):
         """Update product information when a product is selected."""
-        if not all([self.ai1_eiq_label, self.ai_percent_spin, self.rate_spin, self.rate_unit_combo]):
+        if not all([self.ai1_eiq_label, self.ai_percent_label, self.rate_spin, self.rate_unit_combo]):
             return
             
         if not product_name:
             # Clear fields if no product is selected
             self.ai1_eiq_label.setText("--")
-            self.ai_percent_spin.setValue(0.0)
+            self.ai_percent_label.setText("--")  # Updated for label
             self.rate_spin.setValue(0.0)
             self.impact_gauge.set_value(0, "No product selected")
             return
@@ -365,7 +365,16 @@ class SingleProductCalculator(QWidget):
             
             # Update fields with product data
             self.ai1_eiq_label.setText(str(product_info["ai1_eiq"]))
-            self.ai_percent_spin.setValue(product_info["ai_percent"])
+            
+            # Get AI percent from product info or use default placeholder
+            ai_percent = product_info["ai_percent"]
+            if ai_percent == 0.0:
+                # Use placeholder value for development purposes
+                ai_percent = self.DEFAULT_AI_PERCENT
+                self.ai_percent_label.setText(f"{ai_percent}% (placeholder)")
+            else:
+                self.ai_percent_label.setText(f"{ai_percent}%")
+                
             self.rate_spin.setValue(product_info["default_rate"])
             
             # Try to set rate unit if available in product data
@@ -381,13 +390,13 @@ class SingleProductCalculator(QWidget):
             print(f"Error loading product info for '{product_name}': {e}")
             # Clear fields on error
             self.ai1_eiq_label.setText("--")
-            self.ai_percent_spin.setValue(0.0)
+            self.ai_percent_label.setText("--")  # Updated for label
             self.rate_spin.setValue(0.0)
             self.impact_gauge.set_value(0, "Error loading product")
     
     def calculate_single_eiq(self):
         """Calculate the Field EIQ for a single product."""
-        if not all([self.ai1_eiq_label, self.field_eiq_result, self.impact_gauge]):
+        if not all([self.ai1_eiq_label, self.ai_percent_label, self.field_eiq_result, self.impact_gauge]):
             return
             
         # Check if a product is selected and has valid EIQ value
@@ -397,7 +406,11 @@ class SingleProductCalculator(QWidget):
         try:
             # Get values
             ai1_eiq = float(self.ai1_eiq_label.text())
-            ai_percent = self.ai_percent_spin.value()
+            
+            # Parse AI percent from label text (may include "(placeholder)" text)
+            ai_percent_text = self.ai_percent_label.text().split("%")[0]
+            ai_percent = float(ai_percent_text)
+            
             rate = self.rate_spin.value()
             applications = self.applications_spin.value()
             unit = self.rate_unit_combo.currentText()
