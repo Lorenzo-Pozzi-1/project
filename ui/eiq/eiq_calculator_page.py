@@ -56,7 +56,7 @@ class EiqCalculatorPage(QWidget):
         self.tabs.addTab(self.product_comparison_calculator, "Product Comparison")
         
         # Season calculator tab
-        self.seasonal_eiq_calculator = SeasonalEIQCalculator(self)
-        self.tabs.addTab(self.seasonal_eiq_calculator, "Seasonal EIQ")
+        # self.seasonal_eiq_calculator = SeasonalEIQCalculator(self)
+        # self.tabs.addTab(self.seasonal_eiq_calculator, "Seasonal EIQ")
         
         main_layout.addWidget(self.tabs)

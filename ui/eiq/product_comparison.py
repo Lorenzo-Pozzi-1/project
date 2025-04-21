@@ -57,7 +57,7 @@ class ProductComparisonCalculator(QWidget):
             self.comparison_selection_table.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeToContents)
         
         # Add a few empty rows for product selection
-        for _ in range(3):
+        for _ in range(1):
             self.add_comparison_row()
         
         selection_layout.addWidget(self.comparison_selection_table)
