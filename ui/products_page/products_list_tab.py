@@ -109,10 +109,11 @@ class ProductsListTab(QWidget):
             # Columns to hide (case-insensitive matching to handle potential variations)
             # Updated to handle the new concentration columns format
             columns_to_hide = [
-                "region", "number of ai", "ai1 eiq", "ai1_concentration_%", "uom",
-                "ai2", "ai2 eiq", "ai2 group", "ai2_concentration_%", "uom.1",
-                "ai3", "ai3 eiq", "ai3 group", "ai3_concentration_%", "uom.2",
-                "ai4", "ai4 eiq", "ai4 group", "ai4_concentration_%", "uom.3",
+                "region", "number of ai", 
+                "ai1 eiq", "ai1 group", "ai1_concentration_%",
+                "ai2 eiq", "ai2 group", "ai2_concentration_%",
+                "ai3 eiq", "ai3 group", "ai3_concentration_%",
+                "ai4 eiq", "ai4 group", "ai4_concentration_%"
             ]
             
             # Hide specified columns

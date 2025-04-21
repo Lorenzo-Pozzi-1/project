@@ -9,7 +9,7 @@ It supports displaying multiple active ingredients (up to 4).
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, 
     QFormLayout, QDoubleSpinBox, QLineEdit, QListWidget, QFrame, QScrollArea,
-    QTableWidget, QTableWidgetItem, QHeaderView
+    QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy
 )
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QFont, QColor, QPalette, QBrush
@@ -231,14 +231,10 @@ class SingleProductCalculator(QWidget):
         # Set a reasonable fixed height for the table
         self.ai_table.setMinimumHeight(120)
         self.ai_table.setMaximumHeight(150)
+        self.ai_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         
-        # Create a container widget to ensure the table stays properly aligned
-        ai_container = QWidget()
-        ai_container_layout = QVBoxLayout(ai_container)
-        ai_container_layout.setContentsMargins(0, 0, 0, 0)
-        ai_container_layout.addWidget(self.ai_table)
-        
-        product_layout.addRow("Active Ingredients:", ai_container)
+        # Use a direct form layout row instead of a container
+        product_layout.addRow("Active Ingredients:", self.ai_table)
         
         # Application rate
         rate_layout = QHBoxLayout()
@@ -251,7 +247,7 @@ class SingleProductCalculator(QWidget):
         # Unit of measure selection for application rate
         self.rate_unit_combo = QComboBox()
         self.rate_unit_combo.addItems([
-            "kg/ha", "g/ha", "L/ha", "mL/ha", 
+            "kg/ha", "g/ha", "l/ha", "ml/ha", 
             "lbs/acre", "oz/acre", "fl oz/acre", "gal/acre", 
             "pints/acre", "quarts/acre"
         ])

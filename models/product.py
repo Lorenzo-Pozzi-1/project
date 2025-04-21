@@ -30,22 +30,18 @@ class Product:
                  ai1_eiq=None,
                  ai1_group=None,
                  ai1_concentration_percent=None,  # Updated column name
-                 ai1_concentration_uom=None,
                  ai2=None,
                  ai2_eiq=None,
                  ai2_group=None,
                  ai2_concentration_percent=None,  # Updated column name
-                 ai2_concentration_uom=None,
                  ai3=None,
                  ai3_eiq=None,
                  ai3_group=None,
                  ai3_concentration_percent=None,  # Updated column name
-                 ai3_concentration_uom=None,
                  ai4=None,
                  ai4_eiq=None,
                  ai4_group=None,
                  ai4_concentration_percent=None,  # Updated column name
-                 ai4_concentration_uom=None,
                  eiq_total=None,
                  min_days_between_applications=None,
                  rei_hours=None,
@@ -69,22 +65,18 @@ class Product:
             ai1_eiq (float): EIQ value for first active ingredient
             ai1_group (str): Group/classification for first active ingredient
             ai1_concentration_percent (float): Concentration of first active ingredient
-            ai1_concentration_uom (str): Unit of measure for first AI concentration
             ai2 (str): Second active ingredient name (if applicable)
             ai2_eiq (float): EIQ value for second active ingredient
             ai2_group (str): Group/classification for second active ingredient
             ai2_concentration_percent (float): Concentration of second active ingredient
-            ai2_concentration_uom (str): Unit of measure for second AI concentration
             ai3 (str): Third active ingredient name (if applicable)
             ai3_eiq (float): EIQ value for third active ingredient
             ai3_group (str): Group/classification for third active ingredient
             ai3_concentration_percent (float): Concentration of third active ingredient
-            ai3_concentration_uom (str): Unit of measure for third AI concentration
             ai4 (str): Fourth active ingredient name (if applicable)
             ai4_eiq (float): EIQ value for fourth active ingredient
             ai4_group (str): Group/classification for fourth active ingredient
             ai4_concentration_percent (float): Concentration of fourth active ingredient
-            ai4_concentration_uom (str): Unit of measure for fourth AI concentration
             eiq_total (float): Total EIQ value for the product
             min_days_between_applications (int): Minimum days between applications
             rei_hours (int): Restricted Entry Interval in hours
@@ -114,28 +106,24 @@ class Product:
         self.ai1_eiq = self._convert_to_float(ai1_eiq)
         self.ai1_group = ai1_group
         self.ai1_concentration_percent = self._convert_to_float(ai1_concentration_percent)  # Updated parameter name
-        self.ai1_concentration_uom = ai1_concentration_uom
         
         # Active ingredient 2 (if present)
         self.ai2 = ai2
         self.ai2_eiq = self._convert_to_float(ai2_eiq)
         self.ai2_group = ai2_group
         self.ai2_concentration_percent = self._convert_to_float(ai2_concentration_percent)  # Updated parameter name
-        self.ai2_concentration_uom = ai2_concentration_uom
         
         # Active ingredient 3 (if present)
         self.ai3 = ai3
         self.ai3_eiq = self._convert_to_float(ai3_eiq)
         self.ai3_group = ai3_group
         self.ai3_concentration_percent = self._convert_to_float(ai3_concentration_percent)  # Updated parameter name
-        self.ai3_concentration_uom = ai3_concentration_uom
         
         # Active ingredient 4 (if present)
         self.ai4 = ai4
         self.ai4_eiq = self._convert_to_float(ai4_eiq)
         self.ai4_group = ai4_group
         self.ai4_concentration_percent = self._convert_to_float(ai4_concentration_percent)  # Updated parameter name
-        self.ai4_concentration_uom = ai4_concentration_uom
         
         # Overall EIQ and application intervals
         self.eiq_total = self._convert_to_float(eiq_total)
@@ -229,22 +217,18 @@ class Product:
             "AI1 eiq": self.ai1_eiq,
             "AI1 group": self.ai1_group,
             "AI1_concentration_%": self.ai1_concentration_percent,  # Updated column name
-            "UOM": self.ai1_concentration_uom,
             "AI2": self.ai2,
             "AI2 eiq": self.ai2_eiq,
             "AI2 group": self.ai2_group,
             "AI2_concentration_%": self.ai2_concentration_percent,  # Updated column name
-            "UOM.1": self.ai2_concentration_uom,
             "AI3": self.ai3,
             "AI3 eiq": self.ai3_eiq,
             "AI3 group": self.ai3_group,
             "AI3_concentration_%": self.ai3_concentration_percent,  # Updated column name
-            "UOM.2": self.ai3_concentration_uom,
             "AI4": self.ai4,
             "AI4 eiq": self.ai4_eiq,
             "AI4 group": self.ai4_group,
             "AI4_concentration_%": self.ai4_concentration_percent,  # Updated column name
-            "UOM.3": self.ai4_concentration_uom,
             "eiq total": self.eiq_total,
             "min days between applications": self.min_days_between_applications,
             "REI (hours)": self.rei_hours,
@@ -285,22 +269,18 @@ class Product:
             ai1_eiq=data.get("AI1 eiq"),
             ai1_group=data.get("AI1 group"),
             ai1_concentration_percent=ai1_concentration,  # Use updated naming with fallback
-            ai1_concentration_uom=data.get("UOM"),
             ai2=data.get("AI2"),
             ai2_eiq=data.get("AI2 eiq"),
             ai2_group=data.get("AI2 group"),
             ai2_concentration_percent=ai2_concentration,  # Use updated naming with fallback
-            ai2_concentration_uom=data.get("UOM.1"),
             ai3=data.get("AI3"),
             ai3_eiq=data.get("AI3 eiq"),
             ai3_group=data.get("AI3 group"),
             ai3_concentration_percent=ai3_concentration,  # Use updated naming with fallback
-            ai3_concentration_uom=data.get("UOM.2"),
             ai4=data.get("AI4"),
             ai4_eiq=data.get("AI4 eiq"),
             ai4_group=data.get("AI4 group"),
             ai4_concentration_percent=ai4_concentration,  # Use updated naming with fallback
-            ai4_concentration_uom=data.get("UOM.3"),
             eiq_total=data.get("eiq total"),
             min_days_between_applications=data.get("min days between applications"),
             rei_hours=data.get("REI (hours)"),

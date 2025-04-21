@@ -1,6 +1,6 @@
 {
     "data_directory": "data",
-    "theme": "dark",
+    "theme": "light",
     "auto_save": true,
     "backup_count": 5,
     "last_view": "products"

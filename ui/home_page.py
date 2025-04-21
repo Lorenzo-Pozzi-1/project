@@ -100,11 +100,21 @@ class HomePage(QWidget):
         
         main_layout.addLayout(buttons_layout)
         
-        # EIQ info section at the bottom without yellow period
+        # Warning section and EIQ info section at the bottom
         info_frame = ContentFrame()
         info_layout = QVBoxLayout()
         
-        # Title without yellow period
+        # Warning title
+        warning_title = QLabel("WARNING - FAKE DATA - JUST FOR TESTING PURPOSES") 
+        warning_title.setFont(get_subtitle_font(size=30))
+        warning_title.setStyleSheet("color: red; font-weight: bold;")
+        warning_title.setAlignment(Qt.AlignCenter)
+        info_layout.addWidget(warning_title)
+        
+        # Add some space between warning and EIQ info
+        info_layout.addSpacing(15)
+        
+        # EIQ info title
         info_title = QLabel("About Environmental Impact Quotient (EIQ)")
         info_title.setFont(get_subtitle_font(size=16))
         info_layout.addWidget(info_title)
