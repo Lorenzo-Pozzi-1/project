@@ -36,7 +36,7 @@ BUTTON_MIN_WIDTH = 120
 BUTTON_MIN_HEIGHT = 40
 FEATURE_BUTTON_SIZE = 180       # Size for large feature buttons on home page
 
-# Font configurations - Keep Red Hat Display for titles but use default font for body
+# Font configurations
 def get_title_font(size=24, bold=True):
     """Returns a font configured for titles - Red Hat Display Black."""
     font = QFont("Red Hat Display")
@@ -132,7 +132,7 @@ FRAME_STYLE = f"""
 
 FILTER_FRAME_STYLE = f"""
     QFrame {{
-        background-color: {WHITE};  /* Changed from LIGHT_BG_COLOR to WHITE */
+        background-color: {WHITE};
         border: 1px solid #DDDDDD;
         border-radius: 4px;
         padding: 10px;
@@ -154,12 +154,12 @@ def setup_app_palette(app):
     palette = QPalette()
     
     # Set up the color palette with white background
-    palette.setColor(QPalette.Window, QColor(WHITE))  # Changed from LIGHT_BG_COLOR
+    palette.setColor(QPalette.Window, QColor(WHITE)) 
     palette.setColor(QPalette.WindowText, QColor(TEXT_COLOR))
     palette.setColor(QPalette.Base, QColor(WHITE))
-    palette.setColor(QPalette.AlternateBase, QColor(LIGHT_BG_COLOR))  # Kept as LIGHT_BG_COLOR for alternating table rows
+    palette.setColor(QPalette.AlternateBase, QColor(LIGHT_BG_COLOR)) 
     palette.setColor(QPalette.Text, QColor(TEXT_COLOR))
-    palette.setColor(QPalette.Button, QColor(WHITE))  # Changed from LIGHT_BG_COLOR
+    palette.setColor(QPalette.Button, QColor(WHITE))
     palette.setColor(QPalette.ButtonText, QColor(TEXT_COLOR))
     palette.setColor(QPalette.Link, QColor(PRIMARY_COLOR))
     palette.setColor(QPalette.Highlight, QColor(PRIMARY_COLOR))

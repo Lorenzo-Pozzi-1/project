@@ -203,32 +203,32 @@ class Product:
         """
         return {
             "region": self.region,
-            "product type": self.product_type,
-            "product name": self.product_name,
-            "producer name": self.producer_name,
+            "type": self.product_type,
+            "name": self.product_name,
+            "producer": self.producer_name,
             "regulator number": self.regulator_number,
             "application method": self.application_method,
-            "label minimum rate": self.label_minimum_rate,
-            "label maximum rate": self.label_maximum_rate,
-            "label suggested rate": self.label_suggested_rate,
+            "min rate": self.label_minimum_rate,
+            "max rate": self.label_maximum_rate,
+            "suggested rate": self.label_suggested_rate,
             "rate UOM": self.rate_uom,
             "number of AI": self.number_of_ai,
             "AI1": self.ai1,
             "AI1 eiq": self.ai1_eiq,
             "AI1 group": self.ai1_group,
-            "AI1_concentration_%": self.ai1_concentration_percent,  # Updated column name
+            "AI1 %": self.ai1_concentration_percent,
             "AI2": self.ai2,
             "AI2 eiq": self.ai2_eiq,
             "AI2 group": self.ai2_group,
-            "AI2_concentration_%": self.ai2_concentration_percent,  # Updated column name
+            "AI2 %": self.ai2_concentration_percent,
             "AI3": self.ai3,
             "AI3 eiq": self.ai3_eiq,
             "AI3 group": self.ai3_group,
-            "AI3_concentration_%": self.ai3_concentration_percent,  # Updated column name
+            "AI3 %": self.ai3_concentration_percent,
             "AI4": self.ai4,
             "AI4 eiq": self.ai4_eiq,
             "AI4 group": self.ai4_group,
-            "AI4_concentration_%": self.ai4_concentration_percent,  # Updated column name
+            "AI4 %": self.ai4_concentration_percent,
             "eiq total": self.eiq_total,
             "min days between applications": self.min_days_between_applications,
             "REI (hours)": self.rei_hours,
@@ -246,41 +246,35 @@ class Product:
         Returns:
             Product: New Product instance
         """
-        # Handle both old format "AIxconcentration" and new format "AIx_concentration_%"
-        # For backward compatibility
-        ai1_concentration = data.get("AI1_concentration_%", data.get("AI1concentration"))
-        ai2_concentration = data.get("AI2_concentration_%", data.get("AI2concentration"))
-        ai3_concentration = data.get("AI3_concentration_%", data.get("AI3concentration"))
-        ai4_concentration = data.get("AI4_concentration_%", data.get("AI4concentration"))
         
         return cls(
             region=data.get("region"),
-            product_type=data.get("product type"),
-            product_name=data.get("product name"),
-            producer_name=data.get("producer name"),
+            product_type=data.get("type"),
+            product_name=data.get("name"),
+            producer_name=data.get("producer"),
             regulator_number=data.get("regulator number"),
             application_method=data.get("application method"),
-            label_minimum_rate=data.get("label minimum rate"),
-            label_maximum_rate=data.get("label maximum rate"),
-            label_suggested_rate=data.get("label suggested rate"),
+            label_minimum_rate=data.get("min rate"),
+            label_maximum_rate=data.get("max rate"),
+            label_suggested_rate=data.get("suggested rate"),
             rate_uom=data.get("rate UOM"),
             number_of_ai=data.get("number of AI"),
             ai1=data.get("AI1"),
             ai1_eiq=data.get("AI1 eiq"),
             ai1_group=data.get("AI1 group"),
-            ai1_concentration_percent=ai1_concentration,  # Use updated naming with fallback
+            ai1_concentration_percent=data.get("AI1 %"),
             ai2=data.get("AI2"),
             ai2_eiq=data.get("AI2 eiq"),
             ai2_group=data.get("AI2 group"),
-            ai2_concentration_percent=ai2_concentration,  # Use updated naming with fallback
+            ai2_concentration_percent=data.get("AI2 %"),
             ai3=data.get("AI3"),
             ai3_eiq=data.get("AI3 eiq"),
             ai3_group=data.get("AI3 group"),
-            ai3_concentration_percent=ai3_concentration,  # Use updated naming with fallback
+            ai3_concentration_percent=data.get("AI3 %"),
             ai4=data.get("AI4"),
             ai4_eiq=data.get("AI4 eiq"),
             ai4_group=data.get("AI4 group"),
-            ai4_concentration_percent=ai4_concentration,  # Use updated naming with fallback
+            ai4_concentration_percent=data.get("AI4 %"),
             eiq_total=data.get("eiq total"),
             min_days_between_applications=data.get("min days between applications"),
             rei_hours=data.get("REI (hours)"),
