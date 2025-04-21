@@ -280,12 +280,13 @@ class SingleProductCalculator(QWidget):
         results_title.setFont(get_subtitle_font(size=16))
         results_layout.addWidget(results_title)
         
-        # Field EIQ result
+        # Field EIQ result - now using a single label with consistent formatting
         field_eiq_layout = QHBoxLayout()
         field_eiq_label = QLabel("Field EIQ:")
         field_eiq_label.setFont(get_body_font(size=14, bold=True))
         
-        self.field_eiq_result = QLabel("--")
+        # Single label for the entire result with consistent formatting
+        self.field_eiq_result = QLabel("-- acre = -- ha")
         self.field_eiq_result.setFont(get_body_font(size=16, bold=True))
         
         field_eiq_layout.addWidget(field_eiq_label)
@@ -499,8 +500,11 @@ class SingleProductCalculator(QWidget):
                 except (ValueError, TypeError) as e:
                     print(f"Error calculating EIQ for AI row {row}: {e}")
             
-            # Update result display
-            self.field_eiq_result.setText(f"{total_field_eiq:.2f}")
+            # Calculate hectare value (1 hectare = 2.47 acres)
+            field_eiq_per_ha = total_field_eiq * 2.47
+            
+            # Update result display with consistent formatting
+            self.field_eiq_result.setText(f"{total_field_eiq:.2f} /acre = {field_eiq_per_ha:.2f} /ha")
             
             # Update impact rating gauge
             rating, _ = get_impact_category(total_field_eiq)
@@ -508,7 +512,7 @@ class SingleProductCalculator(QWidget):
             
         except (ValueError, ZeroDivisionError, AttributeError) as e:
             print(f"Error calculating EIQ: {e}")
-            self.field_eiq_result.setText("Error")
+            self.field_eiq_result.setText("Error calculating EIQ")
             self.impact_gauge.set_value(0, "Error in calculation")
     
     def save_calculation(self):
