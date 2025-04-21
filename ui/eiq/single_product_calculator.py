@@ -3,14 +3,16 @@ Single Product EIQ Calculator for the LORENZO POZZI Pesticide App.
 
 This module provides the SingleProductCalculator widget for calculating EIQ
 of a single pesticide product with search and suggestions functionality.
+It supports displaying multiple active ingredients (up to 4).
 """
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, 
-    QFormLayout, QDoubleSpinBox, QLineEdit, QListWidget, QFrame, QScrollArea
+    QFormLayout, QDoubleSpinBox, QLineEdit, QListWidget, QFrame, QScrollArea,
+    QTableWidget, QTableWidgetItem, QHeaderView
 )
 from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtGui import QFont, QColor, QPalette
+from PySide6.QtGui import QFont, QColor, QPalette, QBrush
 
 from ui.common.styles import (
     get_title_font, get_subtitle_font, get_body_font, PRIMARY_BUTTON_STYLE, 
@@ -164,26 +166,29 @@ class SingleProductCalculator(QWidget):
         # Initialize UI elements to avoid AttributeError
         self.product_type_combo = None
         self.product_search = None
-        self.ai1_eiq_label = None
-        self.ai_percent_label = None  # Changed from ai_percent_spin to label
+        self.ai_table = None  # Changed to table for multiple AIs
         self.rate_spin = None
         self.rate_unit_combo = None
         self.applications_spin = None
         self.field_eiq_result = None
         self.impact_gauge = None
         
-        # Default AI percentage for placeholder (development only)
-        self.DEFAULT_AI_PERCENT = 15.0
+        # Currently selected product data
+        self.current_product = None
         
         self.setup_ui()
     
     def setup_ui(self):
         """Set up the UI components."""
+        # Main layout with stretching to ensure proper alignment when window is resized
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(15)
         
         # Product selection area
         product_frame = ContentFrame()
         product_layout = QFormLayout()
+        product_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
         
         # Region selection
         self.region_combo = QComboBox()
@@ -210,16 +215,30 @@ class SingleProductCalculator(QWidget):
         self.product_search = ProductSearchField()
         self.product_search.product_selected.connect(self.update_product_info)
         product_layout.addRow("Product:", self.product_search)
+
+        # Create Active Ingredients table
+        self.ai_table = QTableWidget()
+        self.ai_table.setRowCount(0)  # Start empty
+        self.ai_table.setColumnCount(3)
+        self.ai_table.setHorizontalHeaderLabels(["Active Ingredient", "EIQ", "Concentration %"])
         
-        # AI1 EIQ - Use consistent naming
-        self.ai1_eiq_label = QLabel("--")
-        self.ai1_eiq_label.setFont(get_body_font())
-        product_layout.addRow("AI1 EIQ:", self.ai1_eiq_label)
+        # Make all columns equal width by setting them all to Stretch
+        header = self.ai_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.Stretch)
         
-        # Active ingredient percentage - Changed to label from spin box
-        self.ai_percent_label = QLabel("--")
-        self.ai_percent_label.setFont(get_body_font())
-        product_layout.addRow("Active Ingredient %:", self.ai_percent_label)
+        # Set a reasonable fixed height for the table
+        self.ai_table.setMinimumHeight(120)
+        self.ai_table.setMaximumHeight(150)
+        
+        # Create a container widget to ensure the table stays properly aligned
+        ai_container = QWidget()
+        ai_container_layout = QVBoxLayout(ai_container)
+        ai_container_layout.setContentsMargins(0, 0, 0, 0)
+        ai_container_layout.addWidget(self.ai_table)
+        
+        product_layout.addRow("Active Ingredients:", ai_container)
         
         # Application rate
         rate_layout = QHBoxLayout()
@@ -258,6 +277,8 @@ class SingleProductCalculator(QWidget):
         # Results area
         results_frame = ContentFrame()
         results_layout = QVBoxLayout()
+        results_layout.setContentsMargins(5, 5, 5, 5)
+        results_layout.setAlignment(Qt.AlignCenter)
         
         results_title = QLabel("EIQ Results")
         results_title.setFont(get_subtitle_font(size=16))
@@ -333,8 +354,7 @@ class SingleProductCalculator(QWidget):
                 self.product_search.clear()
                 
                 # Reset fields
-                self.ai1_eiq_label.setText("--")
-                self.ai_percent_label.setText("--")  # Updated for label instead of spin box
+                self.clear_ai_table()
                 self.rate_spin.setValue(0.0)
                 self.impact_gauge.set_value(0, "Select a product")
             else:
@@ -346,39 +366,94 @@ class SingleProductCalculator(QWidget):
             print(f"Error updating product list: {e}")
             self.product_search.setEnabled(False)
     
+    def clear_ai_table(self):
+        """Clear the active ingredients table."""
+        self.ai_table.setRowCount(0)
+
     def update_product_info(self, product_name):
         """Update product information when a product is selected."""
-        if not all([self.ai1_eiq_label, self.ai_percent_label, self.rate_spin, self.rate_unit_combo]):
-            return
-            
         if not product_name:
             # Clear fields if no product is selected
-            self.ai1_eiq_label.setText("--")
-            self.ai_percent_label.setText("--")  # Updated for label
+            self.clear_ai_table()
             self.rate_spin.setValue(0.0)
             self.impact_gauge.set_value(0, "No product selected")
             return
             
         try:
-            # Get product info from CSV data
-            product_info = get_product_info(product_name)
+            # Find the actual product object by name (removing any suffix in parentheses)
+            name_without_suffix = product_name.split(" (")[0]
+            for product in self.all_products:
+                if product.product_name == name_without_suffix:
+                    self.current_product = product
+                    break
             
-            # Update fields with product data
-            self.ai1_eiq_label.setText(str(product_info["ai1_eiq"]))
+            if not self.current_product:
+                raise ValueError(f"Product '{name_without_suffix}' not found")
             
-            # Get AI percent from product info or use default placeholder
-            ai_percent = product_info["ai_percent"]
-            if ai_percent == 0.0:
-                # Use placeholder value for development purposes
-                ai_percent = self.DEFAULT_AI_PERCENT
-                self.ai_percent_label.setText(f"{ai_percent}% (placeholder)")
-            else:
-                self.ai_percent_label.setText(f"{ai_percent}%")
+            # Clear active ingredients table
+            self.clear_ai_table()
+            
+            # Add rows for each active ingredient that has data
+            ai_data = []
+            
+            # Check AI1 data
+            if self.current_product.ai1:
+                ai_data.append({
+                    "name": self.current_product.ai1,
+                    "eiq": self.current_product.ai1_eiq if self.current_product.ai1_eiq is not None else "--",
+                    "percent": self.current_product.ai1_concentration_percent if self.current_product.ai1_concentration_percent is not None else "--"
+                })
+            
+            # Check AI2 data
+            if self.current_product.ai2:
+                ai_data.append({
+                    "name": self.current_product.ai2,
+                    "eiq": self.current_product.ai2_eiq if self.current_product.ai2_eiq is not None else "--",
+                    "percent": self.current_product.ai2_concentration_percent if self.current_product.ai2_concentration_percent is not None else "--"
+                })
+            
+            # Check AI3 data
+            if self.current_product.ai3:
+                ai_data.append({
+                    "name": self.current_product.ai3,
+                    "eiq": self.current_product.ai3_eiq if self.current_product.ai3_eiq is not None else "--",
+                    "percent": self.current_product.ai3_concentration_percent if self.current_product.ai3_concentration_percent is not None else "--"
+                })
+            
+            # Check AI4 data
+            if self.current_product.ai4:
+                ai_data.append({
+                    "name": self.current_product.ai4,
+                    "eiq": self.current_product.ai4_eiq if self.current_product.ai4_eiq is not None else "--",
+                    "percent": self.current_product.ai4_concentration_percent if self.current_product.ai4_concentration_percent is not None else "--"
+                })
+            
+            # Add rows to table
+            self.ai_table.setRowCount(len(ai_data))
+            
+            for i, ai in enumerate(ai_data):
+                # Name
+                name_item = QTableWidgetItem(ai["name"])
+                name_item.setTextAlignment(Qt.AlignCenter)
+                self.ai_table.setItem(i, 0, name_item)
                 
-            self.rate_spin.setValue(product_info["default_rate"])
+                # EIQ
+                eiq_item = QTableWidgetItem(str(ai["eiq"]))
+                eiq_item.setTextAlignment(Qt.AlignCenter)
+                self.ai_table.setItem(i, 1, eiq_item)
+                
+                # Percent
+                percent_item = QTableWidgetItem(f"{ai['percent']}%" if ai["percent"] != "--" else "--")
+                percent_item.setTextAlignment(Qt.AlignCenter)
+                self.ai_table.setItem(i, 2, percent_item)
+            
+            # Update application rate
+            self.rate_spin.setValue(self.current_product.label_suggested_rate or 
+                                    self.current_product.label_maximum_rate or 
+                                    self.current_product.label_minimum_rate or 0.0)
             
             # Try to set rate unit if available in product data
-            unit = product_info.get("default_unit", "")
+            unit = self.current_product.rate_uom or ""
             if unit:
                 index = self.rate_unit_combo.findText(unit)
                 if index >= 0:
@@ -386,44 +461,54 @@ class SingleProductCalculator(QWidget):
             
             # Calculate EIQ with new values
             self.calculate_single_eiq()
+            
         except Exception as e:
             print(f"Error loading product info for '{product_name}': {e}")
             # Clear fields on error
-            self.ai1_eiq_label.setText("--")
-            self.ai_percent_label.setText("--")  # Updated for label
+            self.clear_ai_table()
             self.rate_spin.setValue(0.0)
             self.impact_gauge.set_value(0, "Error loading product")
     
     def calculate_single_eiq(self):
         """Calculate the Field EIQ for a single product."""
-        if not all([self.ai1_eiq_label, self.ai_percent_label, self.field_eiq_result, self.impact_gauge]):
+        if not self.current_product or self.ai_table.rowCount() == 0:
             return
             
-        # Check if a product is selected and has valid EIQ value
-        if self.ai1_eiq_label.text() == "--":
-            return
-        
         try:
-            # Get values
-            ai1_eiq = float(self.ai1_eiq_label.text())
+            # We'll calculate Field EIQ for each active ingredient and sum them
+            total_field_eiq = 0.0
             
-            # Parse AI percent from label text (may include "(placeholder)" text)
-            ai_percent_text = self.ai_percent_label.text().split("%")[0]
-            ai_percent = float(ai_percent_text)
-            
-            rate = self.rate_spin.value()
-            applications = self.applications_spin.value()
-            unit = self.rate_unit_combo.currentText()
-            
-            # Calculate Field EIQ
-            field_eiq = calculate_field_eiq(ai1_eiq, ai_percent, rate, unit, applications)
+            for row in range(self.ai_table.rowCount()):
+                # Get AI data from table
+                eiq_item = self.ai_table.item(row, 1)
+                percent_item = self.ai_table.item(row, 2)
+                
+                if not eiq_item or not percent_item or eiq_item.text() == "--" or percent_item.text() == "--":
+                    continue
+                
+                try:
+                    ai_eiq = float(eiq_item.text())
+                    # Extract numeric value from percent string
+                    ai_percent = float(percent_item.text().replace("%", ""))
+                    
+                    # Get application parameters
+                    rate = self.rate_spin.value()
+                    applications = self.applications_spin.value()
+                    unit = self.rate_unit_combo.currentText()
+                    
+                    # Calculate Field EIQ for this AI
+                    ai_field_eiq = calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications)
+                    total_field_eiq += ai_field_eiq
+                    
+                except (ValueError, TypeError) as e:
+                    print(f"Error calculating EIQ for AI row {row}: {e}")
             
             # Update result display
-            self.field_eiq_result.setText(f"{field_eiq:.2f}")
+            self.field_eiq_result.setText(f"{total_field_eiq:.2f}")
             
             # Update impact rating gauge
-            rating, _ = get_impact_category(field_eiq)
-            self.impact_gauge.set_value(field_eiq, rating)
+            rating, _ = get_impact_category(total_field_eiq)
+            self.impact_gauge.set_value(total_field_eiq, rating)
             
         except (ValueError, ZeroDivisionError, AttributeError) as e:
             print(f"Error calculating EIQ: {e}")
