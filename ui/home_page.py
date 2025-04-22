@@ -42,7 +42,7 @@ class HomePage(QWidget):
         main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
         main_layout.setSpacing(SPACING_LARGE)
         
-        # Title without yellow period
+        # Title
         title_label = QLabel("LORENZO POZZI Pesticide App")
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setFont(get_title_font(size=24))

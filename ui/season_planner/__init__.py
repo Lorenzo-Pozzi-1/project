@@ -7,5 +7,6 @@ scenarios, calculate EIQ impacts, and track season-long pesticide usage.
 """
 
 from ui.season_planner.season_planner_page import SeasonPlannerPage
+from ui.season_planner.new_season_page import NewSeasonPage
 
-__all__ = ['SeasonPlannerPage']
+__all__ = ['SeasonPlannerPage', 'NewSeasonPage']

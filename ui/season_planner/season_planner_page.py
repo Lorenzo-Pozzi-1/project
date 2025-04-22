@@ -13,6 +13,7 @@ from ui.common.styles import (
     MARGIN_LARGE, SPACING_LARGE, get_subtitle_font, get_body_font
 )
 from ui.common.widgets import HeaderWithBackButton, FeatureButton, ContentFrame
+from ui.season_planner.new_season_page import NewSeasonPage
 
 class SeasonPlannerPage(QWidget):
     """
@@ -42,22 +43,27 @@ class SeasonPlannerPage(QWidget):
         
         # Create stacked widget for different views
         self.stacked_widget = QStackedWidget()
-        
+
         # Main selection page (index 0)
-        self.init_main_selection_page()
+        self.selection_page = self.create_selection_page()
+        self.stacked_widget.addWidget(self.selection_page)
         
-        # Note: The other pages are commented out since they haven't been developed yet
         # New season page (index 1)
-        #self.new_season_page = NewSeasonPage(self)
-        #self.stacked_widget.addWidget(self.new_season_page)
+        self.new_season_page = NewSeasonPage(self)
+        self.stacked_widget.addWidget(self.new_season_page)
+        
+        # Note: The previous season page will be added in the future
+        # Previous season page (index 2)
+        # self.previous_season_page = PreviousSeasonPage(self)
+        # self.stacked_widget.addWidget(self.previous_season_page)
         
         main_layout.addWidget(self.stacked_widget)
-        
+
         # Show the main selection page initially
         self.stacked_widget.setCurrentIndex(0)
     
-    def init_main_selection_page(self):
-        """Initialize the main selection page with two buttons."""
+    def create_selection_page(self):
+        """Create the main selection page with two buttons."""
         selection_page = QWidget()
         selection_layout = QVBoxLayout(selection_page)
         selection_layout.setContentsMargins(0, 0, 0, 0)
@@ -86,16 +92,12 @@ class SeasonPlannerPage(QWidget):
         selection_layout.addLayout(buttons_layout)
         selection_layout.addStretch(1)  # Add stretch to push content to the top
         
-        # Add to stacked widget
-        self.stacked_widget.addWidget(selection_page)
-    
+        return selection_page
+
     def show_new_season(self):
         """Switch to the new season page."""
-        print("New Season page will be opened")
-        # The below code is commented out since the new_season_page hasn't been developed yet
-        # self.stacked_widget.setCurrentIndex(1)
-        # Signal to the new season page that it's being shown
-        # self.new_season_page.on_show()
+        # Navigate to the new season page (index 1)
+        self.stacked_widget.setCurrentIndex(1)
     
     def show_previous_season(self):
         """Switch to the previous season page."""
