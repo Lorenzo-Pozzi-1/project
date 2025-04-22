@@ -2,7 +2,7 @@
 Product Comparison Calculator for the LORENZO POZZI Pesticide App.
 
 This module provides the ProductComparisonCalculator widget for comparing EIQ
-values of multiple pesticide products.
+values of multiple pesticide products. Features real-time calculation updates.
 """
 
 from PySide6.QtWidgets import (
@@ -26,7 +26,7 @@ from ui.eiq.eiq_utils_and_components import (
 
 
 class ProductComparisonCalculator(QWidget):
-    """Widget for comparing EIQ values of multiple pesticide products."""
+    """Widget for comparing EIQ values of multiple pesticide products with real-time updates."""
     
     def __init__(self, parent=None):
         """Initialize the product comparison calculator widget."""
@@ -97,9 +97,9 @@ class ProductComparisonCalculator(QWidget):
         results_title.setFont(get_subtitle_font(size=16))
         results_layout.addWidget(results_title)
         
-        # Calculate button
-        calculate_button = QPushButton("Calculate and Compare")
-        calculate_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
+        # Manual Calculate button - still available but not strictly necessary anymore
+        calculate_button = QPushButton("Recalculate All Values")
+        calculate_button.setStyleSheet(SECONDARY_BUTTON_STYLE)  # Changed to secondary style
         calculate_button.clicked.connect(self.calculate_comparison)
         results_layout.addWidget(calculate_button)
         
@@ -122,9 +122,6 @@ class ProductComparisonCalculator(QWidget):
         export_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
         export_button.clicked.connect(self.export_comparison)
         main_layout.addWidget(export_button, alignment=Qt.AlignRight)
-        
-        # Connect signals to update the selection table when values change
-        self.comparison_selection_table.cellChanged.connect(self.on_cell_changed)
     
     def add_product_row(self):
         """Add a new row to the comparison selection table."""
@@ -160,6 +157,8 @@ class ProductComparisonCalculator(QWidget):
         rate_spin = QDoubleSpinBox()
         rate_spin.setRange(0.01, 100.0)
         rate_spin.setValue(0.0)
+        # Connect to real-time calculation
+        rate_spin.valueChanged.connect(lambda value, r=row: self.calculate_single_row(r))
         self.comparison_selection_table.setCellWidget(row, 3, rate_spin)
         
         # Unit combo box
@@ -169,6 +168,8 @@ class ProductComparisonCalculator(QWidget):
             "lbs/acre", "oz/acre", "fl oz/acre", "gal/acre", 
             "pints/acre", "quarts/acre"
         ])
+        # Connect to real-time calculation
+        unit_combo.currentIndexChanged.connect(lambda idx, r=row: self.calculate_single_row(r))
         self.comparison_selection_table.setCellWidget(row, 4, unit_combo)
         
         # Applications spinner
@@ -176,6 +177,8 @@ class ProductComparisonCalculator(QWidget):
         apps_spin.setRange(1, 10)
         apps_spin.setValue(1)
         apps_spin.setDecimals(0)
+        # Connect to real-time calculation
+        apps_spin.valueChanged.connect(lambda value, r=row: self.calculate_single_row(r))
         self.comparison_selection_table.setCellWidget(row, 5, apps_spin)
         
         # Add a new entry to track this row's data
@@ -204,6 +207,9 @@ class ProductComparisonCalculator(QWidget):
         # Ensure there's always at least one row
         if self.comparison_selection_table.rowCount() == 0:
             self.add_product_row()
+            
+        # Update results after removing rows
+        self.calculate_comparison()
     
     def update_product_combo(self, row):
         """Update the product combo box based on the selected product type."""
@@ -240,6 +246,9 @@ class ProductComparisonCalculator(QWidget):
             if 0 <= row < len(self.products_data):
                 self.products_data[row]["product"] = None
                 self.products_data[row]["active_ingredients"] = []
+                
+            # Clear any previous results for this row
+            self.calculate_single_row(row)
             return
         
         product_name = product_combo.currentText()
@@ -314,6 +323,10 @@ class ProductComparisonCalculator(QWidget):
                     index = unit_combo.findText(product.rate_uom)
                     if index >= 0:
                         unit_combo.setCurrentIndex(index)
+                        
+                # The rate or unit setting will trigger calculate_single_row
+                # But we call it explicitly just in case
+                self.calculate_single_row(row)
             
         except Exception as e:
             print(f"Error loading product info for '{product_name}': {e}")
@@ -321,103 +334,130 @@ class ProductComparisonCalculator(QWidget):
             if 0 <= row < len(self.products_data):
                 self.products_data[row]["product"] = None
                 self.products_data[row]["active_ingredients"] = []
+                
+            # Clear any previous results for this row
+            self.calculate_single_row(row)
     
-    def on_cell_changed(self, row, column):
-        """Handle changes to table cells."""
-        # Only handle changes to cells we care about
-        # Note: ComboBox and SpinBox changes aren't caught here - they have their own signals
-        pass
+    def calculate_single_row(self, row):
+        """
+        Calculate EIQ for a single row and update the results table.
+        This enables real-time updates for each product individually.
+        """
+        # Only process if the row exists in our data structure
+        if not (0 <= row < len(self.products_data)):
+            return
+            
+        # Get the product data for this row
+        product_data = self.products_data[row]
+        product = product_data.get("product")
+        active_ingredients = product_data.get("active_ingredients", [])
+        
+        # Skip calculation if no valid product or active ingredients
+        if not product or not active_ingredients:
+            # Remove this product from results table if it exists
+            self.update_results_for_row(row, None, None)
+            return
+            
+        try:
+            # Get application parameters
+            rate_spin = self.comparison_selection_table.cellWidget(row, 3)
+            unit_combo = self.comparison_selection_table.cellWidget(row, 4) 
+            apps_spin = self.comparison_selection_table.cellWidget(row, 5)
+            
+            rate = rate_spin.value() if rate_spin else 0.0
+            unit = unit_combo.currentText() if unit_combo else "lbs/acre"
+            applications = apps_spin.value() if apps_spin else 1
+            
+            # Calculate Field EIQ for each active ingredient and sum them
+            total_field_eiq = 0.0
+            
+            for ai in active_ingredients:
+                # Skip AIs with missing data
+                if ai["eiq"] == "--" or ai["percent"] == "--":
+                    continue
+                
+                ai_eiq = float(ai["eiq"])
+                ai_percent = float(ai["percent"]) if isinstance(ai["percent"], (int, float)) else float(ai["percent"].replace("%", ""))
+                
+                # Calculate Field EIQ for this AI using the shared utility function
+                ai_field_eiq = calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications)
+                total_field_eiq += ai_field_eiq
+            
+            # Calculate hectare value (1 hectare = 2.47 acres)
+            field_eiq_per_ha = total_field_eiq * 2.47
+            
+            # Update the results table for this row
+            self.update_results_for_row(row, total_field_eiq, field_eiq_per_ha)
+            
+        except (ValueError, ZeroDivisionError, AttributeError) as e:
+            print(f"Error calculating EIQ for row {row}: {e}")
+            # Clear results for this row
+            self.update_results_for_row(row, None, None)
+    
+    def update_results_for_row(self, selection_row, field_eiq_acre, field_eiq_ha):
+        """
+        Update the results table for a specific row.
+        """
+        if not self.products_data[selection_row]["product"]:
+            # Find and remove any existing results for this row
+            for r in range(self.comparison_results_table.rowCount()):
+                if r < self.comparison_results_table.rowCount():
+                    product_item = self.comparison_results_table.item(r, 0)
+                    if product_item and product_item.data(Qt.UserRole) == selection_row:
+                        self.comparison_results_table.removeRow(r)
+                        break
+            return
+            
+        product_name = self.products_data[selection_row]["product"].product_name
+        
+        # Check if we already have a row for this product in the results table
+        found_row = -1
+        for r in range(self.comparison_results_table.rowCount()):
+            product_item = self.comparison_results_table.item(r, 0)
+            if product_item and product_item.data(Qt.UserRole) == selection_row:
+                found_row = r
+                break
+                
+        if field_eiq_acre is None or field_eiq_acre <= 0:
+            # If invalid EIQ and we found a row, remove it
+            if found_row >= 0:
+                self.comparison_results_table.removeRow(found_row)
+            return
+            
+        # If we didn't find a row, add a new one
+        if found_row == -1:
+            found_row = self.comparison_results_table.rowCount()
+            self.comparison_results_table.insertRow(found_row)
+            
+        # Product name with reference to source row
+        product_item = QTableWidgetItem(product_name)
+        product_item.setData(Qt.UserRole, selection_row)  # Store reference to selection table row
+        self.comparison_results_table.setItem(found_row, 0, product_item)
+        
+        # Field EIQ / acre with color coding
+        eiq_acre_item = ColorCodedEiqItem(
+            field_eiq_acre, 
+            low_threshold=20, 
+            high_threshold=40
+        )
+        self.comparison_results_table.setItem(found_row, 1, eiq_acre_item)
+        
+        # Field EIQ / ha with color coding
+        eiq_ha_item = ColorCodedEiqItem(
+            field_eiq_ha, 
+            low_threshold=50, 
+            high_threshold=100
+        )
+        self.comparison_results_table.setItem(found_row, 2, eiq_ha_item)
     
     def calculate_comparison(self):
-        """Calculate and display EIQ comparison results."""
+        """Calculate and display EIQ comparison results for all rows."""
         # Clear the results table
         self.comparison_results_table.setRowCount(0)
         
         # Iterate through all products in the selection table
         for row in range(self.comparison_selection_table.rowCount()):
-            if row >= len(self.products_data) or not self.products_data[row]["product"]:
-                continue  # Skip rows without product data
-            
-            product_data = self.products_data[row]
-            product = product_data["product"]
-            active_ingredients = product_data["active_ingredients"]
-            
-            if not product or not active_ingredients:
-                continue
-            
-            try:
-                # Get application parameters
-                rate_spin = self.comparison_selection_table.cellWidget(row, 3)
-                unit_combo = self.comparison_selection_table.cellWidget(row, 4) 
-                apps_spin = self.comparison_selection_table.cellWidget(row, 5)
-                
-                rate = rate_spin.value() if rate_spin else 0.0
-                unit = unit_combo.currentText() if unit_combo else "lbs/acre"
-                applications = apps_spin.value() if apps_spin else 1
-                
-                # Calculate Field EIQ for each active ingredient and sum them
-                total_field_eiq = 0.0
-                
-                for ai in active_ingredients:
-                    # Skip AIs with missing data
-                    if ai["eiq"] == "--" or ai["percent"] == "--":
-                        continue
-                    
-                    ai_eiq = float(ai["eiq"])
-                    ai_percent = float(ai["percent"]) if isinstance(ai["percent"], (int, float)) else float(ai["percent"].replace("%", ""))
-                    
-                    # Calculate Field EIQ for this AI using the shared utility function
-                    ai_field_eiq = calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications)
-                    total_field_eiq += ai_field_eiq
-                
-                # Calculate hectare value (1 hectare = 2.47 acres)
-                field_eiq_per_ha = total_field_eiq * 2.47
-                
-                # Only add to results if the EIQ is greater than zero
-                if total_field_eiq > 0:
-                    # Add a row to the results table
-                    result_row = self.comparison_results_table.rowCount()
-                    self.comparison_results_table.insertRow(result_row)
-                    
-                    # Product name
-                    self.comparison_results_table.setItem(
-                        result_row, 0, 
-                        QTableWidgetItem(product.product_name)
-                    )
-                    
-                    # Field EIQ / acre with color coding
-                    eiq_acre_item = ColorCodedEiqItem(
-                        total_field_eiq, 
-                        low_threshold=20, 
-                        high_threshold=40
-                    )
-                    self.comparison_results_table.setItem(result_row, 1, eiq_acre_item)
-                    
-                    # Field EIQ / ha with color coding
-                    eiq_ha_item = ColorCodedEiqItem(
-                        field_eiq_per_ha, 
-                        low_threshold=50, 
-                        high_threshold=100
-                    )
-                    self.comparison_results_table.setItem(result_row, 2, eiq_ha_item)
-                
-            except (ValueError, ZeroDivisionError, AttributeError) as e:
-                print(f"Error calculating EIQ for row {row}: {e}")
-                # Add error row
-                result_row = self.comparison_results_table.rowCount()
-                self.comparison_results_table.insertRow(result_row)
-                self.comparison_results_table.setItem(
-                    result_row, 0, 
-                    QTableWidgetItem(product.product_name)
-                )
-                self.comparison_results_table.setItem(
-                    result_row, 1, 
-                    QTableWidgetItem("Error")
-                )
-                self.comparison_results_table.setItem(
-                    result_row, 2, 
-                    QTableWidgetItem("Error")
-                )
+            self.calculate_single_row(row)
     
     def export_comparison(self):
         """Export comparison results to a file."""
