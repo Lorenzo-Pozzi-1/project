@@ -17,7 +17,6 @@ from ui.common.widgets import HeaderWithBackButton
 # Import EIQ calculator components
 from ui.eiq.single_product_calculator import SingleProductCalculator
 from ui.eiq.product_comparison import ProductComparisonCalculator
-from ui.eiq.seasonal_eiq import SeasonalEIQCalculator
 
 
 class EiqCalculatorPage(QWidget):
@@ -55,8 +54,5 @@ class EiqCalculatorPage(QWidget):
         self.product_comparison_calculator = ProductComparisonCalculator(self)
         self.tabs.addTab(self.product_comparison_calculator, "Product Comparison")
         
-        # Season calculator tab
-        # self.seasonal_eiq_calculator = SeasonalEIQCalculator(self)
-        # self.tabs.addTab(self.seasonal_eiq_calculator, "Seasonal EIQ")
-        
+
         main_layout.addWidget(self.tabs)
