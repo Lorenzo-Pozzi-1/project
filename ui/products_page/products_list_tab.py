@@ -2,7 +2,7 @@
 Products list tab for the Lorenzo Pozzi Pesticide App
 
 This module defines the ProductsListTab class which handles the product listing
-and filtering functionality with an improved filtering system.
+and filtering functionality with an improved filtering system and optimized layout.
 """
 
 from PySide6.QtWidgets import (
@@ -43,8 +43,30 @@ class FilterRow(QWidget):
     
     def setup_ui(self):
         """Set up the UI components."""
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
+        # Main layout just contains the frame
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        
+        # Create a frame to contain everything with the border
+        container_frame = QFrame(self)
+        container_frame.setFrameShape(QFrame.StyledPanel)
+        container_frame.setStyleSheet("""
+            QFrame {
+            border: 1px solid black;
+            border-radius: 4px;
+            background-color: #F0F0F0;
+            }
+            QLabel, QComboBox, QLineEdit, QPushButton {
+            border: none;
+            background-color: transparent;
+            }
+        """)
+        main_layout.addWidget(container_frame)
+        
+        # Layout inside the frame for the actual filter controls
+        layout = QHBoxLayout(container_frame)
+        layout.setContentsMargins(5, 5, 5, 5)
         layout.setSpacing(5)
         
         # Field selection dropdown
@@ -56,7 +78,8 @@ class FilterRow(QWidget):
         layout.addWidget(self.field_combo)
         
         # Contains label
-        layout.addWidget(QLabel("contains:"))
+        contains_label = QLabel("contains:")
+        layout.addWidget(contains_label)
         
         # Filter value input
         self.value_input = QLineEdit()
@@ -68,6 +91,7 @@ class FilterRow(QWidget):
         self.remove_button = QPushButton("×")  # Using × character for close icon
         self.remove_button.setFixedSize(24, 24)
         self.remove_button.setToolTip("Remove this filter")
+        self.remove_button.setStyleSheet("QPushButton { color: red; font-weight: bold; }")
         self.remove_button.clicked.connect(self.request_remove)
         layout.addWidget(self.remove_button)
     
@@ -123,18 +147,21 @@ class ProductsListTab(QWidget):
         # Main layout
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(10)
+        main_layout.setSpacing(5)
         
         # Filter section frame
         filter_frame = QFrame()
         filter_frame.setFrameShape(QFrame.StyledPanel)
         filter_frame.setStyleSheet("""
             QFrame {
-                background-color: #f7f7f7;
-                border: 1px solid #e0e0e0;
+                background-color: transparent;
+                border: none;
                 border-radius: 4px;
             }
         """)
+        # Set size policy to take minimum vertical space
+        filter_frame.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        
         filter_layout = QVBoxLayout(filter_frame)
         filter_layout.setContentsMargins(10, 10, 10, 10)
         filter_layout.setSpacing(10)
@@ -168,8 +195,8 @@ class ProductsListTab(QWidget):
         add_filter_button.clicked.connect(self.add_filter_row)
         filter_layout.addWidget(add_filter_button, alignment=Qt.AlignLeft)
         
-        # Add filter frame to main layout
-        main_layout.addWidget(filter_frame)
+        # Add filter frame to main layout with stretch factor 0 (minimum space)
+        main_layout.addWidget(filter_frame, 0)
         
         # Create table for products
         self.products_table = QTableWidget()
@@ -177,7 +204,11 @@ class ProductsListTab(QWidget):
         self.products_table.verticalHeader().setVisible(False)  # Hide row numbers
         self.products_table.setSelectionBehavior(QTableWidget.SelectRows)
         
-        main_layout.addWidget(self.products_table)
+        # Set size policy for table to expand and fill available space
+        self.products_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
+        # Add table to main layout with stretch factor 1 (gets all remaining space)
+        main_layout.addWidget(self.products_table, 1)
         
         # "Compare Selected" button
         compare_button = QPushButton("View Fact Sheet / Compare Selected Products")
