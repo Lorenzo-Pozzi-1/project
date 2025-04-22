@@ -14,10 +14,6 @@ from ui.common.styles import (
 )
 from ui.common.widgets import HeaderWithBackButton, FeatureButton, ContentFrame
 
-from ui.season_planner.new_season_page import NewSeasonPage
-from ui.season_planner.previous_season_page import PreviousSeasonPage
-
-
 class SeasonPlannerPage(QWidget):
     """
     Season Planner page for planning pesticide applications across a growing season.
@@ -50,13 +46,10 @@ class SeasonPlannerPage(QWidget):
         # Main selection page (index 0)
         self.init_main_selection_page()
         
+        # Note: The other pages are commented out since they haven't been developed yet
         # New season page (index 1)
-        self.new_season_page = NewSeasonPage(self)
-        self.stacked_widget.addWidget(self.new_season_page)
-        
-        # Previous season page (index 2)
-        self.previous_season_page = PreviousSeasonPage(self)
-        self.stacked_widget.addWidget(self.previous_season_page)
+        #self.new_season_page = NewSeasonPage(self)
+        #self.stacked_widget.addWidget(self.new_season_page)
         
         main_layout.addWidget(self.stacked_widget)
         
@@ -69,25 +62,6 @@ class SeasonPlannerPage(QWidget):
         selection_layout = QVBoxLayout(selection_page)
         selection_layout.setContentsMargins(0, 0, 0, 0)
         selection_layout.setSpacing(SPACING_LARGE)
-        
-        # Description frame
-        description_frame = ContentFrame()
-        description_title = QLabel("Season Planner")
-        description_title.setFont(get_subtitle_font(size=18))
-        description_title.setAlignment(Qt.AlignLeft)
-        
-        description_text = QLabel(
-            "Welcome to the Season Planner. Here you can plan your pesticide "
-            "applications for an entire growing season, calculate total Environmental "
-            "Impact Quotient (EIQ), and compare different application scenarios."
-        )
-        description_text.setWordWrap(True)
-        description_text.setFont(get_body_font())
-        
-        description_frame.layout.addWidget(description_title)
-        description_frame.layout.addWidget(description_text)
-        
-        selection_layout.addWidget(description_frame)
         
         # Buttons layout
         buttons_layout = QHBoxLayout()
@@ -117,15 +91,19 @@ class SeasonPlannerPage(QWidget):
     
     def show_new_season(self):
         """Switch to the new season page."""
-        self.stacked_widget.setCurrentIndex(1)
+        print("New Season page will be opened")
+        # The below code is commented out since the new_season_page hasn't been developed yet
+        # self.stacked_widget.setCurrentIndex(1)
         # Signal to the new season page that it's being shown
-        self.new_season_page.on_show()
+        # self.new_season_page.on_show()
     
     def show_previous_season(self):
         """Switch to the previous season page."""
-        self.stacked_widget.setCurrentIndex(2)
+        print("Previous Season page will be opened")
+        # The below code is commented out since the previous_season_page hasn't been developed yet
+        # self.stacked_widget.setCurrentIndex(2)
         # Signal to the previous season page that it's being shown
-        self.previous_season_page.on_show()
+        # self.previous_season_page.on_show()
     
     def go_back_to_main(self):
         """Go back to the main selection page."""
