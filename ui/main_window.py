@@ -6,15 +6,16 @@ for all pages in the application.
 """
 
 import os
+import shutil
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon, QFontDatabase, QFont
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon, QFontDatabase
 
 from ui.home_page import HomePage
-from ui.products_page import ProductsPage
-from ui.season_planner import SeasonPlannerPage
-from ui.eiq import EiqCalculatorPage
-from ui.common.styles import YELLOW_BAR_STYLE
+from ui.products_page.products_page import ProductsPage
+from ui.season_planner.season_planner_page import SeasonPlannerPage
+from ui.eiq.eiq_calculator_page import EiqCalculatorPage
+from ui.common.styles import YELLOW_BAR_STYLE, setup_app_palette
 from data.products_data import DB_FILE  # Import the database file path
 
 
@@ -32,7 +33,7 @@ class MainWindow(QMainWindow):
         self.config = config or {}
         self.selected_country = None
         self.setup_window()
-        # self.init_fonts()
+        self.init_fonts()
         self.init_ui()
 
         # Connect the region_changed signal to methods that need to be updated
@@ -46,20 +47,22 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(900, 700)
         
         # Set window icon (if available)
-        try:
-            self.setWindowIcon(QIcon("assets/icon.png"))
-        except:
-            pass  # No icon available, use default
+        icon_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "icon.png")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
     
     def init_fonts(self):
-        """Initialize and load fonts for titles only."""
-        # Load only Red Hat Display for titles
-        try:
-            QFontDatabase.addApplicationFont("ui/common/RedHatDisplay-Black.ttf")
-            QFontDatabase.addApplicationFont("ui/common/RedHatDisplay-Bold.ttf")
-            QFontDatabase.addApplicationFont("ui/common/RedHatDisplay-Regular.ttf")
-        except:
-            print("Red Hat Display font not available, using fallback")
+        """Initialize and load fonts for titles."""
+        # Load Red Hat Display fonts
+        font_paths = [
+            os.path.join(os.path.dirname(__file__), "common", "RedHatDisplay-Black.ttf"),
+            os.path.join(os.path.dirname(__file__), "common", "RedHatDisplay-Bold.ttf"),
+            os.path.join(os.path.dirname(__file__), "common", "RedHatDisplay-Regular.ttf")
+        ]
+        
+        for font_path in font_paths:
+            if os.path.exists(font_path):
+                QFontDatabase.addApplicationFont(font_path)
     
     def init_ui(self):
         """Initialize the UI components."""
@@ -89,7 +92,6 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.season_planner_page)
         
         # Create and add the EIQ calculator page (index 3)
-        # Now using the new modular EiqCalculatorPage
         self.eiq_calculator_page = EiqCalculatorPage(self)
         self.stacked_widget.addWidget(self.eiq_calculator_page)
         
@@ -120,8 +122,7 @@ class MainWindow(QMainWindow):
         Handle the close event for the main window.
         
         This is called when the application is being closed.
-        It deletes the products.json file to prevent it from becoming too large
-        and attempts to clean up __pycache__ directories with Windows compatibility.
+        It deletes the products.json file and cleans up __pycache__ directories.
         """
         # Clean up the products.json file
         try:
@@ -137,36 +138,28 @@ class MainWindow(QMainWindow):
             app_dir = os.path.dirname(os.path.abspath(__file__))
             root_dir = os.path.dirname(app_dir)  # Go up one level to get the project root
             
-            # Keep track of files successfully deleted
+            # Track deleted files for reporting
             deleted_files = 0
             total_files = 0
             
             # Walk through all directories
             for dirpath, dirnames, filenames in os.walk(root_dir):
-                # Check if the current directory is a __pycache__ directory
                 if os.path.basename(dirpath) == "__pycache__":
-                    # First try to delete all files in the directory
                     for file in filenames:
                         total_files += 1
-                        file_path = os.path.join(dirpath, file)
-                        try:
-                            if file.endswith('.pyc') or file.endswith('.pyo'):
-                                os.remove(file_path)
+                        if file.endswith('.pyc') or file.endswith('.pyo'):
+                            try:
+                                os.remove(os.path.join(dirpath, file))
                                 deleted_files += 1
-                        except Exception as e:
-                            # Just continue with the next file
-                            pass
+                            except Exception:
+                                pass
                     
-                    # Only try to remove the directory if we're confident it's empty
-                    # Don't try to force directory removal as it may cause errors on Windows
+                    # Try to remove the directory if empty
                     try:
-                        # Check if directory is empty now
                         remaining_files = os.listdir(dirpath)
                         if not remaining_files:
                             os.rmdir(dirpath)
-                            print(f"Removed empty __pycache__ directory: {dirpath}")
                     except Exception:
-                        # Ignore directory removal errors
                         pass
             
             if deleted_files > 0:
@@ -174,5 +167,5 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Error during cache cleanup: {e}")
         
-        # Accept the close event to continue with application shutdown
+        # Accept the close event
         event.accept()

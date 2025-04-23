@@ -12,7 +12,7 @@ from PySide6.QtCore import Qt
 PRIMARY_COLOR = "#fee000"       # Yellow
 SECONDARY_COLOR = "#000000"     # Black
 TEXT_COLOR = "#000000"          # Black for text
-LIGHT_BG_COLOR = "F5F5F5"       # Light gray
+LIGHT_BG_COLOR = "#F5F5F5"      # Light gray (fixed missing #)
 WHITE = "#FFFFFF"               # White
 RED_HIGHLIGHT = "#EC3400"       # Red for warnings/high values
 YELLOW_MEDIUM = "#fee000"       # Yellow for medium values
@@ -32,6 +32,7 @@ SPACING_MEDIUM = 10
 SPACING_LARGE = 15
 SPACING_XLARGE = 20
 
+# Standard element dimensions
 BUTTON_MIN_WIDTH = 120
 BUTTON_MIN_HEIGHT = 40
 FEATURE_BUTTON_SIZE = 180       # Size for large feature buttons on home page
@@ -54,7 +55,6 @@ def get_subtitle_font(size=18, bold=True):
 
 def get_body_font(size=11, bold=False):
     """Returns a default system font for body text."""
-    # Use default system font instead of Montserrat
     font = QFont()
     font.setPointSize(size)
     font.setBold(bold)
@@ -62,7 +62,6 @@ def get_body_font(size=11, bold=False):
 
 def get_small_font(size=9, bold=False):
     """Returns a default system font for small text."""
-    # Use default system font instead of Montserrat
     font = QFont()
     font.setPointSize(size)
     font.setBold(bold)

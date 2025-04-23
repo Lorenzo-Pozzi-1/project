@@ -15,7 +15,7 @@ from ui.common.styles import (
     MARGIN_LARGE, SPACING_LARGE, get_subtitle_font, get_body_font,
     PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 )
-from ui.common.widgets import HeaderWithBackButton, ContentFrame
+from ui.common.widgets import HeaderWithBackButton, ContentFrame, ToxicityBar
 
 class NewSeasonPage(QWidget):
     """
@@ -37,16 +37,16 @@ class NewSeasonPage(QWidget):
         main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
         main_layout.setSpacing(SPACING_LARGE)
         
-        # Header layout with back button and compare button
-        header_layout = QHBoxLayout()
+        # Header with back button and title
+        self.header = HeaderWithBackButton("New Season Planning")
+        self.header.back_clicked.connect(self.go_back)
+        main_layout.addWidget(self.header)
         
-        # Compare Scenarios button
+        # Compare Scenarios button - add to right side of header
         self.compare_button = QPushButton("Compare Scenarios")
         self.compare_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
         self.compare_button.clicked.connect(self.compare_scenarios)
-        header_layout.addWidget(self.compare_button)
-        
-        main_layout.addLayout(header_layout)
+        self.header.layout().addWidget(self.compare_button)
         
         # Tab widget for scenarios
         self.tab_widget = QTabWidget()
@@ -62,33 +62,12 @@ class NewSeasonPage(QWidget):
         
         main_layout.addWidget(self.tab_widget)
         
-        # Placeholder for color-coded gradient bar
-        self.gradient_bar = QFrame()
-        # self.gradient_bar.setFrameShape(QFrame.StyledPanel) # Optional: Stylesheet border takes precedence
-        self.gradient_bar.setMinimumHeight(40)
-        self.gradient_bar.setMaximumHeight(40)
-        self.gradient_bar.setStyleSheet(f"""
-            QFrame {{
-                /* Define a linear gradient using your palette */
-                /* Red (start) -> Yellow (middle) -> Green (end) */
-                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                                stop:0 #EC3400, 
-                                                stop:0.5 #fee000, 
-                                                stop:1 #009863);
-                
-                /* Keep the border and rounded corners */
-                border: 1px solid #cccccc;
-                border-radius: 4px;
-            }}
-        """)
+        # Replace the custom gradient bar with ToxicityBar
+        self.toxicity_bar = ToxicityBar(self)
+        self.toxicity_bar.title_text = "Environmental Impact"
+        self.toxicity_bar.set_value(0, "No data")  # Initialize with no value
         
-        # Add label to the gradient bar
-        gradient_layout = QHBoxLayout(self.gradient_bar)
-        gradient_label = QLabel("Placeholder for Color-Coded Gradient Bar (Bad/Average/Good)")
-        gradient_label.setAlignment(Qt.AlignCenter)
-        gradient_layout.addWidget(gradient_label)
-        
-        main_layout.addWidget(self.gradient_bar)
+        main_layout.addWidget(self.toxicity_bar)
     
     def add_scenario_tab(self):
         """Add a new scenario tab with a placeholder table."""

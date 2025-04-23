@@ -5,7 +5,6 @@ This module provides reusable custom widgets used throughout the application.
 """
 
 import math
-
 from PySide6.QtCore import Qt, Signal, QSize, QRect, QRectF, QPointF
 from PySide6.QtGui import QFont, QColor, QBrush, QPainter, QPen, QLinearGradient
 from PySide6.QtWidgets import (
@@ -147,7 +146,7 @@ class ContentFrame(QFrame):
     def __init__(self, parent=None):
         """Initialize the frame."""
         super().__init__(parent)
-        self.setFrameShape(QFrame.NoFrame)  # Changed from StyledPanel to NoFrame
+        self.setFrameShape(QFrame.NoFrame)
         self.setStyleSheet("""
             QFrame {
                 background-color: white;
@@ -177,24 +176,26 @@ class ToxicityBar(QWidget):
         # Set default values
         self.min_value = 0
         self.max_value = 100
-        self.low_threshold = low_threshold  # Store the provided threshold
-        self.high_threshold = high_threshold  # Store the provided threshold
+        self.low_threshold = low_threshold
+        self.high_threshold = high_threshold
         self.current_value = 0
         self.label_text = ""
         self.title_text = "Toxicity level:"
         
-        # Colors
+        # Colors - define once and reuse
         self.low_color = QColor("#77DD77")  # Pastel green
         self.medium_color = QColor("#FFF275")  # Pastel yellow
         self.high_color = QColor("#FF6961")  # Pastel red
         self.border_color = QColor("#CCCCCC")
         self.text_color = QColor("#333333")
         
-        # Category colors - darker versions for text
-        self.low_text_color = QColor("#1E8449")
-        self.medium_text_color = QColor("#B7950B")
-        self.high_text_color = QColor("#B03A2E")
-        self.extreme_text_color = QColor("#B03A2E")
+        # Category colors - defined once
+        self.category_text_colors = {
+            "Low": QColor("#1E8449"),
+            "Medium": QColor("#B7950B"),
+            "High": QColor("#B03A2E"),
+            "EXTREME": QColor("#B03A2E")
+        }
         
         # Set minimum size - increased height to make room for text
         self.setMinimumSize(200, 140)
@@ -212,11 +213,8 @@ class ToxicityBar(QWidget):
             value: Value to display on the bar
             label_text: Text to display below the bar
         """
-        # Store the original value (even if >100)
         self.current_value = value
         self.label_text = label_text
-        
-        # Update the widget
         self.update()
     
     def get_toxicity_level(self):
@@ -238,9 +236,8 @@ class ToxicityBar(QWidget):
         # Calculate the dimensions
         rect = self.rect()
         margin = 10
-        bar_width = rect.width() - (margin * 2)  # Margin on both sides
+        bar_width = rect.width() - (margin * 2)
         bar_height = 20  # Fixed height
-        
         bar_x = rect.x() + margin
         
         # Draw the title
@@ -251,9 +248,8 @@ class ToxicityBar(QWidget):
         title_rect = QRect(bar_x, margin, bar_width, 25)
         painter.drawText(title_rect, Qt.AlignCenter, self.title_text)
         
-        # Position the bar below the title (with fixed position)
+        # Position the bar below the title
         bar_y = title_rect.bottom() + 15
-        
         bar_rect = QRect(bar_x, bar_y, bar_width, bar_height)
         
         # Create gradient
@@ -264,90 +260,69 @@ class ToxicityBar(QWidget):
         
         # Draw gradient bar
         painter.fillRect(bar_rect, gradient)
-        
-        # Draw border
         painter.setPen(QPen(self.border_color, 1))
         painter.drawRect(bar_rect)
         
-        # Draw small ticks with faint labels
-        painter.setPen(QPen(QColor(160, 160, 160, 120), 1))  # Light gray, semi-transparent
-        painter.setFont(get_body_font(size=8))  # Small font
+        # Draw ticks and labels - reuse formatting for consistency
+        self._draw_ticks_and_labels(painter, bar_x, bar_y, bar_width, bar_height)
         
-        # Low tick (0)
-        low_x = bar_x
-        painter.drawLine(low_x, bar_y + bar_height, low_x, bar_y + bar_height + 3)
-        painter.drawText(QRect(low_x - 15, bar_y + bar_height + 4, 30, 12), Qt.AlignCenter, "0")
-        
-        # Low-Medium threshold tick (33.3)
-        low_med_x = bar_x + (self.low_threshold / self.max_value) * bar_width
-        painter.drawLine(low_med_x, bar_y + bar_height, low_med_x, bar_y + bar_height + 3)
-        
-        # Format the threshold value with one decimal place
-        low_med_text = f"{self.low_threshold:.1f}"
-        painter.drawText(QRect(low_med_x - 15, bar_y + bar_height + 4, 30, 12), Qt.AlignCenter, low_med_text)
-        
-        # Medium-High threshold tick (66.6)
-        med_high_x = bar_x + (self.high_threshold / self.max_value) * bar_width
-        painter.drawLine(med_high_x, bar_y + bar_height, med_high_x, bar_y + bar_height + 3)
-        
-        # Format the threshold value with one decimal place
-        med_high_text = f"{self.high_threshold:.1f}"
-        painter.drawText(QRect(med_high_x - 15, bar_y + bar_height + 4, 30, 12), Qt.AlignCenter, med_high_text)
-        
-        # High-end tick (100)
-        high_x = bar_x + bar_width
-        painter.drawLine(high_x, bar_y + bar_height, high_x, bar_y + bar_height + 3)
-        painter.drawText(QRect(high_x - 15, bar_y + bar_height + 4, 30, 12), Qt.AlignCenter, "100")
-        
-        # Handle the marker and text display
+        # Handle the marker and text display if we have a valid value
         if self.current_value > 0:
-            # Get current toxicity level
-            toxicity_level = self.get_toxicity_level()
-            
-            # If the value is greater than 100, cap the marker position at the end of the bar
-            marker_value = min(self.current_value, self.max_value) 
-            marker_x = bar_x + (marker_value / self.max_value) * bar_width
-            
-            # Draw triangle marker below the bar pointing upwards
-            triangle_width = 10
-            triangle_height = 8
-            
-            # Set up triangle coordinates
-            points = [
-                (marker_x, bar_y + bar_height),  # Top point
-                (marker_x - triangle_width/2, bar_y + bar_height + triangle_height),  # Bottom left
-                (marker_x + triangle_width/2, bar_y + bar_height + triangle_height)   # Bottom right
-            ]
-            
-            # Draw filled triangle
-            painter.setBrush(QBrush(QColor("#333333")))
-            painter.setPen(QPen(QColor("#333333"), 1))
-            
-            # Create QPointF objects for the polygon
-            polygon_points = [QPointF(x, y) for x, y in points]
-            painter.drawPolygon(polygon_points)
-            
-            # Set color based on toxicity level
-            if toxicity_level == "Low":
-                text_color = self.low_text_color
-            elif toxicity_level == "Medium":
-                text_color = self.medium_text_color
-            elif toxicity_level == "EXTREME":
-                text_color = self.extreme_text_color
-            else:  # High
-                text_color = self.high_text_color
-            
-            # Draw the bold toxicity level text centered under the marker
-            painter.setFont(get_body_font(size=15, bold=True))
-            painter.setPen(QPen(text_color, 1))
-            
-            # Position the text under the triangle - move it up compared to previous version
-            text_y = bar_y + bar_height + triangle_height + 5
-            text_width = 120  # Increased width for "EXTREMELY TOXIC"
-            
-            # Ensure text stays within bounds of the widget
-            text_x = max(bar_x, min(marker_x - text_width/2, bar_x + bar_width - text_width))
-            
-            # Draw the toxicity level
-            level_rect = QRect(text_x, text_y, text_width, 20)
-            painter.drawText(level_rect, Qt.AlignCenter, toxicity_level)
+            self._draw_marker_and_text(painter, bar_x, bar_y, bar_width, bar_height)
+    
+    def _draw_ticks_and_labels(self, painter, bar_x, bar_y, bar_width, bar_height):
+        """Draw the tick marks and labels on the bar."""
+        painter.setPen(QPen(QColor(160, 160, 160, 120), 1))
+        painter.setFont(get_body_font(size=8))
+        
+        # Define tick positions and labels
+        ticks = [
+            (0, "0"),
+            (self.low_threshold / self.max_value, f"{self.low_threshold:.1f}"),
+            (self.high_threshold / self.max_value, f"{self.high_threshold:.1f}"),
+            (1.0, "100")
+        ]
+        
+        for relative_pos, label in ticks:
+            x_pos = bar_x + relative_pos * bar_width
+            painter.drawLine(x_pos, bar_y + bar_height, x_pos, bar_y + bar_height + 3)
+            painter.drawText(QRect(x_pos - 15, bar_y + bar_height + 4, 30, 12), Qt.AlignCenter, label)
+    
+    def _draw_marker_and_text(self, painter, bar_x, bar_y, bar_width, bar_height):
+        """Draw the position marker and text label."""
+        toxicity_level = self.get_toxicity_level()
+        
+        # Cap the marker position at the end of the bar
+        marker_value = min(self.current_value, self.max_value) 
+        marker_x = bar_x + (marker_value / self.max_value) * bar_width
+        
+        # Draw triangle marker
+        triangle_width = 10
+        triangle_height = 8
+        
+        points = [
+            QPointF(marker_x, bar_y + bar_height),  # Top point
+            QPointF(marker_x - triangle_width/2, bar_y + bar_height + triangle_height),  # Bottom left
+            QPointF(marker_x + triangle_width/2, bar_y + bar_height + triangle_height)   # Bottom right
+        ]
+        
+        # Draw filled triangle
+        painter.setBrush(QBrush(QColor("#333333")))
+        painter.setPen(QPen(QColor("#333333"), 1))
+        painter.drawPolygon(points)
+        
+        # Set color based on toxicity level
+        text_color = self.category_text_colors.get(toxicity_level, self.category_text_colors["High"])
+        
+        # Draw the toxicity level text
+        painter.setFont(get_body_font(size=15, bold=True))
+        painter.setPen(QPen(text_color, 1))
+        
+        text_y = bar_y + bar_height + triangle_height + 5
+        text_width = 120
+        
+        # Keep text within widget bounds
+        text_x = max(bar_x, min(marker_x - text_width/2, bar_x + bar_width - text_width))
+        
+        level_rect = QRect(text_x, text_y, text_width, 20)
+        painter.drawText(level_rect, Qt.AlignCenter, toxicity_level)

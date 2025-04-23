@@ -104,10 +104,10 @@ class HomePage(QWidget):
         info_frame = ContentFrame()
         info_layout = QVBoxLayout()
         
-        # Warning title
+        # Warning title - make it more visible with improved styling
         warning_title = QLabel("! WARNING !\nFAKE DATA - JUST FOR TESTING PURPOSES") 
-        warning_title.setFont(get_subtitle_font(size=30))
-        warning_title.setStyleSheet("color: red; font-weight: bold;")
+        warning_title.setFont(get_subtitle_font(size=24))  # Reduced size for better proportions
+        warning_title.setStyleSheet("color: red; font-weight: bold; background-color: #FFEEEE; border: 2px solid red; border-radius: 5px; padding: 5px;")
         warning_title.setAlignment(Qt.AlignCenter)
         info_layout.addWidget(warning_title)
         
@@ -119,15 +119,16 @@ class HomePage(QWidget):
         info_title.setFont(get_subtitle_font(size=16))
         info_layout.addWidget(info_title)
         
+        # Improved EIQ description with better formatting and concise information
         info_text = QLabel(
-            "<b>Environmental Impact Quotient (EIQ)</b>, developed by the <b>NYSIPM Program at Cornell University</b>, is a tool used to assess the potential risks of pesticide active ingredients. "
-            "It generates a single numerical score reflecting environmental and human health impacts.<br><br>"
-            "<b>EIQ evaluates:</b><br>"
-            "- <b>Farm worker risk</b> (toxicity + exposure)<br>"
-            "- <b>Consumer risk</b> (residue on food)<br>"
-            "- <b>Ecological risk</b> (effects on birds, bees, fish, etc.)<br><br>"
-            "Higher scores = higher impact. Users can also calculate a <b>Field Use Rating</b>, which adjusts for application rate and frequency. "
-            "The EIQ supports <b>sustainable, low-impact pest management</b> decisions in agriculture."
+            "<b>Environmental Impact Quotient (EIQ)</b>, developed by the <b>NYSIPM Program at Cornell University</b>, "
+            "provides a standardized assessment of pesticide environmental impact.<br><br>"
+            "<b>EIQ evaluates three main components:</b><br>"
+            "- <b>Farm worker risk</b> (applicator + harvester exposure)<br>"
+            "- <b>Consumer risk</b> (food residue + groundwater effects)<br>"
+            "- <b>Ecological risk</b> (fish, birds, bees, and beneficial insects)<br><br>"
+            "Higher scores indicate greater environmental impact. The <b>Field Use EIQ</b> (= EIQ × %AI × Rate) "
+            "adjusts for real-world application conditions, supporting sustainable pest management decisions."
         )
 
         info_text.setWordWrap(True)
@@ -136,15 +137,12 @@ class HomePage(QWidget):
         
         info_frame.layout.addLayout(info_layout)
         
-        # Add a spacer before the info frame
+        # Add a spacer before the info frame for better proportions
         main_layout.addStretch(1)
         main_layout.addWidget(info_frame)
     
     def on_region_changed(self, index):
         """Handle region selection change."""
-        # In the future, this could update application-wide settings
-        # or trigger region-specific data loading
         region = self.region_combo.currentText()
         print(f"Region changed to: {region}")
-
-        self.region_changed.emit(region)
+        self.region_changed.emit(region)  # Emit signal with selected region
