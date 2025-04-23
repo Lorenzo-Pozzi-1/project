@@ -42,32 +42,24 @@ class FilterRow(QWidget):
         self.setup_ui()
     
     def setup_ui(self):
-        """Set up the UI components."""
-        # Main layout just contains the frame
-        main_layout = QHBoxLayout(self)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(0)
-        
-        # Create a frame to contain everything with the border
-        container_frame = QFrame(self)
-        container_frame.setFrameShape(QFrame.StyledPanel)
-        container_frame.setStyleSheet("""
-            QFrame {
-            border: 1px solid black;
-            border-radius: 4px;
-            background-color: #F0F0F0;
-            }
-            QLabel, QComboBox, QLineEdit, QPushButton {
-            border: none;
-            background-color: transparent;
-            }
-        """)
-        main_layout.addWidget(container_frame)
-        
-        # Layout inside the frame for the actual filter controls
-        layout = QHBoxLayout(container_frame)
+        """Set up the UI components with simplified structure."""
+        # Single horizontal layout
+        layout = QHBoxLayout(self)
         layout.setContentsMargins(5, 5, 5, 5)
         layout.setSpacing(5)
+        
+        # Set background styling directly on the widget
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #F0F0F0;
+                border: 1px solid black;
+                border-radius: 4px;
+            }
+            QComboBox, QLineEdit, QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+        """)
         
         # Field selection dropdown
         self.field_combo = QComboBox()
@@ -149,54 +141,8 @@ class ProductsListTab(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(5)
         
-        # Filter section frame
-        filter_frame = QFrame()
-        filter_frame.setFrameShape(QFrame.StyledPanel)
-        filter_frame.setStyleSheet("""
-            QFrame {
-                background-color: transparent;
-                border: none;
-                border-radius: 4px;
-            }
-        """)
-        # Set size policy to take minimum vertical space
-        filter_frame.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
-        
-        filter_layout = QVBoxLayout(filter_frame)
-        filter_layout.setContentsMargins(10, 10, 10, 10)
-        filter_layout.setSpacing(10)
-        
-        # Filter title
-        filter_title = QLabel("Filter Products")
-        filter_title.setFont(get_body_font(size=12, bold=True))
-        filter_layout.addWidget(filter_title)
-        
-        # Container for filter rows - using horizontal layout now
-        self.filter_rows_widget = QWidget()
-        self.filter_rows_layout = QHBoxLayout(self.filter_rows_widget)
-        self.filter_rows_layout.setContentsMargins(0, 0, 0, 0)
-        self.filter_rows_layout.setSpacing(10)
-        self.filter_rows_layout.setAlignment(Qt.AlignLeft)
-        
-        # Add initial filter row (will be initialized once we have columns)
-        # We'll add this later when we have loaded the column names
-        
-        # Create a scroll area for filters in case there are many
-        filter_scroll = QScrollArea()
-        filter_scroll.setWidgetResizable(True)
-        filter_scroll.setFrameShape(QFrame.NoFrame)
-        filter_scroll.setWidget(self.filter_rows_widget)
-        filter_scroll.setMaximumHeight(80)  # Reduced height since filters are now horizontal
-        filter_layout.addWidget(filter_scroll)
-        
-        # Add Filter button
-        add_filter_button = QPushButton("Add Another Filter")
-        add_filter_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        add_filter_button.clicked.connect(self.add_filter_row)
-        filter_layout.addWidget(add_filter_button, alignment=Qt.AlignLeft)
-        
-        # Add filter frame to main layout with stretch factor 0 (minimum space)
-        main_layout.addWidget(filter_frame, 0)
+        # Simplified filter section
+        self.setup_filter_section(main_layout)
         
         # Create table for products
         self.products_table = QTableWidget()
@@ -218,6 +164,46 @@ class ProductsListTab(QWidget):
         compare_button.setFont(get_body_font(size=11))
         
         main_layout.addWidget(compare_button, alignment=Qt.AlignRight)
+    
+    def setup_filter_section(self, main_layout):
+        """Set up the filter section with simplified layout."""
+        # Filter container
+        filter_container = QWidget()
+        filter_container.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        filter_layout = QVBoxLayout(filter_container)
+        filter_layout.setContentsMargins(10, 10, 10, 10)
+        filter_layout.setSpacing(10)
+        
+        # Filter title
+        filter_title = QLabel("Filter Products")
+        filter_title.setFont(get_body_font(size=12, bold=True))
+        filter_layout.addWidget(filter_title)
+        
+        # Horizontal scrollable area for filter rows
+        self.filter_rows_container = QWidget()
+        self.filter_rows_layout = QHBoxLayout(self.filter_rows_container)
+        self.filter_rows_layout.setContentsMargins(0, 0, 0, 0)
+        self.filter_rows_layout.setSpacing(10)
+        self.filter_rows_layout.setAlignment(Qt.AlignLeft)
+        
+        # Add the scrollable area
+        filter_scroll = QScrollArea()
+        filter_scroll.setWidgetResizable(True)
+        filter_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        filter_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        filter_scroll.setFrameShape(QFrame.NoFrame)
+        filter_scroll.setWidget(self.filter_rows_container)
+        filter_scroll.setMaximumHeight(60)  # Reduced height for horizontal filters
+        filter_layout.addWidget(filter_scroll)
+        
+        # Add Filter button
+        add_filter_button = QPushButton("Add Another Filter")
+        add_filter_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
+        add_filter_button.clicked.connect(self.add_filter_row)
+        filter_layout.addWidget(add_filter_button, alignment=Qt.AlignLeft)
+        
+        # Add to main layout
+        main_layout.addWidget(filter_container, 0)
     
     def load_product_data(self):
         """Load product data from the database using the load_products function."""
@@ -333,7 +319,7 @@ class ProductsListTab(QWidget):
         filter_row.filter_changed.connect(self.apply_filters)
         filter_row.remove_requested.connect(self.remove_filter_row)
         
-        # Add to layout horizontally
+        # Add to layout
         self.filter_rows_layout.addWidget(filter_row)
         
         # Add to tracking list

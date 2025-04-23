@@ -83,14 +83,14 @@ class HomePage(QWidget):
         self.products_button.clicked.connect(lambda: self.parent.navigate_to_page(1))
         
         self.season_planner_button = FeatureButton(
-            "Season Planner",
-            "Plan applications, compare scenarios, import and work from previous years plans"
+            "EIQ Season Planner",
+            "Plan applications\nCompare scenarios\nImport and work from previous years plans"
         )
         self.season_planner_button.clicked.connect(lambda: self.parent.navigate_to_page(2))
         
         self.eiq_calculator_button = FeatureButton(
             "EIQ Calculator",
-            "Calculate Environmental Impact Quotients, compare EIQ of different applications, calculate your seasonal EIQ"
+            "Calculate Environmental Impact Quotients\nCompare EIQ of different applications\nCalculate your seasonal EIQ"
         )
         self.eiq_calculator_button.clicked.connect(lambda: self.parent.navigate_to_page(3))
         
@@ -105,7 +105,7 @@ class HomePage(QWidget):
         info_layout = QVBoxLayout()
         
         # Warning title
-        warning_title = QLabel("WARNING - FAKE DATA - JUST FOR TESTING PURPOSES") 
+        warning_title = QLabel("〣 ( ºΔº ) 〣 ! WARNING ! 〣 ( ºΔº ) 〣\n FAKE DATA - JUST FOR TESTING PURPOSES") 
         warning_title.setFont(get_subtitle_font(size=30))
         warning_title.setStyleSheet("color: red; font-weight: bold;")
         warning_title.setAlignment(Qt.AlignCenter)
