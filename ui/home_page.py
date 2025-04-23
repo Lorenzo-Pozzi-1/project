@@ -105,7 +105,7 @@ class HomePage(QWidget):
         info_layout = QVBoxLayout()
         
         # Warning title
-        warning_title = QLabel("〣 ( ºΔº ) 〣 ! WARNING ! 〣 ( ºΔº ) 〣\n FAKE DATA - JUST FOR TESTING PURPOSES") 
+        warning_title = QLabel("! WARNING !\nFAKE DATA - JUST FOR TESTING PURPOSES") 
         warning_title.setFont(get_subtitle_font(size=30))
         warning_title.setStyleSheet("color: red; font-weight: bold;")
         warning_title.setAlignment(Qt.AlignCenter)
