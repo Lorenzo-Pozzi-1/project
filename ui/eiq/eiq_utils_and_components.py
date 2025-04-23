@@ -16,7 +16,7 @@ from ui.common.styles import (
     get_title_font, get_subtitle_font, get_body_font,
     EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
 )
-from ui.common.widgets import GaugeWidget
+from ui.common.widgets import ToxicityBar
 
 from data.products_data import load_products, get_product_by_name
 
@@ -143,9 +143,9 @@ def get_impact_category(field_eiq):
     Returns:
         tuple: (rating, color) where rating is a string and color is a hex code
     """
-    if field_eiq < 20:
+    if field_eiq < 33.3:
         return "Low Environmental Impact", "#E6F5E6"  # Light green
-    elif field_eiq < 40:
+    elif field_eiq < 66.6:
         return "Moderate Environmental Impact", "#FFF5E6"  # Light yellow
     else:
         return "High Environmental Impact", "#F5E6E6"  # Light red
@@ -155,7 +155,7 @@ def format_eiq_result(field_eiq):
     field_eiq_per_ha = field_eiq * 2.47
     return f"{field_eiq:.2f} /acre = {field_eiq_per_ha:.2f} /ha"
 
-def get_eiq_color(eiq_value, low_threshold=20, high_threshold=40):
+def get_eiq_color(eiq_value, low_threshold=33.3, high_threshold=66.6):
     """Get color for EIQ value based on thresholds."""
     if eiq_value < low_threshold:
         return EIQ_LOW_COLOR
@@ -292,7 +292,7 @@ class ProductSearchField(QWidget):
         self.suggestions_container.setVisible(False)
 
 class EiqResultDisplay(QWidget):
-    """A widget for displaying EIQ results with gauge and rating."""
+    """A widget for displaying EIQ results with toxicity bar and rating."""
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -325,33 +325,31 @@ class EiqResultDisplay(QWidget):
         
         layout.addLayout(field_eiq_layout)
         
-        # Impact rating gauge
-        self.impact_gauge = GaugeWidget(
-            min_value=0,
-            max_value=100,
-            critical_threshold=50,  # Adjust based on your EIQ thresholds
-            warning_threshold=20    # Adjust based on your EIQ thresholds
+        # Toxicity bar (replacing the gauge)
+        self.toxicity_bar = ToxicityBar(
+            low_threshold=33.3,  # Adjust based on your EIQ thresholds
+            high_threshold=66.6  # Adjust based on your EIQ thresholds
         )
-        layout.addWidget(self.impact_gauge)
+        layout.addWidget(self.toxicity_bar)
     
     def update_result(self, field_eiq):
         """Update the EIQ result display with the calculated value."""
         if field_eiq <= 0:
             self.field_eiq_result.setText("-- acre = -- ha")
-            self.impact_gauge.set_value(0, "No calculation")
+            self.toxicity_bar.set_value(0, "No calculation")
             return
             
         # Format result with per-acre and per-ha values
         self.field_eiq_result.setText(format_eiq_result(field_eiq))
         
-        # Update impact rating gauge
+        # Update toxicity bar
         rating, _ = get_impact_category(field_eiq)
-        self.impact_gauge.set_value(field_eiq, rating)
+        self.toxicity_bar.set_value(field_eiq, rating)
 
 class ColorCodedEiqItem(QTableWidgetItem):
     """A table item specifically for EIQ values with automatic color coding."""
     
-    def __init__(self, eiq_value, low_threshold=20, high_threshold=40):
+    def __init__(self, eiq_value, low_threshold=33.3, high_threshold=66.6):
         """
         Initialize with EIQ value and thresholds.
         
