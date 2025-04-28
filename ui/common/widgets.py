@@ -180,7 +180,7 @@ class ToxicityBar(QWidget):
         self.high_threshold = high_threshold
         self.current_value = 0
         self.label_text = ""
-        self.title_text = "Toxicity level:"
+        self.title_text = "Field EIQ score:"
         
         # Colors - define once and reuse
         self.low_color = QColor("#77DD77")  # Pastel green
