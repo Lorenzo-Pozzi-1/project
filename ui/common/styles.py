@@ -142,8 +142,8 @@ FILTER_FRAME_STYLE = f"""
 YELLOW_BAR_STYLE = f"""
     QFrame {{
         background-color: {PRIMARY_COLOR};
-        min-height: 10px;
-        max-height: 10px;
+        min-height: 25px;
+        max-height: 25px;
     }}
 """
 
