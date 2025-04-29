@@ -20,6 +20,9 @@ from utils.config import load_config
 # Clear the terminal screen for a clean start
 print("\033c", end="")
 
+# Set the environment variable for Qt logging rules to suppress debug messages
+os.environ['QT_LOGGING_RULES'] = '*=false'
+
 def setup_environment():
     """Setup the application environment."""
         

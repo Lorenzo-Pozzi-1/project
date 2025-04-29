@@ -230,45 +230,52 @@ class ToxicityBar(QWidget):
     
     def paintEvent(self, event):
         """Paint the gradient bar and all other elements."""
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
+        painter = QPainter()
+        if not painter.begin(self):  # Explicitly call begin and check for success
+            return  # Don't proceed if begin fails
         
-        # Calculate the dimensions
-        rect = self.rect()
-        margin = 10
-        bar_width = rect.width() - (margin * 2)
-        bar_height = 20  # Fixed height
-        bar_x = rect.x() + margin
+        try:
+            painter.setRenderHint(QPainter.Antialiasing)
+            
+            # Calculate the dimensions
+            rect = self.rect()
+            margin = 10
+            bar_width = rect.width() - (margin * 2)
+            bar_height = 20  # Fixed height
+            bar_x = rect.x() + margin
+            
+            # Draw the title
+            title_font = get_body_font(size=14, bold=True)
+            painter.setFont(title_font)
+            painter.setPen(QPen(self.text_color, 1))
+            
+            title_rect = QRect(bar_x, margin, bar_width, 25)
+            painter.drawText(title_rect, Qt.AlignCenter, self.title_text)
+            
+            # Position the bar below the title
+            bar_y = title_rect.bottom() + 15
+            bar_rect = QRect(bar_x, bar_y, bar_width, bar_height)
+            
+            # Create gradient
+            gradient = QLinearGradient(bar_rect.topLeft(), bar_rect.topRight())
+            gradient.setColorAt(0.0, self.low_color)
+            gradient.setColorAt(0.5, self.medium_color)
+            gradient.setColorAt(1.0, self.high_color)
+            
+            # Draw gradient bar
+            painter.fillRect(bar_rect, gradient)
+            painter.setPen(QPen(self.border_color, 1))
+            painter.drawRect(bar_rect)
+            
+            # Draw ticks and labels - reuse formatting for consistency
+            self._draw_ticks_and_labels(painter, bar_x, bar_y, bar_width, bar_height)
+            
+            # Handle the marker and text display if we have a valid value
+            if self.current_value > 0:
+                self._draw_marker_and_text(painter, bar_x, bar_y, bar_width, bar_height)
         
-        # Draw the title
-        title_font = get_body_font(size=14, bold=True)
-        painter.setFont(title_font)
-        painter.setPen(QPen(self.text_color, 1))
-        
-        title_rect = QRect(bar_x, margin, bar_width, 25)
-        painter.drawText(title_rect, Qt.AlignCenter, self.title_text)
-        
-        # Position the bar below the title
-        bar_y = title_rect.bottom() + 15
-        bar_rect = QRect(bar_x, bar_y, bar_width, bar_height)
-        
-        # Create gradient
-        gradient = QLinearGradient(bar_rect.topLeft(), bar_rect.topRight())
-        gradient.setColorAt(0.0, self.low_color)
-        gradient.setColorAt(0.5, self.medium_color)
-        gradient.setColorAt(1.0, self.high_color)
-        
-        # Draw gradient bar
-        painter.fillRect(bar_rect, gradient)
-        painter.setPen(QPen(self.border_color, 1))
-        painter.drawRect(bar_rect)
-        
-        # Draw ticks and labels - reuse formatting for consistency
-        self._draw_ticks_and_labels(painter, bar_x, bar_y, bar_width, bar_height)
-        
-        # Handle the marker and text display if we have a valid value
-        if self.current_value > 0:
-            self._draw_marker_and_text(painter, bar_x, bar_y, bar_width, bar_height)
+        finally:
+            painter.end()  # Always call end() to properly clean up
     
     def _draw_ticks_and_labels(self, painter, bar_x, bar_y, bar_width, bar_height):
         """Draw the tick marks and labels on the bar."""
