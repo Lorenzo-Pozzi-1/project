@@ -51,7 +51,7 @@ class ProductComparisonCalculator(QWidget):
         # Comparison selection table
         self.comparison_selection_table = QTableWidget(0, 6)
         self.comparison_selection_table.setHorizontalHeaderLabels([
-            "Product Type", "Product Name", "Active Ingredient", "Application Rate", 
+            "Product Type", "Product Name", "Active Ingredients", "Application Rate", 
             "Unit", "Applications"
         ])
         
@@ -307,15 +307,15 @@ class ProductComparisonCalculator(QWidget):
                 self.products_data[row]["active_ingredients"] = ai_data
                 
                 # Display first active ingredient in the table or "None" if no AI
-                ai_display = product.ai1 if product.ai1 else "None"
+                ai_display = ", ".join(product.active_ingredients) if product.active_ingredients else "None"
                 self.comparison_selection_table.item(row, 2).setText(ai_display)
                 
                 # Update application rate
                 rate_spin = self.comparison_selection_table.cellWidget(row, 3)
                 if rate_spin:
-                    rate_spin.setValue(product.label_suggested_rate or 
-                                      product.label_maximum_rate or 
-                                      product.label_minimum_rate or 0.0)
+                    rate_spin.setValue( product.label_maximum_rate or 
+                                        product.label_suggested_rate or 
+                                        product.label_minimum_rate or 0.0)
                 
                 # Try to set rate unit if available in product data
                 unit_combo = self.comparison_selection_table.cellWidget(row, 4)

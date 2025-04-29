@@ -15,7 +15,7 @@ from ui.common.styles import (
     MARGIN_LARGE, SPACING_LARGE, get_subtitle_font, get_body_font,
     PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 )
-from ui.common.widgets import HeaderWithBackButton, ContentFrame, ToxicityBar
+from ui.common.widgets import HeaderWithBackButton, ContentFrame
 
 class NewSeasonPage(QWidget):
     """
@@ -62,12 +62,33 @@ class NewSeasonPage(QWidget):
         
         main_layout.addWidget(self.tab_widget)
         
-        # Replace the custom gradient bar with ToxicityBar
-        self.toxicity_bar = ToxicityBar(self)
-        self.toxicity_bar.title_text = "Environmental Impact"
-        self.toxicity_bar.set_value(0, "No data")  # Initialize with no value
+        # Placeholder for color-coded gradient bar
+        self.gradient_bar = QFrame()
+        # self.gradient_bar.setFrameShape(QFrame.StyledPanel) # Optional: Stylesheet border takes precedence
+        self.gradient_bar.setMinimumHeight(40)
+        self.gradient_bar.setMaximumHeight(40)
+        self.gradient_bar.setStyleSheet(f"""
+            QFrame {{
+                /* Define a linear gradient using your palette */
+                /* Red (start) -> Yellow (middle) -> Green (end) */
+                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                                stop:0 #EC3400, 
+                                                stop:0.5 #fee000, 
+                                                stop:1 #009863);
+                
+                /* Keep the border and rounded corners */
+                border: 1px solid #cccccc;
+                border-radius: 4px;
+            }}
+        """)
         
-        main_layout.addWidget(self.toxicity_bar)
+        # Add label to the gradient bar
+        gradient_layout = QHBoxLayout(self.gradient_bar)
+        gradient_label = QLabel("Placeholder for Color-Coded Gradient Bar (Bad/Average/Good)")
+        gradient_label.setAlignment(Qt.AlignCenter)
+        gradient_layout.addWidget(gradient_label)
+        
+        main_layout.addWidget(self.gradient_bar)
     
     def add_scenario_tab(self):
         """Add a new scenario tab with a placeholder table."""

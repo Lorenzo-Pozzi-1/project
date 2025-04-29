@@ -282,9 +282,9 @@ class SingleProductCalculator(QWidget):
                 self.ai_table.setItem(i, 2, percent_item)
             
             # Update application rate
-            self.rate_spin.setValue(self.current_product.label_suggested_rate or 
-                                   self.current_product.label_maximum_rate or 
-                                   self.current_product.label_minimum_rate or 0.0)
+            self.rate_spin.setValue(self.current_product.label_maximum_rate or 
+                                    self.current_product.label_suggested_rate or 
+                                    self.current_product.label_minimum_rate or 0.0)
             
             # Try to set rate unit if available in product data
             unit = self.current_product.rate_uom or ""
