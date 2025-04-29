@@ -21,13 +21,13 @@ from ui.common.widgets import FeatureButton, ContentFrame
 
 class HomePage(QWidget):
     """
-    Home page with region selection and feature navigation buttons.
+    Home page with country selection and feature navigation buttons.
     
     This page serves as the main entry point for users to access the
     various features of the application.
     """
     
-    region_changed = Signal(str)
+    country_changed = Signal(str)
     
     def __init__(self, parent=None):
         """Initialize the home page."""
@@ -48,28 +48,28 @@ class HomePage(QWidget):
         title_label.setFont(get_title_font(size=24))
         main_layout.addWidget(title_label)
         
-        # Region selection area
-        region_frame = QFrame()
-        region_frame.setFrameShape(QFrame.NoFrame)
-        region_layout = QHBoxLayout(region_frame)
-        region_layout.setAlignment(Qt.AlignCenter)
+        # country selection area
+        country_frame = QFrame()
+        country_frame.setFrameShape(QFrame.NoFrame)
+        country_layout = QHBoxLayout(country_frame)
+        country_layout.setAlignment(Qt.AlignCenter)
         
-        region_label = QLabel("Select Region:")
-        region_label.setFont(get_body_font(size=12))
+        country_label = QLabel("Select country:")
+        country_label.setFont(get_body_font(size=12))
         
-        self.region_combo = QComboBox()
-        self.region_combo.setFont(get_body_font(size=12))
-        self.region_combo.addItems([
-            "CA", "USA"
+        self.country_combo = QComboBox()
+        self.country_combo.setFont(get_body_font(size=12))
+        self.country_combo.addItems([
+            "Canada", "United States"
         ])
-        self.region_combo.setMinimumWidth(200)
-        self.region_combo.setCurrentIndex(0)
-        self.region_combo.currentIndexChanged.connect(self.on_region_changed)
+        self.country_combo.setMinimumWidth(200)
+        self.country_combo.setCurrentIndex(0)
+        self.country_combo.currentIndexChanged.connect(self.on_country_changed)
         
-        region_layout.addWidget(region_label)
-        region_layout.addWidget(self.region_combo)
+        country_layout.addWidget(country_label)
+        country_layout.addWidget(self.country_combo)
         
-        main_layout.addWidget(region_frame)
+        main_layout.addWidget(country_frame)
         
         # Buttons area
         buttons_layout = QHBoxLayout()
@@ -141,8 +141,8 @@ class HomePage(QWidget):
         main_layout.addStretch(1)
         main_layout.addWidget(info_frame)
     
-    def on_region_changed(self, index):
-        """Handle region selection change."""
-        region = self.region_combo.currentText()
-        print(f"Region changed to: {region}")
-        self.region_changed.emit(region)  # Emit signal with selected region
+    def on_country_changed(self, index):
+        """Handle country selection change."""
+        country = self.country_combo.currentText()
+        print(f"country changed to: {country}")
+        self.country_changed.emit(country)  # Emit signal with selected country

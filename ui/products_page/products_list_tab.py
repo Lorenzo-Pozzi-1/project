@@ -127,7 +127,7 @@ class ProductsListTab(QWidget):
         super().__init__(parent)
         self.parent = parent
         self.column_keys = []  # Store CSV column keys
-        self.region_column_index = -1  # Will store index of the region column
+        self.country_column_index = -1  # Will store index of the country column
         self.filter_rows = []  # Track filter row widgets
         self.original_header_texts = {}  # Store original header texts
         self.all_products = []  # Store all loaded products
@@ -213,15 +213,15 @@ class ProductsListTab(QWidget):
         if not products:
             return
 
-        # Filter products by selected region
+        # Filter products by selected country
         filtered_products = []
-        selected_region = self.parent.parent.selected_country if self.parent and self.parent.parent and hasattr(self.parent.parent, 'selected_country') else None
+        selected_country = self.parent.parent.selected_country if self.parent and self.parent.parent and hasattr(self.parent.parent, 'selected_country') else None
         
-        if selected_region:
-            # Only include products for the selected region
-            filtered_products = [p for p in products if p.region == selected_region]
+        if selected_country:
+            # Only include products for the selected country
+            filtered_products = [p for p in products if p.country == selected_country]
         else:
-            # If no region selected, show all products
+            # If no country selected, show all products
             filtered_products = products
             
         self.all_products = filtered_products  # Store filtered list of Product objects
@@ -252,11 +252,11 @@ class ProductsListTab(QWidget):
             
             # Columns to hide (case-insensitive matching to handle potential variations)
             columns_to_hide = [
-                "region", "number of ai", 
-                "ai1 eiq", "ai1 group", "ai1 %",
-                "ai2 eiq", "ai2 group", "ai2 %",
-                "ai3 eiq", "ai3 group", "ai3 %",
-                "ai4 eiq", "ai4 group", "ai4 %"
+                "country", "region", 
+                "[ai1]", "[ai1]UOM", "ai1 eiq",
+                "[ai2]", "[ai2]UOM", "ai2 eiq",
+                "[ai3]", "[ai3]UOM", "ai3 eiq",
+                "[ai4]", "[ai4]UOM", "ai4 eiq"
             ]
             
             # Hidden column indices

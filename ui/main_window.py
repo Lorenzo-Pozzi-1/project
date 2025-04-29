@@ -36,9 +36,9 @@ class MainWindow(QMainWindow):
         self.init_fonts()
         self.init_ui()
 
-        # Connect the region_changed signal to methods that need to be updated
-        self.home_page.region_changed.connect(self.update_selected_country)
-        self.home_page.region_changed.connect(self.products_page.update_region_filter)
+        # Connect the country_changed signal to methods that need to be updated
+        self.home_page.country_changed.connect(self.update_selected_country)
+        self.home_page.country_changed.connect(self.products_page.update_country_filter)
         
     def setup_window(self):
         """Set up the window properties."""
@@ -103,9 +103,9 @@ class MainWindow(QMainWindow):
         # Start with the home page
         self.stacked_widget.setCurrentIndex(0)
     
-    def update_selected_country(self, region):
+    def update_selected_country(self, country):
         """Update the selected country when the signal is emitted."""
-        self.selected_country = region
+        self.selected_country = country
         print(f"MainWindow updated selected country to: {self.selected_country}")
 
     def navigate_to_page(self, page_index):

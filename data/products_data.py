@@ -3,6 +3,7 @@ Product data module for the LORENZO POZZI Pesticide App.
 
 This module provides functions to load and manage product data.
 The data can be initialized from a CSV file and is stored in JSON format.
+Updated to work with NEW_products.csv format.
 """
 
 import os
@@ -12,7 +13,7 @@ from models.product import Product
 
 # Paths to data files
 DB_FILE = os.path.join("data", "products.json")
-CSV_FILE = os.path.join("data", "products.csv")
+CSV_FILE = os.path.join("data", "NEW_products.csv")
 
 def csv_to_dict(csv_file):
     """
@@ -27,12 +28,13 @@ def csv_to_dict(csv_file):
     product_data = []
     
     try:
-        with open(csv_file, 'r', newline='', encoding='utf-8') as file:
+        # Use cp1252 encoding for the NEW_products.csv file
+        with open(csv_file, 'r', newline='', encoding='cp1252') as file:
             # Explicitly set quoting parameters to handle strings with commas
             reader = csv.DictReader(file, quotechar='"', skipinitialspace=True)
             for row in reader:
                 # Clean the row keys to handle potential whitespace in headers
-                cleaned_row = {k.strip(): v for k, v in row.items()}                
+                cleaned_row = {k.strip(): v.strip() if isinstance(v, str) else v for k, v in row.items() if k is not None}                
                 product_data.append(cleaned_row)
         
         return product_data
@@ -63,8 +65,8 @@ def initialize_database():
             
             if product_data:
                 # Create database with CSV data
-                with open(DB_FILE, 'w') as file:
-                    json.dump(product_data, file, indent=4)
+                with open(DB_FILE, 'w', encoding='utf-8') as file:
+                    json.dump(product_data, file, indent=4, ensure_ascii=False)
                 return True
     
     return False
@@ -92,8 +94,8 @@ def refresh_from_csv():
             return False
         
         # Save to database file
-        with open(DB_FILE, 'w') as file:
-            json.dump(product_data, file, indent=4)
+        with open(DB_FILE, 'w', encoding='utf-8') as file:
+            json.dump(product_data, file, indent=4, ensure_ascii=False)
         
         return True
     
@@ -127,7 +129,7 @@ def export_to_csv():
         fieldnames = list(product_dicts[0].keys())
         
         # Write to CSV
-        with open(CSV_FILE, 'w', newline='', encoding='utf-8') as file:
+        with open(CSV_FILE, 'w', newline='', encoding='cp1252') as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(product_dicts)
@@ -151,16 +153,27 @@ def load_products():
     
     try:
         products = []
-        with open(CSV_FILE, newline='', encoding='utf-8') as csvfile:
+        # Read directly from the CSV to ensure we have the latest data
+        with open(CSV_FILE, newline='', encoding='cp1252') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                                
-                product = Product.from_dict(row)
+                # Clean row data
+                cleaned_row = {k.strip(): v.strip() if isinstance(v, str) else v for k, v in row.items() if k is not None}
+                product = Product.from_dict(cleaned_row)
                 products.append(product)
         return products
-    except (json.JSONDecodeError, IOError) as e:
-        print(f"Error loading product data: {e}")
-        return []
+    except (IOError) as e:
+        print(f"Error loading product data from CSV: {e}")
+        
+        # Try loading from JSON as fallback
+        try:
+            with open(DB_FILE, 'r', encoding='utf-8') as file:
+                product_data = json.load(file)
+                products = [Product.from_dict(item) for item in product_data]
+                return products
+        except (json.JSONDecodeError, IOError) as e:
+            print(f"Error loading product data from JSON: {e}")
+            return []
 
 
 def save_products(products):
@@ -178,8 +191,18 @@ def save_products(products):
         product_data = [product.to_dict() for product in products]
         
         # Save to database file
-        with open(DB_FILE, 'w') as file:
-            json.dump(product_data, file, indent=4)
+        with open(DB_FILE, 'w', encoding='utf-8') as file:
+            json.dump(product_data, file, indent=4, ensure_ascii=False)
+        
+        # Also export to CSV to keep both in sync
+        # Get fieldnames from the first product
+        fieldnames = list(product_data[0].keys())
+        
+        # Write to CSV
+        with open(CSV_FILE, 'w', newline='', encoding='cp1252') as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(product_data)
         
         return True
     except IOError as e:
@@ -313,3 +336,17 @@ def get_products_by_region(region):
     """
     products = load_products()
     return [product for product in products if product.region == region]
+
+
+def get_products_by_country(country):
+    """
+    Get all products registered in a specific country.
+    
+    Args:
+        country (str): Country to filter by
+    
+    Returns:
+        list: List of Product objects for the specified country
+    """
+    products = load_products()
+    return [product for product in products if product.country == country]
