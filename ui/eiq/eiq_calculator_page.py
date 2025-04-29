@@ -2,10 +2,9 @@
 Main EIQ Calculator page for the LORENZO POZZI Pesticide App.
 
 This module defines the EiqCalculatorPage class which serves as a container for
-the three EIQ calculator components:
+two EIQ calculator components:
 - Single Product Calculator
 - Product Comparison Calculator
-- Seasonal EIQ Calculator
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
@@ -54,5 +53,4 @@ class EiqCalculatorPage(QWidget):
         self.product_comparison_calculator = ProductComparisonCalculator(self)
         self.tabs.addTab(self.product_comparison_calculator, "Product Comparison")
         
-
         main_layout.addWidget(self.tabs)

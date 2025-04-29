@@ -20,8 +20,8 @@ from ui.common.widgets import ContentFrame
 
 # Import shared EIQ utilities and components
 from ui.eiq.eiq_utils_and_components import (
-    get_products_from_csv, calculate_field_eiq, 
-    ColorCodedEiqItem, format_eiq_result
+    get_products_from_csv, calculate_field_eiq, calculate_product_field_eiq,
+    ColorCodedEiqItem, format_eiq_result, convert_concentration_to_percent
 )
 
 
@@ -274,34 +274,50 @@ class ProductComparisonCalculator(QWidget):
                 
                 # Check AI1 data
                 if product.ai1:
+                    concentration = product.ai1_concentration
+                    uom = product.ai1_concentration_uom
+                    percent_value = convert_concentration_to_percent(concentration, uom)
+                    
                     ai_data.append({
                         "name": product.ai1,
                         "eiq": product.ai1_eiq if product.ai1_eiq is not None else "--",
-                        "percent": product.ai1_concentration_percent if product.ai1_concentration_percent is not None else "--"
+                        "percent": percent_value if percent_value is not None else "--"
                     })
                 
                 # Check AI2 data
                 if product.ai2:
+                    concentration = product.ai2_concentration
+                    uom = product.ai2_concentration_uom
+                    percent_value = convert_concentration_to_percent(concentration, uom)
+                    
                     ai_data.append({
                         "name": product.ai2,
                         "eiq": product.ai2_eiq if product.ai2_eiq is not None else "--",
-                        "percent": product.ai2_concentration_percent if product.ai2_concentration_percent is not None else "--"
+                        "percent": percent_value if percent_value is not None else "--"
                     })
                 
                 # Check AI3 data
                 if product.ai3:
+                    concentration = product.ai3_concentration
+                    uom = product.ai3_concentration_uom
+                    percent_value = convert_concentration_to_percent(concentration, uom)
+                    
                     ai_data.append({
                         "name": product.ai3,
                         "eiq": product.ai3_eiq if product.ai3_eiq is not None else "--",
-                        "percent": product.ai3_concentration_percent if product.ai3_concentration_percent is not None else "--"
+                        "percent": percent_value if percent_value is not None else "--"
                     })
                 
                 # Check AI4 data
                 if product.ai4:
+                    concentration = product.ai4_concentration
+                    uom = product.ai4_concentration_uom
+                    percent_value = convert_concentration_to_percent(concentration, uom)
+                    
                     ai_data.append({
                         "name": product.ai4,
                         "eiq": product.ai4_eiq if product.ai4_eiq is not None else "--",
-                        "percent": product.ai4_concentration_percent if product.ai4_concentration_percent is not None else "--"
+                        "percent": percent_value if percent_value is not None else "--"
                     })
                 
                 self.products_data[row]["active_ingredients"] = ai_data
@@ -368,20 +384,9 @@ class ProductComparisonCalculator(QWidget):
             unit = unit_combo.currentText() if unit_combo else "lbs/acre"
             applications = apps_spin.value() if apps_spin else 1
             
-            # Calculate Field EIQ for each active ingredient and sum them
-            total_field_eiq = 0.0
-            
-            for ai in active_ingredients:
-                # Skip AIs with missing data
-                if ai["eiq"] == "--" or ai["percent"] == "--":
-                    continue
-                
-                ai_eiq = float(ai["eiq"])
-                ai_percent = float(ai["percent"]) if isinstance(ai["percent"], (int, float)) else float(ai["percent"].replace("%", ""))
-                
-                # Calculate Field EIQ for this AI using the shared utility function
-                ai_field_eiq = calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications)
-                total_field_eiq += ai_field_eiq
+            # Calculate total Field EIQ using the improved function
+            total_field_eiq = calculate_product_field_eiq(
+                active_ingredients, rate, unit, applications)
             
             # Calculate hectare value (1 hectare = 2.47 acres)
             field_eiq_per_ha = total_field_eiq * 2.47

@@ -21,7 +21,8 @@ from ui.common.widgets import ContentFrame
 # Import common utilities and components from consolidated module
 from ui.eiq.eiq_utils_and_components import (
     get_products_from_csv, get_product_info, calculate_field_eiq,
-    ProductSearchField, EiqResultDisplay 
+    calculate_product_field_eiq, ProductSearchField, EiqResultDisplay,
+    convert_concentration_to_percent
 )
 
 
@@ -49,6 +50,8 @@ class SingleProductCalculator(QWidget):
         self.current_product = None
         
         self.setup_ui()
+        
+    # Removed the local _convert_concentration_to_percent method as we now use the centralized one
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -149,11 +152,9 @@ class SingleProductCalculator(QWidget):
         
         save_button = QPushButton("Save Calculation")
         save_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        save_button.clicked.connect(self.save_calculation)
         
         export_button = QPushButton("Export Results")
         export_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        export_button.clicked.connect(self.export_results)
         
         buttons_layout.addWidget(save_button)
         buttons_layout.addWidget(export_button)
@@ -232,34 +233,50 @@ class SingleProductCalculator(QWidget):
             
             # Check AI1 data
             if self.current_product.ai1:
+                concentration = self.current_product.ai1_concentration
+                uom = self.current_product.ai1_concentration_uom
+                percent_value = convert_concentration_to_percent(concentration, uom)
+                
                 ai_data.append({
                     "name": self.current_product.ai1,
                     "eiq": self.current_product.ai1_eiq if self.current_product.ai1_eiq is not None else "--",
-                    "percent": self.current_product.ai1_concentration_percent if self.current_product.ai1_concentration_percent is not None else "--"
+                    "percent": percent_value if percent_value is not None else "--"
                 })
             
             # Check AI2 data
             if self.current_product.ai2:
+                concentration = self.current_product.ai2_concentration
+                uom = self.current_product.ai2_concentration_uom
+                percent_value = convert_concentration_to_percent(concentration, uom)
+                
                 ai_data.append({
                     "name": self.current_product.ai2,
                     "eiq": self.current_product.ai2_eiq if self.current_product.ai2_eiq is not None else "--",
-                    "percent": self.current_product.ai2_concentration_percent if self.current_product.ai2_concentration_percent is not None else "--"
+                    "percent": percent_value if percent_value is not None else "--"
                 })
             
             # Check AI3 data
             if self.current_product.ai3:
+                concentration = self.current_product.ai3_concentration
+                uom = self.current_product.ai3_concentration_uom
+                percent_value = convert_concentration_to_percent(concentration, uom)
+                
                 ai_data.append({
                     "name": self.current_product.ai3,
                     "eiq": self.current_product.ai3_eiq if self.current_product.ai3_eiq is not None else "--",
-                    "percent": self.current_product.ai3_concentration_percent if self.current_product.ai3_concentration_percent is not None else "--"
+                    "percent": percent_value if percent_value is not None else "--"
                 })
             
             # Check AI4 data
             if self.current_product.ai4:
+                concentration = self.current_product.ai4_concentration
+                uom = self.current_product.ai4_concentration_uom
+                percent_value = convert_concentration_to_percent(concentration, uom)
+                
                 ai_data.append({
                     "name": self.current_product.ai4,
                     "eiq": self.current_product.ai4_eiq if self.current_product.ai4_eiq is not None else "--",
-                    "percent": self.current_product.ai4_concentration_percent if self.current_product.ai4_concentration_percent is not None else "--"
+                    "percent": percent_value if percent_value is not None else "--"
                 })
             
             # Add rows to table
@@ -309,33 +326,32 @@ class SingleProductCalculator(QWidget):
             return
             
         try:
-            # We'll calculate Field EIQ for each active ingredient and sum them
-            total_field_eiq = 0.0
+            # Collect all active ingredients data from the table
+            active_ingredients = []
             
             for row in range(self.ai_table.rowCount()):
                 # Get AI data from table
+                name_item = self.ai_table.item(row, 0)
                 eiq_item = self.ai_table.item(row, 1)
                 percent_item = self.ai_table.item(row, 2)
                 
                 if not eiq_item or not percent_item or eiq_item.text() == "--" or percent_item.text() == "--":
                     continue
                 
-                try:
-                    ai_eiq = float(eiq_item.text())
-                    # Extract numeric value from percent string
-                    ai_percent = float(percent_item.text().replace("%", ""))
-                    
-                    # Get application parameters
-                    rate = self.rate_spin.value()
-                    applications = self.applications_spin.value()
-                    unit = self.rate_unit_combo.currentText()
-                    
-                    # Calculate Field EIQ for this AI
-                    ai_field_eiq = calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications)
-                    total_field_eiq += ai_field_eiq
-                    
-                except (ValueError, TypeError) as e:
-                    print(f"Error calculating EIQ for AI row {row}: {e}")
+                active_ingredients.append({
+                    'name': name_item.text() if name_item else "",
+                    'eiq': eiq_item.text(),
+                    'percent': percent_item.text()
+                })
+            
+            # Get application parameters
+            rate = self.rate_spin.value()
+            applications = self.applications_spin.value()
+            unit = self.rate_unit_combo.currentText()
+            
+            # Calculate total Field EIQ using the improved function
+            total_field_eiq = calculate_product_field_eiq(
+                active_ingredients, rate, unit, applications)
             
             # Update result display with the new EIQ value
             self.eiq_results_display.update_result(total_field_eiq)
@@ -343,13 +359,3 @@ class SingleProductCalculator(QWidget):
         except (ValueError, ZeroDivisionError, AttributeError) as e:
             print(f"Error calculating EIQ: {e}")
             self.eiq_results_display.update_result(0)
-    
-    def save_calculation(self):
-        """Save the current calculation to history."""
-        print("Save calculation")
-        # In a real application, this would save the calculation to a database
-    
-    def export_results(self):
-        """Export calculation results to a file."""
-        print("Export results")
-        # In a real application, this would export to CSV or PDF

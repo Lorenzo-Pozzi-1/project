@@ -73,8 +73,19 @@ def get_product_info(product_name):
         # Now using AI1 EIQ instead of base EIQ
         ai1_eiq = product.ai1_eiq if product.ai1_eiq is not None else 0.0
         
-        # Updated from ai1_concentration to ai1_concentration_percent
-        ai_percent = product.ai1_concentration_percent if product.ai1_concentration_percent is not None else 0.0
+        # Get concentration and convert to percent based on UOM
+        ai_percent = 0.0
+        if product.ai1_concentration is not None:
+            # If the concentration UOM is already in percent, use it directly
+            if product.ai1_concentration_uom == '%':
+                ai_percent = product.ai1_concentration
+            # Otherwise, handle other UOMs (this would need expansion based on your data)
+            elif product.ai1_concentration_uom == 'g/l':
+                # Example conversion: g/l to percent (this may need to be updated)
+                ai_percent = product.ai1_concentration / 10.0
+            else:
+                # Default assumption that concentration is in percent
+                ai_percent = product.ai1_concentration
         
         if product.label_suggested_rate is not None:
             rate = product.label_suggested_rate
@@ -100,12 +111,12 @@ def get_product_info(product_name):
         "default_unit": "lbs/acre"
     }
 
-def calculate_field_eiq(ai1_eiq, ai_percent, rate, unit, applications=1):
+def calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications=1):
     """
     Calculate Field EIQ based on product data and application parameters.
     
     Args:
-        ai1_eiq (float): AI1 EIQ value
+        ai_eiq (float): Active ingredient EIQ value
         ai_percent (float): Active ingredient percentage (0-100)
         rate (float): Application rate
         unit (str): Unit of measure for rate
@@ -126,12 +137,55 @@ def calculate_field_eiq(ai1_eiq, ai_percent, rate, unit, applications=1):
             rate_in_pounds = rate
         
         # Calculate Field EIQ
-        field_eiq = ai1_eiq * ai_decimal * rate_in_pounds * applications
+        field_eiq = ai_eiq * ai_decimal * rate_in_pounds * applications
         return field_eiq
     
     except (ValueError, ZeroDivisionError, TypeError) as e:
         print(f"Error calculating Field EIQ: {e}")
         return 0.0
+
+def calculate_product_field_eiq(active_ingredients, rate, unit, applications=1):
+    """
+    Calculate total Field EIQ for a product with multiple active ingredients.
+    
+    Args:
+        active_ingredients (list): List of dictionaries with 'eiq' and 'percent' keys
+        rate (float): Application rate
+        unit (str): Unit of measure for rate
+        applications (int): Number of applications
+        
+    Returns:
+        float: Total Field EIQ value for the product
+    """
+    total_field_eiq = 0.0
+    
+    for ai in active_ingredients:
+        # Skip AIs with missing data
+        if not ai or 'eiq' not in ai or 'percent' not in ai:
+            continue
+            
+        # Handle case where eiq or percent might be stored as strings or have "--" placeholder
+        if ai['eiq'] == "--" or ai['percent'] == "--":
+            continue
+            
+        try:
+            # Convert to float if stored as string
+            ai_eiq = float(ai['eiq']) if isinstance(ai['eiq'], str) else ai['eiq']
+            
+            # Handle percent that might be stored with "%" suffix
+            percent_str = str(ai['percent'])
+            ai_percent = float(percent_str.replace('%', '')) if '%' in percent_str else float(ai['percent'])
+            
+            # Calculate and add Field EIQ for this active ingredient
+            ai_field_eiq = calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications)
+            total_field_eiq += ai_field_eiq
+            
+        except (ValueError, TypeError) as e:
+            print(f"Error calculating EIQ for active ingredient {ai.get('name', 'unknown')}: {e}")
+            # Skip this ingredient but continue with others
+            continue
+    
+    return total_field_eiq
 
 def get_impact_category(field_eiq):
     """
@@ -163,6 +217,47 @@ def get_eiq_color(eiq_value, low_threshold=33.3, high_threshold=66.6):
         return EIQ_MEDIUM_COLOR
     else:
         return EIQ_HIGH_COLOR
+
+def convert_concentration_to_percent(concentration, uom):
+    """
+    Convert concentration to percentage based on unit of measure.
+    
+    Args:
+        concentration (float): Concentration value
+        uom (str): Unit of measure for concentration
+        
+    Returns:
+        float or None: Concentration as percentage
+    """
+    if concentration is None:
+        return None
+        
+    try:
+        # Handle different UOMs
+        if uom == '%':
+            # Already in percent
+            return float(concentration)
+        elif uom == 'g/l':
+            # Conversion from g/l to % (approximation)
+            # This assumes that g/l * 0.1 = % (verify with domain experts)
+            return float(concentration) * 0.1
+        elif uom == 'g/kg':
+            # g/kg is equivalent to 0.1%
+            return float(concentration) * 0.1
+        elif uom == 'ppm':
+            # ppm to % (1 ppm = 0.0001%)
+            return float(concentration) * 0.0001
+        elif uom == 'w/w':
+            # w/w is typically expressed as decimal, so multiply by 100
+            return float(concentration) * 100
+        elif uom == 'w/v':
+            # w/v is typically expressed as decimal, so multiply by 100
+            return float(concentration) * 100
+        else:
+            # Default: assume value is already in percent
+            return float(concentration)
+    except (ValueError, TypeError):
+        return None
 
 #------------------------
 # UI Components
