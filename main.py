@@ -24,7 +24,6 @@ def setup_environment():
     """Setup the application environment."""
         
     # Set the current working directory to the application's directory
-    # This ensures relative paths work correctly
     app_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(app_dir)
     QDir.setCurrent(app_dir)

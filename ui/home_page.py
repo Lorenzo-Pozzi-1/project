@@ -105,8 +105,8 @@ class HomePage(QWidget):
         info_layout = QVBoxLayout()
         
         # Warning title - make it more visible with improved styling
-        warning_title = QLabel("! WARNING !\nFAKE DATA - JUST FOR TESTING PURPOSES\nalways check the products labels, this tool is only meant as an aide [...]") 
-        warning_title.setFont(get_subtitle_font(size=24))  # Reduced size for better proportions
+        warning_title = QLabel("! Always check products' labels !") 
+        warning_title.setFont(get_subtitle_font(size=20))  # Reduced size for better proportions
         warning_title.setStyleSheet("color: red; font-weight: bold; background-color: #FFEEEE; border: 2px solid red; border-radius: 5px; padding: 5px;")
         warning_title.setAlignment(Qt.AlignCenter)
         info_layout.addWidget(warning_title)
