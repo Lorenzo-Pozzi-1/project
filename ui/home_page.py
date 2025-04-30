@@ -110,7 +110,7 @@ class HomePage(QWidget):
         # Warning title with improved styling
         warning_title = QLabel("! Always check products' labels !") 
         warning_title.setFont(get_subtitle_font(size=20))
-        warning_title.setStyleSheet("color: red; font-weight: bold; background-color: #FFEEEE; border: 2px solid red; border-radius: 5px; padding: 5px;")
+        warning_title.setStyleSheet("color: red; font-weight: bold; background-color: #FFEEEE; padding: 5px;")
         warning_title.setAlignment(Qt.AlignCenter)
         warning_layout.addWidget(warning_title)
         
@@ -162,13 +162,11 @@ class HomePage(QWidget):
         
         # Notes text
         dev_notes_text = QLabel(
-            "This section contains notes for future development tasks:\n\n"
-            "• Implement multi-field seasonal planning\n"
-            "• Add reporting capabilities with PDF export\n"
-            "• Create data visualization for historical EIQ trends\n"
-            "• Add user accounts and cloud sync functionality\n"
-            "• Integrate weather data for optimal application timing\n\n"
-            "Feel free to add or modify these notes as development progresses."
+            "Notes for future development TO-DOs:\n\n"
+            "• check UOM\n"
+            "• mange UOM for ammount/length and seed treatments\n"
+            "• past season data import\n"
+            "• develop season planner"
         )
         dev_notes_text.setWordWrap(True)
         dev_notes_text.setTextInteractionFlags(Qt.TextSelectableByMouse)
