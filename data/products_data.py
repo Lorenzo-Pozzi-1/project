@@ -9,7 +9,7 @@ Updated to work with NEW_products.csv format.
 import os
 import json
 import csv
-from models.product import Product
+from data.product_model import Product
 
 # Paths to data files
 DB_FILE = os.path.join("data", "products.json")

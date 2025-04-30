@@ -8,7 +8,7 @@ comparison functionality.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtCore import Qt
 
-from ui.common.styles import get_body_font
+from common.styles import get_body_font
 
 
 class ProductsComparisonTab(QWidget):

@@ -11,15 +11,11 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QBrush
 
-from ui.common.styles import (
-    get_title_font, get_subtitle_font, get_body_font,
-    EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
-)
-from ui.common.widgets import ToxicityBar
-
+from common.styles import get_title_font, get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
+from common.widgets import ToxicityBar
 from data.products_data import load_products, get_product_by_name
-from ui.eiq.eiq_conversions import convert_concentration_to_percent
-from ui.eiq.eiq_calculations import format_eiq_result, get_impact_category
+from eiq_calculator.eiq_conversions import convert_concentration_to_percent
+from eiq_calculator.eiq_calculations import format_eiq_result, get_impact_category
 
 #------------------------
 # Data Handling Functions

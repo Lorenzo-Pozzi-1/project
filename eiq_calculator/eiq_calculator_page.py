@@ -10,12 +10,10 @@ two EIQ calculator components:
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
 from PySide6.QtCore import Qt
 
-from ui.common.styles import MARGIN_LARGE, SPACING_MEDIUM
-from ui.common.widgets import HeaderWithBackButton
-
-# Import EIQ calculator components
-from ui.eiq.single_product_calculator import SingleProductCalculator
-from ui.eiq.product_comparison import ProductComparisonCalculator
+from common.styles import MARGIN_LARGE, SPACING_MEDIUM
+from common.widgets import HeaderWithBackButton
+from eiq_calculator.single_product_calculator import SingleProductCalculator
+from eiq_calculator.product_comparison import ProductComparisonCalculator
 
 
 class EiqCalculatorPage(QWidget):

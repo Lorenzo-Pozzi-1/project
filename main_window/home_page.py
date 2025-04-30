@@ -12,11 +12,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 
-from ui.common.styles import (
-    get_title_font, get_body_font, get_subtitle_font, PRIMARY_COLOR, 
-    MARGIN_LARGE, SPACING_LARGE, SECONDARY_COLOR, YELLOW_BAR_STYLE
-)
-from ui.common.widgets import FeatureButton, ContentFrame
+from common.styles import get_title_font, get_body_font, get_subtitle_font, PRIMARY_COLOR, MARGIN_LARGE, SPACING_LARGE, SECONDARY_COLOR, YELLOW_BAR_STYLE
+from common.widgets import FeatureButton, ContentFrame
 
 
 class HomePage(QWidget):

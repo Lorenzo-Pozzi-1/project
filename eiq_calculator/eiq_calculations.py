@@ -5,7 +5,7 @@ This module provides functions for calculating Environmental Impact Quotients
 (EIQ) for pesticide products and applications.
 """
 
-from ui.eiq.eiq_conversions import convert_application_rate, convert_eiq_units
+from eiq_calculator.eiq_conversions import convert_application_rate, convert_eiq_units
 
 def calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications=1):
     """

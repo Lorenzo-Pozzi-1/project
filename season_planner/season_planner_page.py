@@ -9,11 +9,9 @@ or from a previous year's plan.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QStackedWidget, QLabel
 from PySide6.QtCore import Qt
 
-from ui.common.styles import (
-    MARGIN_LARGE, SPACING_LARGE, get_subtitle_font, get_body_font
-)
-from ui.common.widgets import HeaderWithBackButton, FeatureButton, ContentFrame
-from ui.season_planner.new_season_page import NewSeasonPage
+from common.styles import MARGIN_LARGE, SPACING_LARGE, get_subtitle_font, get_body_font
+from common.widgets import HeaderWithBackButton, FeatureButton, ContentFrame
+from season_planner.new_season_page import NewSeasonPage
 
 class SeasonPlannerPage(QWidget):
     """

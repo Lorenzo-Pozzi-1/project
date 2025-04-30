@@ -11,11 +11,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, Signal
 
-from ui.common.styles import (
-    MARGIN_LARGE, SPACING_LARGE, get_subtitle_font, get_body_font,
-    PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
-)
-from ui.common.widgets import HeaderWithBackButton, ContentFrame
+from common.styles import MARGIN_LARGE, SPACING_LARGE, get_subtitle_font, get_body_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
+from common.widgets import HeaderWithBackButton, ContentFrame
 
 class NewSeasonPage(QWidget):
     """

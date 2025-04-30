@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QSizePolicy, QWidget, QTableWidget, QTableWidgetItem, QSpacerItem
 )
 
-from ui.common.styles import (
+from common.styles import (
     PRIMARY_COLOR, WHITE, FEATURE_BUTTON_STYLE, PRIMARY_BUTTON_STYLE,
     SECONDARY_BUTTON_STYLE, get_title_font, get_body_font, 
     MARGIN_MEDIUM, SPACING_MEDIUM

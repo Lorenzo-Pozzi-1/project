@@ -11,12 +11,12 @@ from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon, QFontDatabase
 
-from ui.home_page import HomePage
-from ui.products_page.products_page import ProductsPage
-from ui.season_planner.season_planner_page import SeasonPlannerPage
-from ui.eiq.eiq_calculator_page import EiqCalculatorPage
-from ui.common.styles import YELLOW_BAR_STYLE, setup_app_palette
-from data.products_data import DB_FILE  # Import the database file path
+from main_window.home_page import HomePage
+from products.products_page import ProductsPage
+from season_planner.season_planner_page import SeasonPlannerPage
+from eiq_calculator.eiq_calculator_page import EiqCalculatorPage
+from common.styles import YELLOW_BAR_STYLE, setup_app_palette
+from data.products_data import DB_FILE
 
 
 class MainWindow(QMainWindow):

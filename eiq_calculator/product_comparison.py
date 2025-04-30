@@ -13,21 +13,11 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QBrush
 
-from ui.common.styles import (
-    get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE,
-)
-from ui.common.widgets import ContentFrame
-
-from ui.eiq.eiq_ui_components import (
-    get_products_from_csv, ColorCodedEiqItem
-)
-from ui.eiq.eiq_calculations import (
-    calculate_product_field_eiq, format_eiq_result
-)
-from ui.eiq.eiq_conversions import (
-    convert_concentration_to_percent, convert_concentration_to_decimal,
-    APPLICATION_RATE_CONVERSION
-)
+from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
+from common.widgets import ContentFrame
+from eiq_calculator.eiq_ui_components import get_products_from_csv, ColorCodedEiqItem
+from eiq_calculator.eiq_calculations import calculate_product_field_eiq, format_eiq_result
+from eiq_calculator.eiq_conversions import convert_concentration_to_percent, convert_concentration_to_decimal, APPLICATION_RATE_CONVERSION
 
 
 class ProductComparisonCalculator(QWidget):

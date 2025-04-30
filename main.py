@@ -11,11 +11,8 @@ import os
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QDir
 
-# Import the MainWindow from the UI module
-from ui.main_window import MainWindow
-
-# Import utility functions
-from utils.config import load_config
+from main_window.main_window import MainWindow
+from common.config_utils import load_config
 
 # Clear the terminal screen for a clean start
 print("\033c", end="")
