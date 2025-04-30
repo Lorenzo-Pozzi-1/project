@@ -6,7 +6,7 @@ active ingredient concentrations, and other units used in EIQ calculations.
 """
 
 # Application rate conversion factors to lb/acre (standard for EIQ calculation)
-APPLICATION_RATE_CONVERSION = {
+APPLICATION_RATE_CONVERSION = {                 # CHECK WITH PAPER NOTES AND UPDATE, MANAGE SEEDS AND AMMONT/LENGTH 
     # Imperial units to lb/acre
     "lbs/acre": 1.0,      # Base unit
     "oz/acre": 1/16.0,    # 16 oz = 1 pound
@@ -26,10 +26,8 @@ APPLICATION_RATE_CONVERSION = {
 CONCENTRATION_CONVERSION = {
     "%": 0.01,            # Direct percentage (e.g., 50% = 0.5)
     "g/l": 0.001,         # Approximate conversion (e.g., 500 g/L ≈ 0.5 or 50%)
-    "g/kg": 0.001,        # Direct conversion (e.g., 500 g/kg = 0.5 or 50%)
-    "ppm": 0.000001,      # Parts per million (e.g., 1000 ppm = 0.001 or 0.1%)
-    "w/w": 1.0,           # Already in decimal form (e.g., 0.5 w/w = 0.5 or 50%)
-    "w/v": 1.0,           # Already in decimal form (e.g., 0.5 w/v = 0.5 or 50%)
+    "lb/gal": 0.00834      # Approximate conversion (e.g., 8.34 lb/gal ≈ 0.5 or 50%)     CHECK THIS
+    # CFU / ML ??????????
 }
 
 def convert_application_rate(rate, from_unit, to_unit="lbs/acre"):
