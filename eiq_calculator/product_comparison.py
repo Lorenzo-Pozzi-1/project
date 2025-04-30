@@ -92,12 +92,6 @@ class ProductComparisonCalculator(QWidget):
         results_title.setFont(get_subtitle_font(size=16))
         results_layout.addWidget(results_title)
         
-        # Manual Calculate button - still available but not strictly necessary anymore
-        calculate_button = QPushButton("Recalculate All Values")
-        calculate_button.setStyleSheet(SECONDARY_BUTTON_STYLE)  # Changed to secondary style
-        calculate_button.clicked.connect(self.calculate_comparison)
-        results_layout.addWidget(calculate_button)
-        
         # Results table
         self.comparison_results_table = QTableWidget(0, 3)
         self.comparison_results_table.setHorizontalHeaderLabels([
@@ -202,7 +196,7 @@ class ProductComparisonCalculator(QWidget):
             self.add_product_row()
             
         # Update results after removing rows
-        self.calculate_comparison()
+        self.refresh_all_calculations()
     
     def update_product_combo(self, row):
         """Update the product combo box based on the selected product type."""
@@ -451,7 +445,7 @@ class ProductComparisonCalculator(QWidget):
         )
         self.comparison_results_table.setItem(found_row, 2, eiq_ha_item)
     
-    def calculate_comparison(self):
+    def refresh_all_calculations(self):
         """Calculate and display EIQ comparison results for all rows."""
         # Clear the results table
         self.comparison_results_table.setRowCount(0)
