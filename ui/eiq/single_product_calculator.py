@@ -3,7 +3,7 @@ Single Product EIQ Calculator for the LORENZO POZZI Pesticide App.
 
 This module provides the SingleProductCalculator widget for calculating EIQ
 of a single pesticide product with search and suggestions functionality.
-It supports displaying multiple active ingredients (up to 4).
+It supports displaying multiple active ingredients (up to 4) with improved UOM handling.
 """
 
 from PySide6.QtWidgets import (
@@ -20,9 +20,9 @@ from ui.common.widgets import ContentFrame
 
 # Import common utilities and components from consolidated module
 from ui.eiq.eiq_utils_and_components import (
-    get_products_from_csv, get_product_info, calculate_field_eiq,
-    calculate_product_field_eiq, ProductSearchField, EiqResultDisplay,
-    convert_concentration_to_percent
+    get_products_from_csv, get_product_info, calculate_product_field_eiq,
+    ProductSearchField, EiqResultDisplay, convert_concentration_to_percent,
+    convert_concentration_to_decimal, APPLICATION_RATE_CONVERSION
 )
 
 
@@ -50,8 +50,6 @@ class SingleProductCalculator(QWidget):
         self.current_product = None
         
         self.setup_ui()
-        
-    # Removed the local _convert_concentration_to_percent method as we now use the centralized one
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -113,15 +111,13 @@ class SingleProductCalculator(QWidget):
         self.rate_spin = QDoubleSpinBox()
         self.rate_spin.setRange(0.0, 9999.99)
         self.rate_spin.setValue(0.0)
+        self.rate_spin.setDecimals(2)
         self.rate_spin.valueChanged.connect(self.calculate_single_eiq)
         
         # Unit of measure selection for application rate
         self.rate_unit_combo = QComboBox()
-        self.rate_unit_combo.addItems([
-            "kg/ha", "g/ha", "l/ha", "ml/ha", 
-            "lbs/acre", "oz/acre", "fl oz/acre", "gal/acre", 
-            "pints/acre", "quarts/acre"
-        ])
+        # Populate with sorted options from the APPLICATION_RATE_CONVERSION dictionary
+        self.rate_unit_combo.addItems(sorted(APPLICATION_RATE_CONVERSION.keys()))
         self.rate_unit_combo.setFont(get_body_font())
         self.rate_unit_combo.currentIndexChanged.connect(self.calculate_single_eiq)
         
@@ -191,7 +187,7 @@ class SingleProductCalculator(QWidget):
                 # Reset fields
                 self.clear_ai_table()
                 self.rate_spin.setValue(0.0)
-                self.eiq_results_display.update_result(0)
+                self.eiq_results_display.update_result(0.0)
             else:
                 # Handle case where no products are loaded
                 self.product_search.setEnabled(False)
@@ -211,7 +207,7 @@ class SingleProductCalculator(QWidget):
             # Clear fields if no product is selected
             self.clear_ai_table()
             self.rate_spin.setValue(0.0)
-            self.eiq_results_display.update_result(0)
+            self.eiq_results_display.update_result(0.0)
             return
             
         try:
@@ -298,14 +294,18 @@ class SingleProductCalculator(QWidget):
                 percent_item.setTextAlignment(Qt.AlignCenter)
                 self.ai_table.setItem(i, 2, percent_item)
             
-            # Update application rate
-            self.rate_spin.setValue(self.current_product.label_maximum_rate or 
-                                    self.current_product.label_minimum_rate or 0.0)
+            # Update application rate with max rate from product data
+            if self.current_product.label_maximum_rate is not None:
+                self.rate_spin.setValue(self.current_product.label_maximum_rate)
+            elif self.current_product.label_minimum_rate is not None:
+                self.rate_spin.setValue(self.current_product.label_minimum_rate)
+            else:
+                self.rate_spin.setValue(0.0)
             
-            # Try to set rate unit if available in product data
-            unit = self.current_product.rate_uom or ""
-            if unit:
-                index = self.rate_unit_combo.findText(unit)
+            # Set rate unit to match product's UOM
+            rate_unit = self.current_product.rate_uom
+            if rate_unit and rate_unit in APPLICATION_RATE_CONVERSION:
+                index = self.rate_unit_combo.findText(rate_unit)
                 if index >= 0:
                     self.rate_unit_combo.setCurrentIndex(index)
             
@@ -317,11 +317,12 @@ class SingleProductCalculator(QWidget):
             # Clear fields on error
             self.clear_ai_table()
             self.rate_spin.setValue(0.0)
-            self.eiq_results_display.update_result(0)
+            self.eiq_results_display.update_result(0.0)
     
     def calculate_single_eiq(self):
         """Calculate the Field EIQ for a single product."""
         if not self.current_product or self.ai_table.rowCount() == 0:
+            self.eiq_results_display.update_result(0.0)
             return
             
         try:
@@ -337,15 +338,22 @@ class SingleProductCalculator(QWidget):
                 if not eiq_item or not percent_item or eiq_item.text() == "--" or percent_item.text() == "--":
                     continue
                 
+                # Extract percent value without '%' sign if present
+                percent_text = percent_item.text()
+                if "%" in percent_text:
+                    percent_value = float(percent_text.replace("%", "").strip())
+                else:
+                    percent_value = float(percent_text)
+                
                 active_ingredients.append({
                     'name': name_item.text() if name_item else "",
-                    'eiq': eiq_item.text(),
-                    'percent': percent_item.text()
+                    'eiq': float(eiq_item.text()),
+                    'percent': percent_value
                 })
             
             # Get application parameters
             rate = self.rate_spin.value()
-            applications = self.applications_spin.value()
+            applications = int(self.applications_spin.value())
             unit = self.rate_unit_combo.currentText()
             
             # Calculate total Field EIQ using the improved function
@@ -357,4 +365,4 @@ class SingleProductCalculator(QWidget):
             
         except (ValueError, ZeroDivisionError, AttributeError) as e:
             print(f"Error calculating EIQ: {e}")
-            self.eiq_results_display.update_result(0)
+            self.eiq_results_display.update_result(0.0)

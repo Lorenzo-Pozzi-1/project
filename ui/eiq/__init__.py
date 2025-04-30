@@ -10,7 +10,9 @@ from ui.eiq.single_product_calculator import SingleProductCalculator
 from ui.eiq.product_comparison import ProductComparisonCalculator
 from ui.eiq.eiq_utils_and_components import (
     calculate_field_eiq, calculate_product_field_eiq, 
-    format_eiq_result, get_impact_category, convert_concentration_to_percent
+    format_eiq_result, get_impact_category, convert_concentration_to_percent,
+    convert_application_rate, convert_concentration_to_decimal, convert_eiq_units,
+    APPLICATION_RATE_CONVERSION, CONCENTRATION_CONVERSION
 )
 
 __all__ = [
@@ -21,5 +23,10 @@ __all__ = [
     'calculate_product_field_eiq',
     'format_eiq_result',
     'get_impact_category',
-    'convert_concentration_to_percent'
+    'convert_concentration_to_percent',
+    'convert_application_rate',
+    'convert_concentration_to_decimal',
+    'convert_eiq_units',
+    'APPLICATION_RATE_CONVERSION',
+    'CONCENTRATION_CONVERSION'
 ]

@@ -2,7 +2,7 @@
 Product Comparison Calculator for the LORENZO POZZI Pesticide App.
 
 This module provides the ProductComparisonCalculator widget for comparing EIQ
-values of multiple pesticide products. Features real-time calculation updates.
+values of multiple pesticide products with improved UOM management.
 """
 
 from PySide6.QtWidgets import (
@@ -20,8 +20,9 @@ from ui.common.widgets import ContentFrame
 
 # Import shared EIQ utilities and components
 from ui.eiq.eiq_utils_and_components import (
-    get_products_from_csv, calculate_field_eiq, calculate_product_field_eiq,
-    ColorCodedEiqItem, format_eiq_result, convert_concentration_to_percent
+    get_products_from_csv, calculate_product_field_eiq,
+    ColorCodedEiqItem, format_eiq_result, convert_concentration_to_percent,
+    convert_concentration_to_decimal, APPLICATION_RATE_CONVERSION
 )
 
 
@@ -157,17 +158,15 @@ class ProductComparisonCalculator(QWidget):
         rate_spin = QDoubleSpinBox()
         rate_spin.setRange(0.0, 9999.99)
         rate_spin.setValue(0.0)
+        rate_spin.setDecimals(2)
         # Connect to real-time calculation
         rate_spin.valueChanged.connect(lambda value, r=row: self.calculate_single_row(r))
         self.comparison_selection_table.setCellWidget(row, 3, rate_spin)
         
         # Unit combo box
         unit_combo = QComboBox()
-        unit_combo.addItems([
-            "kg/ha", "g/ha", "l/ha", "ml/ha", 
-            "lbs/acre", "oz/acre", "fl oz/acre", "gal/acre", 
-            "pints/acre", "quarts/acre"
-        ])
+        # Use the units from APPLICATION_RATE_CONVERSION
+        unit_combo.addItems(sorted(APPLICATION_RATE_CONVERSION.keys()))
         # Connect to real-time calculation
         unit_combo.currentIndexChanged.connect(lambda idx, r=row: self.calculate_single_row(r))
         self.comparison_selection_table.setCellWidget(row, 4, unit_combo)
@@ -326,13 +325,17 @@ class ProductComparisonCalculator(QWidget):
                 ai_display = ", ".join(product.active_ingredients) if product.active_ingredients else "None"
                 self.comparison_selection_table.item(row, 2).setText(ai_display)
                 
-                # Update application rate
+                # Update application rate with max rate from product data
                 rate_spin = self.comparison_selection_table.cellWidget(row, 3)
                 if rate_spin:
-                    rate_spin.setValue( product.label_maximum_rate or 
-                                        product.label_minimum_rate or 0.0)
+                    if product.label_maximum_rate is not None:
+                        rate_spin.setValue(product.label_maximum_rate)
+                    elif product.label_minimum_rate is not None:
+                        rate_spin.setValue(product.label_minimum_rate)
+                    else:
+                        rate_spin.setValue(0.0)
                 
-                # Try to set rate unit if available in product data
+                # Set rate unit to match product's UOM
                 unit_combo = self.comparison_selection_table.cellWidget(row, 4)
                 if unit_combo and product.rate_uom:
                     index = unit_combo.findText(product.rate_uom)
@@ -381,7 +384,7 @@ class ProductComparisonCalculator(QWidget):
             
             rate = rate_spin.value() if rate_spin else 0.0
             unit = unit_combo.currentText() if unit_combo else "lbs/acre"
-            applications = apps_spin.value() if apps_spin else 1
+            applications = int(apps_spin.value()) if apps_spin else 1
             
             # Calculate total Field EIQ using the improved function
             total_field_eiq = calculate_product_field_eiq(
@@ -402,7 +405,7 @@ class ProductComparisonCalculator(QWidget):
         """
         Update the results table for a specific row.
         """
-        if not self.products_data[selection_row]["product"]:
+        if not 0 <= selection_row < len(self.products_data) or not self.products_data[selection_row]["product"]:
             # Find and remove any existing results for this row
             for r in range(self.comparison_results_table.rowCount()):
                 if r < self.comparison_results_table.rowCount():
