@@ -111,7 +111,7 @@ class SingleProductCalculator(QWidget):
         rate_layout = QHBoxLayout()
         
         self.rate_spin = QDoubleSpinBox()
-        self.rate_spin.setRange(0.01, 100.0)
+        self.rate_spin.setRange(0.0, 9999.99)
         self.rate_spin.setValue(0.0)
         self.rate_spin.valueChanged.connect(self.calculate_single_eiq)
         
@@ -300,7 +300,6 @@ class SingleProductCalculator(QWidget):
             
             # Update application rate
             self.rate_spin.setValue(self.current_product.label_maximum_rate or 
-                                    self.current_product.label_suggested_rate or 
                                     self.current_product.label_minimum_rate or 0.0)
             
             # Try to set rate unit if available in product data

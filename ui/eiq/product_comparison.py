@@ -155,7 +155,7 @@ class ProductComparisonCalculator(QWidget):
         
         # Application rate spinner
         rate_spin = QDoubleSpinBox()
-        rate_spin.setRange(0.01, 100.0)
+        rate_spin.setRange(0.0, 9999.99)
         rate_spin.setValue(0.0)
         # Connect to real-time calculation
         rate_spin.valueChanged.connect(lambda value, r=row: self.calculate_single_row(r))
@@ -330,7 +330,6 @@ class ProductComparisonCalculator(QWidget):
                 rate_spin = self.comparison_selection_table.cellWidget(row, 3)
                 if rate_spin:
                     rate_spin.setValue( product.label_maximum_rate or 
-                                        product.label_suggested_rate or 
                                         product.label_minimum_rate or 0.0)
                 
                 # Try to set rate unit if available in product data
