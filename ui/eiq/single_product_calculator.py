@@ -18,11 +18,13 @@ from ui.common.styles import (
 )
 from ui.common.widgets import ContentFrame
 
-# Import common utilities and components from consolidated module
-from ui.eiq.eiq_utils_and_components import (
-    get_products_from_csv, get_product_info, calculate_product_field_eiq,
-    ProductSearchField, EiqResultDisplay, convert_concentration_to_percent,
-    convert_concentration_to_decimal, APPLICATION_RATE_CONVERSION
+from ui.eiq.eiq_ui_components import (
+    get_products_from_csv, get_product_info, ProductSearchField, EiqResultDisplay
+)
+from ui.eiq.eiq_calculations import calculate_product_field_eiq
+from ui.eiq.eiq_conversions import (
+    convert_concentration_to_percent, convert_concentration_to_decimal, 
+    APPLICATION_RATE_CONVERSION
 )
 
 

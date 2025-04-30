@@ -18,11 +18,15 @@ from ui.common.styles import (
 )
 from ui.common.widgets import ContentFrame
 
-# Import shared EIQ utilities and components
-from ui.eiq.eiq_utils_and_components import (
-    get_products_from_csv, calculate_product_field_eiq,
-    ColorCodedEiqItem, format_eiq_result, convert_concentration_to_percent,
-    convert_concentration_to_decimal, APPLICATION_RATE_CONVERSION
+from ui.eiq.eiq_ui_components import (
+    get_products_from_csv, ColorCodedEiqItem
+)
+from ui.eiq.eiq_calculations import (
+    calculate_product_field_eiq, format_eiq_result
+)
+from ui.eiq.eiq_conversions import (
+    convert_concentration_to_percent, convert_concentration_to_decimal,
+    APPLICATION_RATE_CONVERSION
 )
 
 
