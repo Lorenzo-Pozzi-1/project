@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         # Set window properties
         self.setWindowTitle("LORENZO POZZI Pesticide App")
         self.setMinimumSize(900, 700)
+        self.showMaximized()
         
         # Set window icon (if available)
         icon_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "icon.png")

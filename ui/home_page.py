@@ -100,19 +100,29 @@ class HomePage(QWidget):
         
         main_layout.addLayout(buttons_layout)
         
-        # Warning section and EIQ info section at the bottom
-        info_frame = ContentFrame()
-        info_layout = QVBoxLayout()
+        # Add a spacer before the info frames for better proportions
+        main_layout.addStretch(1)
         
-        # Warning title - make it more visible with improved styling
+        # Warning section in its own frame
+        warning_frame = ContentFrame()
+        warning_layout = QVBoxLayout()
+        
+        # Warning title with improved styling
         warning_title = QLabel("! Always check products' labels !") 
-        warning_title.setFont(get_subtitle_font(size=20))  # Reduced size for better proportions
+        warning_title.setFont(get_subtitle_font(size=20))
         warning_title.setStyleSheet("color: red; font-weight: bold; background-color: #FFEEEE; border: 2px solid red; border-radius: 5px; padding: 5px;")
         warning_title.setAlignment(Qt.AlignCenter)
-        info_layout.addWidget(warning_title)
+        warning_layout.addWidget(warning_title)
         
-        # Add some space between warning and EIQ info
-        info_layout.addSpacing(15)
+        warning_frame.layout.addLayout(warning_layout)
+        main_layout.addWidget(warning_frame)
+        
+        # Reduce spacing between frames
+        main_layout.addSpacing(5)
+        
+        # EIQ info section
+        info_frame = ContentFrame()
+        info_layout = QVBoxLayout()
         
         # EIQ info title
         info_title = QLabel("About Environmental Impact Quotient (EIQ)")
@@ -136,10 +146,37 @@ class HomePage(QWidget):
         info_layout.addWidget(info_text)
         
         info_frame.layout.addLayout(info_layout)
-        
-        # Add a spacer before the info frame for better proportions
-        main_layout.addStretch(1)
         main_layout.addWidget(info_frame)
+
+        # Reduce spacing between frames
+        main_layout.addSpacing(5)
+        
+        # Add future development notes section
+        dev_notes_frame = ContentFrame()
+        dev_notes_layout = QVBoxLayout()
+        
+        # Title for the section
+        dev_notes_title = QLabel("Future Development Notes")
+        dev_notes_title.setFont(get_subtitle_font(size=16))
+        dev_notes_layout.addWidget(dev_notes_title)
+        
+        # Notes text
+        dev_notes_text = QLabel(
+            "This section contains notes for future development tasks:\n\n"
+            "• Implement multi-field seasonal planning\n"
+            "• Add reporting capabilities with PDF export\n"
+            "• Create data visualization for historical EIQ trends\n"
+            "• Add user accounts and cloud sync functionality\n"
+            "• Integrate weather data for optimal application timing\n\n"
+            "Feel free to add or modify these notes as development progresses."
+        )
+        dev_notes_text.setWordWrap(True)
+        dev_notes_text.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        dev_notes_text.setFont(get_body_font())
+        dev_notes_layout.addWidget(dev_notes_text)
+        
+        dev_notes_frame.layout.addLayout(dev_notes_layout)
+        main_layout.addWidget(dev_notes_frame)
     
     def on_country_changed(self, index):
         """Handle country selection change."""
