@@ -108,7 +108,7 @@ class HomePage(QWidget):
         warning_layout = QVBoxLayout()
         
         # Warning title with improved styling
-        warning_title = QLabel("! Always check products' labels !") 
+        warning_title = QLabel("! ALWAYS CHECK LABELS !") 
         warning_title.setFont(get_subtitle_font(size=20))
         warning_title.setStyleSheet("color: red; font-weight: bold; background-color: #FFEEEE; padding: 5px;")
         warning_title.setAlignment(Qt.AlignCenter)
