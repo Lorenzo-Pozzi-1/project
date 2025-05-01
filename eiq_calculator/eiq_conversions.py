@@ -5,29 +5,46 @@ This module provides conversion functions for application rates,
 active ingredient concentrations, and other units used in EIQ calculations.
 """
 
-# Application rate conversion factors to lb/acre (standard for EIQ calculation)
-APPLICATION_RATE_CONVERSION = {                 # CHECK WITH PAPER NOTES AND UPDATE, MANAGE SEEDS AND AMMONT/LENGTH 
-    # Imperial units to lb/acre
-    "lbs/acre": 1.0,      # Base unit
-    "oz/acre": 1/16.0,    # 16 oz = 1 pound
-    "fl oz/acre": 1/16.0, # Assuming density of 1.0 for liquids
-    "pints/acre": 1.0,    # Assumption: 1 pint = 1 pound
-    "quarts/acre": 2.0,   # Assumption: 1 quart = 2 pounds
-    "gal/acre": 8.0,      # Assumption: 1 gallon = 8 pounds
+# Application rate conversion factors to kg/ha or l/ha (! incoherent when multiplied by [EIQ/lb of AI] !)
+APPLICATION_RATE_CONVERSION = {    # CHECK WITH PAPER NOTES AND UPDATE, MANAGE SEEDS AND AMMOUNT/LENGTH 
+    # Imperial
+    "lbs/acre"   : 1.121,     # to kg/ha
+    "oz/acre"    : 70.05,     # to kg/ha
+    "fl oz/acre" : 0.0730778, # to l/ha
+    "pt/acre"    : 1.16924,   # to l/ha
+    "qt/acre"    : 2.33849,   # to l/ha
+    "gal/acre"   : 11.2336,   # to l/ha
     
-    # Metric units to lb/acre
-    "kg/ha": 0.892,       # 1 kg/ha = 0.892 lbs/acre
-    "g/ha": 0.000892,     # 1 g/ha = 0.000892 lbs/acre
-    "l/ha": 0.892,        # Assumption: 1 L/ha = 0.892 lbs/acre (density of 1.0)
-    "ml/ha": 0.000892,    # 1 ml/ha = 0.000892 lbs/acre (density of 1.0)
+    # Metric
+    "kg/ha": 1,     # to kg/ha
+    "g/ha" : 0.001, # to kg/ha
+    "l/ha" : 1,     # to l/ha
+    "ml/ha": 0.001, # to l/ha
+
+    # silly
+    "fl oz/100 gal": 0.0, # CHECK
+    "ml/acre"      : 0.00247105, # to l/ha
+    
+    # Seed treatments
+    "fl oz/cwt" : 0.0, # CHECK
+    "oz/cwt"    : 0.0, # CHECK
+    "g/cwt"     : 0.0, # CHECK
+    "lb/cwt"    : 0.0, # CHECK
+    "ml/100 kg" : 0.0, # CHECK
+    "oz/100 gal": 0.0, # CHECK-----
+
+    # Linear
+    "fl oz/1000 ft": 0.0, # CHECK
+    "ml/100 m"     : 0.0, # CHECK
+    "oz/1000 ft"   : 0.0, # CHECK
 }
 
-# AI concentration conversion factors to decimal (for percentage calculations)
+# AI concentration conversion factors to metric
 CONCENTRATION_CONVERSION = {
-    "%": 0.01,            # Direct percentage (e.g., 50% = 0.5)
-    "g/l": 0.001,         # Approximate conversion (e.g., 500 g/L ≈ 0.5 or 50%)
-    "lb/gal": 0.00834      # Approximate conversion (e.g., 8.34 lb/gal ≈ 0.5 or 50%)     CHECK THIS
-    # CFU / ML ??????????
+    "%"     : 0.0, # CHECK
+    "g/l"   : 0.0, # CHECK
+    "lb/gal": 0.0, # CHECK
+    "cgu/ml": 0.0  # CHECK
 }
 
 def convert_application_rate(rate, from_unit, to_unit="lbs/acre"):

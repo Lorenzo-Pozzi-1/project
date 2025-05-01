@@ -153,14 +153,14 @@ class HomePage(QWidget):
         dev_notes_layout = QVBoxLayout()
         
         # Title for the section
-        dev_notes_title = QLabel("Future Development Notes")
+        dev_notes_title = QLabel("Future Development TO-DOs")
         dev_notes_title.setFont(get_subtitle_font(size=16))
         dev_notes_layout.addWidget(dev_notes_title)
         
         # Notes text
         dev_notes_text = QLabel(
-            "Notes for future development TO-DOs:\n\n"
-            "• check UOM\n"
+            "• UOM INCOHERENCY: CORNELL GIVES [EIQ/lb of AI], AND WE ARE DOING [kg of AI/ha] * [EIQ/lb of AI]\n"
+            "• CURRENTLY CALCULATING SEED TREATMENTS AS 0, NEED TO SOLVE ISSUE WITH HOW MUCH AI IS PICKED UP FROM SOAKING IN SOLUTIONS (e.g. AGRI-MYCIN 17)\n"
             "• mange UOM for ammount/length and seed treatments\n"
             "• past season data import\n"
             "• develop season planner"
