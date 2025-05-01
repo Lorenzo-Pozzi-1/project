@@ -159,6 +159,7 @@ class HomePage(QWidget):
         
         # Notes text
         dev_notes_text = QLabel(
+            "• AIs functional group, currently missing: not provided by GXCore\n"
             "• UOM INCOHERENCY: CORNELL GIVES [EIQ/lb of AI], AND WE ARE DOING [kg of AI/ha] * [EIQ/lb of AI]\n"
             "• CURRENTLY CALCULATING SEED TREATMENTS AS 0, NEED TO SOLVE ISSUE WITH HOW MUCH AI IS PICKED UP FROM SOAKING IN SOLUTIONS (e.g. AGRI-MYCIN 17)\n"
             "• product types: field fungicides and herbicides have different types (XX inches spacing, pre-post-etc emergence), this must be addressed\n"
