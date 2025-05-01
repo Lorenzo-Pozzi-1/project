@@ -45,7 +45,7 @@ UOM_DATA = {
     "g/l": {"category": "concentration", "factor": 0.001, "standard": "decimal"},        # 1 g/l = 0.001 kg/l
     "lb/gal": {"category": "concentration", "factor": 0.119826, "standard": "decimal"},  # 1 lb/gal = 0.119826 kg/l
     "g/kg": {"category": "concentration", "factor": 0.001, "standard": "decimal"},       # 1 g/kg = 0.001 kg/kg
-    "cgu/ml": {"category": "concentration", "factor": 0.0, "standard": "decimal"},       # Placeholder
+    "cfu/ml": {"category": "concentration", "factor": 0.0, "standard": "decimal"},       # Placeholder
 }
 
 # For backward compatibility, create APPLICATION_RATE_CONVERSION from the unified structure
