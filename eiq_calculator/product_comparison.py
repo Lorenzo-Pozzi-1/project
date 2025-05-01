@@ -348,6 +348,7 @@ class ProductComparisonCalculator(QWidget):
         """
         Calculate EIQ for a single row and update the results table.
         This enables real-time updates for each product individually.
+        Uses improved UOM handling for consistent calculations.
         """
         # Only process if the row exists in our data structure
         if not (0 <= row < len(self.products_data)):
@@ -374,15 +375,17 @@ class ProductComparisonCalculator(QWidget):
             unit = unit_combo.currentText() if unit_combo else "lbs/acre"
             applications = int(apps_spin.value()) if apps_spin else 1
             
-            # Calculate total Field EIQ using the improved function
+            # Calculate total Field EIQ using the improved function with proper UOM handling
+            # This now uses our enhanced standardize_eiq_calculation under the hood
             total_field_eiq = calculate_product_field_eiq(
                 active_ingredients, rate, unit, applications)
             
-            # Calculate hectare value (1 hectare = 2.47 acres)
-            field_eiq_per_ha = total_field_eiq * 2.47
+            # For the comparison table, we prefer to show per-ha values as the primary metric
+            # But also calculate per-acre for display
+            field_eiq_per_acre = total_field_eiq / 2.47  # Convert ha to acre
             
             # Update the results table for this row
-            self.update_results_for_row(row, total_field_eiq, field_eiq_per_ha)
+            self.update_results_for_row(row, field_eiq_per_acre, total_field_eiq)
             
         except (ValueError, ZeroDivisionError, AttributeError) as e:
             print(f"Error calculating EIQ for row {row}: {e}")

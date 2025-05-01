@@ -15,6 +15,7 @@ from eiq_calculator.eiq_calculations import (
 from eiq_calculator.eiq_conversions import (
     convert_concentration_to_percent, convert_application_rate,
     convert_concentration_to_decimal, convert_eiq_units,
+    standardize_eiq_calculation, convert_eiq_to_metric,
     APPLICATION_RATE_CONVERSION, CONCENTRATION_CONVERSION
 )
 from eiq_calculator.eiq_ui_components import (
@@ -34,6 +35,8 @@ __all__ = [
     'convert_application_rate',
     'convert_concentration_to_decimal',
     'convert_eiq_units',
+    'standardize_eiq_calculation',
+    'convert_eiq_to_metric',
     'APPLICATION_RATE_CONVERSION',
     'CONCENTRATION_CONVERSION',
     'ProductSearchField',

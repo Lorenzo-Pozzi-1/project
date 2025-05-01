@@ -314,7 +314,7 @@ class SingleProductCalculator(QWidget):
             self.eiq_results_display.update_result(0.0)
     
     def calculate_single_eiq(self):
-        """Calculate the Field EIQ for a single product."""
+        """Calculate the Field EIQ for a single product with improved UOM handling."""
         if not self.current_product or self.ai_table.rowCount() == 0:
             self.eiq_results_display.update_result(0.0)
             return
@@ -350,7 +350,8 @@ class SingleProductCalculator(QWidget):
             applications = int(self.applications_spin.value())
             unit = self.rate_unit_combo.currentText()
             
-            # Calculate total Field EIQ using the improved function
+            # Calculate total Field EIQ using the improved function with proper UOM handling
+            # This now uses our enhanced standardize_eiq_calculation under the hood
             total_field_eiq = calculate_product_field_eiq(
                 active_ingredients, rate, unit, applications)
             

@@ -1,86 +1,209 @@
 """
-EIQ Unit Conversion Utilities for the LORENZO POZZI Pesticide App.
+Enhanced EIQ Unit Conversion Utilities for the LORENZO POZZI Pesticide App.
 
-This module provides conversion functions for application rates, 
+This module provides improved conversion functions for application rates, 
 active ingredient concentrations, and other units used in EIQ calculations.
+Uses a single unified data structure for UOM classification and conversion factors.
 """
 
-# Application rate conversion factors to kg/ha or l/ha (! incoherent when multiplied by [EIQ/lb of AI] !)
-APPLICATION_RATE_CONVERSION = {    # CHECK WITH PAPER NOTES AND UPDATE, MANAGE SEEDS AND AMMOUNT/LENGTH 
-    # Imperial
-    "lbs/acre"   : 1.121,     # to kg/ha
-    "oz/acre"    : 70.05,     # to kg/ha
-    "fl oz/acre" : 0.0730778, # to l/ha
-    "pt/acre"    : 1.16924,   # to l/ha
-    "qt/acre"    : 2.33849,   # to l/ha
-    "gal/acre"   : 11.2336,   # to l/ha
+# Unified UOM data structure
+# Each UOM has its category and conversion factor to the standard unit for that category
+UOM_DATA = {
+    # Weight-based application rates (standard: kg/ha)
+    "lbs/acre": {"category": "weight", "factor": 1.12085, "standard": "kg/ha"},  # 1 lb/acre = 1.12085 kg/ha
+    "oz/acre": {"category": "weight", "factor": 0.070053, "standard": "kg/ha"},  # 1 oz/acre = 0.070053 kg/ha
+    "kg/ha": {"category": "weight", "factor": 1.0, "standard": "kg/ha"},         # Already in standard unit
+    "g/ha": {"category": "weight", "factor": 0.001, "standard": "kg/ha"},        # 1 g/ha = 0.001 kg/ha
     
-    # Metric
-    "kg/ha": 1,     # to kg/ha
-    "g/ha" : 0.001, # to kg/ha
-    "l/ha" : 1,     # to l/ha
-    "ml/ha": 0.001, # to l/ha
-
-    # silly
-    "fl oz/100 gal": 0.0, # CHECK
-    "ml/acre"      : 0.00247105, # to l/ha
+    # Volume-based application rates (standard: l/ha)
+    "fl oz/acre": {"category": "volume", "factor": 0.073078, "standard": "l/ha"},  # 1 fl oz/acre = 0.073078 l/ha
+    "pt/acre": {"category": "volume", "factor": 1.16924, "standard": "l/ha"},      # 1 pt/acre = 1.16924 l/ha
+    "qt/acre": {"category": "volume", "factor": 2.33849, "standard": "l/ha"},      # 1 qt/acre = 2.33849 l/ha
+    "gal/acre": {"category": "volume", "factor": 9.35396, "standard": "l/ha"},     # 1 gal/acre = 9.35396 l/ha
+    "l/ha": {"category": "volume", "factor": 1.0, "standard": "l/ha"},             # Already in standard unit
+    "ml/ha": {"category": "volume", "factor": 0.001, "standard": "l/ha"},          # 1 ml/ha = 0.001 l/ha
+    "ml/acre": {"category": "volume", "factor": 0.00247105, "standard": "l/ha"},   # ml/acre to l/ha
     
-    # Seed treatments
-    "fl oz/cwt" : 0.0, # CHECK
-    "oz/cwt"    : 0.0, # CHECK
-    "g/cwt"     : 0.0, # CHECK
-    "lb/cwt"    : 0.0, # CHECK
-    "ml/100 kg" : 0.0, # CHECK
-    "oz/100 gal": 0.0, # CHECK-----
-
-    # Linear
-    "fl oz/1000 ft": 0.0, # CHECK
-    "ml/100 m"     : 0.0, # CHECK
-    "oz/1000 ft"   : 0.0, # CHECK
+    # Miscellaneous (to be properly categorized)
+    "fl oz/100 gal": {"category": "misc", "factor": 0.0, "standard": "misc"},  # Placeholder
+    
+    # Seed treatments (standard: kg/100kg seed)
+    "fl oz/cwt": {"category": "seed", "factor": 0.0, "standard": "kg/100kg"},  # Placeholder
+    "oz/cwt": {"category": "seed", "factor": 0.0, "standard": "kg/100kg"},     # Placeholder
+    "g/cwt": {"category": "seed", "factor": 0.0, "standard": "kg/100kg"},      # Placeholder
+    "lb/cwt": {"category": "seed", "factor": 0.0, "standard": "kg/100kg"},     # Placeholder
+    "ml/100 kg": {"category": "seed", "factor": 0.0, "standard": "kg/100kg"},  # Placeholder
+    "oz/100 gal": {"category": "seed", "factor": 0.0, "standard": "kg/100kg"}, # Placeholder
+    
+    # Linear application rates (standard: kg/100m)
+    "fl oz/1000 ft": {"category": "linear", "factor": 0.0, "standard": "kg/100m"},  # Placeholder
+    "ml/100 m": {"category": "linear", "factor": 0.0, "standard": "kg/100m"},       # Placeholder
+    "oz/1000 ft": {"category": "linear", "factor": 0.0, "standard": "kg/100m"},     # Placeholder
+    
+    # Concentration units (all convert to decimal 0-1)
+    "%": {"category": "concentration", "factor": 0.01, "standard": "decimal"},           # 1% = 0.01 decimal
+    "g/l": {"category": "concentration", "factor": 0.001, "standard": "decimal"},        # 1 g/l = 0.001 kg/l
+    "lb/gal": {"category": "concentration", "factor": 0.119826, "standard": "decimal"},  # 1 lb/gal = 0.119826 kg/l
+    "g/kg": {"category": "concentration", "factor": 0.001, "standard": "decimal"},       # 1 g/kg = 0.001 kg/kg
+    "cgu/ml": {"category": "concentration", "factor": 0.0, "standard": "decimal"},       # Placeholder
 }
 
-# AI concentration conversion factors to metric
-CONCENTRATION_CONVERSION = {
-    "%"     : 0.0, # CHECK
-    "g/l"   : 0.0, # CHECK
-    "lb/gal": 0.0, # CHECK
-    "cgu/ml": 0.0  # CHECK
-}
+# For backward compatibility, create APPLICATION_RATE_CONVERSION from the unified structure
+APPLICATION_RATE_CONVERSION = {uom: data["factor"] for uom, data in UOM_DATA.items() 
+                              if data["category"] in ["weight", "volume", "seed", "linear"]}
 
-def convert_application_rate(rate, from_unit, to_unit="lbs/acre"):
+# Create CONCENTRATION_CONVERSION from the unified structure
+CONCENTRATION_CONVERSION = {uom: data["factor"] for uom, data in UOM_DATA.items() 
+                          if data["category"] == "concentration"}
+
+# UOM classification functions
+def get_uom_category(uom):
+    """
+    Get the category of a unit of measure.
+    
+    Args:
+        uom (str): Unit of measure
+        
+    Returns:
+        str: Category ("weight", "volume", "seed", "linear", "concentration", or None)
+    """
+    if uom is None:
+        return None
+        
+    uom_lower = uom.lower()
+    
+    # Check if the UOM is directly in our data structure
+    for key, data in UOM_DATA.items():
+        if key.lower() == uom_lower:
+            return data["category"]
+            
+    # Special case for percentage notation
+    if "%" in uom_lower:
+        return "concentration"
+        
+    return None
+
+def is_weight_uom(uom):
+    """Determine if the UOM is weight-based."""
+    return get_uom_category(uom) == "weight"
+
+def is_volume_uom(uom):
+    """Determine if the UOM is volume-based."""
+    return get_uom_category(uom) == "volume"
+
+def is_seed_treatment_uom(uom):
+    """Determine if the UOM is for seed treatments."""
+    return get_uom_category(uom) == "seed"
+
+def is_linear_uom(uom):
+    """Determine if the UOM is for linear applications."""
+    return get_uom_category(uom) == "linear"
+
+def is_concentration_uom(uom):
+    """Determine if the UOM is for concentration."""
+    return get_uom_category(uom) == "concentration"
+
+def get_standard_unit(uom):
+    """
+    Get the standard unit for a given UOM's category.
+    
+    Args:
+        uom (str): Source unit of measure
+        
+    Returns:
+        str: Standard unit for the category, or None if not found
+    """
+    if uom is None:
+        return None
+        
+    uom_lower = uom.lower()
+    
+    for key, data in UOM_DATA.items():
+        if key.lower() == uom_lower:
+            return data["standard"]
+            
+    return None
+
+def get_conversion_factor(uom):
+    """
+    Get the conversion factor for a unit of measure.
+    
+    Args:
+        uom (str): Unit of measure
+        
+    Returns:
+        float: Conversion factor to standard unit, or None if not found
+    """
+    if uom is None:
+        return None
+        
+    uom_lower = uom.lower()
+    
+    for key, data in UOM_DATA.items():
+        if key.lower() == uom_lower:
+            return data["factor"]
+            
+    # Special case for percentage notation
+    if "%" in uom_lower:
+        return 0.01  # 1% = 0.01 decimal
+            
+    return None
+
+# Conversion functions for application rates
+def convert_application_rate(rate, from_uom, to_uom=None):
     """
     Convert application rate from one unit to another.
     
     Args:
         rate (float): Application rate value
-        from_unit (str): Source unit of measure
-        to_unit (str): Target unit of measure (default: lbs/acre for EIQ calculation)
-    
+        from_uom (str): Source unit of measure
+        to_uom (str): Target unit of measure (if None, converts to standard unit)
+        
     Returns:
         float: Converted application rate
     """
-    if rate is None:
+    if rate is None or from_uom is None:
         return None
+    
+    # Get category and standard unit for source UOM
+    category = get_uom_category(from_uom)
+    if category is None:
+        return rate  # Unknown UOM, return unchanged
         
-    if from_unit == to_unit:
+    # Find the standard unit for this category
+    standard_unit = None
+    for key, data in UOM_DATA.items():
+        if data["category"] == category and key.lower() == from_uom.lower():
+            standard_unit = data["standard"]
+            break
+    
+    # If standard unit not found, or no target unit specified, use the standard unit for the category
+    if to_uom is None:
+        if standard_unit is None:
+            return rate  # Can't determine standard unit, return unchanged
+        to_uom = standard_unit
+    
+    # If source and target are the same, return unchanged
+    if from_uom.lower() == to_uom.lower():
         return rate
-        
+    
+    # Get conversion factors
+    from_factor = get_conversion_factor(from_uom)
+    to_factor = get_conversion_factor(to_uom)
+    
+    if from_factor is None or to_factor is None:
+        return rate  # Unknown conversion factor, return unchanged
+    
+    # Convert to standard unit, then to target unit
     try:
-        # Convert to standard unit (lbs/acre)
-        if from_unit in APPLICATION_RATE_CONVERSION:
-            standard_rate = rate * APPLICATION_RATE_CONVERSION[from_unit]
-            
-            # If target is not the standard unit, convert to target
-            if to_unit != "lbs/acre" and to_unit in APPLICATION_RATE_CONVERSION:
-                return standard_rate / APPLICATION_RATE_CONVERSION[to_unit]
-            
-            return standard_rate
+        standard_value = rate * from_factor
+        result = standard_value / to_factor
+        return result
     except (ValueError, TypeError, ZeroDivisionError) as e:
         print(f"Error converting application rate: {e}")
-        
-    # Default return if conversion fails
-    return rate
+        return rate
 
+# Concentration conversion functions
 def convert_concentration_to_decimal(concentration, uom):
     """
     Convert concentration to decimal value (0-1) based on unit of measure.
@@ -94,20 +217,70 @@ def convert_concentration_to_decimal(concentration, uom):
     """
     if concentration is None:
         return None
-        
+    
     try:
-        # Handle different UOMs using the conversion factors
-        if uom in CONCENTRATION_CONVERSION:
-            return float(concentration) * CONCENTRATION_CONVERSION[uom]
-        else:
-            # Default: assume value is already in percent
-            return float(concentration) * 0.01
+        # Convert concentration to float
+        concentration_float = float(concentration)
+        
+        # Get conversion factor
+        factor = get_conversion_factor(uom)
+        
+        if factor is not None:
+            return concentration_float * factor
+        
+        # Default behavior for unknown UOMs: if it contains "%", treat as percentage
+        if uom and "%" in uom:
+            return concentration_float * 0.01
+            
+        # Otherwise return as is
+        return concentration_float
+            
     except (ValueError, TypeError):
         return None
 
+def convert_concentration_to_percent(concentration, uom):
+    """
+    Convert concentration to percentage (0-100) based on unit of measure.
+    
+    Args:
+        concentration (float): Concentration value
+        uom (str): Unit of measure for concentration
+        
+    Returns:
+        float or None: Concentration as percentage (0-100)
+    """
+    decimal = convert_concentration_to_decimal(concentration, uom)
+    if decimal is not None:
+        return decimal * 100
+    return None
+
+# EIQ conversion functions
+def convert_eiq_to_metric(eiq_value):
+    """
+    Convert Cornell EIQ (EIQ/lb) to metric EIQ (EIQ/kg).
+    
+    Args:
+        eiq_value (float): EIQ value in EIQ/lb
+        
+    Returns:
+        float: EIQ value in EIQ/kg
+    """
+    if eiq_value is None:
+        return None
+        
+    # 1 lb = 0.453592 kg, so EIQ/kg = EIQ/lb ÷ 0.453592
+    try:
+        return float(eiq_value) / 0.453592
+    except (ValueError, TypeError):
+        return None
+
+# Provide convert_eiq_units for backward compatibility
 def convert_eiq_units(eiq_value, application_rate, rate_uom, ai_concentration, concentration_uom, applications=1):
     """
     Prepare all units for EIQ calculation to ensure mathematical correctness.
+    
+    This function is maintained for backward compatibility and uses the improved
+    standardization function internally.
     
     Args:
         eiq_value (float): Base EIQ value for active ingredient [EIQ/lb of AI]
@@ -121,30 +294,46 @@ def convert_eiq_units(eiq_value, application_rate, rate_uom, ai_concentration, c
         tuple: (standardized_eiq, standardized_rate, standardized_concentration)
             All values standardized for calculation in the base formula
     """
-    # Convert application rate to standard unit (lbs/acre)
-    std_rate = convert_application_rate(application_rate, rate_uom)
-    
-    # Convert AI concentration to decimal (0-1)
-    std_concentration = convert_concentration_to_decimal(ai_concentration, concentration_uom)
-    
-    # EIQ value remains unchanged (already in EIQ/lb)
-    std_eiq = eiq_value
-    
-    return (std_eiq, std_rate, std_concentration)
+    # Use the new standardization function
+    return standardize_eiq_calculation(
+        eiq_value, application_rate, rate_uom, ai_concentration, concentration_uom)
 
-def convert_concentration_to_percent(concentration, uom):
+# Main standardization function
+def standardize_eiq_calculation(eiq_value, application_rate, rate_uom, ai_concentration, concentration_uom):
     """
-    Convert concentration to percentage based on unit of measure.
+    Standardize all values for consistent EIQ calculation based on application type.
     
     Args:
-        concentration (float): Concentration value
-        uom (str): Unit of measure for concentration
+        eiq_value (float): Cornell EIQ value (EIQ/lb of AI)
+        application_rate (float): Application rate value
+        rate_uom (str): Unit of measure for application rate
+        ai_concentration (float): AI concentration value 
+        concentration_uom (str): Unit of measure for concentration
         
     Returns:
-        float or None: Concentration as percentage (0-100)
+        tuple: (standardized_eiq, standardized_rate, standardized_concentration)
+              All values standardized for calculation in the base formula
     """
-    # Get decimal value and convert to percentage
-    decimal_value = convert_concentration_to_decimal(concentration, uom)
-    if decimal_value is not None:
-        return decimal_value * 100
-    return None
+    # Determine application category
+    category = get_uom_category(rate_uom)
+    
+    # Convert application rate to standard unit based on category
+    if category == "weight":
+        std_rate = convert_application_rate(application_rate, rate_uom, "kg/ha")
+    elif category == "volume":
+        std_rate = convert_application_rate(application_rate, rate_uom, "l/ha")
+    elif category == "seed":
+        std_rate = convert_application_rate(application_rate, rate_uom, "kg/100kg")
+    elif category == "linear":
+        std_rate = convert_application_rate(application_rate, rate_uom, "kg/100m")
+    else:
+        # Unknown application type, use as is
+        std_rate = application_rate
+    
+    # For all cases, convert concentration to decimal
+    std_concentration = convert_concentration_to_decimal(ai_concentration, concentration_uom)
+    
+    # Convert Cornell EIQ from EIQ/lb to EIQ/kg for all cases
+    std_eiq = convert_eiq_to_metric(eiq_value)
+    
+    return std_eiq, std_rate, std_concentration
