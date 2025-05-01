@@ -5,11 +5,8 @@ This module defines the ProductsListTab class which handles the product listing
 and filtering functionality with an improved filtering system and optimized layout.
 """
 
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTableWidget, 
-    QTableWidgetItem, QHeaderView, QCheckBox, QComboBox, QLineEdit,
-    QFrame, QScrollArea, QSizePolicy
-)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTableWidget, QTableWidgetItem, 
+                                QHeaderView, QCheckBox, QComboBox, QLineEdit, QFrame, QScrollArea, QSizePolicy)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QBrush, QCursor, QIcon
 
@@ -47,19 +44,6 @@ class FilterRow(QWidget):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(5, 5, 5, 5)
         layout.setSpacing(5)
-        
-        # Set background styling directly on the widget
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #F0F0F0;
-                border: 1px solid black;
-                border-radius: 4px;
-            }
-            QComboBox, QLineEdit, QPushButton {
-                border: none;
-                background-color: transparent;
-            }
-        """)
         
         # Field selection dropdown
         self.field_combo = QComboBox()

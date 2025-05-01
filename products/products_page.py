@@ -12,7 +12,7 @@ from common.styles import MARGIN_LARGE, SPACING_MEDIUM, SECONDARY_BUTTON_STYLE
 from common.widgets import HeaderWithBackButton
 from products.products_list_tab import ProductsListTab
 from products.products_comparison_tab import ProductsComparisonTab
-from data.products_data import refresh_from_csv as refresh_products_from_csv
+from data.products_data import refresh_from_csv
 
 
 class ProductsPage(QWidget):
@@ -45,10 +45,10 @@ class ProductsPage(QWidget):
         top_controls = QHBoxLayout()
         
         # Add Refresh from CSV button
-        refresh_button = QPushButton("Refresh from CSV")
+        refresh_button = QPushButton("Reset")
         refresh_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
         refresh_button.setMaximumWidth(150)
-        refresh_button.clicked.connect(self.refresh_from_csv)
+        refresh_button.clicked.connect(self.reset)
         
         top_controls.addStretch(1)
         top_controls.addWidget(refresh_button)
@@ -78,9 +78,9 @@ class ProductsPage(QWidget):
         # Switch to comparison tab
         self.tabs.setCurrentIndex(1)
     
-    def refresh_from_csv(self):
+    def reset(self):
         """Refresh product data from CSV file and reload the products list."""
-        if refresh_products_from_csv():
+        if refresh_from_csv():
             # Clear any selections
             self.selected_products = []
             

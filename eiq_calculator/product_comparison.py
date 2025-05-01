@@ -5,11 +5,7 @@ This module provides the ProductComparisonCalculator widget for comparing EIQ
 values of multiple pesticide products with improved UOM management.
 """
 
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, 
-    QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox,
-    QFrame, QGridLayout
-)
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox, QFrame, QGridLayout
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QBrush
 

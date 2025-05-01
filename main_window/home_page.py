@@ -161,6 +161,8 @@ class HomePage(QWidget):
         dev_notes_text = QLabel(
             "• UOM INCOHERENCY: CORNELL GIVES [EIQ/lb of AI], AND WE ARE DOING [kg of AI/ha] * [EIQ/lb of AI]\n"
             "• CURRENTLY CALCULATING SEED TREATMENTS AS 0, NEED TO SOLVE ISSUE WITH HOW MUCH AI IS PICKED UP FROM SOAKING IN SOLUTIONS (e.g. AGRI-MYCIN 17)\n"
+            "• product types: field fungicides and herbicides have different types (XX inches spacing, pre-post-etc emergence), this must be addressed\n"
+            "• many product standards for some products that apear as the same in app, find a way to manage these\n"
             "• mange UOM for ammount/length and seed treatments\n"
             "• past season data import\n"
             "• develop season planner"
