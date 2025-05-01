@@ -10,21 +10,21 @@ Uses a single unified data structure for UOM classification and conversion facto
 # Each UOM has its category and conversion factor to the standard unit for that category
 UOM_DATA = {
     # Weight-based application rates (standard: kg/ha)
-    "lbs/acre": {"category": "weight", "factor": 1.12085, "standard": "kg/ha"},  # 1 lb/acre = 1.12085 kg/ha
-    "oz/acre": {"category": "weight", "factor": 0.070053, "standard": "kg/ha"},  # 1 oz/acre = 0.070053 kg/ha
+    "lbs/acre": {"category": "weight", "factor": 1.12085, "standard": "kg/ha"},  # 1 [lb/acre] = 1.12085 [kg/ha]
+    "oz/acre": {"category": "weight", "factor": 0.070053, "standard": "kg/ha"},  # 1 [oz/acre] = 0.070053 [kg/ha]
     "kg/ha": {"category": "weight", "factor": 1.0, "standard": "kg/ha"},         # Already in standard unit
-    "g/ha": {"category": "weight", "factor": 0.001, "standard": "kg/ha"},        # 1 g/ha = 0.001 kg/ha
+    "g/ha": {"category": "weight", "factor": 0.001, "standard": "kg/ha"},        # 1 [g/ha] = 0.001 [kg/ha]
     
     # Volume-based application rates (standard: l/ha)
-    "fl oz/acre": {"category": "volume", "factor": 0.073078, "standard": "l/ha"},  # 1 fl oz/acre = 0.073078 l/ha
-    "pt/acre": {"category": "volume", "factor": 1.16924, "standard": "l/ha"},      # 1 pt/acre = 1.16924 l/ha
-    "qt/acre": {"category": "volume", "factor": 2.33849, "standard": "l/ha"},      # 1 qt/acre = 2.33849 l/ha
-    "gal/acre": {"category": "volume", "factor": 9.35396, "standard": "l/ha"},     # 1 gal/acre = 9.35396 l/ha
+    "fl oz/acre": {"category": "volume", "factor": 0.073078, "standard": "l/ha"},  # 1 [fl oz/acre] = 0.073078 [l/ha]
+    "pt/acre": {"category": "volume", "factor": 1.16924, "standard": "l/ha"},      # 1 [pt/acre] = 1.16924 [l/ha]
+    "qt/acre": {"category": "volume", "factor": 2.33849, "standard": "l/ha"},      # 1 [qt/acre] = 2.33849 [l/ha]
+    "gal/acre": {"category": "volume", "factor": 9.35396, "standard": "l/ha"},     # 1 [gal/acre] = 9.35396 [l/ha]
     "l/ha": {"category": "volume", "factor": 1.0, "standard": "l/ha"},             # Already in standard unit
-    "ml/ha": {"category": "volume", "factor": 0.001, "standard": "l/ha"},          # 1 ml/ha = 0.001 l/ha
-    "ml/acre": {"category": "volume", "factor": 0.00247105, "standard": "l/ha"},   # ml/acre to l/ha
+    "ml/ha": {"category": "volume", "factor": 0.001, "standard": "l/ha"},          # 1 [ml/ha] = 0.001 [l/ha]
+    "ml/acre": {"category": "volume", "factor": 0.00247105, "standard": "l/ha"},   # 1 [ml/acre] = 0.00247105 [l/ha]
     
-    # Miscellaneous (to be properly categorized)
+    # Miscellaneous (this is for a seed treatment product that gives concntration to reach in a solution in which the seeds should be soaked)
     "fl oz/100 gal": {"category": "misc", "factor": 0.0, "standard": "misc"},  # Placeholder
     
     # Seed treatments (standard: kg/100kg seed)
@@ -35,17 +35,17 @@ UOM_DATA = {
     "ml/100 kg": {"category": "seed", "factor": 0.0, "standard": "kg/100kg"},  # Placeholder
     "oz/100 gal": {"category": "seed", "factor": 0.0, "standard": "kg/100kg"}, # Placeholder
     
-    # Linear application rates (standard: kg/100m)
-    "fl oz/1000 ft": {"category": "linear", "factor": 0.0, "standard": "kg/100m"},  # Placeholder
-    "ml/100 m": {"category": "linear", "factor": 0.0, "standard": "kg/100m"},       # Placeholder
-    "oz/1000 ft": {"category": "linear", "factor": 0.0, "standard": "kg/100m"},     # Placeholder
+    # Linear application rates for 34-inch row spacing
+    "fl oz/1000 ft": {"category": "linear", "factor": 1.123939, "standard": "l/ha"},  # 15.380 [fl oz/acre per fl oz/1000 ft] * 0.073078 [l/ha per fl oz/acre] = 1.123939 [l/ha per fl oz/1000 ft]
+    "ml/100 m": {"category": "linear", "factor": 0.115824, "standard": "l/ha"},       # 1 [ml/100 m] = 0.115824 [l/ha]
+    "oz/1000 ft": {"category": "linear", "factor": 1.077415, "standard": "kg/ha"},    # 15.380 [oz/acre per oz/1000 ft] * 0.070053 [kg/ha per oz/acre] = 1.077415 [kg/ha per oz/1000 ft]
     
     # Concentration units (all convert to decimal 0-1)
-    "%": {"category": "concentration", "factor": 0.01, "standard": "decimal"},           # 1% = 0.01 decimal
-    "g/l": {"category": "concentration", "factor": 0.001, "standard": "decimal"},        # 1 g/l = 0.001 kg/l
-    "lb/gal": {"category": "concentration", "factor": 0.119826, "standard": "decimal"},  # 1 lb/gal = 0.119826 kg/l
-    "g/kg": {"category": "concentration", "factor": 0.001, "standard": "decimal"},       # 1 g/kg = 0.001 kg/kg
-    "cfu/ml": {"category": "concentration", "factor": 0.0, "standard": "decimal"},       # Placeholder
+    "%": {"category": "concentration", "factor": 0.01, "standard": "decimal"},           # 1% = 0.01 [kg/kg] or [l/l]
+    "g/l": {"category": "concentration", "factor": 0.001, "standard": "decimal"},        # 1 [g/l] = 0.001 [kg/l]
+    "lb/gal": {"category": "concentration", "factor": 0.119826, "standard": "decimal"},  # 1 [lb/gal] = 0.119826 [kg/l]
+    "g/kg": {"category": "concentration", "factor": 0.001, "standard": "decimal"},       # 1 [g/kg] = 0.001 [kg/kg]
+    "cfu/ml": {"category": "concentration", "factor": 0.0, "standard": "decimal"},       # Placeholder for a biological product that gives CFU/ml
 }
 
 # For backward compatibility, create APPLICATION_RATE_CONVERSION from the unified structure
@@ -299,6 +299,8 @@ def convert_eiq_units(eiq_value, application_rate, rate_uom, ai_concentration, c
         eiq_value, application_rate, rate_uom, ai_concentration, concentration_uom)
 
 # Main standardization function
+# Update in standardize_eiq_calculation function:
+
 def standardize_eiq_calculation(eiq_value, application_rate, rate_uom, ai_concentration, concentration_uom):
     """
     Standardize all values for consistent EIQ calculation based on application type.
@@ -325,10 +327,15 @@ def standardize_eiq_calculation(eiq_value, application_rate, rate_uom, ai_concen
     elif category == "seed":
         std_rate = convert_application_rate(application_rate, rate_uom, "kg/100kg")
     elif category == "linear":
-        std_rate = convert_application_rate(application_rate, rate_uom, "kg/100m")
+        # For linear measures, check if volume or weight based
+        if "fl" in rate_uom.lower() or "ml" in rate_uom.lower():
+            std_rate = convert_application_rate(application_rate, rate_uom, "l/ha")
+        else:
+            std_rate = convert_application_rate(application_rate, rate_uom, "kg/ha")
     else:
         # Unknown application type, use as is
         std_rate = application_rate
+        print(f"Unknown application rate unit: {rate_uom}. Using original value.")
     
     # For all cases, convert concentration to decimal
     std_concentration = convert_concentration_to_decimal(ai_concentration, concentration_uom)

@@ -28,7 +28,6 @@ def setup_environment():
     os.chdir(app_dir)
     QDir.setCurrent(app_dir)
 
-
 def main():
     """Main application entry point."""
     # Setup the environment
