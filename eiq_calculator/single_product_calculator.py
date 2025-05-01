@@ -82,14 +82,15 @@ class SingleProductCalculator(QWidget):
         # Create Active Ingredients table
         self.ai_table = QTableWidget()
         self.ai_table.setRowCount(0)  # Start empty
-        self.ai_table.setColumnCount(3)
-        self.ai_table.setHorizontalHeaderLabels(["Active Ingredient", "EIQ", "Concentration %"])
-        
+        self.ai_table.setColumnCount(4)  # Update to 4 columns to include UOM
+        self.ai_table.setHorizontalHeaderLabels(["Active Ingredient", "EIQ", "Concentration", "UOM"])
+
         # Make all columns equal width by setting them all to Stretch
         header = self.ai_table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.Stretch)
         header.setSectionResizeMode(1, QHeaderView.Stretch)
         header.setSectionResizeMode(2, QHeaderView.Stretch)
+        header.setSectionResizeMode(3, QHeaderView.Stretch)
         
         # Set a reasonable fixed height for the table
         self.ai_table.setMinimumHeight(120)
@@ -225,53 +226,53 @@ class SingleProductCalculator(QWidget):
             if self.current_product.ai1:
                 concentration = self.current_product.ai1_concentration
                 uom = self.current_product.ai1_concentration_uom
-                percent_value = convert_concentration_to_percent(concentration, uom)
                 
                 ai_data.append({
                     "name": self.current_product.ai1,
                     "eiq": self.current_product.ai1_eiq if self.current_product.ai1_eiq is not None else "--",
-                    "percent": percent_value if percent_value is not None else "--"
+                    "concentration": concentration if concentration is not None else "--",
+                    "uom": uom if uom is not None else ""
                 })
             
             # Check AI2 data
             if self.current_product.ai2:
                 concentration = self.current_product.ai2_concentration
                 uom = self.current_product.ai2_concentration_uom
-                percent_value = convert_concentration_to_percent(concentration, uom)
                 
                 ai_data.append({
                     "name": self.current_product.ai2,
                     "eiq": self.current_product.ai2_eiq if self.current_product.ai2_eiq is not None else "--",
-                    "percent": percent_value if percent_value is not None else "--"
+                    "concentration": concentration if concentration is not None else "--",
+                    "uom": uom if uom is not None else ""
                 })
             
             # Check AI3 data
             if self.current_product.ai3:
                 concentration = self.current_product.ai3_concentration
                 uom = self.current_product.ai3_concentration_uom
-                percent_value = convert_concentration_to_percent(concentration, uom)
                 
                 ai_data.append({
                     "name": self.current_product.ai3,
                     "eiq": self.current_product.ai3_eiq if self.current_product.ai3_eiq is not None else "--",
-                    "percent": percent_value if percent_value is not None else "--"
+                    "concentration": concentration if concentration is not None else "--",
+                    "uom": uom if uom is not None else ""
                 })
             
             # Check AI4 data
             if self.current_product.ai4:
                 concentration = self.current_product.ai4_concentration
                 uom = self.current_product.ai4_concentration_uom
-                percent_value = convert_concentration_to_percent(concentration, uom)
                 
                 ai_data.append({
                     "name": self.current_product.ai4,
                     "eiq": self.current_product.ai4_eiq if self.current_product.ai4_eiq is not None else "--",
-                    "percent": percent_value if percent_value is not None else "--"
+                    "concentration": concentration if concentration is not None else "--",
+                    "uom": uom if uom is not None else ""
                 })
             
             # Add rows to table
             self.ai_table.setRowCount(len(ai_data))
-            
+
             for i, ai in enumerate(ai_data):
                 # Name
                 name_item = QTableWidgetItem(ai["name"])
@@ -283,10 +284,15 @@ class SingleProductCalculator(QWidget):
                 eiq_item.setTextAlignment(Qt.AlignCenter)
                 self.ai_table.setItem(i, 1, eiq_item)
                 
-                # Percent
-                percent_item = QTableWidgetItem(f"{ai['percent']}%" if ai["percent"] != "--" else "--")
-                percent_item.setTextAlignment(Qt.AlignCenter)
-                self.ai_table.setItem(i, 2, percent_item)
+                # Concentration
+                concentration_item = QTableWidgetItem(str(ai["concentration"]))
+                concentration_item.setTextAlignment(Qt.AlignCenter)
+                self.ai_table.setItem(i, 2, concentration_item)
+                
+                # UOM
+                uom_item = QTableWidgetItem(ai["uom"])
+                uom_item.setTextAlignment(Qt.AlignCenter)
+                self.ai_table.setItem(i, 3, uom_item)
             
             # Update application rate with max rate from product data
             if self.current_product.label_maximum_rate is not None:

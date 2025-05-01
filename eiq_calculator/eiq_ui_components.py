@@ -129,6 +129,11 @@ class ProductSearchField(QWidget):
         self.search_field.setPlaceholderText("Type to search products...")
         self.search_field.setFont(get_body_font())
         self.search_field.textChanged.connect(self.update_suggestions)
+        
+        # Add focus events to show/hide suggestions
+        self.search_field.focusInEvent = self.on_focus_in
+        self.search_field.focusOutEvent = self.on_focus_out
+        
         layout.addWidget(self.search_field)
         
         # Suggestions container
@@ -181,21 +186,52 @@ class ProductSearchField(QWidget):
         # Initially hide suggestions
         self.suggestions_container.setVisible(False)
     
+    def on_focus_in(self, event):
+        """Show all suggestions when the field gets focus."""
+        # Call the original focusInEvent
+        QLineEdit.focusInEvent(self.search_field, event)
+        
+        # Show all items if there's no search text
+        if not self.search_field.text():
+            self.filtered_items = self.all_items.copy()
+            self.suggestions_list.clear()
+            self.suggestions_list.addItems(self.filtered_items)
+            
+            # Only show if we have items
+            has_suggestions = len(self.filtered_items) > 0
+            self.suggestions_container.setVisible(has_suggestions)
+            
+            # Set fixed height based on number of items
+            if has_suggestions:
+                item_height = self.suggestions_list.sizeHintForRow(0)
+                num_visible_items = min(8, len(self.filtered_items))
+                list_height = item_height * num_visible_items + 4
+                self.suggestions_list.setFixedHeight(list_height)
+    
+    def on_focus_out(self, event):
+        """Hide suggestions when the field loses focus."""
+        # Call the original focusOutEvent
+        QLineEdit.focusOutEvent(self.search_field, event)
+        
+        # Hide suggestions immediately
+        # This is fine since the click event on an item will be processed
+        # before the focus out event
+        self.suggestions_container.setVisible(False)
+    
     def update_suggestions(self, text):
         """Update suggestions based on input text."""
         # Clear selection when search text changes
         self.suggestions_list.clearSelection()
         
         if not text:
-            # Hide suggestions when search field is empty
-            self.suggestions_container.setVisible(False)
-            return
-        
-        # Filter items based on search text
-        self.filtered_items = [
-            item for item in self.all_items 
-            if text.lower() in item.lower()
-        ]
+            # Show all items when text is cleared
+            self.filtered_items = self.all_items.copy()
+        else:
+            # Filter items based on search text
+            self.filtered_items = [
+                item for item in self.all_items 
+                if text.lower() in item.lower()
+            ]
         
         # Update suggestions list
         self.suggestions_list.clear()

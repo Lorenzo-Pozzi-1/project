@@ -144,9 +144,11 @@ class Product:
     
     @property
     def display_name(self):
-        """Get display name with primary active ingredient."""
-        if self.ai1:
-            return f"{self.product_name} ({self.ai1})"
+        """Get display name with all active ingredients."""
+        ingredients = self.active_ingredients
+        if ingredients:
+            ai_text = ", ".join(ingredients)
+            return f"{self.product_name} ({ai_text})"
         return self.product_name
     
     @property
