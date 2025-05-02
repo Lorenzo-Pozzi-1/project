@@ -39,11 +39,13 @@ class MainWindow(QMainWindow):
         # Connect the country_changed signal to methods that need to be updated
         self.home_page.country_changed.connect(self.update_selected_country)
         self.home_page.country_changed.connect(self.products_page.update_country_filter)
+        self.home_page.country_changed.connect(self.eiq_calculator_page.update_country_filter)
         
         # Set initial country value (after the connections are established)
         initial_country = self.home_page.country_combo.currentText()
         self.update_selected_country(initial_country)
         self.products_page.update_country_filter(initial_country)
+        self.eiq_calculator_page.update_country_filter(initial_country)
         
     def setup_window(self):
         """Set up the window properties."""

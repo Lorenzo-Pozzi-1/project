@@ -26,6 +26,7 @@ class EiqCalculatorPage(QWidget):
         """Initialize the EIQ calculator page."""
         super().__init__(parent)
         self.parent = parent
+        self.selected_country = None
         self.setup_ui()
     
     def setup_ui(self):
@@ -52,3 +53,11 @@ class EiqCalculatorPage(QWidget):
         self.tabs.addTab(self.product_comparison_calculator, "Product Comparison")
         
         main_layout.addWidget(self.tabs)
+    
+    def update_country_filter(self, country):
+        """Update the country filter based on the selected country."""
+        self.selected_country = country
+        
+        # Update both calculator tabs
+        self.single_product_calculator.update_country_filter(country)
+        self.product_comparison_calculator.update_country_filter(country)

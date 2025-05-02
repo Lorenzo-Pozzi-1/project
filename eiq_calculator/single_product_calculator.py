@@ -100,6 +100,28 @@ class SingleProductCalculator(QWidget):
         # Use a direct form layout row instead of a container
         product_layout.addRow("Active Ingredients:", self.ai_table)
         
+        # Create label information table
+        self.label_info_table = QTableWidget()
+        self.label_info_table.setRowCount(1)  # Just one row for the selected product
+        self.label_info_table.setColumnCount(7)  # 7 columns for the requested info
+        self.label_info_table.setHorizontalHeaderLabels([
+            "Application Method", "Min Rate", "Max Rate", "Rate UOM", 
+            "REI (hours)", "PHI (days)", "Min Days Between Apps"
+        ])
+
+        # Make all columns equal width by setting them all to Stretch
+        header = self.label_info_table.horizontalHeader()
+        for i in range(header.count()):
+            header.setSectionResizeMode(i, QHeaderView.Stretch)
+
+        # Set a reasonable fixed height for the table
+        self.label_info_table.setMinimumHeight(80)
+        self.label_info_table.setMaximumHeight(100)
+        self.label_info_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
+        # Use a direct form layout row instead of a container
+        product_layout.addRow("Label Information:", self.label_info_table)
+
         # Application rate
         rate_layout = QHBoxLayout()
         
@@ -155,6 +177,27 @@ class SingleProductCalculator(QWidget):
         
         # Update product list
         self.update_product_list()
+
+    def update_country_filter(self, country):
+        """Update the country filter and reload product data."""
+        # Store the selected country
+        self.selected_country = country
+        
+        # Reload products with the new country filter
+        self.all_products = get_products_from_csv()
+        
+        # Apply country filter
+        if country and self.all_products:
+            self.all_products = [p for p in self.all_products if p.country == country]
+        
+        # Update the product list
+        self.update_product_list()
+        
+        # Clear current product selection
+        self.product_search.clear()
+        self.clear_ai_table()
+        self.rate_spin.setValue(0.0)
+        self.eiq_results_display.update_result(0.0)
     
     def update_product_list(self):
         """Update the product list based on selected product type."""
@@ -193,8 +236,9 @@ class SingleProductCalculator(QWidget):
             self.product_search.setEnabled(False)
     
     def clear_ai_table(self):
-        """Clear the active ingredients table."""
+        """Clear the active ingredients and label information tables."""
         self.ai_table.setRowCount(0)
+        self.label_info_table.clearContents()
 
     def update_product_info(self, product_name):
         """Update product information when a product is selected."""
@@ -294,6 +338,51 @@ class SingleProductCalculator(QWidget):
                 uom_item.setTextAlignment(Qt.AlignCenter)
                 self.ai_table.setItem(i, 3, uom_item)
             
+            # Clear and populate the label information table
+            self.label_info_table.clearContents()
+
+            if self.current_product:
+                # Application Method
+                method_item = QTableWidgetItem(self.current_product.application_method or "--")
+                method_item.setTextAlignment(Qt.AlignCenter)
+                self.label_info_table.setItem(0, 0, method_item)
+                
+                # Min Rate
+                min_rate = "--"
+                if self.current_product.label_minimum_rate is not None:
+                    min_rate = f"{self.current_product.label_minimum_rate:.2f}"
+                min_rate_item = QTableWidgetItem(min_rate)
+                min_rate_item.setTextAlignment(Qt.AlignCenter)
+                self.label_info_table.setItem(0, 1, min_rate_item)
+                
+                # Max Rate
+                max_rate = "--"
+                if self.current_product.label_maximum_rate is not None:
+                    max_rate = f"{self.current_product.label_maximum_rate:.2f}"
+                max_rate_item = QTableWidgetItem(max_rate)
+                max_rate_item.setTextAlignment(Qt.AlignCenter)
+                self.label_info_table.setItem(0, 2, max_rate_item)
+                
+                # Rate UOM
+                uom_item = QTableWidgetItem(self.current_product.rate_uom or "--")
+                uom_item.setTextAlignment(Qt.AlignCenter)
+                self.label_info_table.setItem(0, 3, uom_item)
+                
+                # REI (hours)
+                rei_item = QTableWidgetItem(str(self.current_product.rei_hours or "--"))
+                rei_item.setTextAlignment(Qt.AlignCenter)
+                self.label_info_table.setItem(0, 4, rei_item)
+                
+                # PHI (days)
+                phi_item = QTableWidgetItem(str(self.current_product.phi_days or "--"))
+                phi_item.setTextAlignment(Qt.AlignCenter)
+                self.label_info_table.setItem(0, 5, phi_item)
+                
+                # Min Days Between Applications
+                min_days_item = QTableWidgetItem(str(self.current_product.min_days_between_applications or "--"))
+                min_days_item.setTextAlignment(Qt.AlignCenter)
+                self.label_info_table.setItem(0, 6, min_days_item)
+
             # Update application rate with max rate from product data
             if self.current_product.label_maximum_rate is not None:
                 self.rate_spin.setValue(self.current_product.label_maximum_rate)

@@ -217,6 +217,44 @@ class ProductComparisonCalculator(QWidget):
         product_combo.clear()
         product_combo.addItem("Select product...")
         product_combo.addItems([p.product_name for p in filtered_products])
+
+    def update_country_filter(self, country):
+        """Update the country filter and reload product data."""
+        # Store the selected country
+        self.selected_country = country
+        
+        # Clear existing product data
+        self.products_data = []
+        
+        # Reset the table
+        self.comparison_selection_table.setRowCount(0)
+        self.comparison_results_table.setRowCount(0)
+        
+        # Add a new empty row
+        self.add_product_row()
+        
+        # Update product types in the first row
+        type_combo = self.comparison_selection_table.cellWidget(0, 0)
+        if type_combo:
+            prev_index = type_combo.currentIndex()
+            
+            # Load product types with country filter
+            products = get_products_from_csv()
+            if country and products:
+                products = [p for p in products if p.country == country]
+            
+            product_types = []
+            if products:
+                product_types = sorted(list(set(p.product_type for p in products if p.product_type)))
+            
+            # Update the combo box
+            type_combo.clear()
+            type_combo.addItem("Select type...")
+            type_combo.addItems(product_types)
+            
+            # Try to restore previous selection if possible
+            if prev_index > 0 and prev_index < type_combo.count():
+                type_combo.setCurrentIndex(prev_index)
     
     def update_product_info(self, row):
         """Update product information when a product is selected."""
