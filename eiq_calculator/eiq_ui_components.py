@@ -288,9 +288,9 @@ class EiqResultDisplay(QWidget):
         field_eiq_layout = QHBoxLayout()
         field_eiq_label = QLabel("Field EIQ:")
         field_eiq_label.setFont(get_body_font(size=14, bold=True))
-        
+
         # Single label for the entire result with consistent formatting
-        self.field_eiq_result = QLabel("-- acre = -- ha")
+        self.field_eiq_result = QLabel("-- /ha")
         self.field_eiq_result.setFont(get_body_font(size=16, bold=True))
         
         field_eiq_layout.addWidget(field_eiq_label)
@@ -309,11 +309,11 @@ class EiqResultDisplay(QWidget):
     def update_result(self, field_eiq):
         """Update the EIQ result display with the calculated value."""
         if field_eiq <= 0:
-            self.field_eiq_result.setText("-- acre = -- ha")
+            self.field_eiq_result.setText("-- /ha")
             self.toxicity_bar.set_value(0, "No calculation")
             return
             
-        # Format result with per-acre and per-ha values
+        # Format result with per-ha values only
         self.field_eiq_result.setText(format_eiq_result(field_eiq))
         
         # Update toxicity bar
