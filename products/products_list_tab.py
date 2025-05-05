@@ -223,16 +223,39 @@ class ProductsListTab(QWidget):
             # Set column headers
             headers = ["Select"] + self.column_keys
             self.products_table.setHorizontalHeaderLabels(headers)
-            
+
             # Store original header texts
             self.original_header_texts = {}
             for i, header_text in enumerate(headers):
                 self.original_header_texts[i] = header_text
-            
+
+            # Replace specific header texts with shortened versions
+            header_replacements = {
+                "regulator number": "Reg. #",
+                "min days between applications": "d.b.a."
+            }
+
+            for col, key in enumerate(self.column_keys, start=1):
+                for original, replacement in header_replacements.items():
+                    if key.lower() == original.lower():
+                        self.products_table.horizontalHeader().model().setHeaderData(
+                            col, Qt.Horizontal, replacement)
+
             # Set column resize modes
             self.products_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)  # Checkbox column
-            for i in range(1, len(headers)):
-                self.products_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+
+            # Columns that should resize to content
+            content_resize_columns = [
+                "regulator number", "formulation", "min rate", "max rate", 
+                "rate UOM", "REI (h)", "PHI (d)", "min days between applications", "application method"
+            ]
+
+            # Apply resize modes
+            for col, key in enumerate(self.column_keys, start=1):
+                if any(resize_col.lower() == key.lower() for resize_col in content_resize_columns):
+                    self.products_table.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeToContents)
+                else:
+                    self.products_table.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
             
             # Columns to hide (case-insensitive matching to handle potential variations)
             columns_to_hide = [

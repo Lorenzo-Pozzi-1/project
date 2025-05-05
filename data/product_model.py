@@ -224,19 +224,19 @@ class Product:
             "AI1": self.ai1,
             "[AI1]": self.ai1_concentration,
             "[AI1]UOM": self.ai1_concentration_uom,
-            "AI1 eiq": self.ai1_eiq,
+            "AI1 EIQ": self.ai1_eiq,
             "AI2": self.ai2,
             "[AI2]": self.ai2_concentration,
             "[AI2]UOM": self.ai2_concentration_uom,
-            "AI2 eiq": self.ai2_eiq,
+            "AI2 EIQ": self.ai2_eiq,
             "AI3": self.ai3,
             "[AI3]": self.ai3_concentration,
             "[AI3]UOM": self.ai3_concentration_uom,
-            "AI3 eiq": self.ai3_eiq,
+            "AI3 EIQ": self.ai3_eiq,
             "AI4": self.ai4,
             "[AI4]": self.ai4_concentration,
             "[AI4]UOM": self.ai4_concentration_uom,
-            "AI4 eiq": self.ai4_eiq
+            "AI4 EIQ": self.ai4_eiq
         }
     
     @classmethod
@@ -268,17 +268,17 @@ class Product:
             ai1=data.get("AI1"),
             ai1_concentration=data.get("[AI1]"),
             ai1_concentration_uom=data.get("[AI1]UOM"),
-            ai1_eiq=data.get("AI1 eiq"),
+            ai1_eiq=data.get("AI1 EIQ"),
             ai2=data.get("AI2"),
             ai2_concentration=data.get("[AI2]"),
             ai2_concentration_uom=data.get("[AI2]UOM"),
-            ai2_eiq=data.get("AI2 eiq"),
+            ai2_eiq=data.get("AI2 EIQ"),
             ai3=data.get("AI3"),
             ai3_concentration=data.get("[AI3]"),
             ai3_concentration_uom=data.get("[AI3]UOM"),
-            ai3_eiq=data.get("AI3 eiq"),
+            ai3_eiq=data.get("AI3 EIQ"),
             ai4=data.get("AI4"),
             ai4_concentration=data.get("[AI4]"),
             ai4_concentration_uom=data.get("[AI4]UOM"),
-            ai4_eiq=data.get("AI4 eiq")
+            ai4_eiq=data.get("AI4 EIQ")
         )
