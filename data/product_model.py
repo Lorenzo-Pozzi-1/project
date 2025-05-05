@@ -51,16 +51,16 @@ class Product:
         
         Args:
             country (str): Country where the product is registered
-            region (str): Geographic region where the product is registered
+            region (str): region where the product standard applies
             product_type (str): Product type (e.g., Herbicide)
             product_name (str): Product name
             producer_name (str): Manufacturer/producer name
             regulator_number (str): Registration/regulation number
             application_method (str): Recommended application method
-            label_minimum_rate (float): Minimum application rate per label
-            label_maximum_rate (float): Maximum application rate per label
+            formulation (str): Product formulation (liquid/dry)
+            label_minimum_rate (float): Minimum application rate as per label
+            label_maximum_rate (float): Maximum application rate as per label
             rate_uom (str): Unit of measure for application rates
-            formulation (str): Product formulation type
             min_days_between_applications (int): Minimum days between applications
             rei_hours (int): Restricted Entry Interval in hours
             phi_days (int): Pre-Harvest Interval in days
@@ -214,6 +214,7 @@ class Product:
             "name": self.product_name,
             "producer": self.producer_name,
             "application method": self.application_method,
+            "formulation": self.formulation,
             "min rate": self.label_minimum_rate,
             "max rate": self.label_maximum_rate,
             "rate UOM": self.rate_uom,
@@ -235,8 +236,7 @@ class Product:
             "AI4": self.ai4,
             "[AI4]": self.ai4_concentration,
             "[AI4]UOM": self.ai4_concentration_uom,
-            "AI4 eiq": self.ai4_eiq,
-            "Formulation": self.formulation
+            "AI4 eiq": self.ai4_eiq
         }
     
     @classmethod
@@ -258,10 +258,10 @@ class Product:
             producer_name=data.get("producer"),
             regulator_number=data.get("regulator number"),
             application_method=data.get("application method"),
+            formulation=data.get("formulation"),
             label_minimum_rate=data.get("min rate"),
             label_maximum_rate=data.get("max rate"),
             rate_uom=data.get("rate UOM"),
-            formulation=data.get("Formulation"),
             min_days_between_applications=data.get("min days between applications"),
             rei_hours=data.get("REI (h)"),
             phi_days=data.get("PHI (d)"),
