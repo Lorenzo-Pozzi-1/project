@@ -59,11 +59,10 @@ class NewSeasonPage(QWidget):
         
         main_layout.addWidget(self.tab_widget)
         
-        # Placeholder for color-coded gradient bar
+        # Gradient bar with labels for adoption stages
         self.gradient_bar = QFrame()
-        # self.gradient_bar.setFrameShape(QFrame.StyledPanel) # Optional: Stylesheet border takes precedence
-        self.gradient_bar.setMinimumHeight(40)
-        self.gradient_bar.setMaximumHeight(40)
+        self.gradient_bar.setMinimumHeight(60)  # Increased height to accommodate labels
+        self.gradient_bar.setMaximumHeight(60)
         self.gradient_bar.setStyleSheet(f"""
             QFrame {{
                 /* Define a linear gradient using your palette */
@@ -78,6 +77,38 @@ class NewSeasonPage(QWidget):
                 border-radius: 4px;
             }}
         """)
+
+        # Use absolute positioning for precise label placement
+        self.gradient_bar.setLayout(QHBoxLayout())
+        self.gradient_bar.layout().setContentsMargins(0, 0, 0, 0)
+
+        # Add labels at specific positions
+        stages = [
+            {"name": "Onboarding", "position": 0.0},   # Start
+            {"name": "Engaged", "position": 0.33},     # 1/3 mark
+            {"name": "Advanced", "position": 0.67},    # 2/3 mark
+            {"name": "Leading", "position": 1.0}       # End
+        ]
+
+        for stage in stages:
+            # Create label with position
+            label = QLabel(stage["name"])
+            label.setFont(get_body_font(bold=True))
+            label.setStyleSheet("color: #000000; background-color: rgba(255, 255, 255, 150); border-radius: 2px; padding: 2px 5px;")
+            label.setAlignment(Qt.AlignCenter)
+            
+            # Position using absolute coordinates
+            label.setParent(self.gradient_bar)
+            label.show()
+            
+            # We'll set exact positions after the gradient bar is shown
+            # Store info for later positioning
+            label.stage_position = stage["position"]
+            
+        # Connect to resizeEvent to position labels correctly
+        self.gradient_bar.resizeEvent = lambda event: self.position_gradient_labels(event)
+
+        main_layout.addWidget(self.gradient_bar)
         
         # Add label to the gradient bar
         gradient_layout = QHBoxLayout(self.gradient_bar)
@@ -86,6 +117,27 @@ class NewSeasonPage(QWidget):
         gradient_layout.addWidget(gradient_label)
         
         main_layout.addWidget(self.gradient_bar)
+
+    def position_gradient_labels(self, event=None):
+        """Position the gradient labels based on their defined positions."""
+        width = self.gradient_bar.width()
+        height = self.gradient_bar.height()
+        
+        # Find all child labels
+        for child in self.gradient_bar.children():
+            if isinstance(child, QLabel) and hasattr(child, 'stage_position'):
+                # Calculate x position based on percentage
+                x_pos = int(width * child.stage_position)
+                
+                # Adjust for label width to center on position
+                label_width = child.sizeHint().width()
+                x_pos -= label_width // 2
+                
+                # Ensure label stays within the widget bounds
+                x_pos = max(5, min(width - label_width - 5, x_pos))
+                
+                # Set the label position at the bottom of the gradient bar
+                child.setGeometry(x_pos, height - 25, label_width, 20)
     
     def add_scenario_tab(self):
         """Add a new scenario tab with a placeholder table."""

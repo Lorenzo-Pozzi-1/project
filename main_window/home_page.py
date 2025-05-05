@@ -147,34 +147,6 @@ class HomePage(QWidget):
 
         # Reduce spacing between frames
         main_layout.addSpacing(5)
-        
-        # # Add future development notes section
-        # dev_notes_frame = ContentFrame()
-        # dev_notes_layout = QVBoxLayout()
-        
-        # # Title for the section
-        # dev_notes_title = QLabel("Future Development TO-DOs")
-        # dev_notes_title.setFont(get_subtitle_font(size=16))
-        # dev_notes_layout.addWidget(dev_notes_title)
-        
-        # # Notes text
-        # dev_notes_text = QLabel(
-        #     "• AIs functional group, currently missing: not provided by GXCore\n"
-        #     "• UOM INCOHERENCY: CORNELL GIVES [EIQ/lb of AI], AND WE ARE DOING [kg of AI/ha] * [EIQ/lb of AI]\n"
-        #     "• CURRENTLY CALCULATING SEED TREATMENTS AS 0, NEED TO SOLVE ISSUE WITH HOW MUCH AI IS PICKED UP FROM SOAKING IN SOLUTIONS (e.g. AGRI-MYCIN 17)\n"
-        #     "• product types: field fungicides and herbicides have different types (XX inches spacing, pre-post-etc emergence), this must be addressed\n"
-        #     "• many product standards for some products that apear as the same in app, find a way to manage these\n"
-        #     "• mange UOM for seed treatments\n"
-        #     "• past season data import\n"
-        #     "• develop season planner"
-        # )
-        # dev_notes_text.setWordWrap(True)
-        # dev_notes_text.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        # dev_notes_text.setFont(get_body_font())
-        # dev_notes_layout.addWidget(dev_notes_text)
-        
-        # dev_notes_frame.layout.addLayout(dev_notes_layout)
-        # main_layout.addWidget(dev_notes_frame)
     
     def on_country_changed(self, index):
         """Handle country selection change."""
