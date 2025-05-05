@@ -117,8 +117,10 @@ class ProductComparisonCalculator(QWidget):
         type_combo = QComboBox()
         type_combo.addItem("Select type...")
         
-        # Load product types
+        # Load product types with country filter
         products = get_products_from_csv()
+        if hasattr(self, 'selected_country') and self.selected_country:
+            products = [p for p in products if p.country == self.selected_country]
         product_types = []
         if products:
             product_types = sorted(list(set(p.product_type for p in products if p.product_type)))
@@ -209,8 +211,10 @@ class ProductComparisonCalculator(QWidget):
             product_combo.addItem("Select product...")
             return
         
-        # Get products filtered by type
+        # Get products filtered by type AND country
         products = get_products_from_csv()
+        if hasattr(self, 'selected_country') and self.selected_country:
+            products = [p for p in products if p.country == self.selected_country]
         filtered_products = [p for p in products if p.product_type == product_type]
         
         # Update product combo
