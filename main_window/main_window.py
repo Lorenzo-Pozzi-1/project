@@ -121,6 +121,11 @@ class MainWindow(QMainWindow):
     def navigate_to_page(self, page_index):
         """Navigate to the specified page index."""
         if 0 <= page_index < self.stacked_widget.count():
+            # Pre-navigation updates for specific pages
+            if page_index == 1:  # Products page
+                # Refresh the products page data before showing it
+                self.products_page.refresh_product_data()
+                
             # Navigate to the page
             self.stacked_widget.setCurrentIndex(page_index)
     

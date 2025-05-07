@@ -34,7 +34,10 @@ class HomePage(QWidget):
         """Initialize the home page."""
         super().__init__(parent)
         self.parent = parent
+        self.initializing = True  # Flag to avoid multiple filtering during setup
         self.setup_ui()
+        self.initializing = False  # Setup complete
+        self.filter_products_to_json()  # Now do the initial filtering just once
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -172,12 +175,12 @@ class HomePage(QWidget):
         
         # Initialize regions dropdown with "None of the above" option
         self.update_regions_dropdown()
-        
-        # Initial filtering of products
-        self.filter_products_to_json()
     
     def on_country_changed(self, index):
         """Handle country selection change."""
+        if self.initializing:
+            return  # Skip during initialization
+            
         country = self.country_combo.currentText()
         print(f"Country changed to: {country}")
         self.country_changed.emit(country)  # Emit signal with selected country
@@ -218,6 +221,9 @@ class HomePage(QWidget):
     
     def on_region_changed(self, index):
         """Handle region selection change."""
+        if self.initializing:
+            return  # Skip during initialization
+            
         region = self.region_combo.currentText()
         print(f"Region changed to: {region}")
         self.region_changed.emit(region)  # Emit signal with selected region

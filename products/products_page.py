@@ -89,3 +89,14 @@ class ProductsPage(QWidget):
             
             # Reset the comparison tab
             self.comparison_tab.clear_comparison()
+
+    def refresh_product_data(self):
+        """Refresh product data based on the updated filtered products JSON."""
+        # Clear any selections
+        self.selected_products = []
+        
+        # Reload the product data in the list tab
+        self.products_list_tab.load_product_data()
+        
+        # Reset the comparison tab
+        self.comparison_tab.clear_comparison()
