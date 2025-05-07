@@ -36,16 +36,23 @@ class MainWindow(QMainWindow):
         self.init_fonts()
         self.init_ui()
 
-        # Connect the country_changed signal to methods that need to be updated
+         # Connect the country_changed and region_changed signals
         self.home_page.country_changed.connect(self.update_selected_country)
+        self.home_page.region_changed.connect(self.update_selected_region)
         self.home_page.country_changed.connect(self.products_page.update_country_filter)
+        self.home_page.region_changed.connect(self.products_page.update_region_filter)
         self.home_page.country_changed.connect(self.eiq_calculator_page.update_country_filter)
+        self.home_page.region_changed.connect(self.eiq_calculator_page.update_region_filter)
         
-        # Set initial country value (after the connections are established)
+        # Set initial values (after the connections are established)
         initial_country = self.home_page.country_combo.currentText()
+        initial_region = self.home_page.region_combo.currentText()
         self.update_selected_country(initial_country)
+        self.update_selected_region(initial_region)
         self.products_page.update_country_filter(initial_country)
+        self.products_page.update_region_filter(initial_region)
         self.eiq_calculator_page.update_country_filter(initial_country)
+        self.eiq_calculator_page.update_region_filter(initial_region)
         
     def setup_window(self):
         """Set up the window properties."""
@@ -115,6 +122,11 @@ class MainWindow(QMainWindow):
         """Update the selected country when the signal is emitted."""
         self.selected_country = country
         print(f"MainWindow updated selected country to: {self.selected_country}")
+
+    def update_selected_region(self, region):
+        """Update the selected region when the signal is emitted."""
+        self.selected_region = region
+        print(f"MainWindow updated selected region to: {self.selected_region}")
 
     def navigate_to_page(self, page_index):
         """Navigate to the specified page index."""

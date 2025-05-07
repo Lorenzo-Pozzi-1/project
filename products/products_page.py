@@ -101,3 +101,16 @@ class ProductsPage(QWidget):
         
         # Reset the comparison tab
         self.comparison_tab.clear_comparison()
+
+    def update_region_filter(self, region):
+        """Update the region filter based on the selected region."""
+        # This method can be called when the region changes in the HomePage
+        # It will reload the product data with the new region filter
+        self.selected_region = region
+        self.products_list_tab.load_product_data()
+        
+        # Reset selections
+        self.selected_products = []
+        
+        # Reset the comparison tab
+        self.comparison_tab.clear_comparison()

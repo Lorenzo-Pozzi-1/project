@@ -25,6 +25,7 @@ class HomePage(QWidget):
     """
     
     country_changed = Signal(str)
+    region_changed = Signal(str)
     
     def __init__(self, parent=None):
         """Initialize the home page."""
@@ -45,12 +46,13 @@ class HomePage(QWidget):
         title_label.setFont(get_title_font(size=24))
         main_layout.addWidget(title_label)
         
-        # country selection area
-        country_frame = QFrame()
-        country_frame.setFrameShape(QFrame.NoFrame)
-        country_layout = QHBoxLayout(country_frame)
-        country_layout.setAlignment(Qt.AlignCenter)
+        # country and region selection area
+        filter_frame = QFrame()
+        filter_frame.setFrameShape(QFrame.NoFrame)
+        filter_layout = QHBoxLayout(filter_frame)
+        filter_layout.setAlignment(Qt.AlignCenter)
         
+        # Country selection
         country_label = QLabel("Select country:")
         country_label.setFont(get_body_font(size=12))
         
@@ -63,10 +65,27 @@ class HomePage(QWidget):
         self.country_combo.setCurrentIndex(0)
         self.country_combo.currentIndexChanged.connect(self.on_country_changed)
         
-        country_layout.addWidget(country_label)
-        country_layout.addWidget(self.country_combo)
+        filter_layout.addWidget(country_label)
+        filter_layout.addWidget(self.country_combo)
         
-        main_layout.addWidget(country_frame)
+        # Add spacing between dropdowns
+        filter_layout.addSpacing(20)
+        
+        # Region selection
+        region_label = QLabel("Select region:")
+        region_label.setFont(get_body_font(size=12))
+        
+        self.region_combo = QComboBox()
+        self.region_combo.setFont(get_body_font(size=12))
+        self.region_combo.addItem("None of the above")
+        self.region_combo.setMinimumWidth(200)
+        self.region_combo.setCurrentIndex(0)
+        self.region_combo.currentIndexChanged.connect(self.on_region_changed)
+        
+        filter_layout.addWidget(region_label)
+        filter_layout.addWidget(self.region_combo)
+        
+        main_layout.addWidget(filter_frame)
         
         # Buttons area
         buttons_layout = QHBoxLayout()
@@ -147,9 +166,49 @@ class HomePage(QWidget):
 
         # Reduce spacing between frames
         main_layout.addSpacing(5)
-    
+        
+        # Initialize regions dropdown with "None of the above" option
+        self.update_regions_dropdown()
+
     def on_country_changed(self, index):
         """Handle country selection change."""
         country = self.country_combo.currentText()
-        print(f"country changed to: {country}")
+        print(f"Country changed to: {country}")
         self.country_changed.emit(country)  # Emit signal with selected country
+        
+        # Update regions dropdown based on selected country
+        self.update_regions_dropdown()
+        
+        # Reset region selection to "None of the above"
+        self.region_combo.setCurrentIndex(0)
+
+    def update_regions_dropdown(self):
+        """Update regions dropdown based on selected country."""
+        # Store current selection if any
+        current_region = self.region_combo.currentText()
+        
+        # Clear the dropdown
+        self.region_combo.clear()
+        self.region_combo.addItem("None of the above")
+        
+        # Get the selected country
+        country = self.country_combo.currentText()
+        
+        # Add regions based on selected country
+        if country == "United States":
+            self.region_combo.addItems(["Washington", "Idaho", "Wisconsin", "Maine"])
+        elif country == "Canada":
+            self.region_combo.addItems(["New Brunswick", "Prince Edward Island", "Alberta", "Manitoba", "Quebec", "Saskatchewan"])
+        
+        # Try to restore previous selection if it's still available
+        index = self.region_combo.findText(current_region)
+        if index >= 0:
+            self.region_combo.setCurrentIndex(index)
+        else:
+            self.region_combo.setCurrentIndex(0)  # Default to "None of the above"
+
+    def on_region_changed(self, index):
+        """Handle region selection change."""
+        region = self.region_combo.currentText()
+        print(f"Region changed to: {region}")
+        self.region_changed.emit(region)  # Emit signal with selected region

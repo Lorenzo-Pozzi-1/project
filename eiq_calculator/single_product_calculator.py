@@ -198,6 +198,14 @@ class SingleProductCalculator(QWidget):
         self.clear_ai_table()
         self.rate_spin.setValue(0.0)
         self.eiq_results_display.update_result(0.0)
+
+    def update_region_filter(self, region):
+        """Update the region filter and reload product data."""
+        # Store the selected region
+        self.selected_region = region
+        
+        # Reload products with the new region filter
+        self.update_product_list()
     
     def update_product_list(self):
         """Update the product list based on selected product type."""

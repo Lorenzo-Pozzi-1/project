@@ -259,6 +259,18 @@ class ProductComparisonCalculator(QWidget):
             # Try to restore previous selection if possible
             if prev_index > 0 and prev_index < type_combo.count():
                 type_combo.setCurrentIndex(prev_index)
+
+    def update_region_filter(self, region):
+        """Update the region filter and reload product data."""
+        # Store the selected region
+        self.selected_region = region
+        
+        # Reset the table
+        self.comparison_selection_table.setRowCount(0)
+        self.comparison_results_table.setRowCount(0)
+        
+        # Add a new empty row
+        self.add_product_row()
     
     def update_product_info(self, row):
         """Update product information when a product is selected."""

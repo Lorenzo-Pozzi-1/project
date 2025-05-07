@@ -197,17 +197,28 @@ class ProductsListTab(QWidget):
         if not products:
             return
 
-        # Filter products by selected country
+        # Filter products by selected country and region
         filtered_products = []
-        selected_country = self.parent.parent.selected_country if self.parent and self.parent.parent and hasattr(self.parent.parent, 'selected_country') else None
+        selected_country = (self.parent.parent.selected_country 
+                        if self.parent and self.parent.parent and hasattr(self.parent.parent, 'selected_country') 
+                        else None)
+        selected_region = (self.parent.parent.selected_region 
+                        if self.parent and self.parent.parent and hasattr(self.parent.parent, 'selected_region') 
+                        else None)
         
-        if selected_country:
-            # Only include products for the selected country
-            filtered_products = [p for p in products if p.country == selected_country]
+        # Handle different filtering scenarios
+        if selected_country and selected_country != "None of the above":
+            if selected_region and selected_region != "None of the above":
+                # Filter by both country and region
+                filtered_products = [p for p in products if p.country == selected_country and 
+                                (p.region == selected_region or not p.region)]
+            else:
+                # Filter by country only
+                filtered_products = [p for p in products if p.country == selected_country]
         else:
-            # If no country selected, show all products
+            # No country filter, show all products
             filtered_products = products
-            
+                
         self.all_products = filtered_products  # Store filtered list of Product objects
         
         # Get the first product to determine column structure

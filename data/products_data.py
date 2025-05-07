@@ -350,3 +350,24 @@ def get_products_by_country(country):
     """
     products = load_products()
     return [product for product in products if product.country == country]
+
+def get_products_by_country_and_region(country, region=None):
+    """
+    Get all products for a specific country and optionally filtered by region.
+    
+    Args:
+        country (str): Country to filter by
+        region (str, optional): Region to filter by. If None, returns all products for the country.
+        
+    Returns:
+        list: List of Product objects for the specified country and region
+    """
+    products = load_products()
+    
+    # If region is None or "None of the above", return all products for the country
+    if not region or region == "None of the above":
+        return [product for product in products if product.country == country]
+    
+    # Return products that match both country and region, or country with no region
+    return [product for product in products 
+            if product.country == country and (product.region == region or not product.region)]

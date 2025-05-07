@@ -61,3 +61,11 @@ class EiqCalculatorPage(QWidget):
         # Update both calculator tabs
         self.single_product_calculator.update_country_filter(country)
         self.product_comparison_calculator.update_country_filter(country)
+
+    def update_region_filter(self, region):
+        """Update the region filter based on the selected region."""
+        self.selected_region = region
+        
+        # Update both calculator tabs
+        self.single_product_calculator.update_region_filter(region)
+        self.product_comparison_calculator.update_region_filter(region)
