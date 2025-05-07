@@ -112,11 +112,17 @@ class MainWindow(QMainWindow):
         """Update the selected country when the signal is emitted."""
         self.selected_country = country
         print(f"MainWindow updated selected country to: {self.selected_country}")
+        
+        # After updating filtered data in home_page, refresh other pages
+        self.eiq_calculator_page.refresh_product_data()
 
     def update_selected_region(self, region):
         """Update the selected region when the signal is emitted."""
         self.selected_region = region
         print(f"MainWindow updated selected region to: {self.selected_region}")
+        
+        # After updating filtered data in home_page, refresh other pages
+        self.eiq_calculator_page.refresh_product_data()
 
     def navigate_to_page(self, page_index):
         """Navigate to the specified page index."""
@@ -125,6 +131,9 @@ class MainWindow(QMainWindow):
             if page_index == 1:  # Products page
                 # Refresh the products page data before showing it
                 self.products_page.refresh_product_data()
+            elif page_index == 3:  # EIQ calculator page
+                # Refresh the EIQ calculator page data before showing it
+                self.eiq_calculator_page.refresh_product_data()
                 
             # Navigate to the page
             self.stacked_widget.setCurrentIndex(page_index)

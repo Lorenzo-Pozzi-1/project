@@ -178,17 +178,10 @@ class SingleProductCalculator(QWidget):
         # Update product list
         self.update_product_list()
 
-    def update_country_filter(self, country):
-        """Update the country filter and reload product data."""
-        # Store the selected country
-        self.selected_country = country
-        
-        # Reload products with the new country filter
+    def refresh_product_data(self):
+        """Refresh product data based on the filtered products data."""
+        # Reload products with the filtered data
         self.all_products = get_products_from_csv()
-        
-        # Apply country filter
-        if country and self.all_products:
-            self.all_products = [p for p in self.all_products if p.country == country]
         
         # Update the product list
         self.update_product_list()
@@ -198,14 +191,6 @@ class SingleProductCalculator(QWidget):
         self.clear_ai_table()
         self.rate_spin.setValue(0.0)
         self.eiq_results_display.update_result(0.0)
-
-    def update_region_filter(self, region):
-        """Update the region filter and reload product data."""
-        # Store the selected region
-        self.selected_region = region
-        
-        # Reload products with the new region filter
-        self.update_product_list()
     
     def update_product_list(self):
         """Update the product list based on selected product type."""

@@ -26,7 +26,6 @@ class EiqCalculatorPage(QWidget):
         """Initialize the EIQ calculator page."""
         super().__init__(parent)
         self.parent = parent
-        self.selected_country = None
         self.setup_ui()
     
     def setup_ui(self):
@@ -54,18 +53,11 @@ class EiqCalculatorPage(QWidget):
         
         main_layout.addWidget(self.tabs)
     
-    def update_country_filter(self, country):
-        """Update the country filter based on the selected country."""
-        self.selected_country = country
-        
+    def refresh_product_data(self):
+        """
+        Refresh product data based on the filtered products data.
+        This method is called when filtered data has changed in the main window.
+        """
         # Update both calculator tabs
-        self.single_product_calculator.update_country_filter(country)
-        self.product_comparison_calculator.update_country_filter(country)
-
-    def update_region_filter(self, region):
-        """Update the region filter based on the selected region."""
-        self.selected_region = region
-        
-        # Update both calculator tabs
-        self.single_product_calculator.update_region_filter(region)
-        self.product_comparison_calculator.update_region_filter(region)
+        self.single_product_calculator.refresh_product_data()
+        self.product_comparison_calculator.refresh_product_data()
