@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         
         self.config = config or {}
+        self.updating_products = False  # Add state variable to track product updates
         self.setup_window()
         self.init_fonts()
         self.init_ui()
@@ -113,25 +114,41 @@ class MainWindow(QMainWindow):
         self.selected_country = country
         print(f"MainWindow updated selected country to: {self.selected_country}")
         
+        # Set updating flag and refresh products data in the background
+        self.updating_products = True
+        
         # After updating filtered data in home_page, refresh other pages
         self.eiq_calculator_page.refresh_product_data()
+        self.products_page.refresh_product_data()
+        
+        # Clear the updating flag
+        self.updating_products = False
 
     def update_selected_region(self, region):
         """Update the selected region when the signal is emitted."""
         self.selected_region = region
         print(f"MainWindow updated selected region to: {self.selected_region}")
         
+        # Set updating flag and refresh products data in the background
+        self.updating_products = True
+        
         # After updating filtered data in home_page, refresh other pages
         self.eiq_calculator_page.refresh_product_data()
+        self.products_page.refresh_product_data()
+        
+        # Clear the updating flag
+        self.updating_products = False
 
     def navigate_to_page(self, page_index):
         """Navigate to the specified page index."""
+        # If we're currently updating products data, ignore navigation requests
+        if self.updating_products:
+            print("Ignoring navigation request while updating products data...")
+            return
+            
         if 0 <= page_index < self.stacked_widget.count():
             # Pre-navigation updates for specific pages
-            if page_index == 1:  # Products page
-                # Refresh the products page data before showing it
-                self.products_page.refresh_product_data()
-            elif page_index == 3:  # EIQ calculator page
+            if page_index == 3:  # EIQ calculator page
                 # Refresh the EIQ calculator page data before showing it
                 self.eiq_calculator_page.refresh_product_data()
                 
