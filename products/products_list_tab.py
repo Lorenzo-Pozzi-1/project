@@ -145,7 +145,7 @@ class ProductsListTab(QWidget):
         compare_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
         compare_button.clicked.connect(self.parent.compare_selected_products)
         compare_button.setMinimumWidth(300)
-        compare_button.setFont(get_body_font(size=11))
+        compare_button.setFont(get_body_font())
         
         main_layout.addWidget(compare_button, alignment=Qt.AlignRight)
     
@@ -160,7 +160,7 @@ class ProductsListTab(QWidget):
         
         # Filter title
         filter_title = QLabel("Filter Products")
-        filter_title.setFont(get_body_font(size=12, bold=True))
+        filter_title.setFont(get_body_font(bold=True))
         filter_layout.addWidget(filter_title)
         
         # Horizontal scrollable area for filter rows

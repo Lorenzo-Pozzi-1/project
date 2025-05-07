@@ -53,7 +53,7 @@ def get_subtitle_font(size=18, bold=True):
     font.setBold(bold)
     return font
 
-def get_body_font(size=11, bold=False):
+def get_body_font(size=12, bold=False):
     """Returns a default system font for body text."""
     font = QFont()
     font.setPointSize(size)

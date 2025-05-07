@@ -36,7 +36,7 @@ class ProductComparisonCalculator(QWidget):
         selection_layout = QVBoxLayout()
         
         selection_title = QLabel("Select Products to Compare")
-        selection_title.setFont(get_subtitle_font(size=16))
+        selection_title.setFont(get_subtitle_font())
         selection_layout.addWidget(selection_title)
         
         # Comparison selection table
@@ -85,7 +85,7 @@ class ProductComparisonCalculator(QWidget):
         results_layout = QVBoxLayout()
         
         results_title = QLabel("EIQ Comparison Results")
-        results_title.setFont(get_subtitle_font(size=16))
+        results_title.setFont(get_subtitle_font())
         results_layout.addWidget(results_title)
         
         # Results table

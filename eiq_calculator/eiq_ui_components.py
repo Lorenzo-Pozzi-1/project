@@ -281,17 +281,17 @@ class EiqResultDisplay(QWidget):
         
         # Results title
         results_title = QLabel("EIQ Results")
-        results_title.setFont(get_subtitle_font(size=16))
+        results_title.setFont(get_subtitle_font())
         layout.addWidget(results_title)
         
         # Field EIQ result layout
         field_eiq_layout = QHBoxLayout()
         field_eiq_label = QLabel("Field EIQ:")
-        field_eiq_label.setFont(get_body_font(size=14, bold=True))
+        field_eiq_label.setFont(get_subtitle_font(bold=True))
 
         # Single label for the entire result with consistent formatting
         self.field_eiq_result = QLabel("-- /ha")
-        self.field_eiq_result.setFont(get_body_font(size=16, bold=True))
+        self.field_eiq_result.setFont(get_subtitle_font(bold=True))
         
         field_eiq_layout.addWidget(field_eiq_label)
         field_eiq_layout.addWidget(self.field_eiq_result)

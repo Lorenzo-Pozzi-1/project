@@ -33,7 +33,7 @@ class ProductsComparisonTab(QWidget):
         # Message for when no products are selected
         self.no_selection_label = QLabel("Select products from the list tab and click 'Compare Selected Products'")
         self.no_selection_label.setAlignment(Qt.AlignCenter)
-        self.no_selection_label.setFont(get_body_font(size=12))
+        self.no_selection_label.setFont(get_body_font())
         main_layout.addWidget(self.no_selection_label)
         
         # Comparison table (initially hidden)

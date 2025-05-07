@@ -49,7 +49,7 @@ class HomePage(QWidget):
         # Title
         title_label = QLabel("LORENZO POZZI Pesticide App")
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setFont(get_title_font(size=24))
+        title_label.setFont(get_title_font())
         main_layout.addWidget(title_label)
         
         # country and region selection area
@@ -60,10 +60,10 @@ class HomePage(QWidget):
         
         # Country selection
         country_label = QLabel("Select country:")
-        country_label.setFont(get_body_font(size=12))
+        country_label.setFont(get_body_font())
         
         self.country_combo = QComboBox()
-        self.country_combo.setFont(get_body_font(size=12))
+        self.country_combo.setFont(get_body_font())
         self.country_combo.addItems([
             "Canada", "United States"
         ])
@@ -79,10 +79,10 @@ class HomePage(QWidget):
         
         # Region selection
         region_label = QLabel("Select region:")
-        region_label.setFont(get_body_font(size=12))
+        region_label.setFont(get_body_font())
         
         self.region_combo = QComboBox()
-        self.region_combo.setFont(get_body_font(size=12))
+        self.region_combo.setFont(get_body_font())
         self.region_combo.addItem("None of the above")
         self.region_combo.setMinimumWidth(200)
         self.region_combo.setCurrentIndex(0)
@@ -148,7 +148,7 @@ class HomePage(QWidget):
         
         # EIQ info title
         info_title = QLabel("About Environmental Impact Quotient (EIQ)")
-        info_title.setFont(get_subtitle_font(size=16))
+        info_title.setFont(get_subtitle_font())
         info_layout.addWidget(info_title)
         
         # Improved EIQ description with better formatting and concise information
