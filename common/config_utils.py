@@ -66,34 +66,3 @@ def save_config(config):
     except IOError as e:
         print(f"Error saving config: {e}")
         return False
-
-
-def get_config_value(config, key, default=None):
-    """
-    Get a configuration value with a fallback default.
-    
-    Args:
-        config (dict): The configuration dictionary
-        key (str): The configuration key to retrieve
-        default: The default value if key is not found
-    
-    Returns:
-        The configuration value or default
-    """
-    return config.get(key, default)
-
-
-def update_config_value(config, key, value):
-    """
-    Update a configuration value and save the configuration.
-    
-    Args:
-        config (dict): The configuration dictionary
-        key (str): The configuration key to update
-        value: The new value
-    
-    Returns:
-        bool: True if successful, False otherwise
-    """
-    config[key] = value
-    return save_config(config)
