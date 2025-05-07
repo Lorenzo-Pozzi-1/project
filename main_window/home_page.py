@@ -5,6 +5,8 @@ This module defines the HomePage class which serves as the main navigation
 screen for the application.
 """
 
+import os
+import json
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
     QComboBox, QFrame, QSizePolicy, QSpacerItem
@@ -14,6 +16,7 @@ from PySide6.QtGui import QFont
 
 from common.styles import get_title_font, get_body_font, get_subtitle_font, PRIMARY_COLOR, MARGIN_LARGE, SPACING_LARGE, SECONDARY_COLOR, YELLOW_BAR_STYLE
 from common.widgets import FeatureButton, ContentFrame
+from data.products_data import load_products
 
 
 class HomePage(QWidget):
@@ -169,7 +172,10 @@ class HomePage(QWidget):
         
         # Initialize regions dropdown with "None of the above" option
         self.update_regions_dropdown()
-
+        
+        # Initial filtering of products
+        self.filter_products_to_json()
+    
     def on_country_changed(self, index):
         """Handle country selection change."""
         country = self.country_combo.currentText()
@@ -181,7 +187,10 @@ class HomePage(QWidget):
         
         # Reset region selection to "None of the above"
         self.region_combo.setCurrentIndex(0)
-
+        
+        # Filter products based on new selection
+        self.filter_products_to_json()
+    
     def update_regions_dropdown(self):
         """Update regions dropdown based on selected country."""
         # Store current selection if any
@@ -206,9 +215,51 @@ class HomePage(QWidget):
             self.region_combo.setCurrentIndex(index)
         else:
             self.region_combo.setCurrentIndex(0)  # Default to "None of the above"
-
+    
     def on_region_changed(self, index):
         """Handle region selection change."""
         region = self.region_combo.currentText()
         print(f"Region changed to: {region}")
         self.region_changed.emit(region)  # Emit signal with selected region
+        
+        # Filter products based on new selection
+        self.filter_products_to_json()
+    
+    def filter_products_to_json(self):
+        """Filter products based on selected country and region, save to JSON file."""
+        # Load all products from original source
+        products = load_products()
+        filtered_products = []
+        
+        # Get selected country and region
+        selected_country = self.country_combo.currentText()
+        selected_region = self.region_combo.currentText()
+        
+        # Apply filtering based on selections
+        if selected_country and selected_country != "None of the above":
+            if selected_region and selected_region != "None of the above":
+                # Filter by both country and region
+                # Include products that match the country AND either:
+                # 1. Match the selected region, OR
+                # 2. Have no region specified (None/empty)
+                filtered_products = [p for p in products if p.country == selected_country and 
+                                   (p.region == selected_region or not p.region)]
+            else:
+                # Filter by country only
+                filtered_products = [p for p in products if p.country == selected_country]
+        else:
+            # No country filter, show all products
+            filtered_products = products
+        
+        # Convert to dictionaries for JSON serialization
+        filtered_product_dicts = [p.to_dict() for p in filtered_products]
+        
+        # Ensure data directory exists
+        os.makedirs("data", exist_ok=True)
+        
+        # Save to filtered JSON file
+        filtered_json_path = os.path.join("data", "filtered_products.json")
+        with open(filtered_json_path, 'w', encoding='utf-8') as file:
+            json.dump(filtered_product_dicts, file, indent=4, ensure_ascii=False)
+        
+        print(f"Filtered products saved to {filtered_json_path}: {len(filtered_products)} products")

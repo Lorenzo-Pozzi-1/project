@@ -13,7 +13,7 @@ from PySide6.QtGui import QColor, QBrush
 
 from common.styles import get_title_font, get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
 from common.widgets import ToxicityBar
-from data.products_data import load_products, get_product_by_name
+from data.products_data import load_products, get_product_by_name, load_filtered_products
 from eiq_calculator.eiq_conversions import convert_concentration_to_percent
 from eiq_calculator.eiq_calculations import format_eiq_result, get_impact_category
 
@@ -23,14 +23,14 @@ from eiq_calculator.eiq_calculations import format_eiq_result, get_impact_catego
 
 def get_products_from_csv():
     """
-    Load products from CSV data.
-    If CSV data is not available, return an empty list.
+    Load products from filtered products data.
+    If filtered data is not available, return an empty list.
     """
     try:
-        products = load_products()
+        products = load_filtered_products()
         return products
     except Exception as e:
-        print(f"Error loading products from CSV: {e}")
+        print(f"Error loading filtered products: {e}")
         return []
 
 def get_product_display_names():

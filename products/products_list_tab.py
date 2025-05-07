@@ -11,7 +11,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QBrush, QCursor, QIcon
 
 from common.styles import get_body_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
-from data.products_data import load_products
+from data.products_data import load_products, load_filtered_products
 
 
 class FilterRow(QWidget):
@@ -190,40 +190,20 @@ class ProductsListTab(QWidget):
         main_layout.addWidget(filter_container, 0)
     
     def load_product_data(self):
-        """Load product data from the database using the load_products function."""
+        """Load product data from the filtered products JSON file."""
         self.products_table.setRowCount(0)
-        products = load_products()
+        
+        # Load products from filtered JSON
+        products = load_filtered_products()
         
         if not products:
             return
-
-        # Filter products by selected country and region
-        filtered_products = []
-        selected_country = (self.parent.parent.selected_country 
-                        if self.parent and self.parent.parent and hasattr(self.parent.parent, 'selected_country') 
-                        else None)
-        selected_region = (self.parent.parent.selected_region 
-                        if self.parent and self.parent.parent and hasattr(self.parent.parent, 'selected_region') 
-                        else None)
-        
-        # Handle different filtering scenarios
-        if selected_country and selected_country != "None of the above":
-            if selected_region and selected_region != "None of the above":
-                # Filter by both country and region
-                filtered_products = [p for p in products if p.country == selected_country and 
-                                (p.region == selected_region or not p.region)]
-            else:
-                # Filter by country only
-                filtered_products = [p for p in products if p.country == selected_country]
-        else:
-            # No country filter, show all products
-            filtered_products = products
-                
-        self.all_products = filtered_products  # Store filtered list of Product objects
+            
+        self.all_products = products  # Store filtered list of Product objects
         
         # Get the first product to determine column structure
-        if filtered_products:
-            first_product = filtered_products[0].to_dict()
+        if products:
+            first_product = products[0].to_dict()
             
             # Get all keys from the product dictionary
             self.column_keys = list(first_product.keys())
@@ -304,11 +284,11 @@ class ProductsListTab(QWidget):
             # Add initial filter row
             self.add_filter_row()
 
-        # Set row count for filtered products
-        self.products_table.setRowCount(len(filtered_products))
+        # Set row count for products
+        self.products_table.setRowCount(len(products))
         
         # Populate the table with product data
-        for row, product in enumerate(filtered_products):
+        for row, product in enumerate(products):
             product_dict = product.to_dict()
 
             # Add checkbox for product selection

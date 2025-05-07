@@ -12,8 +12,9 @@ import csv
 from data.product_model import Product
 
 # Paths to data files
-DB_FILE = os.path.join("data", "products.json")
 CSV_FILE = os.path.join("data", "NEW_products.csv")
+DB_FILE = os.path.join("data", "products.json")
+FILTERED_DB_FILE = os.path.join("data", "filtered_products.json")
 
 def csv_to_dict(csv_file):
     """
@@ -175,6 +176,29 @@ def load_products():
             print(f"Error loading product data from JSON: {e}")
             return []
 
+def load_filtered_products():
+    """
+    Load products from the filtered products JSON file.
+    
+    Returns:
+        list: List of Product objects from the filtered dataset
+    """
+    # Ensure database exists
+    if not os.path.exists(FILTERED_DB_FILE):
+        # If filtered file doesn't exist, use the regular load_products function
+        return load_products()
+    
+    try:
+        products = []
+        # Read from the filtered JSON file
+        with open(FILTERED_DB_FILE, 'r', encoding='utf-8') as file:
+            product_data = json.load(file)
+            products = [Product.from_dict(item) for item in product_data]
+            return products
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"Error loading filtered product data: {e}")
+        # Fallback to regular load_products
+        return load_products()
 
 def save_products(products):
     """

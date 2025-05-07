@@ -16,8 +16,7 @@ from products.products_page import ProductsPage
 from season_planner.season_planner_page import SeasonPlannerPage
 from eiq_calculator.eiq_calculator_page import EiqCalculatorPage
 from common.styles import YELLOW_BAR_STYLE, setup_app_palette
-from data.products_data import DB_FILE
-
+from data.products_data import DB_FILE, FILTERED_DB_FILE
 
 class MainWindow(QMainWindow):
     """
@@ -31,28 +30,19 @@ class MainWindow(QMainWindow):
         super().__init__()
         
         self.config = config or {}
-        self.selected_country = None
         self.setup_window()
         self.init_fonts()
         self.init_ui()
-
-         # Connect the country_changed and region_changed signals
+        
+        # Connect the country_changed and region_changed signals to update stored values
         self.home_page.country_changed.connect(self.update_selected_country)
         self.home_page.region_changed.connect(self.update_selected_region)
-        self.home_page.country_changed.connect(self.products_page.update_country_filter)
-        self.home_page.region_changed.connect(self.products_page.update_region_filter)
-        self.home_page.country_changed.connect(self.eiq_calculator_page.update_country_filter)
-        self.home_page.region_changed.connect(self.eiq_calculator_page.update_region_filter)
         
-        # Set initial values (after the connections are established)
+        # Set initial country and region values
         initial_country = self.home_page.country_combo.currentText()
         initial_region = self.home_page.region_combo.currentText()
         self.update_selected_country(initial_country)
         self.update_selected_region(initial_region)
-        self.products_page.update_country_filter(initial_country)
-        self.products_page.update_region_filter(initial_region)
-        self.eiq_calculator_page.update_country_filter(initial_country)
-        self.eiq_calculator_page.update_region_filter(initial_region)
         
     def setup_window(self):
         """Set up the window properties."""
@@ -131,6 +121,7 @@ class MainWindow(QMainWindow):
     def navigate_to_page(self, page_index):
         """Navigate to the specified page index."""
         if 0 <= page_index < self.stacked_widget.count():
+            # Navigate to the page
             self.stacked_widget.setCurrentIndex(page_index)
     
     def go_home(self):
@@ -144,13 +135,19 @@ class MainWindow(QMainWindow):
         This is called when the application is being closed.
         It deletes the products.json file and cleans up __pycache__ directories.
         """
-        # Clean up the products.json file
+        # Clean up the products.json and filtered products files
         try:
+            # Remove the main database file
             if os.path.exists(DB_FILE):
                 os.remove(DB_FILE)
                 print(f"Successfully deleted {DB_FILE}")
+            
+            # Also remove the filtered database file
+            if os.path.exists(FILTERED_DB_FILE):
+                os.remove(FILTERED_DB_FILE)
+                print(f"Successfully deleted {FILTERED_DB_FILE}")
         except Exception as e:
-            print(f"Error deleting products.json file: {e}")
+            print(f"Error deleting database files: {e}")
         
         # Clean up all __pycache__ directories - Windows compatible approach
         try:
