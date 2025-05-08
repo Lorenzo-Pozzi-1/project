@@ -5,7 +5,7 @@ This module defines the MainWindow class which serves as the container
 for all pages in the application.
 """
 
-import os
+import os, shutil
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget
 from PySide6.QtCore import Signal
 from data.product_repository import ProductRepository
@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
         
         self.setWindowTitle("LORENZO POZZI - Pesticide App")
         self.setMinimumSize(900, 700)
-        self.showMaximized()
+        # self.showMaximized()
                 
     def init_ui(self):
         """Initialize the UI components."""
@@ -137,44 +137,20 @@ class MainWindow(QMainWindow):
         self.stacked_widget.setCurrentIndex(0)
     
     def closeEvent(self, event):
-        """
-        Handle the close event for the main window.
-        
-        This is called when the application is being closed.
-        It cleans up __pycache__ directories.
-        """
-        # Clean up __pycache__ directories - Windows compatible approach
+        """Handle the close event, clean up __pycache__ directories."""
         try:
-            # Start at the root directory of the application
+            # Find and remove all __pycache__ directories 
             app_dir = os.path.dirname(os.path.abspath(__file__))
-            root_dir = os.path.dirname(app_dir)  # Go up one level to get the project root
-            
-            # Track deleted files for reporting
-            deleted_files = 0
-            total_files = 0
-            
-            # Walk through all directories
-            for dirpath, dirnames, filenames in os.walk(root_dir):
-                if os.path.basename(dirpath) == "__pycache__":
-                    for file in filenames:
-                        total_files += 1
-                        if file.endswith('.pyc') or file.endswith('.pyo'):
-                            try:
-                                os.remove(os.path.join(dirpath, file))
-                                deleted_files += 1
-                            except Exception:
-                                pass
-                    
-                    # Try to remove the directory if empty
-                    try:
-                        remaining_files = os.listdir(dirpath)
-                        if not remaining_files:
-                            os.rmdir(dirpath)
-                    except Exception:
-                        pass
-            
-            if deleted_files > 0:
-                print(f"Cleanup complete: Deleted {deleted_files} of {total_files} cached Python files")
+            root_dir = os.path.dirname(app_dir)
+            for dirpath, dirnames, _ in os.walk(root_dir):
+                for dirname in dirnames:
+                    if dirname == "__pycache__":
+                        cache_path = os.path.join(dirpath, dirname)
+                        try:
+                            shutil.rmtree(cache_path)
+                        except Exception:
+                            pass
+                
         except Exception as e:
             print(f"Error during cache cleanup: {e}")
         

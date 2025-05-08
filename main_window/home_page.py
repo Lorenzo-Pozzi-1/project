@@ -54,9 +54,7 @@ class HomePage(QWidget):
         
         self.country_combo = QComboBox()
         self.country_combo.setFont(get_body_font())
-        self.country_combo.addItems([
-            "Canada", "United States"
-        ])
+        self.country_combo.addItems(["Canada", "United States"])
         self.country_combo.setMinimumWidth(200)
         self.country_combo.setCurrentIndex(0)
         self.country_combo.currentIndexChanged.connect(self.on_country_changed)
@@ -77,6 +75,8 @@ class HomePage(QWidget):
         self.region_combo.setMinimumWidth(200)
         self.region_combo.setCurrentIndex(0)
         self.region_combo.currentIndexChanged.connect(self.on_region_changed)
+        
+        self.update_regions_dropdown()
         
         filter_layout.addWidget(region_label)
         filter_layout.addWidget(self.region_combo)
@@ -119,7 +119,6 @@ class HomePage(QWidget):
         warning_frame = ContentFrame()
         warning_layout = QVBoxLayout()
         
-        # Warning title with improved styling
         warning_title = QLabel("! ALWAYS CHECK LABELS !") 
         warning_title.setFont(get_subtitle_font(size=20))
         warning_title.setStyleSheet("color: red; font-weight: bold; background-color: #FFEEEE; padding: 5px;")
@@ -129,7 +128,7 @@ class HomePage(QWidget):
         warning_frame.layout.addLayout(warning_layout)
         main_layout.addWidget(warning_frame)
         
-        # Reduce spacing between frames
+        # Add spacing between frames
         main_layout.addSpacing(5)
         
         # EIQ info section
@@ -162,35 +161,21 @@ class HomePage(QWidget):
 
         # Reduce spacing between frames
         main_layout.addSpacing(5)
-        
-        # Initialize regions dropdown with "None of the above" option
-        self.update_regions_dropdown()
-    
-    def on_country_changed(self, index):
+
+    def on_country_changed(self, _):
         """Handle country selection change."""
         if self.initializing:
-            return  # Skip during initialization
-                
+            return  # Skip during initialization      
         country = self.country_combo.currentText()
         print(f"Country changed to: {country}")
         
-        # Block signals temporarily to prevent cascading events  
-        old_block_state = self.region_combo.blockSignals(True)
-        
-        # Update regions dropdown based on selected country
-        self.update_regions_dropdown()
-        
-        # Reset region selection to "None of the above"  
-        self.region_combo.setCurrentIndex(0)
-        
-        # Get the new region value after reset
-        region = self.region_combo.currentText()
-        
-        # Restore original signal blocking state
-        self.region_combo.blockSignals(old_block_state)
-        
-        # Emit signal for the country change
-        self.country_changed.emit(country)
+        # Update the region dropdown based on the selected country
+        old_block_state = self.region_combo.blockSignals(True)  # Block signals temporarily to prevent cascading events  
+        self.update_regions_dropdown() # Update regions dropdown based on selected country
+        self.region_combo.setCurrentIndex(0) # Reset region selection to "None of the above" 
+        region = self.region_combo.currentText() # Get the new region value after reset
+        self.region_combo.blockSignals(old_block_state) # Restore original signal blocking state
+        self.country_changed.emit(country) # Emit signal for the country change
         
         # Also update the region in the parent window to ensure synchronization
         if self.parent and hasattr(self.parent, 'selected_region'):
