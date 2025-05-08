@@ -9,7 +9,6 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboB
 from PySide6.QtCore import Qt, Signal
 from common.styles import get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE
 from common.widgets import FeatureButton, ContentFrame
-from data.product_repository import ProductRepository
 
 class HomePage(QWidget):
     """

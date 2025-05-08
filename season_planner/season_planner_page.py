@@ -7,7 +7,6 @@ or from a previous year's plan.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QStackedWidget
-
 from common.styles import MARGIN_LARGE, SPACING_LARGE
 from common.widgets import HeaderWithBackButton, FeatureButton
 from season_planner.new_season_page import NewSeasonPage

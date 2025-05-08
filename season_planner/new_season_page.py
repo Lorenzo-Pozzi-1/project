@@ -7,7 +7,6 @@ a new season plan from scratch with multiple scenarios.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTabWidget, QTableWidget, QFrame
 from PySide6.QtCore import Qt
-
 from common.styles import MARGIN_LARGE, SPACING_LARGE, get_body_font, PRIMARY_BUTTON_STYLE
 from common.widgets import HeaderWithBackButton
 

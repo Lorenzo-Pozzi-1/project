@@ -6,7 +6,6 @@ Updated to support multiple active ingredients and detailed EIQ data.
 Adapted for the NEW_products.csv format.
 """
 
-
 class Product:
     """
     Represents a pesticide product.
