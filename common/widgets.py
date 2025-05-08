@@ -35,7 +35,7 @@ class HeaderWithBackButton(QWidget):
         self.back_button.clicked.connect(self.back_clicked.emit)
         layout.addWidget(self.back_button)
         
-        # Title without yellow period
+        # Title
         self.title_label = QLabel(self.title)
         self.title_label.setAlignment(Qt.AlignCenter)
         self.title_label.setFont(get_title_font(size=20))
@@ -49,7 +49,7 @@ class FeatureButton(QPushButton):
     """
     A custom button for feature selection on the home page.
     
-    Features a title, description, and consistent styling.
+    Has a title, description, and consistent styling.
     """
     def __init__(self, title, description, parent=None):
         """Initialize with the given title and description."""
@@ -69,7 +69,7 @@ class FeatureButton(QPushButton):
         layout.setContentsMargins(MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM)
         layout.setSpacing(SPACING_MEDIUM)
         
-        # Title without yellow period
+        # Title
         title_label = QLabel(self.title)
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setFont(get_title_font(size=14))
@@ -88,7 +88,7 @@ class ColorCodedTableItem(QTableWidgetItem):
     """
     A table item that can be color-coded based on its value.
     
-    Useful for EIQ scores and other numeric values that have thresholds.
+    Useful for field EIQ scores and other numeric values that have thresholds.
     """
     def __init__(self, value, low_threshold=15, high_threshold=30, 
                  low_color=QColor(200, 255, 200), 
@@ -150,12 +150,12 @@ class ContentFrame(QFrame):
         self.layout.setSpacing(10)
 
 
-class ToxicityBar(QWidget):
-    """A color gradient bar displaying toxicity levels from Low to High."""
+class ScoreBar(QWidget):
+    """A color gradient bar for displaying field EIQ scores from Low to High."""
     
     def __init__(self, parent=None, low_threshold=33.3, high_threshold=66.6):
         """
-        Initialize the toxicity bar widget.
+        Initialize the scorebar widget.
         
         Args:
             parent: Parent widget
@@ -177,18 +177,18 @@ class ToxicityBar(QWidget):
         self.low_color = QColor("#77DD77")  # Pastel green
         self.medium_color = QColor("#FFF275")  # Pastel yellow
         self.high_color = QColor("#FF6961")  # Pastel red
-        self.border_color = QColor("#CCCCCC")
-        self.text_color = QColor("#333333")
+        self.border_color = QColor("#CCCCCC") # Light gray
+        self.text_color = QColor("#333333") # Dark gray
         
         # Category colors - defined once
         self.category_text_colors = {
-            "Low": QColor("#1E8449"),
-            "Medium": QColor("#B7950B"),
-            "High": QColor("#B03A2E"),
-            "EXTREME": QColor("#B03A2E")
+            "Low": QColor("#1E8449"), # Dark green
+            "Medium": QColor("#B7950B"), # Dark yellow
+            "High": QColor("#B03A2E"), # Dark red
+            "EXTREME": QColor("#B03A2E") # Dark red
         }
         
-        # Set minimum size - increased height to make room for text
+        # Set minimum size
         self.setMinimumSize(200, 140)
         
         # Simple layout with just margins
@@ -208,8 +208,8 @@ class ToxicityBar(QWidget):
         self.label_text = label_text
         self.update()
     
-    def get_toxicity_level(self):
-        """Get the toxicity level based on the current value."""
+    def get_score_level(self):
+        """Get the field EIQ score level based on the current value."""
         if self.current_value > 100:
             return "EXTREME"
         elif self.current_value < self.low_threshold:
@@ -288,7 +288,7 @@ class ToxicityBar(QWidget):
     
     def _draw_marker_and_text(self, painter, bar_x, bar_y, bar_width, bar_height):
         """Draw the position marker and text label."""
-        toxicity_level = self.get_toxicity_level()
+        score_level = self.get_score_level()
         
         # Cap the marker position at the end of the bar
         marker_value = min(self.current_value, self.max_value) 
@@ -309,10 +309,10 @@ class ToxicityBar(QWidget):
         painter.setPen(QPen(QColor("#333333"), 1))
         painter.drawPolygon(points)
         
-        # Set color based on toxicity level
-        text_color = self.category_text_colors.get(toxicity_level, self.category_text_colors["High"])
+        # Set color based on field EIQ score level
+        text_color = self.category_text_colors.get(score_level, self.category_text_colors["High"])
         
-        # Draw the toxicity level text
+        # Draw the field EIQ score level text
         painter.setFont(get_body_font(size=15, bold=True))
         painter.setPen(QPen(text_color, 1))
         
@@ -323,4 +323,4 @@ class ToxicityBar(QWidget):
         text_x = max(bar_x, min(marker_x - text_width/2, bar_x + bar_width - text_width))
         
         level_rect = QRect(text_x, text_y, text_width, 20)
-        painter.drawText(level_rect, Qt.AlignCenter, toxicity_level)
+        painter.drawText(level_rect, Qt.AlignCenter, score_level)

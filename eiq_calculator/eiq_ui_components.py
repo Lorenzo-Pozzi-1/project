@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEd
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QBrush
 from common.styles import get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
-from common.widgets import ToxicityBar
+from common.widgets import ScoreBar
 from data.product_repository import ProductRepository
 from eiq_calculator.eiq_conversions import convert_concentration_to_percent
 from eiq_calculator.eiq_calculations import format_eiq_result, get_impact_category
@@ -264,7 +264,7 @@ class ProductSearchField(QWidget):
         self.suggestions_container.setVisible(False)
 
 class EiqResultDisplay(QWidget):
-    """A widget for displaying EIQ results with toxicity bar and rating."""
+    """A widget for displaying EIQ results with score bar and rating."""
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -297,26 +297,26 @@ class EiqResultDisplay(QWidget):
         
         layout.addLayout(field_eiq_layout)
         
-        # Toxicity bar (replacing the gauge)
-        self.toxicity_bar = ToxicityBar(
+        # Score bar (replacing the gauge)
+        self.score_bar = ScoreBar(
             low_threshold=33.3,  # Adjust based on your EIQ thresholds
             high_threshold=66.6  # Adjust based on your EIQ thresholds
         )
-        layout.addWidget(self.toxicity_bar)
+        layout.addWidget(self.score_bar)
     
     def update_result(self, field_eiq):
         """Update the EIQ result display with the calculated value."""
         if field_eiq <= 0:
             self.field_eiq_result.setText("-- /ha")
-            self.toxicity_bar.set_value(0, "No calculation")
+            self.score_bar.set_value(0, "No calculation")
             return
             
         # Format result with per-ha values only
         self.field_eiq_result.setText(format_eiq_result(field_eiq))
         
-        # Update toxicity bar
+        # Update score bar
         rating, _ = get_impact_category(field_eiq)
-        self.toxicity_bar.set_value(field_eiq, rating)
+        self.score_bar.set_value(field_eiq, rating)
 
 class ColorCodedEiqItem(QTableWidgetItem):
     """A table item specifically for EIQ values with automatic color coding."""

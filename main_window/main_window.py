@@ -1,5 +1,5 @@
 """
-Main application window for the LORENZO POZZI Pesticide App
+Main application window for the Pesticide App
 
 This module defines the MainWindow class which serves as the container
 for all pages in the application.
@@ -7,7 +7,6 @@ for all pages in the application.
 
 import os
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget
-from PySide6.QtGui import QIcon, QFontDatabase
 from PySide6.QtCore import Signal
 from data.product_repository import ProductRepository
 from main_window.home_page import HomePage
@@ -27,46 +26,21 @@ class MainWindow(QMainWindow):
     filters_changed = Signal() # Signal to notify when filters change
 
     def __init__(self, config=None):
-        """Initialize the main window with configuration."""
+        """Initialize the main window and configuration."""
+        
         super().__init__()
-        
-        self.config = config or {}
-        self.updating_products = False  # Add state variable to track product updates
-
-        self.selected_country = None
-        self.selected_region = None
-
+        self.config = config or {}        
         self.setup_window()
-        self.init_fonts()
         self.init_ui()
-        
-        self.initialize_product_filters()
+        self.apply_filters("Canada", "None of the above")
         
     def setup_window(self):
         """Set up the window properties."""
-        # Set window properties
-        self.setWindowTitle("LORENZO POZZI Pesticide App")
+        
+        self.setWindowTitle("LORENZO POZZI - Pesticide App")
         self.setMinimumSize(900, 700)
         self.showMaximized()
-        
-        # Set window icon (if available)
-        icon_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "icon.png")
-        if os.path.exists(icon_path):
-            self.setWindowIcon(QIcon(icon_path))
-    
-    def init_fonts(self):
-        """Initialize and load fonts for titles."""
-        # Load Red Hat Display fonts
-        font_paths = [
-            os.path.join(os.path.dirname(__file__), "common", "RedHatDisplay-Black.ttf"),
-            os.path.join(os.path.dirname(__file__), "common", "RedHatDisplay-Bold.ttf"),
-            os.path.join(os.path.dirname(__file__), "common", "RedHatDisplay-Regular.ttf")
-        ]
-        
-        for font_path in font_paths:
-            if os.path.exists(font_path):
-                QFontDatabase.addApplicationFont(font_path)
-    
+                
     def init_ui(self):
         """Initialize the UI components."""
         # Create central widget to hold the layout
@@ -103,7 +77,7 @@ class MainWindow(QMainWindow):
         self.yellow_bar.setStyleSheet(YELLOW_BAR_STYLE)
         main_layout.addWidget(self.yellow_bar)
         
-        # Connect our new signal to page refresh methods
+        # Connect signal to page refresh methods
         self.filters_changed.connect(self.refresh_pages)
         
         # Connect the country_changed and region_changed signals to handler methods
@@ -112,28 +86,6 @@ class MainWindow(QMainWindow):
         
         # Start with the home page
         self.stacked_widget.setCurrentIndex(0)
-
-    def initialize_product_filters(self):
-        """Initialize product filters at startup."""
-        # Get initial country and region values from home page
-        initial_country = self.home_page.country_combo.currentText()
-        initial_region = self.home_page.region_combo.currentText()
-        
-        # Store the selected values
-        self.selected_country = initial_country
-        self.selected_region = initial_region
-        
-        # Apply filters only once at startup
-        repo = ProductRepository.get_instance()
-        repo.set_filters(initial_country, initial_region)
-
-        # Force filtered products to be generated
-        filtered_products = repo.get_filtered_products()
-        
-        # Refresh all pages with the initial filtered data
-        self.refresh_pages()
-        
-        print(f"Initial filters applied - Country: {initial_country}, Region: {initial_region}")
 
     def apply_filters(self, country, region):
         """Centralized method to apply filters to products."""
@@ -157,32 +109,26 @@ class MainWindow(QMainWindow):
     
     def on_country_changed(self, country):
         """Handle country change event."""
-        region = "None of the above"
-        self.apply_filters(country, region)
+        self.apply_filters(country, "None of the above")
 
     def on_region_changed(self, region):
         """Handle region change event."""
         self.apply_filters(self.selected_country, region)
 
     def refresh_pages(self):
-        """Refresh all pages that display product data."""
+        """Refresh all pages to get product data up to date with filters."""
         self.eiq_calculator_page.refresh_product_data()
         self.products_page.refresh_product_data()
-        # Add any other pages that need refreshing here
+        # In the future add any other pages here
 
     def navigate_to_page(self, page_index):
         """Navigate to the specified page index."""
-        # If we're currently updating products data, ignore navigation requests
+        
         if self.updating_products:
-            print("Ignoring navigation request while updating products data...")
+            print("Please wait, I'm updating the products data...")
             return
             
         if 0 <= page_index < self.stacked_widget.count():
-            # Pre-navigation updates for specific pages
-            if page_index == 3:  # EIQ calculator page
-                # Refresh the EIQ calculator page data before showing it
-                self.eiq_calculator_page.refresh_product_data()
-                
             # Navigate to the page
             self.stacked_widget.setCurrentIndex(page_index)
     

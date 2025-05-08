@@ -19,7 +19,6 @@ DEFAULT_CONFIG = {
 # Configuration file path
 CONFIG_FILE = "config.json"
 
-
 def load_config():
     """
     Load configuration from file or create default if it doesn't exist.
@@ -46,7 +45,6 @@ def load_config():
         # Create default config file
         save_config(DEFAULT_CONFIG)
         return DEFAULT_CONFIG
-
 
 def save_config(config):
     """

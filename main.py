@@ -2,44 +2,35 @@
 """
 LORENZO POZZI Pesticide App - Main Application Entry Point
 
-This module serves as the entry point for the LORENZO POZZI Pesticide App.
+This module serves as the entry point for the App.
 It initializes the application, sets up the main window, and starts the event loop.
 """
 
-import sys
-import os
-from PySide6.QtWidgets import QApplication
+import os, sys
 from PySide6.QtCore import QDir
-
-from main_window.main_window import MainWindow
+from PySide6.QtWidgets import QApplication
 from common.config_utils import load_config
 from data.product_repository import ProductRepository
+from main_window.main_window import MainWindow
 
-# Clear the terminal screen for a clean start
+# Clear the terminal screen
 print("\033c", end="")
 
-# Set the environment variable for Qt logging rules to suppress debug messages
-os.environ['QT_LOGGING_RULES'] = '*=false'
-
-def setup_environment():
-    """Setup the application environment."""
-        
-    # Set the current working directory to the application's directory
-    app_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(app_dir)
-    QDir.setCurrent(app_dir)
+# Silence messages when resiszing the window
+os.environ['QT_LOGGING_RULES'] = '*=false' 
 
 def main():
     """Main application entry point."""
-    # Setup the environment
-    setup_environment()
+    
+    # Set the current directory as working directory 
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(app_dir)
+    QDir.setCurrent(app_dir)
     
     # Create the Qt application
     app = QApplication(sys.argv)
-    
-    # Set application style and properties
     app.setStyle("Fusion")
-    app.setApplicationName("Lorenzo Pozzi Pesticide App")
+    app.setApplicationName("Pesticides App")
     app.setOrganizationName("Lorenzo Pozzi")
     
     # Load application configuration
