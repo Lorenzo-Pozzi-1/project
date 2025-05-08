@@ -13,6 +13,7 @@ from PySide6.QtCore import QDir
 
 from main_window.main_window import MainWindow
 from common.config_utils import load_config
+from data.products_data import initialize_database
 
 # Clear the terminal screen for a clean start
 print("\033c", end="")
@@ -43,6 +44,9 @@ def main():
     
     # Load application configuration
     config = load_config()
+    
+    # Initialize the product repository
+    initialize_database()
     
     # Create and show the main window
     window = MainWindow(config)

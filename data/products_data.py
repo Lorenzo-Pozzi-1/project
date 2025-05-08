@@ -1,17 +1,15 @@
 """
 Product data module for the LORENZO POZZI Pesticide App.
 
-This module provides functions to load and manage product data.
-The data can be initialized from a CSV file and is stored in JSON format.
-Updated to work with NEW_products.csv format.
+This module provides utility functions for initializing product data from CSV.
+All data access should go through the ProductRepository.
 """
 
-import os, json, csv
+import os, csv
+from data.product_repository import ProductRepository
 
 # Paths to data files
 CSV_FILE = os.path.join("data", "NEW_products.csv")
-DB_FILE = os.path.join("data", "products.json")
-FILTERED_DB_FILE = os.path.join("data", "filtered_products.json")
 
 def csv_to_dict(csv_file):
     """
@@ -44,59 +42,28 @@ def csv_to_dict(csv_file):
 
 def initialize_database():
     """
-    Initialize the product database if it doesn't exist.
-    
-    Tries to load from CSV file.
-    Creates the data directory and populates it with product data.
+    Initialize the product repository if it doesn't have data.
     
     Returns:
         bool: True if initialization was performed, False if not needed
     """
-    # Create data directory if it doesn't exist
-    os.makedirs(os.path.dirname(DB_FILE), exist_ok=True)
+    # Get the repository instance
+    repo = ProductRepository.get_instance()
     
-    # Check if database file exists
-    if not os.path.exists(DB_FILE):
-        # Try to load from CSV first
-        if os.path.exists(CSV_FILE):
-            product_data = csv_to_dict(CSV_FILE)
-            
-            if product_data:
-                # Create database with CSV data
-                with open(DB_FILE, 'w', encoding='utf-8') as file:
-                    json.dump(product_data, file, indent=4, ensure_ascii=False)
-                return True
+    # Check if repository already has products
+    if repo.get_all_products():
+        return False
     
-    return False
+    # Force a refresh from CSV
+    return repo.refresh_from_csv()
 
 
 def refresh_from_csv():
     """
-    Refresh the product database from the CSV file.
-    
-    This allows updating the database when the CSV file changes.
+    Refresh the product repository from the CSV file.
     
     Returns:
         bool: True if successful, False otherwise
     """
-    if not os.path.exists(CSV_FILE):
-        print(f"CSV file not found: {CSV_FILE}")
-        return False
-    
-    try:
-        # Load data from CSV
-        product_data = csv_to_dict(CSV_FILE)
-        
-        if not product_data:
-            print("No data found in CSV file")
-            return False
-        
-        # Save to database file
-        with open(DB_FILE, 'w', encoding='utf-8') as file:
-            json.dump(product_data, file, indent=4, ensure_ascii=False)
-        
-        return True
-    
-    except Exception as e:
-        print(f"Error refreshing database from CSV: {e}")
-        return False
+    repo = ProductRepository.get_instance()
+    return repo.refresh_from_csv()

@@ -5,8 +5,6 @@ This module defines the HomePage class which serves as the main navigation
 screen for the application.
 """
 
-import os
-import json
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QFrame
 from PySide6.QtCore import Qt, Signal
 
@@ -32,7 +30,7 @@ class HomePage(QWidget):
         self.initializing = True  # Flag to avoid multiple filtering during setup
         self.setup_ui()
         self.initializing = False  # Setup complete
-        self.filter_products_to_json()  # Now do the initial filtering just once
+        self.apply_filters()  # Now do the initial filtering just once
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -187,7 +185,7 @@ class HomePage(QWidget):
         self.region_combo.setCurrentIndex(0)
         
         # Filter products based on new selection
-        self.filter_products_to_json()
+        self.apply_filters()
     
     def update_regions_dropdown(self):
         """Update regions dropdown based on selected country."""
@@ -224,10 +222,10 @@ class HomePage(QWidget):
         self.region_changed.emit(region)  # Emit signal with selected region
         
         # Filter products based on new selection
-        self.filter_products_to_json()
+        self.apply_filters()
     
-    def filter_products_to_json(self):
-        """Filter products based on selected country and region."""
+    def apply_filters(self):
+        """Apply filters to the product repository."""
         # Get selected country and region
         selected_country = self.country_combo.currentText()
         selected_region = self.region_combo.currentText()
@@ -235,17 +233,7 @@ class HomePage(QWidget):
         # Use repository to handle filtering
         repo = ProductRepository.get_instance()
         repo.set_filters(selected_country, selected_region)
-        filtered_products = repo.get_filtered_products()
         
-        # Convert to dictionaries for JSON serialization
-        filtered_product_dicts = [p.to_dict() for p in filtered_products]
-        
-        # Ensure data directory exists
-        os.makedirs("data", exist_ok=True)
-        
-        # Save to filtered JSON file for backward compatibility
-        filtered_json_path = os.path.join("data", "filtered_products.json")
-        with open(filtered_json_path, 'w', encoding='utf-8') as file:
-            json.dump(filtered_product_dicts, file, indent=4, ensure_ascii=False)
-        
-        print(f"Filtered products saved to {filtered_json_path}: {len(filtered_products)} products")
+        # No need to convert to JSON or write to file anymore
+        print(f"Applied filters - Country: {selected_country}, Region: {selected_region}")
+        print(f"Filtered products count: {len(repo.get_filtered_products())}")

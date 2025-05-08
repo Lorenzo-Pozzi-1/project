@@ -14,7 +14,6 @@ from products.products_page import ProductsPage
 from season_planner.season_planner_page import SeasonPlannerPage
 from eiq_calculator.eiq_calculator_page import EiqCalculatorPage
 from common.styles import YELLOW_BAR_STYLE
-from data.products_data import DB_FILE, FILTERED_DB_FILE
 
 class MainWindow(QMainWindow):
     """
@@ -162,23 +161,9 @@ class MainWindow(QMainWindow):
         Handle the close event for the main window.
         
         This is called when the application is being closed.
-        It deletes the products.json file and cleans up __pycache__ directories.
+        It cleans up __pycache__ directories.
         """
-        # Clean up the products.json and filtered products files
-        try:
-            # Remove the main database file
-            if os.path.exists(DB_FILE):
-                os.remove(DB_FILE)
-                print(f"Successfully deleted {DB_FILE}")
-            
-            # Also remove the filtered database file
-            if os.path.exists(FILTERED_DB_FILE):
-                os.remove(FILTERED_DB_FILE)
-                print(f"Successfully deleted {FILTERED_DB_FILE}")
-        except Exception as e:
-            print(f"Error deleting database files: {e}")
-        
-        # Clean up all __pycache__ directories - Windows compatible approach
+        # Clean up __pycache__ directories - Windows compatible approach
         try:
             # Start at the root directory of the application
             app_dir = os.path.dirname(os.path.abspath(__file__))
