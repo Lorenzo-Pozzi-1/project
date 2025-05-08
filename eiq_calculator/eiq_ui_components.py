@@ -6,14 +6,14 @@ This module provides UI components for EIQ calculations and display.
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget,
-    QFrame, QScrollArea, QTableWidgetItem, QSizePolicy
+    QFrame, QScrollArea, QTableWidgetItem
 )
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QBrush
+from PySide6.QtGui import QBrush
 
-from common.styles import get_title_font, get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
+from common.styles import get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
 from common.widgets import ToxicityBar
-from data.products_data import load_products, get_product_by_name, load_filtered_products
+from data.products_data import get_product_by_name, load_filtered_products
 from eiq_calculator.eiq_conversions import convert_concentration_to_percent
 from eiq_calculator.eiq_calculations import format_eiq_result, get_impact_category
 

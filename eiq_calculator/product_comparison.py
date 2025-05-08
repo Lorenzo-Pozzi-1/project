@@ -5,15 +5,14 @@ This module provides the ProductComparisonCalculator widget for comparing EIQ
 values of multiple pesticide products with improved UOM management.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox, QFrame, QGridLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QBrush
 
 from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from common.widgets import ContentFrame
 from eiq_calculator.eiq_ui_components import get_products_from_csv, ColorCodedEiqItem
-from eiq_calculator.eiq_calculations import calculate_product_field_eiq, format_eiq_result
-from eiq_calculator.eiq_conversions import convert_concentration_to_percent, convert_concentration_to_decimal, APPLICATION_RATE_CONVERSION
+from eiq_calculator.eiq_calculations import calculate_product_field_eiq
+from eiq_calculator.eiq_conversions import convert_concentration_to_percent, APPLICATION_RATE_CONVERSION
 
 
 class ProductComparisonCalculator(QWidget):
@@ -101,12 +100,6 @@ class ProductComparisonCalculator(QWidget):
         
         results_frame.layout.addLayout(results_layout)
         main_layout.addWidget(results_frame)
-        
-        # Export button
-        export_button = QPushButton("Export Comparison")
-        export_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        export_button.clicked.connect(self.export_comparison)
-        main_layout.addWidget(export_button, alignment=Qt.AlignRight)
     
     def add_product_row(self):
         """Add a new row to the comparison selection table."""
@@ -458,8 +451,3 @@ class ProductComparisonCalculator(QWidget):
         # Iterate through all products in the selection table
         for row in range(self.comparison_selection_table.rowCount()):
             self.calculate_single_row(row)
-    
-    def export_comparison(self):
-        """Export comparison results to a file."""
-        print("Export comparison results")
-        # In a real application, this would export to CSV or PDF

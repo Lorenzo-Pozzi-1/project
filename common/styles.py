@@ -6,7 +6,6 @@ colors, fonts, and dimensions.
 """
 
 from PySide6.QtGui import QFont, QColor, QPalette
-from PySide6.QtCore import Qt
 
 # Primary color palette 
 PRIMARY_COLOR = "#fee000"       # Yellow

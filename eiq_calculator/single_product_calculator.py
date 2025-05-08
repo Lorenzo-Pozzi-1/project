@@ -7,17 +7,15 @@ It supports displaying multiple active ingredients (up to 4) with improved UOM h
 """
 
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, 
-    QFormLayout, QDoubleSpinBox, QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QFormLayout, QDoubleSpinBox, QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy
 )
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QBrush
 
 from common.styles import PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE, get_body_font
 from common.widgets import ContentFrame
-from eiq_calculator.eiq_ui_components import get_products_from_csv, get_product_info, ProductSearchField, EiqResultDisplay
+from eiq_calculator.eiq_ui_components import get_products_from_csv, ProductSearchField, EiqResultDisplay
 from eiq_calculator.eiq_calculations import calculate_product_field_eiq
-from eiq_calculator.eiq_conversions import convert_concentration_to_percent, convert_concentration_to_decimal, APPLICATION_RATE_CONVERSION
+from eiq_calculator.eiq_conversions import APPLICATION_RATE_CONVERSION
 
 
 class SingleProductCalculator(QWidget):
@@ -159,21 +157,6 @@ class SingleProductCalculator(QWidget):
         self.eiq_results_display = EiqResultDisplay()
         results_frame.layout.addWidget(self.eiq_results_display)
         layout.addWidget(results_frame)
-        
-        # Save and Export buttons
-        buttons_layout = QHBoxLayout()
-        
-        save_button = QPushButton("Save Calculation")
-        save_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        
-        export_button = QPushButton("Export Results")
-        export_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        
-        buttons_layout.addWidget(save_button)
-        buttons_layout.addWidget(export_button)
-        buttons_layout.addStretch(1)
-        
-        layout.addLayout(buttons_layout)
         
         # Update product list
         self.update_product_list()

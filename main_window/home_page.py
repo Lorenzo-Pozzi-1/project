@@ -7,14 +7,10 @@ screen for the application.
 
 import os
 import json
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-    QComboBox, QFrame, QSizePolicy, QSpacerItem
-)
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QFrame
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QFont
 
-from common.styles import get_title_font, get_body_font, get_subtitle_font, PRIMARY_COLOR, MARGIN_LARGE, SPACING_LARGE, SECONDARY_COLOR, YELLOW_BAR_STYLE
+from common.styles import get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE
 from common.widgets import FeatureButton, ContentFrame
 from data.products_data import load_products
 

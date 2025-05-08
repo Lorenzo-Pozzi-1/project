@@ -6,16 +6,14 @@ for all pages in the application.
 """
 
 import os
-import shutil
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon, QFontDatabase
 
 from main_window.home_page import HomePage
 from products.products_page import ProductsPage
 from season_planner.season_planner_page import SeasonPlannerPage
 from eiq_calculator.eiq_calculator_page import EiqCalculatorPage
-from common.styles import YELLOW_BAR_STYLE, setup_app_palette
+from common.styles import YELLOW_BAR_STYLE
 from data.products_data import DB_FILE, FILTERED_DB_FILE
 
 class MainWindow(QMainWindow):

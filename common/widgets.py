@@ -4,17 +4,15 @@ Common custom widgets for the LORENZO POZZI Pesticide App
 This module provides reusable custom widgets used throughout the application.
 """
 
-import math
-from PySide6.QtCore import Qt, Signal, QSize, QRect, QRectF, QPointF
-from PySide6.QtGui import QFont, QColor, QBrush, QPainter, QPen, QLinearGradient
+from PySide6.QtCore import Qt, Signal, QRect, QPointF
+from PySide6.QtGui import QColor, QBrush, QPainter, QPen, QLinearGradient
 from PySide6.QtWidgets import (
     QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, 
-    QSizePolicy, QWidget, QTableWidget, QTableWidgetItem, QSpacerItem
+    QSizePolicy, QWidget, QTableWidgetItem, QSpacerItem
 )
 
 from common.styles import (
-    PRIMARY_COLOR, WHITE, FEATURE_BUTTON_STYLE, PRIMARY_BUTTON_STYLE,
-    SECONDARY_BUTTON_STYLE, get_title_font, get_body_font, 
+    FEATURE_BUTTON_STYLE, SECONDARY_BUTTON_STYLE, get_title_font, get_body_font, 
     MARGIN_MEDIUM, SPACING_MEDIUM
 )
 

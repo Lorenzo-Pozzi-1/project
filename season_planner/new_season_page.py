@@ -5,14 +5,11 @@ This module defines the NewSeasonPage class which allows users to create
 a new season plan from scratch with multiple scenarios.
 """
 
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, 
-    QTabWidget, QTableWidget, QFrame, QSizePolicy, QSpacerItem
-)
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTabWidget, QTableWidget, QFrame
+from PySide6.QtCore import Qt
 
-from common.styles import MARGIN_LARGE, SPACING_LARGE, get_subtitle_font, get_body_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
-from common.widgets import HeaderWithBackButton, ContentFrame
+from common.styles import MARGIN_LARGE, SPACING_LARGE, get_body_font, PRIMARY_BUTTON_STYLE
+from common.widgets import HeaderWithBackButton
 
 class NewSeasonPage(QWidget):
     """
