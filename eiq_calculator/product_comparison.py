@@ -7,7 +7,6 @@ values of multiple pesticide products with improved UOM management.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox
 from PySide6.QtCore import Qt
-
 from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository

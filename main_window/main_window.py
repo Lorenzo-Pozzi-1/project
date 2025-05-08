@@ -8,7 +8,6 @@ for all pages in the application.
 import os
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget
 from PySide6.QtGui import QIcon, QFontDatabase
-
 from main_window.home_page import HomePage
 from products.products_page import ProductsPage
 from season_planner.season_planner_page import SeasonPlannerPage

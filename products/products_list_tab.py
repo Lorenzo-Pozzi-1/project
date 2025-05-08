@@ -8,7 +8,6 @@ and filtering functionality with an improved filtering system and optimized layo
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTableWidget, QTableWidgetItem, 
                                 QHeaderView, QCheckBox, QComboBox, QLineEdit, QFrame, QScrollArea, QSizePolicy)
 from PySide6.QtCore import Qt, Signal
-
 from common.styles import get_body_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from data.product_repository import ProductRepository
 

@@ -2,13 +2,12 @@
 Product Repository for the LORENZO POZZI Pesticide App.
 
 This module provides a centralized repository for accessing and filtering 
-product data, with caching for performance optimization.
+product data, with CSV loading and caching for performance optimization.
 """
 
 import csv
 import os
 from typing import List, Optional
-
 from data.product_model import Product
 
 class ProductRepository:
@@ -31,7 +30,6 @@ class ProductRepository:
     def __init__(self):
         """Initialize the repository."""
         self.csv_file = os.path.join("data", "NEW_products.csv")
-        self.db_file = os.path.join("data", "products.json")
         
         # Cache storage
         self._all_products = None  # List of all Product objects
@@ -126,3 +124,33 @@ class ProductRepository:
                 return product
         
         return None
+    
+    @staticmethod
+    def csv_to_dict(csv_file):
+        """
+        Convert CSV file to a list of dictionaries.
+        
+        Args:
+            csv_file (str): Path to the CSV file
+        
+        Returns:
+            list: List of dictionaries with product data
+        """
+        product_data = []
+        
+        try:
+            # Use cp1252 encoding for the NEW_products.csv file
+            with open(csv_file, 'r', newline='', encoding='cp1252') as file:
+                # Explicitly set quoting parameters to handle strings with commas
+                reader = csv.DictReader(file, quotechar='"', skipinitialspace=True)
+                for row in reader:
+                    # Clean the row keys to handle potential whitespace in headers
+                    cleaned_row = {k.strip(): v.strip() if isinstance(v, str) else v 
+                                  for k, v in row.items() if k is not None}
+                    product_data.append(cleaned_row)
+            
+            return product_data
+        
+        except (IOError, csv.Error) as e:
+            print(f"Error reading CSV file: {e}")
+            return []

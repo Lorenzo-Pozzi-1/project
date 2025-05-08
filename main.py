@@ -13,7 +13,7 @@ from PySide6.QtCore import QDir
 
 from main_window.main_window import MainWindow
 from common.config_utils import load_config
-from data.products_data import initialize_database
+from data.product_repository import ProductRepository
 
 # Clear the terminal screen for a clean start
 print("\033c", end="")
@@ -46,7 +46,8 @@ def main():
     config = load_config()
     
     # Initialize the product repository
-    initialize_database()
+    repo = ProductRepository.get_instance()
+    repo.get_all_products()  # This will load the products if not already loaded
     
     # Create and show the main window
     window = MainWindow(config)

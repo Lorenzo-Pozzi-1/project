@@ -4,13 +4,9 @@ EIQ UI Components for the LORENZO POZZI Pesticide App.
 This module provides UI components for EIQ calculations and display.
 """
 
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget,
-    QFrame, QScrollArea, QTableWidgetItem
-)
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QFrame, QScrollArea, QTableWidgetItem
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QBrush
-
 from common.styles import get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
 from common.widgets import ToxicityBar
 from data.product_repository import ProductRepository

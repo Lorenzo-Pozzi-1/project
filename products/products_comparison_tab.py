@@ -7,7 +7,6 @@ comparison functionality.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtCore import Qt
-
 from common.styles import get_body_font
 
 
