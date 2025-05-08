@@ -12,8 +12,7 @@ from PySide6.QtCore import Qt, Signal
 
 from common.styles import get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE
 from common.widgets import FeatureButton, ContentFrame
-from data.products_data import load_products
-
+from data.product_repository import ProductRepository
 
 class HomePage(QWidget):
     """
@@ -228,30 +227,15 @@ class HomePage(QWidget):
         self.filter_products_to_json()
     
     def filter_products_to_json(self):
-        """Filter products based on selected country and region, save to JSON file."""
-        # Load all products from original source
-        products = load_products()
-        filtered_products = []
-        
+        """Filter products based on selected country and region."""
         # Get selected country and region
         selected_country = self.country_combo.currentText()
         selected_region = self.region_combo.currentText()
         
-        # Apply filtering based on selections
-        if selected_country and selected_country != "None of the above":
-            if selected_region and selected_region != "None of the above":
-                # Filter by both country and region
-                # Include products that match the country AND either:
-                # 1. Match the selected region, OR
-                # 2. Have no region specified (None/empty)
-                filtered_products = [p for p in products if p.country == selected_country and 
-                                   (p.region == selected_region or not p.region)]
-            else:
-                # Filter by country only
-                filtered_products = [p for p in products if p.country == selected_country]
-        else:
-            # No country filter, show all products
-            filtered_products = products
+        # Use repository to handle filtering
+        repo = ProductRepository.get_instance()
+        repo.set_filters(selected_country, selected_region)
+        filtered_products = repo.get_filtered_products()
         
         # Convert to dictionaries for JSON serialization
         filtered_product_dicts = [p.to_dict() for p in filtered_products]
@@ -259,7 +243,7 @@ class HomePage(QWidget):
         # Ensure data directory exists
         os.makedirs("data", exist_ok=True)
         
-        # Save to filtered JSON file
+        # Save to filtered JSON file for backward compatibility
         filtered_json_path = os.path.join("data", "filtered_products.json")
         with open(filtered_json_path, 'w', encoding='utf-8') as file:
             json.dump(filtered_product_dicts, file, indent=4, ensure_ascii=False)

@@ -11,8 +11,7 @@ from common.styles import MARGIN_LARGE, SPACING_MEDIUM, SECONDARY_BUTTON_STYLE
 from common.widgets import HeaderWithBackButton
 from products.products_list_tab import ProductsListTab
 from products.products_comparison_tab import ProductsComparisonTab
-from data.products_data import refresh_from_csv
-
+from data.product_repository import ProductRepository
 
 class ProductsPage(QWidget):
     """
@@ -79,7 +78,8 @@ class ProductsPage(QWidget):
     
     def reset(self):
         """Refresh product data from CSV file and reload the products list."""
-        if refresh_from_csv():
+        repo = ProductRepository.get_instance()
+        if repo.refresh_from_csv():
             # Clear any selections
             self.selected_products = []
             

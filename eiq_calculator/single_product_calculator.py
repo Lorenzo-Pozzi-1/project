@@ -7,13 +7,14 @@ It supports displaying multiple active ingredients (up to 4) with improved UOM h
 """
 
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QFormLayout, QDoubleSpinBox, QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy
+    QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QFormLayout, QDoubleSpinBox, QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy
 )
 from PySide6.QtCore import Qt
 
-from common.styles import PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE, get_body_font
+from common.styles import get_body_font
 from common.widgets import ContentFrame
-from eiq_calculator.eiq_ui_components import get_products_from_csv, ProductSearchField, EiqResultDisplay
+from data.product_repository import ProductRepository
+from eiq_calculator.eiq_ui_components import ProductSearchField, EiqResultDisplay
 from eiq_calculator.eiq_calculations import calculate_product_field_eiq
 from eiq_calculator.eiq_conversions import APPLICATION_RATE_CONVERSION
 
@@ -56,7 +57,8 @@ class SingleProductCalculator(QWidget):
         product_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
         
         # Load products data
-        self.all_products = get_products_from_csv()
+        repo = ProductRepository.get_instance()
+        self.all_products = repo.get_filtered_products()
         
         # Product type selection
         self.product_type_combo = QComboBox()
@@ -162,9 +164,10 @@ class SingleProductCalculator(QWidget):
         self.update_product_list()
 
     def refresh_product_data(self):
-        """Refresh product data based on the filtered products data."""
+        """Refresh product data based on the filtered products."""
         # Reload products with the filtered data
-        self.all_products = get_products_from_csv()
+        repo = ProductRepository.get_instance()
+        self.all_products = repo.get_filtered_products()
         
         # Update the product list
         self.update_product_list()

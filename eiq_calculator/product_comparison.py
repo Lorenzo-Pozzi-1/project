@@ -10,6 +10,7 @@ from PySide6.QtCore import Qt
 
 from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from common.widgets import ContentFrame
+from data.product_repository import ProductRepository
 from eiq_calculator.eiq_ui_components import get_products_from_csv, ColorCodedEiqItem
 from eiq_calculator.eiq_calculations import calculate_product_field_eiq
 from eiq_calculator.eiq_conversions import convert_concentration_to_percent, APPLICATION_RATE_CONVERSION
@@ -203,7 +204,8 @@ class ProductComparisonCalculator(QWidget):
             return
         
         # Get products filtered by type
-        products = get_products_from_csv()
+        repo = ProductRepository.get_instance()
+        products = repo.get_filtered_products()
         filtered_products = [p for p in products if p.product_type == product_type]
         
         # Update product combo

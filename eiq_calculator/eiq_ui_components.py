@@ -13,7 +13,7 @@ from PySide6.QtGui import QBrush
 
 from common.styles import get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
 from common.widgets import ToxicityBar
-from data.products_data import get_product_by_name, load_filtered_products
+from data.product_repository import ProductRepository
 from eiq_calculator.eiq_conversions import convert_concentration_to_percent
 from eiq_calculator.eiq_calculations import format_eiq_result, get_impact_category
 
@@ -23,11 +23,12 @@ from eiq_calculator.eiq_calculations import format_eiq_result, get_impact_catego
 
 def get_products_from_csv():
     """
-    Load products from filtered products data.
+    Load products from repository.
     If filtered data is not available, return an empty list.
     """
     try:
-        products = load_filtered_products()
+        repo = ProductRepository.get_instance()
+        products = repo.get_filtered_products()
         return products
     except Exception as e:
         print(f"Error loading filtered products: {e}")
@@ -45,7 +46,7 @@ def get_product_display_names():
 
 def get_product_info(product_name):
     """
-    Get product information from CSV
+    Get product information from repository
     
     Args:
         product_name (str): Name of the product
@@ -53,8 +54,9 @@ def get_product_info(product_name):
     Returns:
         dict: Product data containing ai1_eiq, ai_percent, etc.
     """
-    # First try to get product from CSV
-    product = get_product_by_name(product_name.split(" (")[0])
+    # First try to get product from repository
+    repo = ProductRepository.get_instance()
+    product = repo.get_product_by_name(product_name.split(" (")[0])
     
     if product:
         # Now using AI1 EIQ instead of base EIQ

@@ -10,8 +10,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, Q
 from PySide6.QtCore import Qt, Signal
 
 from common.styles import get_body_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
-from data.products_data import load_filtered_products
-
+from data.product_repository import ProductRepository
 
 class FilterRow(QWidget):
     """
@@ -189,11 +188,12 @@ class ProductsListTab(QWidget):
         main_layout.addWidget(filter_container, 0)
     
     def load_product_data(self):
-        """Load product data from the filtered products JSON file."""
+        """Load product data from the repository."""
         self.products_table.setRowCount(0)
         
-        # Load products from filtered JSON
-        products = load_filtered_products()
+        # Load products from repository
+        repo = ProductRepository.get_instance()
+        products = repo.get_filtered_products()
         
         if not products:
             return

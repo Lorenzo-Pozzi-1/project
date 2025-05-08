@@ -6,10 +6,7 @@ The data can be initialized from a CSV file and is stored in JSON format.
 Updated to work with NEW_products.csv format.
 """
 
-import os
-import json
-import csv
-from data.product_model import Product
+import os, json, csv
 
 # Paths to data files
 CSV_FILE = os.path.join("data", "NEW_products.csv")
@@ -103,101 +100,3 @@ def refresh_from_csv():
     except Exception as e:
         print(f"Error refreshing database from CSV: {e}")
         return False
-
-
-def load_products():
-    """
-    Load all products from the database.
-    
-    Returns:
-        list: List of Product objects
-    """
-    # Ensure database exists
-    initialize_database()
-    
-    try:
-        products = []
-        # Read directly from the CSV to ensure we have the latest data
-        with open(CSV_FILE, newline='', encoding='cp1252') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                # Clean row data
-                cleaned_row = {k.strip(): v.strip() if isinstance(v, str) else v for k, v in row.items() if k is not None}
-                product = Product.from_dict(cleaned_row)
-                products.append(product)
-        return products
-    except (IOError) as e:
-        print(f"Error loading product data from CSV: {e}")
-        
-        # Try loading from JSON as fallback
-        try:
-            with open(DB_FILE, 'r', encoding='utf-8') as file:
-                product_data = json.load(file)
-                products = [Product.from_dict(item) for item in product_data]
-                return products
-        except (json.JSONDecodeError, IOError) as e:
-            print(f"Error loading product data from JSON: {e}")
-            return []
-
-def load_filtered_products():
-    """
-    Load products from the filtered products JSON file.
-    
-    Returns:
-        list: List of Product objects from the filtered dataset
-    """
-    # Ensure database exists
-    if not os.path.exists(FILTERED_DB_FILE):
-        # If filtered file doesn't exist, use the regular load_products function
-        return load_products()
-    
-    try:
-        products = []
-        # Read from the filtered JSON file
-        with open(FILTERED_DB_FILE, 'r', encoding='utf-8') as file:
-            product_data = json.load(file)
-            products = [Product.from_dict(item) for item in product_data]
-            return products
-    except (json.JSONDecodeError, IOError) as e:
-        print(f"Error loading filtered product data: {e}")
-        # Fallback to regular load_products
-        return load_products()
-
-def get_product_by_name(product_name):
-    """
-    Get a specific product by name.
-    
-    Args:
-        product_name (str): Name of product to retrieve
-    
-    Returns:
-        Product: The requested product or None if not found
-    """
-    products = load_products()
-    
-    for product in products:
-        if product.product_name == product_name:
-            return product
-    
-    return None
-
-def get_products_by_country_and_region(country, region=None):
-    """
-    Get all products for a specific country and optionally filtered by region.
-    
-    Args:
-        country (str): Country to filter by
-        region (str, optional): Region to filter by. If None, returns all products for the country.
-        
-    Returns:
-        list: List of Product objects for the specified country and region
-    """
-    products = load_products()
-    
-    # If region is None or "None of the above", return all products for the country
-    if not region or region == "None of the above":
-        return [product for product in products if product.country == country]
-    
-    # Return products that match both country and region, or country with no region
-    return [product for product in products 
-            if product.country == country and (product.region == region or not product.region)]
