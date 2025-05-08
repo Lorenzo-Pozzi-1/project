@@ -54,9 +54,9 @@ class EiqCalculatorPage(QWidget):
     
     def refresh_product_data(self):
         """
-        Refresh product data based on the filtered products data.
+        Refresh product data based on the filtered products.
         This method is called when filtered data has changed in the main window.
         """
-        # Update both calculator tabs
+        # Update both calculator tabs with the current filtered data
         self.single_product_calculator.refresh_product_data()
         self.product_comparison_calculator.refresh_product_data()

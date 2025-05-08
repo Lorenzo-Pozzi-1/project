@@ -29,7 +29,6 @@ class HomePage(QWidget):
         self.initializing = True  # Flag to avoid multiple filtering during setup
         self.setup_ui()
         self.initializing = False  # Setup complete
-        self.apply_filters()  # Now do the initial filtering just once
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -172,19 +171,31 @@ class HomePage(QWidget):
         """Handle country selection change."""
         if self.initializing:
             return  # Skip during initialization
-            
+                
         country = self.country_combo.currentText()
         print(f"Country changed to: {country}")
-        self.country_changed.emit(country)  # Emit signal with selected country
+        
+        # Block signals temporarily to prevent cascading events  
+        old_block_state = self.region_combo.blockSignals(True)
         
         # Update regions dropdown based on selected country
         self.update_regions_dropdown()
         
-        # Reset region selection to "None of the above"
+        # Reset region selection to "None of the above"  
         self.region_combo.setCurrentIndex(0)
         
-        # Filter products based on new selection
-        self.apply_filters()
+        # Get the new region value after reset
+        region = self.region_combo.currentText()
+        
+        # Restore original signal blocking state
+        self.region_combo.blockSignals(old_block_state)
+        
+        # Emit signal for the country change
+        self.country_changed.emit(country)
+        
+        # Also update the region in the parent window to ensure synchronization
+        if self.parent and hasattr(self.parent, 'selected_region'):
+            self.parent.selected_region = region
     
     def update_regions_dropdown(self):
         """Update regions dropdown based on selected country."""
@@ -215,24 +226,9 @@ class HomePage(QWidget):
         """Handle region selection change."""
         if self.initializing:
             return  # Skip during initialization
-            
+                
         region = self.region_combo.currentText()
         print(f"Region changed to: {region}")
-        self.region_changed.emit(region)  # Emit signal with selected region
         
-        # Filter products based on new selection
-        self.apply_filters()
-    
-    def apply_filters(self):
-        """Apply filters to the product repository."""
-        # Get selected country and region
-        selected_country = self.country_combo.currentText()
-        selected_region = self.region_combo.currentText()
-        
-        # Use repository to handle filtering
-        repo = ProductRepository.get_instance()
-        repo.set_filters(selected_country, selected_region)
-        
-        # No need to convert to JSON or write to file anymore
-        print(f"Applied filters - Country: {selected_country}, Region: {selected_region}")
-        print(f"Filtered products count: {len(repo.get_filtered_products())}")
+        # Emit signal with selected region - MainWindow will handle filtering
+        self.region_changed.emit(region)

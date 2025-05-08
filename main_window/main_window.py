@@ -8,6 +8,8 @@ for all pages in the application.
 import os
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget
 from PySide6.QtGui import QIcon, QFontDatabase
+from PySide6.QtCore import Signal
+from data.product_repository import ProductRepository
 from main_window.home_page import HomePage
 from products.products_page import ProductsPage
 from season_planner.season_planner_page import SeasonPlannerPage
@@ -21,25 +23,24 @@ class MainWindow(QMainWindow):
     The MainWindow uses a QStackedWidget to switch between different pages
     of the application.
     """
+
+    filters_changed = Signal() # Signal to notify when filters change
+
     def __init__(self, config=None):
         """Initialize the main window with configuration."""
         super().__init__()
         
         self.config = config or {}
         self.updating_products = False  # Add state variable to track product updates
+
+        self.selected_country = None
+        self.selected_region = None
+
         self.setup_window()
         self.init_fonts()
         self.init_ui()
         
-        # Connect the country_changed and region_changed signals to update stored values
-        self.home_page.country_changed.connect(self.update_selected_country)
-        self.home_page.region_changed.connect(self.update_selected_region)
-        
-        # Set initial country and region values
-        initial_country = self.home_page.country_combo.currentText()
-        initial_region = self.home_page.region_combo.currentText()
-        self.update_selected_country(initial_country)
-        self.update_selected_region(initial_region)
+        self.initialize_product_filters()
         
     def setup_window(self):
         """Set up the window properties."""
@@ -102,38 +103,72 @@ class MainWindow(QMainWindow):
         self.yellow_bar.setStyleSheet(YELLOW_BAR_STYLE)
         main_layout.addWidget(self.yellow_bar)
         
+        # Connect our new signal to page refresh methods
+        self.filters_changed.connect(self.refresh_pages)
+        
+        # Connect the country_changed and region_changed signals to handler methods
+        self.home_page.country_changed.connect(self.on_country_changed)
+        self.home_page.region_changed.connect(self.on_region_changed)
+        
         # Start with the home page
         self.stacked_widget.setCurrentIndex(0)
-    
-    def update_selected_country(self, country):
-        """Update the selected country when the signal is emitted."""
-        self.selected_country = country
-        print(f"MainWindow updated selected country to: {self.selected_country}")
-        
-        # Set updating flag and refresh products data in the background
-        self.updating_products = True
-        
-        # After updating filtered data in home_page, refresh other pages
-        self.eiq_calculator_page.refresh_product_data()
-        self.products_page.refresh_product_data()
-        
-        # Clear the updating flag
-        self.updating_products = False
 
-    def update_selected_region(self, region):
-        """Update the selected region when the signal is emitted."""
-        self.selected_region = region
-        print(f"MainWindow updated selected region to: {self.selected_region}")
+    def initialize_product_filters(self):
+        """Initialize product filters at startup."""
+        # Get initial country and region values from home page
+        initial_country = self.home_page.country_combo.currentText()
+        initial_region = self.home_page.region_combo.currentText()
         
-        # Set updating flag and refresh products data in the background
+        # Store the selected values
+        self.selected_country = initial_country
+        self.selected_region = initial_region
+        
+        # Apply filters only once at startup
+        repo = ProductRepository.get_instance()
+        repo.set_filters(initial_country, initial_region)
+
+        # Force filtered products to be generated
+        filtered_products = repo.get_filtered_products()
+        
+        # Refresh all pages with the initial filtered data
+        self.refresh_pages()
+        
+        print(f"Initial filters applied - Country: {initial_country}, Region: {initial_region}")
+
+    def apply_filters(self, country, region):
+        """Centralized method to apply filters to products."""
+        # Set updating flag to prevent navigation during updates
         self.updating_products = True
+            
+        # Store the selected values
+        self.selected_country = country
+        self.selected_region = region
         
-        # After updating filtered data in home_page, refresh other pages
+        # Apply filters to the repository
+        repo = ProductRepository.get_instance()
+        repo.set_filters(country, region)
+        
+        print(f"Filters applied - Country: {country}, Region: {region}")
+        print(f"Filtered products count: {len(repo.get_filtered_products())}")
+        
+        # Notify pages to refresh their views
+        self.filters_changed.emit()
+        self.updating_products = False
+    
+    def on_country_changed(self, country):
+        """Handle country change event."""
+        region = "None of the above"
+        self.apply_filters(country, region)
+
+    def on_region_changed(self, region):
+        """Handle region change event."""
+        self.apply_filters(self.selected_country, region)
+
+    def refresh_pages(self):
+        """Refresh all pages that display product data."""
         self.eiq_calculator_page.refresh_product_data()
         self.products_page.refresh_product_data()
-        
-        # Clear the updating flag
-        self.updating_products = False
+        # Add any other pages that need refreshing here
 
     def navigate_to_page(self, page_index):
         """Navigate to the specified page index."""
