@@ -33,24 +33,24 @@ class ProductsPage(QWidget):
         main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
         main_layout.setSpacing(SPACING_MEDIUM)
         
+        # Create a horizontal layout for the header section
+        header_layout = QHBoxLayout()
+        
         # Header with back button
         header = HeaderWithBackButton("Products List and Comparison")
         header.back_clicked.connect(self.parent.go_home)
+        
+        # Add Reset button directly to the header
+        reset_button = QPushButton("Reset")
+        reset_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
+        reset_button.setMaximumWidth(150)
+        reset_button.clicked.connect(self.reset)
+        
+        # Add the Reset button to the header's layout (right side)
+        header.layout().addWidget(reset_button)
+        
+        # Add the full header to the main layout
         main_layout.addWidget(header)
-        
-        # Top controls area (Only Refresh Button)
-        top_controls = QHBoxLayout()
-        
-        # Add Refresh from CSV button
-        refresh_button = QPushButton("Reset")
-        refresh_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        refresh_button.setMaximumWidth(150)
-        refresh_button.clicked.connect(self.reset)
-        
-        top_controls.addStretch(1)
-        top_controls.addWidget(refresh_button)
-        
-        main_layout.addLayout(top_controls)
         
         # Create tabs for list and comparison
         self.tabs = QTabWidget()

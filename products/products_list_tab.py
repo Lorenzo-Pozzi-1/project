@@ -221,7 +221,7 @@ class ProductsListTab(QWidget):
             # Replace specific header texts with shortened versions
             header_replacements = {
                 "regulator number": "Reg. #",
-                "min days between applications": "d.b.a."
+                "min days between applications": "DBA"
             }
 
             for col, key in enumerate(self.column_keys, start=1):
