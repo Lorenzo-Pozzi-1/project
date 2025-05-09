@@ -8,7 +8,6 @@ Refactored to be compatible with Qt's Model/View architecture.
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
                               QListWidget, QFrame, QScrollArea)
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QBrush
 from common.styles import get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
 from common.widgets import ScoreBar
 from data.product_repository import ProductRepository

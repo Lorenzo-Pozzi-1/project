@@ -8,7 +8,7 @@ support the application's Model/View architecture.
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QSortFilterProxyModel
 from PySide6.QtGui import QBrush, QColor
 from data.product_model import Product
-from typing import List, Any, Optional, Dict
+from typing import List, Any, Optional
 
 class ProductTableModel(QAbstractTableModel):
     """

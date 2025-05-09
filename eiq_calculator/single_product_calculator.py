@@ -9,7 +9,6 @@ and uses Qt's Model/View architecture.
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QFormLayout, 
                               QDoubleSpinBox, QTableView, QHeaderView, QSizePolicy)
-from PySide6.QtCore import Qt
 from common.styles import get_body_font
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository

@@ -6,11 +6,10 @@ and filtering functionality with Qt's Model/View architecture.
 """
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, 
-                               QTableView, QHeaderView, QCheckBox, QComboBox, QLineEdit, 
+                               QTableView, QHeaderView, QComboBox, QLineEdit, 
                                QFrame, QScrollArea, QSizePolicy, QStyledItemDelegate,
                                QAbstractItemView, QStyleOptionButton, QStyle, QApplication)
-from PySide6.QtCore import Qt, Signal, QItemSelectionModel, QPoint, QRect, QSize
-from PySide6.QtGui import QColor, QBrush
+from PySide6.QtCore import Qt, Signal, QPoint, QRect, QSize
 from common.styles import get_body_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from data.product_repository import ProductRepository
 from data.models import ProductTableModel, ProductFilterProxyModel

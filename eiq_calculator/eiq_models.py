@@ -7,7 +7,7 @@ This module provides custom Qt model implementations for the EIQ calculator comp
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PySide6.QtGui import QBrush, QColor
 from data.product_model import Product
-from typing import List, Any, Dict, Optional, Callable
+from typing import List, Any, Dict, Optional
 from eiq_calculator.eiq_calculations import calculate_product_field_eiq
 from eiq_calculator.eiq_conversions import convert_concentration_to_percent
 

@@ -7,13 +7,11 @@ values of multiple pesticide products with improved UOM management and Model/Vie
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, 
                               QLabel, QTableView, QHeaderView, QDoubleSpinBox)
-from PySide6.QtCore import Qt, QItemSelectionModel
 from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
 from eiq_calculator.eiq_conversions import APPLICATION_RATE_CONVERSION
 from eiq_calculator.eiq_models import ProductComparisonCalculatorModel, ComparisonResultsModel
-from eiq_calculator.eiq_ui_components import get_eiq_color
 from data.product_repository import ProductRepository
 
 
