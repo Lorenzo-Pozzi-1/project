@@ -24,7 +24,7 @@ class AIRepository:
     
     def __init__(self):
         """Initialize the repository."""
-        self.csv_file = os.path.join("data", "AI groups.csv")
+        self.csv_file = os.path.join("data", "active_ingredients_groups.csv")
         
         # Cache storage
         self._all_ingredients = {}  # Dictionary of all ActiveIngredient objects by name

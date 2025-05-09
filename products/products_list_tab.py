@@ -284,6 +284,22 @@ class ProductsListTab(QWidget):
                     self.products_table.horizontalHeader().model().setHeaderData(
                         col, Qt.Horizontal, "AIs")
                     break
+            
+            # Insert a new column for Groups right after AI column
+            if ai1_col > 0:
+                groups_col = ai1_col + 1
+                self.products_table.insertColumn(groups_col)
+                
+                # Set header text for the new column
+                self.products_table.setHorizontalHeaderItem(
+                    groups_col, QTableWidgetItem("Groups"))
+                    
+                # Update original header texts dictionary to include new column
+                for i in range(groups_col+1, len(self.original_header_texts)+1):
+                    self.original_header_texts[i] = self.original_header_texts[i-1]
+                self.original_header_texts[groups_col] = "Groups"
+            else:
+                groups_col = -1
 
             # Apply other header replacements
             for col, key in enumerate(self.column_keys, start=1):
@@ -303,10 +319,19 @@ class ProductsListTab(QWidget):
 
             # Apply resize modes
             for col, key in enumerate(self.column_keys, start=1):
+                # Adjust column index for columns after the groups column
+                adj_col = col
+                if groups_col > 0 and col >= groups_col:
+                    adj_col = col + 1
+                    
                 if any(resize_col.lower() == key.lower() for resize_col in content_resize_columns):
-                    self.products_table.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeToContents)
+                    self.products_table.horizontalHeader().setSectionResizeMode(adj_col, QHeaderView.ResizeToContents)
                 else:
-                    self.products_table.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
+                    self.products_table.horizontalHeader().setSectionResizeMode(adj_col, QHeaderView.Stretch)
+            
+            # Also set Groups column to stretch
+            if groups_col > 0:
+                self.products_table.horizontalHeader().setSectionResizeMode(groups_col, QHeaderView.Stretch)
             
             # Columns to hide (case-insensitive matching to handle potential variations)
             columns_to_hide = [
@@ -324,25 +349,40 @@ class ProductsListTab(QWidget):
             
             # Hide specified columns
             for col, key in enumerate(self.column_keys, start=1):
+                # Adjust column index for columns after the groups column
+                adj_col = col
+                if groups_col > 0 and col >= groups_col:
+                    adj_col = col + 1
+                    
                 # Check if the key matches any of the hide keys in a case-insensitive manner
                 if any(hide_key.lower() == key.lower() for hide_key in columns_to_hide):
-                    self.products_table.setColumnHidden(col, True)
-                    self.hidden_column_indices.append(col)
+                    self.products_table.setColumnHidden(adj_col, True)
+                    self.hidden_column_indices.append(adj_col)
             
             # Create visible column list and mapping for filter dropdowns
             self.visible_columns = []
             self.field_to_column_map = {}
             
             for col, key in enumerate(self.column_keys, start=1):
-                if col not in self.hidden_column_indices:
+                # Adjust column index for columns after the groups column
+                adj_col = col
+                if groups_col > 0 and col >= groups_col:
+                    adj_col = col + 1
+                    
+                if adj_col not in self.hidden_column_indices:
                     # Special case for AI1 column - rename to AIs in filter dropdown
                     if key.lower() == "ai1" and col == ai1_col:
                         self.visible_columns.append("AIs")
-                        self.field_to_column_map["AIs"] = col
+                        self.field_to_column_map["AIs"] = adj_col
                     else:
                         self.visible_columns.append(key)
                         # Map the field name to its actual column index in the table
-                        self.field_to_column_map[key] = col
+                        self.field_to_column_map[key] = adj_col
+            
+            # Add Groups to visible columns and column map if it exists
+            if groups_col > 0 and groups_col not in self.hidden_column_indices:
+                self.visible_columns.append("Groups")
+                self.field_to_column_map["Groups"] = groups_col
             
             # Initialize filters now that we have columns
             # Clear existing filter rows
@@ -370,14 +410,25 @@ class ProductsListTab(QWidget):
 
             # Add all product fields
             for col, key in enumerate(self.column_keys, start=1):
+                # Adjust column index for columns after the groups column
+                adj_col = col
+                if groups_col > 0 and col >= groups_col:
+                    adj_col = col + 1
+                    
                 # Special case for AI1 column - show all active ingredients
                 if col == ai1_col:
                     ai_text = ", ".join(products[row].active_ingredients)
-                    self.products_table.setItem(row, col, QTableWidgetItem(ai_text))
+                    self.products_table.setItem(row, adj_col, QTableWidgetItem(ai_text))
+                    
+                    # Also populate the Groups column if it exists
+                    if groups_col > 0:
+                        ai_groups = products[row].get_ai_groups()
+                        groups_text = ", ".join(filter(None, ai_groups))  # Filter out empty strings
+                        self.products_table.setItem(row, groups_col, QTableWidgetItem(groups_text))
                 else:
                     # Normal case for other columns (AI2, AI3, AI4 will be hidden)
                     value = product_dict.get(key, "")
-                    self.products_table.setItem(row, col, QTableWidgetItem(str(value) if value is not None else ""))
+                    self.products_table.setItem(row, adj_col, QTableWidgetItem(str(value) if value is not None else ""))    
     
     def add_filter_row(self):
         """Add a new filter row to the filter section."""

@@ -29,7 +29,7 @@ class ProductRepository:
     
     def __init__(self):
         """Initialize the repository."""
-        self.csv_file = os.path.join("data", "NEW_products.csv")
+        self.csv_file = os.path.join("data", "products.csv")
         
         # Cache storage
         self._all_products = None  # List of all Product objects

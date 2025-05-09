@@ -11,6 +11,7 @@ from PySide6.QtCore import QDir
 from PySide6.QtWidgets import QApplication
 from common.config_utils import load_config
 from data.product_repository import ProductRepository
+from data.ai_repository import AIRepository
 from main_window.main_window import MainWindow
 
 # Clear the terminal screen
@@ -39,6 +40,10 @@ def main():
     # Initialize the product repository
     repo = ProductRepository.get_instance()
     repo.get_all_products()  # This will load the products if not already loaded
+    
+    # Initialize the AI repository
+    ai_repo = AIRepository.get_instance()
+    ai_repo.get_all_ingredients()  # Load AI data
     
     # Create and show the main window
     window = MainWindow(config)
