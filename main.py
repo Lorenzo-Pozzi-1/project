@@ -37,11 +37,9 @@ def main():
     # Load application configuration
     config = load_config()
     
-    # Initialize the product repository
-    repo = ProductRepository.get_instance()
-    repo.get_all_products()  # This will load the products if not already loaded
-    
-    # Initialize the AI repository
+    # Initialize repositories
+    product_repo = ProductRepository.get_instance()
+    product_repo.get_all_products()  # Load products data
     ai_repo = AIRepository.get_instance()
     ai_repo.get_all_ingredients()  # Load AI data
     

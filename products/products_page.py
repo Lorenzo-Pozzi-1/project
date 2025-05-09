@@ -77,8 +77,8 @@ class ProductsPage(QWidget):
     
     def reset(self):
         """Refresh product data from CSV file and reload the products list."""
-        repo = ProductRepository.get_instance()
-        if repo.refresh_from_csv():
+        products_repo = ProductRepository.get_instance()
+        if products_repo.refresh_from_csv():
             # Clear any selections
             self.selected_products = []
             

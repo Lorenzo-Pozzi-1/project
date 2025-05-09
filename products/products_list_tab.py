@@ -242,8 +242,8 @@ class ProductsListTab(QWidget):
         self.products_table.horizontalHeader().setSortIndicatorShown(False)
         
         # Load products from repository
-        repo = ProductRepository.get_instance()
-        products = repo.get_filtered_products()
+        products_repo = ProductRepository.get_instance()
+        products = products_repo.get_filtered_products()
         
         if not products:
             return

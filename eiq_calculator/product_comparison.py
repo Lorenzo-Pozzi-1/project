@@ -203,8 +203,8 @@ class ProductComparisonCalculator(QWidget):
             return
         
         # Get products filtered by type
-        repo = ProductRepository.get_instance()
-        products = repo.get_filtered_products()
+        products_repo = ProductRepository.get_instance()
+        products = products_repo.get_filtered_products()
         filtered_products = [p for p in products if p.product_type == product_type]
         
         # Update product combo

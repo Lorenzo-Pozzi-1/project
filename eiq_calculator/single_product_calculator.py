@@ -54,8 +54,8 @@ class SingleProductCalculator(QWidget):
         product_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
         
         # Load products data
-        repo = ProductRepository.get_instance()
-        self.all_products = repo.get_filtered_products()
+        products_repo = ProductRepository.get_instance()
+        self.all_products = products_repo.get_filtered_products()
         
         # Product type selection
         self.product_type_combo = QComboBox()
@@ -163,8 +163,8 @@ class SingleProductCalculator(QWidget):
     def refresh_product_data(self):
         """Refresh product data based on the filtered products."""
         # Reload products with the filtered data
-        repo = ProductRepository.get_instance()
-        self.all_products = repo.get_filtered_products()
+        products_repo = ProductRepository.get_instance()
+        self.all_products = products_repo.get_filtered_products()
         
         # Update the product list
         self.update_product_list()

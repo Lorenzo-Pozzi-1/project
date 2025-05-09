@@ -23,8 +23,8 @@ def get_products_from_csv():
     If filtered data is not available, return an empty list.
     """
     try:
-        repo = ProductRepository.get_instance()
-        products = repo.get_filtered_products()
+        products_repo = ProductRepository.get_instance()
+        products = products_repo.get_filtered_products()
         return products
     except Exception as e:
         print(f"Error loading filtered products: {e}")
@@ -51,8 +51,8 @@ def get_product_info(product_name):
         dict: Product data containing ai1_eiq, ai_percent, etc.
     """
     # First try to get product from repository
-    repo = ProductRepository.get_instance()
-    product = repo.get_product_by_name(product_name.split(" (")[0])
+    products_repo = ProductRepository.get_instance()
+    product = products_repo.get_product_by_name(product_name.split(" (")[0])
     
     if product:
         # Now using AI1 EIQ instead of base EIQ
