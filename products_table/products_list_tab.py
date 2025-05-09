@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, Q
                                QTableView, QHeaderView, QComboBox, QLineEdit, 
                                QFrame, QScrollArea, QSizePolicy, QStyledItemDelegate,
                                QAbstractItemView, QStyleOptionButton, QStyle, QApplication)
-from PySide6.QtCore import Qt, Signal, QPoint, QRect, QSize
+from PySide6.QtCore import Qt, Signal, QPoint, QRect, QSize, QModelIndex
 from common.styles import get_body_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from data.product_repository import ProductRepository
 from data.models import ProductTableModel, ProductFilterProxyModel
@@ -343,7 +343,8 @@ class ProductsListTab(QWidget):
         headers = []
         for col in range(1, self.product_model.columnCount()):  # Skip column 0 (checkbox)
             header = self.product_model.headerData(col, Qt.Horizontal, Qt.DisplayRole)
-            headers.append(header)
+            if header:  # Skip empty headers (like the checkbox column)
+                headers.append(header)
         
         # Create a new filter row
         filter_row = FilterRow(headers, self)
@@ -403,7 +404,7 @@ class ProductsListTab(QWidget):
     def on_filter_criteria_changed(self, column, filter_text):
         """Handle changes to a filter criteria."""
         # Apply filter to the proxy model 
-        # (column + 1 to skip the selection column in the view)
+        # Column + 1 to account for checkbox column in the model
         self.filter_proxy_model.setFilterCriteria(column + 1, filter_text)
     
     def on_product_selection_changed(self, row, checked):

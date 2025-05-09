@@ -23,13 +23,14 @@ class ProductTableModel(QAbstractTableModel):
         super().__init__(parent)
         self._products = products or []
         self._headers = [
-            "Product Type", "Product Name", "Producer Name", "Regulator Number",
+            "", "Product Type", "Product Name", "Producer Name", "Regulator Number",
             "Application Method", "Formulation", "Min Rate", "Max Rate", "Rate UOM",
-            "REI (h)", "PHI (d)", "Min Days Between", "Active Ingredients", "EIQ Total"
-        ]
+            "REI (h)", "PHI (d)", "Min Days Between", "Active Ingredients"
+        ]  # First header is empty for checkbox column
         
         # Map header names to product attributes or computed values
         self._column_map = {
+            "": None,  # No mapping for checkbox column
             "Product Type": "product_type",
             "Product Name": "product_name",
             "Producer Name": "producer_name",
@@ -42,8 +43,7 @@ class ProductTableModel(QAbstractTableModel):
             "REI (h)": "rei_hours",
             "PHI (d)": "phi_days", 
             "Min Days Between": "min_days_between_applications",
-            "Active Ingredients": lambda product: ", ".join(product.active_ingredients),
-            "EIQ Total": lambda product: product.eiq_total
+            "Active Ingredients": lambda product: ", ".join(product.active_ingredients)
         }
     
     def rowCount(self, parent=QModelIndex()) -> int:
@@ -77,7 +77,7 @@ class ProductTableModel(QAbstractTableModel):
             # Handle direct attributes
             value = getattr(product, attr, None)
             if isinstance(value, (int, float)) and value is not None:
-                if attr in ["label_minimum_rate", "label_maximum_rate", "eiq_total"]:
+                if attr in ["label_minimum_rate", "label_maximum_rate"]:
                     return f"{value:.2f}" if value else ""
                 return str(value)
             return str(value or "")
@@ -88,38 +88,12 @@ class ProductTableModel(QAbstractTableModel):
             attr = self._column_map[column_name]
             if not callable(attr) and attr in [
                 "label_minimum_rate", "label_maximum_rate", "rei_hours", 
-                "phi_days", "min_days_between_applications", "eiq_total"
+                "phi_days", "min_days_between_applications"
             ]:
                 return Qt.AlignCenter
             return Qt.AlignLeft | Qt.AlignVCenter
-            
-        # Background role - cell background color
-        elif role == Qt.BackgroundRole:
-            # Color EIQ values based on thresholds
-            if column_name == "EIQ Total":
-                eiq_value = product.eiq_total
-                if eiq_value is not None:
-                    if eiq_value < 33.3:
-                        return QBrush(QColor(200, 255, 200))  # Light green for low
-                    elif eiq_value < 66.6:
-                        return QBrush(QColor(255, 255, 200))  # Light yellow for medium
-                    else:
-                        return QBrush(QColor(255, 200, 200))  # Light red for high
-            return None
-            
-        # Tooltip role - shown when hovering over a cell
-        elif role == Qt.ToolTipRole:
-            if column_name == "EIQ Total":
-                eiq_value = product.eiq_total
-                if eiq_value is not None:
-                    if eiq_value < 33.3:
-                        return "Low Environmental Impact"
-                    elif eiq_value < 66.6:
-                        return "Moderate Environmental Impact"
-                    else:
-                        return "High Environmental Impact"
-            return None
-            
+        
+        # Remove EIQ-specific background and tooltip code
         return None
     
     def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.DisplayRole) -> Any:
