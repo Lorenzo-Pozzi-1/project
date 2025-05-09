@@ -19,8 +19,8 @@ from eiq_calculator.eiq_conversions import (
     APPLICATION_RATE_CONVERSION, CONCENTRATION_CONVERSION
 )
 from eiq_calculator.eiq_ui_components import (
-    ProductSearchField, EiqResultDisplay,
-    get_eiq_color
+    ProductSearchField, EiqResultDisplay, ColorCodedEiqItem,
+    get_products_from_csv, get_product_info, get_eiq_color
 )
 
 __all__ = [
@@ -41,5 +41,8 @@ __all__ = [
     'CONCENTRATION_CONVERSION',
     'ProductSearchField',
     'EiqResultDisplay',
+    'ColorCodedEiqItem',
+    'get_products_from_csv',
+    'get_product_info',
     'get_eiq_color'
 ]

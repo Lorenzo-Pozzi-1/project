@@ -2,12 +2,11 @@
 EIQ UI Components for the LORENZO POZZI Pesticide App.
 
 This module provides UI components for EIQ calculations and display.
-Refactored to be compatible with Qt's Model/View architecture.
 """
 
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
-                              QListWidget, QFrame, QScrollArea)
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QFrame, QScrollArea, QTableWidgetItem
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QBrush
 from common.styles import get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
 from common.widgets import ScoreBar
 from data.product_repository import ProductRepository
@@ -15,7 +14,7 @@ from eiq_calculator.eiq_conversions import convert_concentration_to_percent
 from eiq_calculator.eiq_calculations import format_eiq_result, get_impact_category
 
 #------------------------
-# Helper Functions
+# Data Handling Functions
 #------------------------
 
 def get_products_from_csv():
@@ -264,7 +263,6 @@ class ProductSearchField(QWidget):
         self.search_field.clear()
         self.suggestions_container.setVisible(False)
 
-
 class EiqResultDisplay(QWidget):
     """A widget for displaying EIQ results with score bar and rating."""
     
@@ -319,3 +317,32 @@ class EiqResultDisplay(QWidget):
         # Update score bar
         rating, _ = get_impact_category(field_eiq)
         self.score_bar.set_value(field_eiq, rating)
+
+class ColorCodedEiqItem(QTableWidgetItem):
+    """A table item specifically for EIQ values with automatic color coding."""
+    
+    def __init__(self, eiq_value, low_threshold=33.3, high_threshold=66.6):
+        """
+        Initialize with EIQ value and thresholds.
+        
+        Args:
+            eiq_value (float): The EIQ value to display
+            low_threshold (float): Values below this are considered "low impact"
+            high_threshold (float): Values above this are considered "high impact"
+        """
+        if isinstance(eiq_value, (int, float)):
+            display_value = f"{eiq_value:.1f}"
+        else:
+            display_value = str(eiq_value)
+            
+        super().__init__(display_value)
+        
+        self.setTextAlignment(Qt.AlignCenter)
+        
+        # Apply color coding based on thresholds
+        try:
+            value_float = float(eiq_value)
+            self.setBackground(QBrush(get_eiq_color(value_float, low_threshold, high_threshold)))
+        except (ValueError, TypeError):
+            # If value can't be converted to float, don't apply color
+            pass
