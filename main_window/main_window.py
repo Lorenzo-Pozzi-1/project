@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
         
         self.setWindowTitle("LORENZO POZZI - Pesticide App")
         self.setMinimumSize(900, 700)
-        # self.showMaximized()
+        self.showMaximized()
                 
     def init_ui(self):
         """Initialize the UI components."""
