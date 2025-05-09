@@ -6,7 +6,7 @@ This module provides reusable custom widgets used throughout the application.
 
 from PySide6.QtCore import Qt, Signal, QRect, QPointF
 from PySide6.QtGui import QColor, QBrush, QPainter, QPen, QLinearGradient
-from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy, QWidget, QTableWidgetItem, QSpacerItem
+from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy, QWidget, QSpacerItem
 from common.styles import FEATURE_BUTTON_STYLE, SECONDARY_BUTTON_STYLE, get_title_font, get_body_font, MARGIN_MEDIUM, SPACING_MEDIUM
 
 class HeaderWithBackButton(QWidget):
@@ -82,50 +82,6 @@ class FeatureButton(QPushButton):
         desc_label.setFont(get_body_font())
         desc_label.setWordWrap(True)
         layout.addWidget(desc_label)
-
-
-class ColorCodedTableItem(QTableWidgetItem):
-    """
-    A table item that can be color-coded based on its value.
-    
-    Useful for field EIQ scores and other numeric values that have thresholds.
-    """
-    def __init__(self, value, low_threshold=15, high_threshold=30, 
-                 low_color=QColor(200, 255, 200), 
-                 medium_color=QColor(255, 255, 200),
-                 high_color=QColor(255, 200, 200)):
-        """
-        Initialize with value and thresholds.
-        
-        Args:
-            value: The numeric value to display
-            low_threshold: Values below this are considered "low"
-            high_threshold: Values above this are considered "high"
-            low_color: Background color for low values
-            medium_color: Background color for medium values
-            high_color: Background color for high values
-        """
-        if isinstance(value, (int, float)):
-            display_value = f"{value:.1f}"
-        else:
-            display_value = str(value)
-            
-        super().__init__(display_value)
-        
-        self.setTextAlignment(Qt.AlignCenter)
-        
-        # Apply color coding based on thresholds
-        try:
-            value_float = float(value)
-            if value_float < low_threshold:
-                self.setBackground(QBrush(low_color))
-            elif value_float < high_threshold:
-                self.setBackground(QBrush(medium_color))
-            else:
-                self.setBackground(QBrush(high_color))
-        except (ValueError, TypeError):
-            # If value can't be converted to float, don't apply color
-            pass
 
 
 class ContentFrame(QFrame):

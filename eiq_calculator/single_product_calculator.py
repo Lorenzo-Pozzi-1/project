@@ -3,10 +3,12 @@ Single Product EIQ Calculator for the LORENZO POZZI Pesticide App.
 
 This module provides the SingleProductCalculator widget for calculating EIQ
 of a single pesticide product with search and suggestions functionality.
-It supports displaying multiple active ingredients (up to 4) with improved UOM handling.
+It supports displaying multiple active ingredients (up to 4) with improved UOM handling
+and uses Qt's Model/View architecture.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QFormLayout, QDoubleSpinBox, QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QFormLayout, 
+                              QDoubleSpinBox, QTableView, QHeaderView, QSizePolicy)
 from PySide6.QtCore import Qt
 from common.styles import get_body_font
 from common.widgets import ContentFrame
@@ -14,10 +16,11 @@ from data.product_repository import ProductRepository
 from eiq_calculator.eiq_ui_components import ProductSearchField, EiqResultDisplay
 from eiq_calculator.eiq_calculations import calculate_product_field_eiq
 from eiq_calculator.eiq_conversions import APPLICATION_RATE_CONVERSION
+from eiq_calculator.eiq_models import ActiveIngredientsModel, LabelInfoModel
 
 
 class SingleProductCalculator(QWidget):
-    """Widget for calculating EIQ for a single pesticide product."""
+    """Widget for calculating EIQ for a single pesticide product using Model/View."""
     
     def __init__(self, parent=None):
         """Initialize the single product calculator widget."""
@@ -27,17 +30,12 @@ class SingleProductCalculator(QWidget):
         # Store the full list of products
         self.all_products = []
         
-        # Initialize UI elements to avoid AttributeError
-        self.product_type_combo = None
-        self.product_search = None
-        self.ai_table = None  # Changed to table for multiple AIs
-        self.rate_spin = None
-        self.rate_unit_combo = None
-        self.applications_spin = None
-        self.eiq_results_display = None
-        
         # Currently selected product data
         self.current_product = None
+        
+        # Create models
+        self.active_ingredients_model = ActiveIngredientsModel(self)
+        self.label_info_model = LabelInfoModel(self)
         
         self.setup_ui()
     
@@ -76,18 +74,14 @@ class SingleProductCalculator(QWidget):
         self.product_search.product_selected.connect(self.update_product_info)
         product_layout.addRow("Product:", self.product_search)
 
-        # Create Active Ingredients table
-        self.ai_table = QTableWidget()
-        self.ai_table.setRowCount(0)  # Start empty
-        self.ai_table.setColumnCount(4)  # Update to 4 columns to include UOM
-        self.ai_table.setHorizontalHeaderLabels(["Active Ingredient", "EIQ", "Concentration", "UOM"])
-
-        # Make all columns equal width by setting them all to Stretch
+        # Create Active Ingredients table view
+        self.ai_table = QTableView()
+        self.ai_table.setModel(self.active_ingredients_model)
+        self.ai_table.setAlternatingRowColors(True)
+        
+        # Configure headers
         header = self.ai_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.Stretch)
-        header.setSectionResizeMode(1, QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QHeaderView.Stretch)
-        header.setSectionResizeMode(3, QHeaderView.Stretch)
+        header.setSectionResizeMode(QHeaderView.Stretch)
         
         # Set a reasonable fixed height for the table
         self.ai_table.setMinimumHeight(120)
@@ -97,20 +91,15 @@ class SingleProductCalculator(QWidget):
         # Use a direct form layout row instead of a container
         product_layout.addRow("Active Ingredients:", self.ai_table)
         
-        # Create label information table
-        self.label_info_table = QTableWidget()
-        self.label_info_table.setRowCount(1)  # Just one row for the selected product
-        self.label_info_table.setColumnCount(7)  # 7 columns for the requested info
-        self.label_info_table.setHorizontalHeaderLabels([
-            "Application Method", "Min Rate", "Max Rate", "Rate UOM", 
-            "REI (hours)", "PHI (days)", "Min Days Between Apps"
-        ])
-
-        # Make all columns equal width by setting them all to Stretch
+        # Create label information table view
+        self.label_info_table = QTableView()
+        self.label_info_table.setModel(self.label_info_model)
+        self.label_info_table.setAlternatingRowColors(True)
+        
+        # Configure headers
         header = self.label_info_table.horizontalHeader()
-        for i in range(header.count()):
-            header.setSectionResizeMode(i, QHeaderView.Stretch)
-
+        header.setSectionResizeMode(QHeaderView.Stretch)
+        
         # Set a reasonable fixed height for the table
         self.label_info_table.setMinimumHeight(80)
         self.label_info_table.setMaximumHeight(100)
@@ -171,7 +160,9 @@ class SingleProductCalculator(QWidget):
         
         # Clear current product selection
         self.product_search.clear()
-        self.clear_ai_table()
+        self.current_product = None
+        self.active_ingredients_model.setProduct(None)
+        self.label_info_model.setProduct(None)
         self.rate_spin.setValue(0.0)
         self.eiq_results_display.update_result(0.0)
     
@@ -199,7 +190,9 @@ class SingleProductCalculator(QWidget):
                 self.product_search.clear()
                 
                 # Reset fields
-                self.clear_ai_table()
+                self.current_product = None
+                self.active_ingredients_model.setProduct(None)
+                self.label_info_model.setProduct(None)
                 self.rate_spin.setValue(0.0)
                 self.eiq_results_display.update_result(0.0)
             else:
@@ -211,16 +204,13 @@ class SingleProductCalculator(QWidget):
             print(f"Error updating product list: {e}")
             self.product_search.setEnabled(False)
     
-    def clear_ai_table(self):
-        """Clear the active ingredients and label information tables."""
-        self.ai_table.setRowCount(0)
-        self.label_info_table.clearContents()
-
     def update_product_info(self, product_name):
         """Update product information when a product is selected."""
         if not product_name:
             # Clear fields if no product is selected
-            self.clear_ai_table()
+            self.current_product = None
+            self.active_ingredients_model.setProduct(None)
+            self.label_info_model.setProduct(None)
             self.rate_spin.setValue(0.0)
             self.eiq_results_display.update_result(0.0)
             return
@@ -236,128 +226,11 @@ class SingleProductCalculator(QWidget):
             if not self.current_product:
                 raise ValueError(f"Product '{name_without_suffix}' not found")
             
-            # Clear active ingredients table
-            self.clear_ai_table()
+            # Update the active ingredients model
+            self.active_ingredients_model.setProduct(self.current_product)
             
-            # Add rows for each active ingredient that has data
-            ai_data = []
-            
-            # Check AI1 data
-            if self.current_product.ai1:
-                concentration = self.current_product.ai1_concentration
-                uom = self.current_product.ai1_concentration_uom
-                
-                ai_data.append({
-                    "name": self.current_product.ai1,
-                    "eiq": self.current_product.ai1_eiq if self.current_product.ai1_eiq is not None else "--",
-                    "concentration": concentration if concentration is not None else "--",
-                    "uom": uom if uom is not None else ""
-                })
-            
-            # Check AI2 data
-            if self.current_product.ai2:
-                concentration = self.current_product.ai2_concentration
-                uom = self.current_product.ai2_concentration_uom
-                
-                ai_data.append({
-                    "name": self.current_product.ai2,
-                    "eiq": self.current_product.ai2_eiq if self.current_product.ai2_eiq is not None else "--",
-                    "concentration": concentration if concentration is not None else "--",
-                    "uom": uom if uom is not None else ""
-                })
-            
-            # Check AI3 data
-            if self.current_product.ai3:
-                concentration = self.current_product.ai3_concentration
-                uom = self.current_product.ai3_concentration_uom
-                
-                ai_data.append({
-                    "name": self.current_product.ai3,
-                    "eiq": self.current_product.ai3_eiq if self.current_product.ai3_eiq is not None else "--",
-                    "concentration": concentration if concentration is not None else "--",
-                    "uom": uom if uom is not None else ""
-                })
-            
-            # Check AI4 data
-            if self.current_product.ai4:
-                concentration = self.current_product.ai4_concentration
-                uom = self.current_product.ai4_concentration_uom
-                
-                ai_data.append({
-                    "name": self.current_product.ai4,
-                    "eiq": self.current_product.ai4_eiq if self.current_product.ai4_eiq is not None else "--",
-                    "concentration": concentration if concentration is not None else "--",
-                    "uom": uom if uom is not None else ""
-                })
-            
-            # Add rows to table
-            self.ai_table.setRowCount(len(ai_data))
-
-            for i, ai in enumerate(ai_data):
-                # Name
-                name_item = QTableWidgetItem(ai["name"])
-                name_item.setTextAlignment(Qt.AlignCenter)
-                self.ai_table.setItem(i, 0, name_item)
-                
-                # EIQ
-                eiq_item = QTableWidgetItem(str(ai["eiq"]))
-                eiq_item.setTextAlignment(Qt.AlignCenter)
-                self.ai_table.setItem(i, 1, eiq_item)
-                
-                # Concentration
-                concentration_item = QTableWidgetItem(str(ai["concentration"]))
-                concentration_item.setTextAlignment(Qt.AlignCenter)
-                self.ai_table.setItem(i, 2, concentration_item)
-                
-                # UOM
-                uom_item = QTableWidgetItem(ai["uom"])
-                uom_item.setTextAlignment(Qt.AlignCenter)
-                self.ai_table.setItem(i, 3, uom_item)
-            
-            # Clear and populate the label information table
-            self.label_info_table.clearContents()
-
-            if self.current_product:
-                # Application Method
-                method_item = QTableWidgetItem(self.current_product.application_method or "--")
-                method_item.setTextAlignment(Qt.AlignCenter)
-                self.label_info_table.setItem(0, 0, method_item)
-                
-                # Min Rate
-                min_rate = "--"
-                if self.current_product.label_minimum_rate is not None:
-                    min_rate = f"{self.current_product.label_minimum_rate:.2f}"
-                min_rate_item = QTableWidgetItem(min_rate)
-                min_rate_item.setTextAlignment(Qt.AlignCenter)
-                self.label_info_table.setItem(0, 1, min_rate_item)
-                
-                # Max Rate
-                max_rate = "--"
-                if self.current_product.label_maximum_rate is not None:
-                    max_rate = f"{self.current_product.label_maximum_rate:.2f}"
-                max_rate_item = QTableWidgetItem(max_rate)
-                max_rate_item.setTextAlignment(Qt.AlignCenter)
-                self.label_info_table.setItem(0, 2, max_rate_item)
-                
-                # Rate UOM
-                uom_item = QTableWidgetItem(self.current_product.rate_uom or "--")
-                uom_item.setTextAlignment(Qt.AlignCenter)
-                self.label_info_table.setItem(0, 3, uom_item)
-                
-                # REI (hours)
-                rei_item = QTableWidgetItem(str(self.current_product.rei_hours or "--"))
-                rei_item.setTextAlignment(Qt.AlignCenter)
-                self.label_info_table.setItem(0, 4, rei_item)
-                
-                # PHI (days)
-                phi_item = QTableWidgetItem(str(self.current_product.phi_days or "--"))
-                phi_item.setTextAlignment(Qt.AlignCenter)
-                self.label_info_table.setItem(0, 5, phi_item)
-                
-                # Min Days Between Applications
-                min_days_item = QTableWidgetItem(str(self.current_product.min_days_between_applications or "--"))
-                min_days_item.setTextAlignment(Qt.AlignCenter)
-                self.label_info_table.setItem(0, 6, min_days_item)
+            # Update the label info model
+            self.label_info_model.setProduct(self.current_product)
 
             # Update application rate with max rate from product data
             if self.current_product.label_maximum_rate is not None:
@@ -380,41 +253,21 @@ class SingleProductCalculator(QWidget):
         except Exception as e:
             print(f"Error loading product info for '{product_name}': {e}")
             # Clear fields on error
-            self.clear_ai_table()
+            self.current_product = None
+            self.active_ingredients_model.setProduct(None)
+            self.label_info_model.setProduct(None)
             self.rate_spin.setValue(0.0)
             self.eiq_results_display.update_result(0.0)
     
     def calculate_single_eiq(self):
         """Calculate the Field EIQ for a single product with improved UOM handling."""
-        if not self.current_product or self.ai_table.rowCount() == 0:
+        if not self.current_product or self.active_ingredients_model.rowCount() == 0:
             self.eiq_results_display.update_result(0.0)
             return
             
         try:
-            # Collect all active ingredients data from the table
-            active_ingredients = []
-            
-            for row in range(self.ai_table.rowCount()):
-                # Get AI data from table
-                name_item = self.ai_table.item(row, 0)
-                eiq_item = self.ai_table.item(row, 1)
-                percent_item = self.ai_table.item(row, 2)
-                
-                if not eiq_item or not percent_item or eiq_item.text() == "--" or percent_item.text() == "--":
-                    continue
-                
-                # Extract percent value without '%' sign if present
-                percent_text = percent_item.text()
-                if "%" in percent_text:
-                    percent_value = float(percent_text.replace("%", "").strip())
-                else:
-                    percent_value = float(percent_text)
-                
-                active_ingredients.append({
-                    'name': name_item.text() if name_item else "",
-                    'eiq': float(eiq_item.text()),
-                    'percent': percent_value
-                })
+            # Get active ingredients data from model
+            active_ingredients = self.active_ingredients_model.getActiveIngredients()
             
             # Get application parameters
             rate = self.rate_spin.value()
@@ -422,7 +275,6 @@ class SingleProductCalculator(QWidget):
             unit = self.rate_unit_combo.currentText()
             
             # Calculate total Field EIQ using the improved function with proper UOM handling
-            # This now uses our enhanced standardize_eiq_calculation under the hood
             total_field_eiq = calculate_product_field_eiq(
                 active_ingredients, rate, unit, applications)
             

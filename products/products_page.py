@@ -2,7 +2,7 @@
 Products page for the Lorenzo Pozzi Pesticide App
 
 This module defines the ProductsPage class which acts as a container for the
-product listing and comparison tabs, coordinating between them.
+product listing and comparison tabs, using Qt's Model/View architecture.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTabWidget
@@ -17,7 +17,7 @@ class ProductsPage(QWidget):
     Products page for listing, filtering, and comparing products.
     
     This class acts as a container for the product listing and comparison tabs,
-    and coordinates between them.
+    and coordinates between them using Qt's Model/View architecture.
     """
     def __init__(self, parent=None):
         """Initialize the products page."""
@@ -83,7 +83,7 @@ class ProductsPage(QWidget):
             self.selected_products = []
             
             # Reload the product data in the list tab
-            self.products_list_tab.load_product_data()
+            self.products_list_tab.refresh_product_data()
             
             # Reset the comparison tab
             self.comparison_tab.clear_comparison()
@@ -94,7 +94,7 @@ class ProductsPage(QWidget):
         self.selected_products = []
         
         # Reload the product data in the list tab
-        self.products_list_tab.load_product_data()
+        self.products_list_tab.refresh_product_data()
         
         # Reset the comparison tab
         self.comparison_tab.clear_comparison()

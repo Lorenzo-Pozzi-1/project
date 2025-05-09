@@ -2,27 +2,39 @@
 Product Comparison Calculator for the LORENZO POZZI Pesticide App.
 
 This module provides the ProductComparisonCalculator widget for comparing EIQ
-values of multiple pesticide products with improved UOM management.
+values of multiple pesticide products with improved UOM management and Model/View architecture.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, 
+                              QLabel, QTableView, QHeaderView, QDoubleSpinBox)
+from PySide6.QtCore import Qt, QItemSelectionModel
 from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
-from eiq_calculator.eiq_ui_components import get_products_from_csv, ColorCodedEiqItem
-from eiq_calculator.eiq_calculations import calculate_product_field_eiq
-from eiq_calculator.eiq_conversions import convert_concentration_to_percent, APPLICATION_RATE_CONVERSION
+from eiq_calculator.eiq_conversions import APPLICATION_RATE_CONVERSION
+from eiq_calculator.eiq_models import ProductComparisonCalculatorModel, ComparisonResultsModel
+from eiq_calculator.eiq_ui_components import get_eiq_color
+from data.product_repository import ProductRepository
 
 
 class ProductComparisonCalculator(QWidget):
-    """Widget for comparing EIQ values of multiple pesticide products with real-time updates."""
+    """
+    Widget for comparing EIQ values of multiple pesticide products with real-time updates.
+    Uses Qt's Model/View architecture for better separation of concerns.
+    """
     
     def __init__(self, parent=None):
         """Initialize the product comparison calculator widget."""
         super().__init__(parent)
         self.parent = parent
-        self.products_data = []  # List to track product data
+        
+        # Create models
+        self.comparison_model = ProductComparisonCalculatorModel(self)
+        self.results_model = ComparisonResultsModel(self)
+        
+        # Connect signals
+        self.comparison_model.calculation_required = self.refresh_all_calculations
+        
         self.setup_ui()
     
     def setup_ui(self):
@@ -39,23 +51,25 @@ class ProductComparisonCalculator(QWidget):
         selection_layout.addWidget(selection_title)
         
         # Comparison selection table
-        self.comparison_selection_table = QTableWidget(0, 6)
-        self.comparison_selection_table.setHorizontalHeaderLabels([
-            "Product Type", "Product Name", "Active Ingredients", "Application Rate", 
-            "Unit", "Applications"
-        ])
+        self.comparison_selection_table = QTableView()
+        self.comparison_selection_table.setModel(self.comparison_model)
+        self.comparison_selection_table.setAlternatingRowColors(True)
+        self.comparison_selection_table.setSelectionBehavior(QTableView.SelectRows)
         
         # Set up table properties
         header = self.comparison_selection_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QHeaderView.Stretch)
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)  # Product Type
+        header.setSectionResizeMode(1, QHeaderView.Stretch)           # Product Name
+        header.setSectionResizeMode(2, QHeaderView.Stretch)           # Active Ingredients
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)  # Application Rate
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)  # Unit
+        header.setSectionResizeMode(5, QHeaderView.ResizeToContents)  # Applications
         
-        # Add initial empty rows
-        self.add_product_row()
+        # Set up cell editors for the table
+        self.setup_cell_editors()
+        
+        # Add initial empty row in model
+        self.comparison_model.addEmptyRow()
         
         selection_layout.addWidget(self.comparison_selection_table)
         
@@ -88,109 +102,97 @@ class ProductComparisonCalculator(QWidget):
         results_layout.addWidget(results_title)
         
         # Results table
-        self.comparison_results_table = QTableWidget(0, 2)  # Changed from 3 to 2 columns
-        self.comparison_results_table.setHorizontalHeaderLabels([
-            "Product", "Field EIQ / ha"
-        ])
+        self.comparison_results_table = QTableView()
+        self.comparison_results_table.setModel(self.results_model)
+        self.comparison_results_table.setAlternatingRowColors(True)
         
-        # Set up table properties - all columns equal width
-        self.comparison_results_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # Set up table properties
+        header = self.comparison_results_table.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
         
         results_layout.addWidget(self.comparison_results_table)
         
         results_frame.layout.addLayout(results_layout)
         main_layout.addWidget(results_frame)
     
+    def setup_cell_editors(self):
+        """Set up cell editors for the comparison table."""
+        # We'll use the selection_changed signal to handle product selection
+        self.comparison_selection_table.selectionModel().selectionChanged.connect(
+            self.handle_selection_changed)
+    
+    def handle_selection_changed(self, selected, deselected):
+        """Handle selection changes in the table."""
+        # We'll implement product selection via a separate dialog or combobox
+        # This is just a placeholder for future implementation
+        pass
+    
     def add_product_row(self):
-        """Add a new row to the comparison selection table."""
-        row = self.comparison_selection_table.rowCount()
-        self.comparison_selection_table.insertRow(row)
+        """Add a new row to the comparison table."""
+        row = self.comparison_model.addEmptyRow()
         
+        # Create and set up a product selector for this row
+        self.create_product_selector(row)
+    
+    def create_product_selector(self, row):
+        """Create a product selector for the given row."""
         # Product Type combo box
         type_combo = QComboBox()
         type_combo.addItem("Select type...")
         
         # Load product types
-        products = get_products_from_csv()
-        product_types = []
-        if products:
-            product_types = sorted(list(set(p.product_type for p in products if p.product_type)))
+        repo = ProductRepository.get_instance()
+        products = repo.get_filtered_products()
+        product_types = sorted(list(set(p.product_type for p in products if p.product_type)))
         
         type_combo.addItems(product_types)
         type_combo.currentIndexChanged.connect(lambda idx, r=row: self.update_product_combo(r))
-        self.comparison_selection_table.setCellWidget(row, 0, type_combo)
+        self.comparison_selection_table.setIndexWidget(
+            self.comparison_model.index(row, 0), type_combo)
         
         # Product Name combo box
         product_combo = QComboBox()
         product_combo.addItem("Select product...")
         product_combo.currentIndexChanged.connect(lambda idx, r=row: self.update_product_info(r))
-        self.comparison_selection_table.setCellWidget(row, 1, product_combo)
-        
-        # Active ingredient (read-only)
-        ai_item = QTableWidgetItem("")
-        ai_item.setFlags(ai_item.flags() & ~Qt.ItemIsEditable)
-        self.comparison_selection_table.setItem(row, 2, ai_item)
+        self.comparison_selection_table.setIndexWidget(
+            self.comparison_model.index(row, 1), product_combo)
         
         # Application rate spinner
         rate_spin = QDoubleSpinBox()
         rate_spin.setRange(0.0, 9999.99)
         rate_spin.setValue(0.0)
         rate_spin.setDecimals(2)
-        # Connect to real-time calculation
-        rate_spin.valueChanged.connect(lambda value, r=row: self.calculate_single_row(r))
-        self.comparison_selection_table.setCellWidget(row, 3, rate_spin)
+        rate_spin.valueChanged.connect(lambda value, r=row: self.update_rate(r, value))
+        self.comparison_selection_table.setIndexWidget(
+            self.comparison_model.index(row, 3), rate_spin)
         
         # Unit combo box
         unit_combo = QComboBox()
-        # Use the units from APPLICATION_RATE_CONVERSION
         unit_combo.addItems(sorted(APPLICATION_RATE_CONVERSION.keys()))
-        # Connect to real-time calculation
-        unit_combo.currentIndexChanged.connect(lambda idx, r=row: self.calculate_single_row(r))
-        self.comparison_selection_table.setCellWidget(row, 4, unit_combo)
+        unit_combo.currentIndexChanged.connect(
+            lambda idx, r=row: self.update_unit(r, unit_combo.currentText()))
+        self.comparison_selection_table.setIndexWidget(
+            self.comparison_model.index(row, 4), unit_combo)
         
         # Applications spinner
         apps_spin = QDoubleSpinBox()
         apps_spin.setRange(1, 10)
         apps_spin.setValue(1)
         apps_spin.setDecimals(0)
-        # Connect to real-time calculation
-        apps_spin.valueChanged.connect(lambda value, r=row: self.calculate_single_row(r))
-        self.comparison_selection_table.setCellWidget(row, 5, apps_spin)
-        
-        # Add a new entry to track this row's data
-        self.products_data.append({
-            "product": None,
-            "active_ingredients": []
-        })
-    
-    def remove_selected_row(self):
-        """Remove the selected row from the table."""
-        selected_rows = self.comparison_selection_table.selectionModel().selectedRows()
-        
-        if not selected_rows:
-            return
-        
-        # Sort in reverse order to avoid index issues when removing
-        rows = sorted([index.row() for index in selected_rows], reverse=True)
-        
-        for row in rows:
-            self.comparison_selection_table.removeRow(row)
-            
-            # Also remove from the data tracking list
-            if 0 <= row < len(self.products_data):
-                self.products_data.pop(row)
-        
-        # Ensure there's always at least one row
-        if self.comparison_selection_table.rowCount() == 0:
-            self.add_product_row()
-            
-        # Update results after removing rows
-        self.refresh_all_calculations()
+        apps_spin.valueChanged.connect(
+            lambda value, r=row: self.update_applications(r, int(value)))
+        self.comparison_selection_table.setIndexWidget(
+            self.comparison_model.index(row, 5), apps_spin)
     
     def update_product_combo(self, row):
         """Update the product combo box based on the selected product type."""
-        type_combo = self.comparison_selection_table.cellWidget(row, 0)
-        product_combo = self.comparison_selection_table.cellWidget(row, 1)
+        # Get the type combo
+        type_combo = self.comparison_selection_table.indexWidget(
+            self.comparison_model.index(row, 0))
+        
+        # Get the product combo
+        product_combo = self.comparison_selection_table.indexWidget(
+            self.comparison_model.index(row, 1))
         
         if not type_combo or not product_combo:
             return
@@ -211,41 +213,28 @@ class ProductComparisonCalculator(QWidget):
         product_combo.clear()
         product_combo.addItem("Select product...")
         product_combo.addItems([p.product_name for p in filtered_products])
-
-    def refresh_product_data(self):
-        """Refresh product data based on the filtered products data."""
-        # Clear existing product data
-        self.products_data = []
-        
-        # Reset the table
-        self.comparison_selection_table.setRowCount(0)
-        self.comparison_results_table.setRowCount(0)
-        
-        # Add a new empty row
-        self.add_product_row()
     
     def update_product_info(self, row):
         """Update product information when a product is selected."""
-        product_combo = self.comparison_selection_table.cellWidget(row, 1)
+        product_combo = self.comparison_selection_table.indexWidget(
+            self.comparison_model.index(row, 1))
         
         if not product_combo or product_combo.currentIndex() == 0:
-            # Clear the row data
-            self.comparison_selection_table.item(row, 2).setText("")
+            # Clear the row data in the model
+            self.comparison_model.updateProduct(row, None)
             
-            if 0 <= row < len(self.products_data):
-                self.products_data[row]["product"] = None
-                self.products_data[row]["active_ingredients"] = []
-                
-            # Clear any previous results for this row
-            self.calculate_single_row(row)
+            # Remove any results for this row
+            self.results_model.removeResult(row)
             return
         
         product_name = product_combo.currentText()
         
         try:
-            # Find the product in the database
-            products = get_products_from_csv()
+            # Find the product in the repository
+            repo = ProductRepository.get_instance()
+            products = repo.get_filtered_products()
             product = None
+            
             for p in products:
                 if p.product_name == product_name:
                     product = p
@@ -254,201 +243,108 @@ class ProductComparisonCalculator(QWidget):
             if not product:
                 raise ValueError(f"Product '{product_name}' not found")
             
-            # Store the product data
-            if 0 <= row < len(self.products_data):
-                self.products_data[row]["product"] = product
-                
-                # Get active ingredients
-                ai_data = []
-                
-                # Check AI1 data
-                if product.ai1:
-                    concentration = product.ai1_concentration
-                    uom = product.ai1_concentration_uom
-                    percent_value = convert_concentration_to_percent(concentration, uom)
-                    
-                    ai_data.append({
-                        "name": product.ai1,
-                        "eiq": product.ai1_eiq if product.ai1_eiq is not None else "--",
-                        "percent": percent_value if percent_value is not None else "--"
-                    })
-                
-                # Check AI2 data
-                if product.ai2:
-                    concentration = product.ai2_concentration
-                    uom = product.ai2_concentration_uom
-                    percent_value = convert_concentration_to_percent(concentration, uom)
-                    
-                    ai_data.append({
-                        "name": product.ai2,
-                        "eiq": product.ai2_eiq if product.ai2_eiq is not None else "--",
-                        "percent": percent_value if percent_value is not None else "--"
-                    })
-                
-                # Check AI3 data
-                if product.ai3:
-                    concentration = product.ai3_concentration
-                    uom = product.ai3_concentration_uom
-                    percent_value = convert_concentration_to_percent(concentration, uom)
-                    
-                    ai_data.append({
-                        "name": product.ai3,
-                        "eiq": product.ai3_eiq if product.ai3_eiq is not None else "--",
-                        "percent": percent_value if percent_value is not None else "--"
-                    })
-                
-                # Check AI4 data
-                if product.ai4:
-                    concentration = product.ai4_concentration
-                    uom = product.ai4_concentration_uom
-                    percent_value = convert_concentration_to_percent(concentration, uom)
-                    
-                    ai_data.append({
-                        "name": product.ai4,
-                        "eiq": product.ai4_eiq if product.ai4_eiq is not None else "--",
-                        "percent": percent_value if percent_value is not None else "--"
-                    })
-                
-                self.products_data[row]["active_ingredients"] = ai_data
-                
-                # Display first active ingredient in the table or "None" if no AI
-                ai_display = ", ".join(product.active_ingredients) if product.active_ingredients else "None"
-                self.comparison_selection_table.item(row, 2).setText(ai_display)
-                
-                # Update application rate with max rate from product data
-                rate_spin = self.comparison_selection_table.cellWidget(row, 3)
-                if rate_spin:
-                    if product.label_maximum_rate is not None:
-                        rate_spin.setValue(product.label_maximum_rate)
-                    elif product.label_minimum_rate is not None:
-                        rate_spin.setValue(product.label_minimum_rate)
-                    else:
-                        rate_spin.setValue(0.0)
-                
-                # Set rate unit to match product's UOM
-                unit_combo = self.comparison_selection_table.cellWidget(row, 4)
-                if unit_combo and product.rate_uom:
-                    index = unit_combo.findText(product.rate_uom)
-                    if index >= 0:
-                        unit_combo.setCurrentIndex(index)
-                        
-                # The rate or unit setting will trigger calculate_single_row
-                # But we call it explicitly just in case
-                self.calculate_single_row(row)
+            # Update the model with the product data
+            self.comparison_model.updateProduct(row, product)
+            
+            # Update the rate spinner with the product's rate
+            rate_spin = self.comparison_selection_table.indexWidget(
+                self.comparison_model.index(row, 3))
+            
+            if rate_spin:
+                if product.label_maximum_rate is not None:
+                    rate_spin.setValue(product.label_maximum_rate)
+                elif product.label_minimum_rate is not None:
+                    rate_spin.setValue(product.label_minimum_rate)
+            
+            # Update the unit combo with the product's UOM
+            unit_combo = self.comparison_selection_table.indexWidget(
+                self.comparison_model.index(row, 4))
+            
+            if unit_combo and product.rate_uom:
+                index = unit_combo.findText(product.rate_uom)
+                if index >= 0:
+                    unit_combo.setCurrentIndex(index)
+            
+            # Calculate Field EIQ for this row
+            self.calculate_single_row(row)
             
         except Exception as e:
             print(f"Error loading product info for '{product_name}': {e}")
-            # Clear fields on error
-            if 0 <= row < len(self.products_data):
-                self.products_data[row]["product"] = None
-                self.products_data[row]["active_ingredients"] = []
-                
-            # Clear any previous results for this row
-            self.calculate_single_row(row)
+            # Clear row data in the model
+            self.comparison_model.updateProduct(row, None)
+            
+            # Remove any results for this row
+            self.results_model.removeResult(row)
+    
+    def update_rate(self, row, value):
+        """Update the application rate in the model."""
+        self.comparison_model.updateRate(row, value)
+        self.calculate_single_row(row)
+    
+    def update_unit(self, row, unit):
+        """Update the unit in the model."""
+        self.comparison_model.updateUnit(row, unit)
+        self.calculate_single_row(row)
+    
+    def update_applications(self, row, applications):
+        """Update the number of applications in the model."""
+        self.comparison_model.updateApplications(row, applications)
+        self.calculate_single_row(row)
+    
+    def remove_selected_row(self):
+        """Remove the selected row from the table."""
+        selected_rows = self.comparison_selection_table.selectionModel().selectedRows()
+        
+        if not selected_rows:
+            return
+        
+        # Sort in reverse order to avoid index issues when removing
+        rows = sorted([index.row() for index in selected_rows], reverse=True)
+        
+        for row in rows:
+            # Remove from results model first
+            self.results_model.removeResult(row)
+            
+            # Then remove from comparison model
+            self.comparison_model.removeRow(row)
+        
+        # Ensure there's always at least one row
+        if self.comparison_model.rowCount() == 0:
+            self.add_product_row()
+    
+    def refresh_product_data(self):
+        """Refresh product data based on the filtered products."""
+        # Clear existing data
+        self.comparison_model.setProducts([])
+        self.results_model.clearResults()
+        
+        # Reset the table
+        self.comparison_selection_table.setModel(self.comparison_model)
+        
+        # Add a new empty row
+        self.add_product_row()
     
     def calculate_single_row(self, row):
         """
-        Calculate EIQ for a single row and update the results table.
+        Calculate EIQ for a single row and update the results.
         This enables real-time updates for each product individually.
-        Uses improved UOM handling for consistent calculations.
         """
-        # Only process if the row exists in our data structure
-        if not (0 <= row < len(self.products_data)):
+        # Get product data from the model
+        product_data = self.comparison_model.getProductData(row)
+        if not product_data or not product_data.get("product"):
+            # Remove result if it exists
+            self.results_model.removeResult(row)
             return
             
-        # Get the product data for this row
-        product_data = self.products_data[row]
-        product = product_data.get("product")
-        active_ingredients = product_data.get("active_ingredients", [])
+        # Calculate Field EIQ using the model's method
+        field_eiq = self.comparison_model.calculateFieldEIQ(row)
         
-        # Skip calculation if no valid product or active ingredients
-        if not product or not active_ingredients:
-            # Remove this product from results table if it exists
-            self.update_results_for_row(row, None, None)
-            return
-            
-        try:
-            # Get application parameters
-            rate_spin = self.comparison_selection_table.cellWidget(row, 3)
-            unit_combo = self.comparison_selection_table.cellWidget(row, 4) 
-            apps_spin = self.comparison_selection_table.cellWidget(row, 5)
-            
-            rate = rate_spin.value() if rate_spin else 0.0
-            unit = unit_combo.currentText() if unit_combo else "lbs/acre"
-            applications = int(apps_spin.value()) if apps_spin else 1
-            
-            # Calculate total Field EIQ using the improved function with proper UOM handling
-            # This now uses our enhanced standardize_eiq_calculation under the hood
-            total_field_eiq = calculate_product_field_eiq(
-                active_ingredients, rate, unit, applications)
-            
-            # For the comparison table, we prefer to show per-ha values as the primary metric
-            # But also calculate per-acre for display
-            field_eiq_per_acre = total_field_eiq / 2.47  # Convert ha to acre
-            
-            # Update the results table for this row
-            self.update_results_for_row(row, field_eiq_per_acre, total_field_eiq)
-            
-        except (ValueError, ZeroDivisionError, AttributeError) as e:
-            print(f"Error calculating EIQ for row {row}: {e}")
-            # Clear results for this row
-            self.update_results_for_row(row, None, None)
-    
-    def update_results_for_row(self, selection_row, field_eiq_acre, field_eiq_ha):
-        """
-        Update the results table for a specific row.
-        """
-        if not 0 <= selection_row < len(self.products_data) or not self.products_data[selection_row]["product"]:
-            # Find and remove any existing results for this row
-            for r in range(self.comparison_results_table.rowCount()):
-                if r < self.comparison_results_table.rowCount():
-                    product_item = self.comparison_results_table.item(r, 0)
-                    if product_item and product_item.data(Qt.UserRole) == selection_row:
-                        self.comparison_results_table.removeRow(r)
-                        break
-            return
-                
-        product_name = self.products_data[selection_row]["product"].product_name
-        
-        # Check if we already have a row for this product in the results table
-        found_row = -1
-        for r in range(self.comparison_results_table.rowCount()):
-            product_item = self.comparison_results_table.item(r, 0)
-            if product_item and product_item.data(Qt.UserRole) == selection_row:
-                found_row = r
-                break
-                    
-        if field_eiq_ha is None or field_eiq_ha <= 0:
-            # If invalid EIQ and we found a row, remove it
-            if found_row >= 0:
-                self.comparison_results_table.removeRow(found_row)
-            return
-                
-        # If we didn't find a row, add a new one
-        if found_row == -1:
-            found_row = self.comparison_results_table.rowCount()
-            self.comparison_results_table.insertRow(found_row)
-                
-        # Product name with reference to source row
-        product_item = QTableWidgetItem(product_name)
-        product_item.setData(Qt.UserRole, selection_row)  # Store reference to selection table row
-        self.comparison_results_table.setItem(found_row, 0, product_item)
-        
-        # Field EIQ / ha with color coding
-        eiq_ha_item = ColorCodedEiqItem(
-            field_eiq_ha, 
-            low_threshold=50, 
-            high_threshold=100
-        )
-        self.comparison_results_table.setItem(found_row, 1, eiq_ha_item)
-        
-        # Keep the field_eiq_acre parameter for future use but don't display it
+        # Update the results model
+        self.results_model.updateResult(
+            product_data["product"], field_eiq, row)
     
     def refresh_all_calculations(self):
         """Calculate and display EIQ comparison results for all rows."""
-        # Clear the results table
-        self.comparison_results_table.setRowCount(0)
-        
-        # Iterate through all products in the selection table
-        for row in range(self.comparison_selection_table.rowCount()):
+        # Iterate through all products in the model
+        for row in range(self.comparison_model.rowCount()):
             self.calculate_single_row(row)

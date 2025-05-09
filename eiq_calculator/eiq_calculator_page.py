@@ -5,6 +5,8 @@ This module defines the EiqCalculatorPage class which serves as a container for
 two EIQ calculator components:
 - Single Product Calculator
 - Product Comparison Calculator
+
+Updated to use Qt's Model/View architecture.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
