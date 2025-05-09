@@ -6,8 +6,9 @@ and filtering functionality with an improved filtering system and optimized layo
 """
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTableWidget, QTableWidgetItem, 
-                                QHeaderView, QCheckBox, QComboBox, QLineEdit, QFrame, QScrollArea, QSizePolicy)
-from PySide6.QtCore import Qt, Signal
+                                QHeaderView, QCheckBox, QComboBox, QLineEdit, QFrame, QScrollArea, QSizePolicy, QToolTip)
+from PySide6.QtCore import Qt, Signal, QEvent
+from PySide6.QtGui import QCursor
 from common.styles import get_body_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from data.product_repository import ProductRepository
 
@@ -131,6 +132,10 @@ class ProductsListTab(QWidget):
         self.products_table.verticalHeader().setVisible(False)  # Hide row numbers
         self.products_table.setSelectionBehavior(QTableWidget.SelectRows)
         
+        # Enable sorting and track sort order
+        self.column_sort_order = {}  # {column_index: Qt.AscendingOrder or Qt.DescendingOrder}
+        self.products_table.horizontalHeader().sectionClicked.connect(self.sort_table_by_column)
+        
         # Set size policy for table to expand and fill available space
         self.products_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
@@ -145,6 +150,48 @@ class ProductsListTab(QWidget):
         compare_button.setFont(get_body_font())
         
         main_layout.addWidget(compare_button, alignment=Qt.AlignRight)
+
+    def sort_table_by_column(self, column_index):
+        """Sort the table by the clicked column header."""
+        # Skip checkbox column (index 0)
+        if column_index == 0:
+            return
+            
+        # Check if this is the AIs column by header text
+        header_text = self.products_table.horizontalHeaderItem(column_index).text()
+        if header_text == "AIs":
+            # Skip sorting for AIs column
+            QToolTip.showText(QCursor.pos(), "The AIs column cannot be sorted", self.products_table)
+            return
+        
+        # Determine sort order - toggle between ascending and descending
+        if column_index not in self.column_sort_order:
+            # First click sorts ascending
+            self.column_sort_order[column_index] = Qt.AscendingOrder
+        else:
+            # Toggle sort order
+            self.column_sort_order[column_index] = (
+                Qt.DescendingOrder if self.column_sort_order[column_index] == Qt.AscendingOrder 
+                else Qt.AscendingOrder
+            )
+        
+        # Get current sort order for this column
+        sort_order = self.column_sort_order[column_index]
+        
+        # Update header to show sort indicator
+        header = self.products_table.horizontalHeader()
+        header.setSortIndicator(column_index, sort_order)
+        header.setSortIndicatorShown(True)
+        
+        # Disable automatic sorting (we'll handle it manually)
+        was_sorting_enabled = self.products_table.isSortingEnabled()
+        self.products_table.setSortingEnabled(False)
+        
+        # Sort the table
+        self.products_table.sortItems(column_index, sort_order)
+        
+        # Re-enable automatic sorting if it was enabled
+        self.products_table.setSortingEnabled(was_sorting_enabled)
     
     def setup_filter_section(self, main_layout):
         """Set up the filter section with simplified layout."""
@@ -190,6 +237,10 @@ class ProductsListTab(QWidget):
         """Load product data from the repository."""
         self.products_table.setRowCount(0)
         
+        # Reset sort indicators
+        self.column_sort_order = {}
+        self.products_table.horizontalHeader().setSortIndicatorShown(False)
+        
         # Load products from repository
         repo = ProductRepository.get_instance()
         products = repo.get_filtered_products()
@@ -224,6 +275,17 @@ class ProductsListTab(QWidget):
                 "min days between applications": "DBA"
             }
 
+            # Find the index of "AI1" to rename it to "AIs"
+            ai1_col = -1
+            for col, key in enumerate(self.column_keys, start=1):
+                if key.lower() == "ai1":
+                    ai1_col = col
+                    # Rename the column header to "AIs"
+                    self.products_table.horizontalHeader().model().setHeaderData(
+                        col, Qt.Horizontal, "AIs")
+                    break
+
+            # Apply other header replacements
             for col, key in enumerate(self.column_keys, start=1):
                 for original, replacement in header_replacements.items():
                     if key.lower() == original.lower():
@@ -252,7 +314,9 @@ class ProductsListTab(QWidget):
                 "[ai1]", "[ai1]UOM", "ai1 eiq",
                 "[ai2]", "[ai2]UOM", "ai2 eiq",
                 "[ai3]", "[ai3]UOM", "ai3 eiq",
-                "[ai4]", "[ai4]UOM", "ai4 eiq"
+                "[ai4]", "[ai4]UOM", "ai4 eiq",
+                # Hide AI2, AI3, AI4 columns since we're showing all AIs in the AI1 column
+                "ai2", "ai3", "ai4"
             ]
             
             # Hidden column indices
@@ -271,9 +335,14 @@ class ProductsListTab(QWidget):
             
             for col, key in enumerate(self.column_keys, start=1):
                 if col not in self.hidden_column_indices:
-                    self.visible_columns.append(key)
-                    # Map the field name to its actual column index in the table
-                    self.field_to_column_map[key] = col
+                    # Special case for AI1 column - rename to AIs in filter dropdown
+                    if key.lower() == "ai1" and col == ai1_col:
+                        self.visible_columns.append("AIs")
+                        self.field_to_column_map["AIs"] = col
+                    else:
+                        self.visible_columns.append(key)
+                        # Map the field name to its actual column index in the table
+                        self.field_to_column_map[key] = col
             
             # Initialize filters now that we have columns
             # Clear existing filter rows
@@ -301,8 +370,14 @@ class ProductsListTab(QWidget):
 
             # Add all product fields
             for col, key in enumerate(self.column_keys, start=1):
-                value = product_dict.get(key, "")
-                self.products_table.setItem(row, col, QTableWidgetItem(str(value) if value is not None else ""))
+                # Special case for AI1 column - show all active ingredients
+                if col == ai1_col:
+                    ai_text = ", ".join(products[row].active_ingredients)
+                    self.products_table.setItem(row, col, QTableWidgetItem(ai_text))
+                else:
+                    # Normal case for other columns (AI2, AI3, AI4 will be hidden)
+                    value = product_dict.get(key, "")
+                    self.products_table.setItem(row, col, QTableWidgetItem(str(value) if value is not None else ""))
     
     def add_filter_row(self):
         """Add a new filter row to the filter section."""
