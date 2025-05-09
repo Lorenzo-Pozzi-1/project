@@ -32,7 +32,6 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     app.setApplicationName("Pesticides App")
-    app.setOrganizationName("Lorenzo Pozzi")
     
     # Load application configuration
     config = load_config()

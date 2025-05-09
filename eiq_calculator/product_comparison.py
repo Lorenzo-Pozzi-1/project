@@ -88,9 +88,9 @@ class ProductComparisonCalculator(QWidget):
         results_layout.addWidget(results_title)
         
         # Results table
-        self.comparison_results_table = QTableWidget(0, 2)  # Changed from 3 to 2 columns
+        self.comparison_results_table = QTableWidget(0, 3)
         self.comparison_results_table.setHorizontalHeaderLabels([
-            "Product", "Field EIQ / ha"
+            "Product", "Field EIQ / ha", "Field EIQ / acre"
         ])
         
         # Set up table properties - all columns equal width
@@ -407,7 +407,7 @@ class ProductComparisonCalculator(QWidget):
                         self.comparison_results_table.removeRow(r)
                         break
             return
-                
+                    
         product_name = self.products_data[selection_row]["product"].product_name
         
         # Check if we already have a row for this product in the results table
@@ -417,18 +417,18 @@ class ProductComparisonCalculator(QWidget):
             if product_item and product_item.data(Qt.UserRole) == selection_row:
                 found_row = r
                 break
-                    
+                        
         if field_eiq_ha is None or field_eiq_ha <= 0:
             # If invalid EIQ and we found a row, remove it
             if found_row >= 0:
                 self.comparison_results_table.removeRow(found_row)
             return
-                
+                    
         # If we didn't find a row, add a new one
         if found_row == -1:
             found_row = self.comparison_results_table.rowCount()
             self.comparison_results_table.insertRow(found_row)
-                
+                    
         # Product name with reference to source row
         product_item = QTableWidgetItem(product_name)
         product_item.setData(Qt.UserRole, selection_row)  # Store reference to selection table row
@@ -442,7 +442,13 @@ class ProductComparisonCalculator(QWidget):
         )
         self.comparison_results_table.setItem(found_row, 1, eiq_ha_item)
         
-        # Keep the field_eiq_acre parameter for future use but don't display it
+        # Field EIQ / acre with color coding
+        eiq_acre_item = ColorCodedEiqItem(
+            field_eiq_ha / 2.47105,  # Convert ha to acre
+            low_threshold=50 / 2.47105,  # Adjust thresholds for acre
+            high_threshold=100 / 2.47105
+        )
+        self.comparison_results_table.setItem(found_row, 2, eiq_acre_item)
     
     def refresh_all_calculations(self):
         """Calculate and display EIQ comparison results for all rows."""

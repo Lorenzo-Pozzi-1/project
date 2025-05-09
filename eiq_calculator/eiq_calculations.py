@@ -95,19 +95,22 @@ def calculate_product_field_eiq(active_ingredients, rate, unit, applications=1):
 
 def format_eiq_result(field_eiq):
     """
-    Format EIQ results for display, including per-ha values only.
+    Format EIQ results for display, including per-ha and per-acre values.
     
     Args:
         field_eiq (float): Field EIQ value
         
     Returns:
-        str: Formatted string with per-ha values
+        tuple: (ha_string, acre_string) with formatted values
     """
     if field_eiq <= 0:
-        return "0.00 /ha"
+        return "0.00 /ha", "0.00 /acre"
         
     # Standard calculation already gives per-ha values
-    return f"{field_eiq:.2f} /ha"
+    eiq_per_ha = field_eiq
+    eiq_per_acre = field_eiq / 2.47105  # Convert ha to acre (1 ha = 2.47105 acres)
+    
+    return f"{eiq_per_ha:.2f} /ha", f"{eiq_per_acre:.2f} /acre"
 
 def get_impact_category(field_eiq):
     """

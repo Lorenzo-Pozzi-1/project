@@ -287,12 +287,15 @@ class EiqResultDisplay(QWidget):
         field_eiq_label = QLabel("Field EIQ:")
         field_eiq_label.setFont(get_subtitle_font(bold=True))
 
-        # Single label for the entire result with consistent formatting
-        self.field_eiq_result = QLabel("-- /ha")
-        self.field_eiq_result.setFont(get_subtitle_font(bold=True))
+        # Labels for both ha and acre values
+        self.field_eiq_result_ha = QLabel("-- /ha")
+        self.field_eiq_result_ha.setFont(get_subtitle_font(bold=True))
+        self.field_eiq_result_acre = QLabel("-- /acre")
+        self.field_eiq_result_acre.setFont(get_subtitle_font(bold=True))
         
         field_eiq_layout.addWidget(field_eiq_label)
-        field_eiq_layout.addWidget(self.field_eiq_result)
+        field_eiq_layout.addWidget(self.field_eiq_result_ha)
+        field_eiq_layout.addWidget(self.field_eiq_result_acre)
         field_eiq_layout.addStretch(1)
         
         layout.addLayout(field_eiq_layout)
@@ -307,12 +310,15 @@ class EiqResultDisplay(QWidget):
     def update_result(self, field_eiq):
         """Update the EIQ result display with the calculated value."""
         if field_eiq <= 0:
-            self.field_eiq_result.setText("-- /ha")
+            self.field_eiq_result_ha.setText("-- /ha")
+            self.field_eiq_result_acre.setText("-- /acre")
             self.score_bar.set_value(0, "No calculation")
             return
             
-        # Format result with per-ha values only
-        self.field_eiq_result.setText(format_eiq_result(field_eiq))
+        # Format result with per-ha and per-acre values
+        ha_text, acre_text = format_eiq_result(field_eiq)
+        self.field_eiq_result_ha.setText(ha_text)
+        self.field_eiq_result_acre.setText(acre_text)
         
         # Update score bar
         rating, _ = get_impact_category(field_eiq)

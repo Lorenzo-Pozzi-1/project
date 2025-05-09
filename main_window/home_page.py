@@ -37,7 +37,7 @@ class HomePage(QWidget):
         main_layout.setSpacing(SPACING_LARGE)
         
         # Title
-        title_label = QLabel("LORENZO POZZI Pesticide App")
+        title_label = QLabel("McCain Pesticides App")
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setFont(get_title_font())
         main_layout.addWidget(title_label)
