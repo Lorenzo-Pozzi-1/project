@@ -281,3 +281,25 @@ class Product:
             ai4_concentration_uom=data.get("[AI4]UOM"),
             ai4_eiq=data.get("AI4 EIQ")
         )
+    
+    def get_ai_groups(self):
+        """
+        Get mode of action groups for all active ingredients in the product.
+        
+        Returns:
+            list: List of dictionaries with AI names and their MoA groups
+        """
+        from data.ai_repository import AIRepository
+        
+        ai_repo = AIRepository.get_instance()
+        ai_groups = []
+        
+        # Process all active ingredients
+        for ai_name in self.active_ingredients:
+            if not ai_name:
+                continue
+                
+            groups = ai_repo.get_moa_groups(ai_name)
+            ai_groups.append(groups)
+        
+        return ai_groups
