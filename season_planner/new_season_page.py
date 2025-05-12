@@ -5,10 +5,12 @@ This module defines the NewSeasonPage class which allows users to create
 a new season plan from scratch with multiple scenarios.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTabWidget, QTableWidget, QFrame
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTabWidget, QFrame
 from PySide6.QtCore import Qt
-from common.styles import MARGIN_LARGE, SPACING_LARGE, get_body_font, PRIMARY_BUTTON_STYLE
+from common.styles import MARGIN_LARGE, SECONDARY_BUTTON_STYLE, SPACING_LARGE, PRIMARY_BUTTON_STYLE
 from common.widgets import HeaderWithBackButton
+from season_planner.models import Scenario
+from season_planner.scenario_widget import ScenarioWidget
 
 class NewSeasonPage(QWidget):
     """
@@ -21,6 +23,7 @@ class NewSeasonPage(QWidget):
         """Initialize the new season page."""
         super().__init__(parent)
         self.parent = parent
+        self.scenarios = []  # List of Scenario objects
         self.setup_ui()
         
     def setup_ui(self):
@@ -40,11 +43,36 @@ class NewSeasonPage(QWidget):
         self.compare_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
         self.compare_button.clicked.connect(self.compare_scenarios)
         self.header.layout().addWidget(self.compare_button)
+
+        # Reset button next to Compare button
+        self.reset_button = QPushButton("Reset")
+        self.reset_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
+        self.reset_button.clicked.connect(self.reset_current_scenario)
+        self.header.layout().addWidget(self.reset_button)
         
         # Tab widget for scenarios
         self.tab_widget = QTabWidget()
         self.tab_widget.setTabsClosable(True)
         self.tab_widget.tabCloseRequested.connect(self.close_scenario_tab)
+
+        # EIQ gradient bar below tab_widget
+        gradient_label = QLabel("Low / Med / High Environmental Impact")
+        gradient_label.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(gradient_label)
+
+        # Create a gradient bar
+        self.gradient_bar = QFrame()
+        self.gradient_bar.setMinimumHeight(20)
+        self.gradient_bar.setStyleSheet("""
+            QFrame {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                        stop:0 #77DD77,
+                                        stop:0.5 #FFF275,
+                                        stop:1 #FF6961);
+                border-radius: 3px;
+            }
+        """)
+        main_layout.addWidget(self.gradient_bar)
         
         # Add initial scenario tab
         self.add_scenario_tab()
@@ -54,98 +82,16 @@ class NewSeasonPage(QWidget):
         self.tab_widget.tabBarClicked.connect(self.handle_tab_click)
         
         main_layout.addWidget(self.tab_widget)
-        
-        # Gradient bar with labels for adoption stages
-        self.gradient_bar = QFrame()
-        self.gradient_bar.setMinimumHeight(60)  # Increased height to accommodate labels
-        self.gradient_bar.setMaximumHeight(60)
-        self.gradient_bar.setStyleSheet(f"""
-            QFrame {{
-                /* Define a linear gradient using your palette */
-                /* Red (start) -> Yellow (middle) -> Green (end) */
-                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                                stop:0 #EC3400, 
-                                                stop:0.5 #fee000, 
-                                                stop:1 #009863);
-                
-                /* Keep the border and rounded corners */
-                border: 1px solid #cccccc;
-                border-radius: 4px;
-            }}
-        """)
-
-        # Use absolute positioning for precise label placement
-        self.gradient_bar.setLayout(QHBoxLayout())
-        self.gradient_bar.layout().setContentsMargins(0, 0, 0, 0)
-
-        # Add labels at specific positions
-        stages = [
-            {"name": "Onboarding", "position": 0.0},   # Start
-            {"name": "Engaged", "position": 0.33},     # 1/3 mark
-            {"name": "Advanced", "position": 0.67},    # 2/3 mark
-            {"name": "Leading", "position": 1.0}       # End
-        ]
-
-        for stage in stages:
-            # Create label with position
-            label = QLabel(stage["name"])
-            label.setFont(get_body_font(bold=True))
-            label.setStyleSheet("color: #000000; background-color: rgba(255, 255, 255, 150); border-radius: 2px; padding: 2px 5px;")
-            label.setAlignment(Qt.AlignCenter)
-            
-            # Position using absolute coordinates
-            label.setParent(self.gradient_bar)
-            label.show()
-            
-            # We'll set exact positions after the gradient bar is shown
-            # Store info for later positioning
-            label.stage_position = stage["position"]
-            
-        # Connect to resizeEvent to position labels correctly
-        self.gradient_bar.resizeEvent = lambda event: self.position_gradient_labels(event)
-
-        main_layout.addWidget(self.gradient_bar)
-        
-        # Add label to the gradient bar
-        gradient_layout = QHBoxLayout(self.gradient_bar)
-        gradient_label = QLabel("Placeholder for Color-Coded Gradient Bar (Bad/Average/Good)")
-        gradient_label.setAlignment(Qt.AlignCenter)
-        gradient_layout.addWidget(gradient_label)
-        
-        main_layout.addWidget(self.gradient_bar)
-
-    def position_gradient_labels(self, event=None):
-        """Position the gradient labels based on their defined positions."""
-        width = self.gradient_bar.width()
-        height = self.gradient_bar.height()
-        
-        # Find all child labels
-        for child in self.gradient_bar.children():
-            if isinstance(child, QLabel) and hasattr(child, 'stage_position'):
-                # Calculate x position based on percentage
-                x_pos = int(width * child.stage_position)
-                
-                # Adjust for label width to center on position
-                label_width = child.sizeHint().width()
-                x_pos -= label_width // 2
-                
-                # Ensure label stays within the widget bounds
-                x_pos = max(5, min(width - label_width - 5, x_pos))
-                
-                # Set the label position at the bottom of the gradient bar
-                child.setGeometry(x_pos, height - 25, label_width, 20)
     
     def add_scenario_tab(self):
-        """Add a new scenario tab with a placeholder table."""
-        # Create tab content widget
-        tab_content = QWidget()
-        tab_layout = QVBoxLayout(tab_content)
+        """Add a new scenario tab with the scenario widget."""
+        # Create new scenario data model
+        scenario = Scenario(name=f"Scenario {len(self.scenarios) + 1}")
+        self.scenarios.append(scenario)
         
-        # Add placeholder table
-        table = QTableWidget(10, 5)  # 10 rows, 5 columns for placeholder
-        table.setHorizontalHeaderLabels(["Date", "Product", "Rate", "Application Method", "Notes"])
-        table.horizontalHeader().setStretchLastSection(True)
-        tab_layout.addWidget(table)
+        # Create the scenario widget
+        scenario_widget = ScenarioWidget(scenario=scenario)
+        scenario_widget.scenario_changed.connect(self.on_scenario_changed)
         
         # Add the tab
         scenario_count = self.tab_widget.count()
@@ -153,7 +99,7 @@ class NewSeasonPage(QWidget):
         if scenario_count > 0 and self.tab_widget.tabText(scenario_count - 1) == "+":
             scenario_count -= 1
             
-        self.tab_widget.insertTab(scenario_count, tab_content, f"Scenario {scenario_count + 1}")
+        self.tab_widget.insertTab(scenario_count, scenario_widget, f"Scenario {scenario_count + 1}")
         self.tab_widget.setCurrentIndex(scenario_count)
     
     def handle_tab_click(self, index):
@@ -176,19 +122,43 @@ class NewSeasonPage(QWidget):
         if scenario_tabs <= 1:
             return
             
+        # Remove the scenario from our data list
+        if 0 <= index < len(self.scenarios):
+            del self.scenarios[index]
+            
         # Close the tab
         self.tab_widget.removeTab(index)
         
         # Rename remaining tabs to keep them sequential
         for i in range(self.tab_widget.count() - 1):  # Skip the "+" tab
             self.tab_widget.setTabText(i, f"Scenario {i + 1}")
+            
+            # Also update scenario names
+            if i < len(self.scenarios):
+                self.scenarios[i].name = f"Scenario {i + 1}"
     
     def compare_scenarios(self):
         """Compare the created scenarios."""
         print("Scenarios will be compared")
-        # Placeholder for future functionality
+        # This will be implemented later
     
     def go_back(self):
         """Go back to the main season planner page."""
         if self.parent:
             self.parent.go_back_to_main()
+    
+    def on_scenario_changed(self):
+        """Handle changes to a scenario."""
+        # This will be used for autosaving, etc.
+        pass
+
+    def reset_current_scenario(self):
+        """Reset the current scenario to empty state."""
+        current_index = self.tab_widget.currentIndex()
+        
+        # Check if it's a valid scenario tab
+        if current_index >= 0 and current_index < len(self.scenarios):
+            # Get the scenario widget
+            widget = self.tab_widget.widget(current_index)
+            if isinstance(widget, ScenarioWidget):
+                widget.clear_scenario()
