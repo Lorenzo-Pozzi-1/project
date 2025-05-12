@@ -5,7 +5,7 @@ This module provides a widget that contains field info and treatments
 for a single scenario.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame, QTableWidgetItem
 from PySide6.QtCore import Qt, Signal
 from common.widgets import ScoreBar
 from common.styles import get_subtitle_font
@@ -80,13 +80,13 @@ class ScenarioWidget(QWidget):
         # Add treatments from scenario
         for treatment in self.scenario.treatments:
             row = self.treatment_table.add_empty_row()
-            self.treatment_table.setItem(row, 1, QLabel(treatment.date))
-            self.treatment_table.setItem(row, 2, QLabel(treatment.product_name))
-            self.treatment_table.setItem(row, 3, QLabel(str(treatment.rate)))
-            self.treatment_table.setItem(row, 4, QLabel(treatment.rate_uom))
-            self.treatment_table.setItem(row, 5, QLabel(str(treatment.acres)))
-            self.treatment_table.setItem(row, 6, QLabel(treatment.application_method))
-            self.treatment_table.setItem(row, 7, QLabel(treatment.active_groups))
+            self.treatment_table.setItem(row, 1, QTableWidgetItem(treatment.date))
+            self.treatment_table.setItem(row, 2, QTableWidgetItem(treatment.product_name))
+            self.treatment_table.setItem(row, 3, QTableWidgetItem(str(treatment.rate)))
+            self.treatment_table.setItem(row, 4, QTableWidgetItem(treatment.rate_uom))
+            self.treatment_table.setItem(row, 5, QTableWidgetItem(str(treatment.acres)))
+            self.treatment_table.setItem(row, 6, QTableWidgetItem(treatment.application_method))
+            self.treatment_table.setItem(row, 7, QTableWidgetItem(treatment.active_groups))
             self.treatment_table.update_field_eiq(row, treatment.field_eiq)
         
         # Add the "+ add treatment" row back

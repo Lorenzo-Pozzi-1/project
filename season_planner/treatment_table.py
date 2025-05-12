@@ -298,27 +298,6 @@ class TreatmentTable(QTableWidget):
         # Default to 0 if calculation fails
         self.update_field_eiq(row, 0)
         return 0
-    
-    def mousePressEvent(self, event):
-        """Override to handle mouse press for drag & drop and add button."""
-        super().mousePressEvent(event)
-        
-        # Check if we clicked the add treatment row
-        row = self.rowAt(event.position().y())
-        if row == self.rowCount() - 1:
-            # Check if it's our add treatment row
-            item = self.item(row, 0)
-            if item and "add treatment" in item.text():
-                self.add_treatment_clicked.emit()
-                return
-        
-        # Check if we clicked on a drag handle
-        if event.button() == Qt.LeftButton:
-            column = self.columnAt(event.position().x())
-            if column == 0 and row < self.rowCount() - 1:  # Skip add row
-                self.drag_start_position = event.position()
-                self.drag_start_row = row
-                event.accept()
 
     def mouseMoveEvent(self, event):
         """Handle mouse move for drag & drop."""
