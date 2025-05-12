@@ -10,8 +10,7 @@ from PySide6.QtCore import Qt
 from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, 
                          SECONDARY_BUTTON_STYLE, get_title_font, get_body_font)
 from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar
-from season_planner.plan_metadata_widget import SeasonPlanMetadataWidget
-from season_planner.applications_table_widget import ApplicationsTableWidget
+from season_planner.widgets import SeasonPlanMetadataWidget, ApplicationsTableContainer
 from eiq_calculator.eiq_calculations import format_eiq_result
 
 
@@ -70,10 +69,10 @@ class SeasonPlannerPage(QWidget):
         table_header.setFont(get_title_font(size=16))
         applications_layout.addWidget(table_header)
         
-        # Applications Table
-        self.applications_table = ApplicationsTableWidget()
-        self.applications_table.applications_changed.connect(self.update_eiq_display)
-        applications_layout.addWidget(self.applications_table)
+        # Applications Table Container
+        self.applications_container = ApplicationsTableContainer()
+        self.applications_container.applications_changed.connect(self.update_eiq_display)
+        applications_layout.addWidget(self.applications_container)
         
         # Buttons for table actions
         buttons_layout = QHBoxLayout()
@@ -110,7 +109,7 @@ class SeasonPlannerPage(QWidget):
         results_layout.addWidget(self.eiq_score_bar)
         
         # Add some additional information labels
-        eiq_info_layout = QHBoxLayout()
+        eiq_info_layout = QHBoxLayout()        
         
         applications_count_label = QLabel("Applications Count:")
         applications_count_label.setFont(get_body_font())
@@ -119,9 +118,9 @@ class SeasonPlannerPage(QWidget):
         self.applications_count_value = QLabel("0")
         self.applications_count_value.setFont(get_body_font())
         eiq_info_layout.addWidget(self.applications_count_value)
-
-        eiq_info_layout.addStretch(1)
         
+        eiq_info_layout.addStretch(1)
+
         results_layout.addLayout(eiq_info_layout)
         
         results_frame.layout.addLayout(results_layout)
@@ -129,28 +128,32 @@ class SeasonPlannerPage(QWidget):
     
     def on_metadata_changed(self):
         """Handle changes to season plan metadata."""
-        # Update field area in applications table
+        # Update field area in applications container
         metadata = self.metadata_widget.get_metadata()
-        self.applications_table.set_field_area(
+        self.applications_container.set_field_area(
             metadata["field_area"], 
             metadata["field_area_uom"]
         )
     
     def add_application(self):
-        """Add a new application row to the table."""
-        self.applications_table.add_application_row()
+        """Add a new application row to the container."""
+        self.applications_container.add_application_row()
     
     def remove_application(self):
-        """Remove the selected application row from the table."""
-        self.applications_table.remove_application_row()
+        """Remove the selected application row from the container."""
+        # This is a placeholder - currently we can't select rows in the container
+        # We will need to implement selection in the ApplicationsTableContainer
+        # or simply remove the last added row for now
+        if self.applications_container.count() > 0:
+            self.applications_container.remove_application_row(self.applications_container.count() - 1)
     
     def update_eiq_display(self):
         """Update the EIQ display based on current applications."""
         # Get total field EIQ
-        total_eiq = self.applications_table.get_total_field_eiq()
+        total_eiq = self.applications_container.get_total_field_eiq()
         
         # Get applications count
-        applications = self.applications_table.get_applications()
+        applications = self.applications_container.get_applications()
         application_count = len(applications)
         
         # Update score bar
@@ -175,7 +178,7 @@ class SeasonPlannerPage(QWidget):
         
         This method is called when filtered data changes in the main window.
         """
-        # Since the applications table loads products dynamically, 
+        # Since the applications container loads products dynamically, 
         # we need to rebuild any existing rows with the new product list
-        applications = self.applications_table.get_applications()
-        self.applications_table.set_applications(applications)
+        applications = self.applications_container.get_applications()
+        self.applications_container.set_applications(applications)
