@@ -11,7 +11,7 @@ from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE,
                          SECONDARY_BUTTON_STYLE, get_title_font, get_body_font)
 from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar
 from season_planner_page.widgets import SeasonPlanMetadataWidget, ApplicationsTableContainer
-from eiq_calculator_page.eiq_calculations import format_eiq_result
+from math_module.eiq_calculations import format_eiq_result
 
 
 class SeasonPlannerPage(QWidget):

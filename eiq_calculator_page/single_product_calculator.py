@@ -12,8 +12,8 @@ from common.styles import get_body_font
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
 from eiq_calculator_page.eiq_ui_components import ProductSearchField, EiqResultDisplay
-from eiq_calculator_page.eiq_calculations import calculate_product_field_eiq
-from eiq_calculator_page.eiq_conversions import APPLICATION_RATE_CONVERSION
+from math_module.eiq_calculations import calculate_product_field_eiq
+from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
 
 class SingleProductCalculator(QWidget):

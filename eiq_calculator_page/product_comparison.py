@@ -11,8 +11,8 @@ from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUT
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
 from eiq_calculator_page.eiq_ui_components import get_products_from_csv, ColorCodedEiqItem
-from eiq_calculator_page.eiq_calculations import calculate_product_field_eiq
-from eiq_calculator_page.eiq_conversions import convert_concentration_to_percent, APPLICATION_RATE_CONVERSION
+from math_module.eiq_calculations import calculate_product_field_eiq
+from math_module.eiq_conversions import convert_concentration_to_percent, APPLICATION_RATE_CONVERSION
 
 
 class ProductComparisonCalculator(QWidget):

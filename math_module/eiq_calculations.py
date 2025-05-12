@@ -1,11 +1,11 @@
 """
-Enhanced EIQ Calculation Functions for the LORENZO POZZI Pesticide App.
+EIQ Calculation Functions for the LORENZO POZZI Pesticide App.
 
-This module provides improved functions for calculating Environmental Impact Quotients
+This module provides functions for calculating Environmental Impact Quotients
 (EIQ) for pesticide products and applications with proper unit of measure handling.
 """
 
-from eiq_calculator_page.eiq_conversions import standardize_eiq_calculation, get_uom_category
+from math_module.eiq_conversions import standardize_eiq_calculation, get_uom_category
 
 def calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications=1):
     """
