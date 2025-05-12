@@ -103,7 +103,7 @@ class SeasonPlanMetadataWidget(QWidget):
         metadata_layout.addWidget(self.field_area_spin)
         
         self.field_area_uom_combo = QComboBox()
-        self.field_area_uom_combo.addItems(["ha", "acre"])
+        self.field_area_uom_combo.addItems(["acre", "ha"])
         self.field_area_uom_combo.currentIndexChanged.connect(self.on_metadata_changed)
         metadata_layout.addWidget(self.field_area_uom_combo)
         

@@ -5,13 +5,14 @@ This module defines the SeasonPlannerPage class which provides functionality
 for planning and managing seasonal pesticide applications.
 """
 
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
-                             QTableWidget, QTableWidgetItem, QHeaderView)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton)
 from PySide6.QtCore import Qt
 from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, 
-                        SECONDARY_BUTTON_STYLE, get_title_font, get_body_font)
+                         SECONDARY_BUTTON_STYLE, get_title_font, get_body_font)
 from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar
 from season_planner.plan_metadata_widget import SeasonPlanMetadataWidget
+from season_planner.applications_table_widget import ApplicationsTableWidget
+from eiq_calculator.eiq_calculations import format_eiq_result
 
 
 class SeasonPlannerPage(QWidget):
@@ -70,21 +71,8 @@ class SeasonPlannerPage(QWidget):
         applications_layout.addWidget(table_header)
         
         # Applications Table
-        self.applications_table = QTableWidget(8, 8)  # 8 rows, 8 columns as placeholder
-        
-        # Set table headers
-        table_headers = [
-            "Date", "Product", "Rate", "UOM", 
-            "Area", "Method", "AI Groups", "Field EIQ"
-        ]
-        self.applications_table.setHorizontalHeaderLabels(table_headers)
-        
-        # Configure table appearance
-        header = self.applications_table.horizontalHeader()
-        for i in range(len(table_headers)):
-            header.setSectionResizeMode(i, QHeaderView.Stretch)
-        
-        # Add table to layout
+        self.applications_table = ApplicationsTableWidget()
+        self.applications_table.applications_changed.connect(self.update_eiq_display)
         applications_layout.addWidget(self.applications_table)
         
         # Buttons for table actions
@@ -92,13 +80,11 @@ class SeasonPlannerPage(QWidget):
         
         add_application_button = QPushButton("Add Application")
         add_application_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        # Placeholder for add functionality
         add_application_button.clicked.connect(self.add_application)
         buttons_layout.addWidget(add_application_button)
         
         remove_application_button = QPushButton("Remove Selected")
         remove_application_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        # Placeholder for remove functionality
         remove_application_button.clicked.connect(self.remove_application)
         buttons_layout.addWidget(remove_application_button)
         
@@ -126,16 +112,6 @@ class SeasonPlannerPage(QWidget):
         # Add some additional information labels
         eiq_info_layout = QHBoxLayout()
         
-        total_eiq_label = QLabel("Total Field EIQ:")
-        total_eiq_label.setFont(get_body_font(bold=True))
-        eiq_info_layout.addWidget(total_eiq_label)
-        
-        self.total_eiq_value = QLabel("0.00 /ha")
-        self.total_eiq_value.setFont(get_body_font(bold=True))
-        eiq_info_layout.addWidget(self.total_eiq_value)
-        
-        eiq_info_layout.addStretch(1)
-        
         applications_count_label = QLabel("Applications Count:")
         applications_count_label.setFont(get_body_font())
         eiq_info_layout.addWidget(applications_count_label)
@@ -143,6 +119,8 @@ class SeasonPlannerPage(QWidget):
         self.applications_count_value = QLabel("0")
         self.applications_count_value.setFont(get_body_font())
         eiq_info_layout.addWidget(self.applications_count_value)
+
+        eiq_info_layout.addStretch(1)
         
         results_layout.addLayout(eiq_info_layout)
         
@@ -151,18 +129,40 @@ class SeasonPlannerPage(QWidget):
     
     def on_metadata_changed(self):
         """Handle changes to season plan metadata."""
-        # This will be implemented later with actual functionality
-        print("Metadata changed")
+        # Update field area in applications table
+        metadata = self.metadata_widget.get_metadata()
+        self.applications_table.set_field_area(
+            metadata["field_area"], 
+            metadata["field_area_uom"]
+        )
     
     def add_application(self):
-        """Placeholder function for adding a new application."""
-        # This will be implemented later
-        print("Add Application clicked")
+        """Add a new application row to the table."""
+        self.applications_table.add_application_row()
     
     def remove_application(self):
-        """Placeholder function for removing a selected application."""
-        # This will be implemented later
-        print("Remove Application clicked")
+        """Remove the selected application row from the table."""
+        self.applications_table.remove_application_row()
+    
+    def update_eiq_display(self):
+        """Update the EIQ display based on current applications."""
+        # Get total field EIQ
+        total_eiq = self.applications_table.get_total_field_eiq()
+        
+        # Get applications count
+        applications = self.applications_table.get_applications()
+        application_count = len(applications)
+        
+        # Update score bar
+        if total_eiq > 0:
+            self.eiq_score_bar.set_value(total_eiq)
+        else:
+            self.eiq_score_bar.set_value(0, "No applications")
+        
+        # Update labels
+        ha_text, acre_text = format_eiq_result(total_eiq)
+        self.total_eiq_value.setText(ha_text)
+        self.applications_count_value.setText(str(application_count))
     
     def compare_plans(self):
         """Placeholder function for comparing multiple plans."""
@@ -174,7 +174,8 @@ class SeasonPlannerPage(QWidget):
         Refresh product data based on the filtered products.
         
         This method is called when filtered data changes in the main window.
-        For now, it's a placeholder that will be implemented with actual functionality.
         """
-        # This will be implemented later
-        pass
+        # Since the applications table loads products dynamically, 
+        # we need to rebuild any existing rows with the new product list
+        applications = self.applications_table.get_applications()
+        self.applications_table.set_applications(applications)
