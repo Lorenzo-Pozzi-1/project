@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (QWidget, QHBoxLayout, QLineEdit, QComboBox,
 from PySide6.QtCore import Qt, Signal, QSize, QEvent
 from PySide6.QtGui import QWheelEvent
 from data.product_repository import ProductRepository
-from math_module.eiq_conversions import convert_concentration_to_percent
+from math_module.eiq_conversions import convert_concentration_to_decimal, convert_concentration_to_percent
 from math_module.eiq_calculations import calculate_product_field_eiq
 
 
@@ -301,53 +301,78 @@ class ApplicationRowWidget(QFrame):  # Changed from QWidget to QFrame
             
             # AI1
             if product.ai1 and product.ai1_eiq is not None and product.ai1_concentration is not None:
-                percent = convert_concentration_to_percent(
+                # Convert concentration to decimal (0-1) using appropriate conversion function
+                ai_decimal = convert_concentration_to_decimal(
                     product.ai1_concentration, 
                     product.ai1_concentration_uom
                 )
-                active_ingredients.append({
-                    'name': product.ai1,
-                    'eiq': product.ai1_eiq,
-                    'percent': percent
-                })
+                
+                if ai_decimal is not None:
+                    # Convert decimal to percent for the calculate_field_eiq function
+                    ai_percent = ai_decimal * 100
+                    
+                    active_ingredients.append({
+                        'name': product.ai1,
+                        'eiq': product.ai1_eiq,
+                        'percent': ai_percent
+                    })
             
             # AI2
             if product.ai2 and product.ai2_eiq is not None and product.ai2_concentration is not None:
-                percent = convert_concentration_to_percent(
+                # Convert concentration to decimal (0-1)
+                ai_decimal = convert_concentration_to_decimal(
                     product.ai2_concentration, 
                     product.ai2_concentration_uom
                 )
-                active_ingredients.append({
-                    'name': product.ai2,
-                    'eiq': product.ai2_eiq,
-                    'percent': percent
-                })
+                
+                if ai_decimal is not None:
+                    # Convert decimal to percent
+                    ai_percent = ai_decimal * 100
+                    
+                    active_ingredients.append({
+                        'name': product.ai2,
+                        'eiq': product.ai2_eiq,
+                        'percent': ai_percent
+                    })
             
             # AI3
             if product.ai3 and product.ai3_eiq is not None and product.ai3_concentration is not None:
-                percent = convert_concentration_to_percent(
+                # Convert concentration to decimal (0-1)
+                ai_decimal = convert_concentration_to_decimal(
                     product.ai3_concentration, 
                     product.ai3_concentration_uom
                 )
-                active_ingredients.append({
-                    'name': product.ai3,
-                    'eiq': product.ai3_eiq,
-                    'percent': percent
-                })
+                
+                if ai_decimal is not None:
+                    # Convert decimal to percent
+                    ai_percent = ai_decimal * 100
+                    
+                    active_ingredients.append({
+                        'name': product.ai3,
+                        'eiq': product.ai3_eiq,
+                        'percent': ai_percent
+                    })
             
             # AI4
             if product.ai4 and product.ai4_eiq is not None and product.ai4_concentration is not None:
-                percent = convert_concentration_to_percent(
+                # Convert concentration to decimal (0-1)
+                ai_decimal = convert_concentration_to_decimal(
                     product.ai4_concentration, 
                     product.ai4_concentration_uom
                 )
-                active_ingredients.append({
-                    'name': product.ai4,
-                    'eiq': product.ai4_eiq,
-                    'percent': percent
-                })
+                
+                if ai_decimal is not None:
+                    # Convert decimal to percent
+                    ai_percent = ai_decimal * 100
+                    
+                    active_ingredients.append({
+                        'name': product.ai4,
+                        'eiq': product.ai4_eiq,
+                        'percent': ai_percent
+                    })
             
-            # Calculate Field EIQ
+            # Calculate Field EIQ using the function from math_module that expects
+            # active ingredients with eiq, percent, and name
             field_eiq = calculate_product_field_eiq(
                 active_ingredients, application_rate, rate_uom, applications=1
             )

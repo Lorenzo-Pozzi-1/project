@@ -1,7 +1,7 @@
 """
-Enhanced EIQ Unit Conversion Utilities for the LORENZO POZZI Pesticide App.
+EIQ Unit Conversion Utilities for the Pesticide App.
 
-This module provides improved conversion functions for application rates, 
+This module provides conversion functions for application rates, 
 active ingredient concentrations, and other units used in EIQ calculations.
 Uses a single unified data structure for UOM classification and conversion factors.
 """
