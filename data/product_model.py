@@ -178,26 +178,6 @@ class Product:
             count += 1
         return count
     
-    @property
-    def eiq_total(self):
-        """Calculate the total EIQ based on all active ingredients."""
-        total_eiq = 0
-        
-        # For each active ingredient, if present, add its contribution to total EIQ
-        if self.ai1 and self.ai1_eiq is not None and self.ai1_concentration is not None:
-            total_eiq += self.ai1_eiq * (self.ai1_concentration / 100)
-            
-        if self.ai2 and self.ai2_eiq is not None and self.ai2_concentration is not None:
-            total_eiq += self.ai2_eiq * (self.ai2_concentration / 100)
-            
-        if self.ai3 and self.ai3_eiq is not None and self.ai3_concentration is not None:
-            total_eiq += self.ai3_eiq * (self.ai3_concentration / 100)
-            
-        if self.ai4 and self.ai4_eiq is not None and self.ai4_concentration is not None:
-            total_eiq += self.ai4_eiq * (self.ai4_concentration / 100)
-            
-        return total_eiq if total_eiq > 0 else None
-    
     def to_dict(self):
         """
         Convert product to dictionary representation.

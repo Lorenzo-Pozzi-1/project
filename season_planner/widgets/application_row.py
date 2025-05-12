@@ -6,14 +6,27 @@ in the season planner.
 """
 
 from PySide6.QtWidgets import (QWidget, QHBoxLayout, QLineEdit, QComboBox, 
-                             QDoubleSpinBox, QLabel)
-from PySide6.QtCore import Qt, Signal
+                             QDoubleSpinBox, QLabel, QSizePolicy, QFrame)
+from PySide6.QtCore import Qt, Signal, QSize, QEvent
+from PySide6.QtGui import QWheelEvent
 from data.product_repository import ProductRepository
 from eiq_calculator.eiq_conversions import convert_concentration_to_percent
 from eiq_calculator.eiq_calculations import calculate_product_field_eiq
 
 
-class ApplicationRowWidget(QWidget):
+# Create a subclass of QDoubleSpinBox that ignores wheel events unless focused
+class NoScrollSpinBox(QDoubleSpinBox):
+    def wheelEvent(self, event):
+        # Only accept wheel events if the spin box has focus
+        if self.hasFocus():
+            super().wheelEvent(event)
+        else:
+            # Pass the wheel event to the parent widget
+            if self.parent():
+                self.parent().wheelEvent(event)
+
+
+class ApplicationRowWidget(QFrame):  # Changed from QWidget to QFrame
     """
     Widget representing a single pesticide application.
     
@@ -23,6 +36,9 @@ class ApplicationRowWidget(QWidget):
     
     # Signals
     data_changed = Signal(object)  # Emitted when any data in the row changes
+    
+    # Fixed row height
+    ROW_HEIGHT = 40
     
     def __init__(self, parent=None, field_area=10.0, field_area_uom="ha"):
         """
@@ -36,14 +52,36 @@ class ApplicationRowWidget(QWidget):
         super().__init__(parent)
         self.field_area = field_area
         self.field_area_uom = field_area_uom
+        self.product_types = []  # List of available product types
+        
+        # Set frame properties for visible border
+        self.setFrameShape(QFrame.StyledPanel)
+        self.setFrameShadow(QFrame.Plain)
+        self.setStyleSheet("""
+            ApplicationRowWidget {
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                background-color: #f8f8f8;
+                margin: 1px;
+            }
+        """)
+        
+        # Set fixed height for the row
+        self.setFixedHeight(self.ROW_HEIGHT)
+        
+        # Set a size policy that maintains the fixed height
+        size_policy = self.sizePolicy()
+        size_policy.setVerticalPolicy(QSizePolicy.Fixed)
+        self.setSizePolicy(size_policy)
+        
         self.setup_ui()
-        self.load_products()
+        self.load_product_types()
     
     def setup_ui(self):
         """Set up the UI components."""
         # Main layout - horizontal row
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setContentsMargins(2, 2, 2, 2)  # Smaller margins to fit within the frame
         layout.setSpacing(5)
         
         # Date field (text input)
@@ -52,14 +90,20 @@ class ApplicationRowWidget(QWidget):
         self.date_edit.textChanged.connect(self.on_data_changed)
         layout.addWidget(self.date_edit)
         
+        # Product Type selection
+        self.product_type_combo = QComboBox()
+        self.product_type_combo.addItem("Select type...")
+        self.product_type_combo.currentIndexChanged.connect(self.on_product_type_changed)
+        layout.addWidget(self.product_type_combo)
+        
         # Product selection
         self.product_combo = QComboBox()
         self.product_combo.addItem("Select a product...")
         self.product_combo.currentIndexChanged.connect(self.on_product_changed)
         layout.addWidget(self.product_combo)
         
-        # Application rate
-        self.rate_spin = QDoubleSpinBox()
+        # Application rate - using our custom spin box that ignores wheel events unless focused
+        self.rate_spin = NoScrollSpinBox()
         self.rate_spin.setRange(0.0, 9999.99)
         self.rate_spin.setDecimals(2)
         self.rate_spin.setValue(0.0)
@@ -73,8 +117,8 @@ class ApplicationRowWidget(QWidget):
         self.uom_combo.currentIndexChanged.connect(self.on_data_changed)
         layout.addWidget(self.uom_combo)
         
-        # Area treated
-        self.area_spin = QDoubleSpinBox()
+        # Area treated - using our custom spin box that ignores wheel events unless focused
+        self.area_spin = NoScrollSpinBox()
         self.area_spin.setRange(0.0, 9999.99)
         self.area_spin.setDecimals(1)
         self.area_spin.setValue(self.field_area)  # Default to field area
@@ -91,33 +135,93 @@ class ApplicationRowWidget(QWidget):
         
         # AI Groups (read-only)
         self.ai_groups_label = QLabel("")
+        self.ai_groups_label.setAlignment(Qt.AlignCenter)
+        self.ai_groups_label.setWordWrap(True)
         layout.addWidget(self.ai_groups_label)
         
         # Field EIQ (read-only)
         self.field_eiq_label = QLabel("")
+        self.field_eiq_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.field_eiq_label)
         
         # Set stretch factors to control widget sizing
         layout.setStretch(0, 2)  # Date
-        layout.setStretch(1, 3)  # Product
-        layout.setStretch(2, 1)  # Rate
-        layout.setStretch(3, 1)  # UOM
-        layout.setStretch(4, 1)  # Area
-        layout.setStretch(5, 2)  # Method
-        layout.setStretch(6, 2)  # AI Groups
-        layout.setStretch(7, 1)  # Field EIQ
+        layout.setStretch(1, 1)  # Product Type
+        layout.setStretch(2, 3)  # Product
+        layout.setStretch(3, 1)  # Rate
+        layout.setStretch(4, 1)  # UOM
+        layout.setStretch(5, 1)  # Area
+        layout.setStretch(6, 2)  # Method
+        layout.setStretch(7, 2)  # AI Groups
+        layout.setStretch(8, 1)  # Field EIQ
     
-    def load_products(self):
-        """Load products from repository into the product combo box."""
-        self.product_combo.clear()
-        self.product_combo.addItem("Select a product...")
+    def sizeHint(self):
+        """
+        Return the recommended size for the widget.
         
-        # Load products from repository
+        Returns:
+            QSize: Recommended size
+        """
+        # Return a size hint that maintains our fixed height
+        width = super().sizeHint().width()
+        return QSize(width, self.ROW_HEIGHT)
+    
+    def minimumSizeHint(self):
+        """
+        Return the minimum recommended size for the widget.
+        
+        Returns:
+            QSize: Minimum recommended size
+        """
+        # Return a minimum size hint that maintains our fixed height
+        width = super().minimumSizeHint().width()
+        return QSize(width, self.ROW_HEIGHT)
+    
+    def load_product_types(self):
+        """Load product types from repository."""
+        # Get all products from repository
         products_repo = ProductRepository.get_instance()
         products = products_repo.get_filtered_products()
         
-        for product in products:
+        # Extract unique product types
+        self.product_types = sorted(list(set(p.product_type for p in products if p.product_type)))
+        
+        # Update product type combo box
+        self.product_type_combo.clear()
+        self.product_type_combo.addItem("Select type...")
+        self.product_type_combo.addItems(self.product_types)
+    
+    def on_product_type_changed(self):
+        """Handle product type selection changes."""
+        # Get selected type
+        type_index = self.product_type_combo.currentIndex()
+        
+        # Clear product selection
+        self.product_combo.clear()
+        self.product_combo.addItem("Select a product...")
+        
+        # If no type selected, return
+        if type_index == 0:
+            return
+        
+        selected_type = self.product_type_combo.currentText()
+        
+        # Load products of the selected type
+        products_repo = ProductRepository.get_instance()
+        products = products_repo.get_filtered_products()
+        
+        filtered_products = [p for p in products if p.product_type == selected_type]
+        
+        # Populate product combo with filtered products
+        for product in filtered_products:
             self.product_combo.addItem(product.product_name)
+        
+        # Reset product-specific fields
+        self.ai_groups_label.setText("")
+        self.field_eiq_label.setText("")
+        
+        # Emit data changed
+        self.on_data_changed()
     
     def on_product_changed(self):
         """Handle product selection changes."""
@@ -307,6 +411,7 @@ class ApplicationRowWidget(QWidget):
         
         return {
             "application_date": self.date_edit.text(),
+            "product_type": self.product_type_combo.currentText(),
             "product_name": self.product_combo.currentText(),
             "rate": self.rate_spin.value(),
             "rate_uom": self.uom_combo.currentText(),
@@ -328,6 +433,14 @@ class ApplicationRowWidget(QWidget):
         
         if "application_date" in data:
             self.date_edit.setText(data["application_date"])
+        
+        if "product_type" in data:
+            index = self.product_type_combo.findText(data["product_type"])
+            if index >= 0:
+                self.product_type_combo.setCurrentIndex(index)
+                
+                # Need to update product list after setting type
+                self.on_product_type_changed()
         
         if "product_name" in data:
             index = self.product_combo.findText(data["product_name"])

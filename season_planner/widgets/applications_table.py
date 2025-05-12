@@ -6,7 +6,7 @@ application rows in the season planner.
 """
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QScrollArea, QFrame,
-                             QLabel, QHeaderView, QSizePolicy, QHBoxLayout)
+                             QLabel, QSizePolicy, QHBoxLayout)
 from PySide6.QtCore import Qt, Signal
 from season_planner.widgets.application_row import ApplicationRowWidget
 
@@ -43,8 +43,13 @@ class ApplicationsTableContainer(QWidget):
         header_layout.setContentsMargins(5, 5, 5, 5)
         header_layout.setSpacing(5)
         
+        # Create header widget with fixed height to match rows
+        header_widget = QWidget()
+        header_widget.setFixedHeight(ApplicationRowWidget.ROW_HEIGHT)
+        header_widget.setLayout(header_layout)
+        
         # Add header labels with matching widths and alignments to the application rows
-        headers = ["Date", "Product", "Rate", "UOM", "Area", "Method", "AI Groups", "Field EIQ"]
+        headers = ["Date", "Type", "Product", "Rate", "UOM", "Area", "Method", "AI Groups", "Field EIQ"]
         for idx, header_text in enumerate(headers):
             label = QLabel(header_text)
             label.setAlignment(Qt.AlignCenter)
@@ -52,32 +57,32 @@ class ApplicationsTableContainer(QWidget):
         
         # Set stretch factors matching those in ApplicationRowWidget
         header_layout.setStretch(0, 2)  # Date
-        header_layout.setStretch(1, 3)  # Product
-        header_layout.setStretch(2, 1)  # Rate
-        header_layout.setStretch(3, 1)  # UOM
-        header_layout.setStretch(4, 1)  # Area
-        header_layout.setStretch(5, 2)  # Method
-        header_layout.setStretch(6, 2)  # AI Groups
-        header_layout.setStretch(7, 1)  # Field EIQ
+        header_layout.setStretch(1, 1)  # Product Type
+        header_layout.setStretch(2, 3)  # Product
+        header_layout.setStretch(3, 1)  # Rate
+        header_layout.setStretch(4, 1)  # UOM
+        header_layout.setStretch(5, 1)  # Area
+        header_layout.setStretch(6, 2)  # Method
+        header_layout.setStretch(7, 2)  # AI Groups
+        header_layout.setStretch(8, 1)  # Field EIQ
         
-        header_widget = QWidget()
-        header_widget.setLayout(header_layout)
         main_layout.addWidget(header_widget)
         
         # Create scroll area for application rows
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setFrameShape(QFrame.NoFrame)
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setFrameShape(QFrame.NoFrame)
         
         # Create container widget for rows
         self.rows_container = QWidget()
         self.rows_layout = QVBoxLayout(self.rows_container)
-        self.rows_layout.setContentsMargins(0, 0, 0, 0)
-        self.rows_layout.setSpacing(2)  # Small spacing between rows
+        # In the setup_ui method, update the spacing for row layout
+        self.rows_layout.setContentsMargins(5, 5, 5, 5)  # Add margins around the rows
+        self.rows_layout.setSpacing(4)  # Spacing between rows
         self.rows_layout.addStretch(1)  # Add stretch at the end to push rows to the top
         
-        scroll_area.setWidget(self.rows_container)
-        main_layout.addWidget(scroll_area)
+        self.scroll_area.setWidget(self.rows_container)
+        main_layout.addWidget(self.scroll_area)
     
     def set_field_area(self, area, uom):
         """
@@ -103,7 +108,7 @@ class ApplicationsTableContainer(QWidget):
         """
         # Create new row widget
         row_widget = ApplicationRowWidget(
-            parent=self, 
+            parent=self.rows_container, 
             field_area=self.field_area,
             field_area_uom=self.field_area_uom
         )
@@ -128,7 +133,7 @@ class ApplicationsTableContainer(QWidget):
         
         Args:
             row: The row widget to remove or index.
-                If None, attempts to find a selected row.
+                If None, removes the last row.
         
         Returns:
             bool: True if a row was removed, False otherwise
@@ -136,6 +141,9 @@ class ApplicationsTableContainer(QWidget):
         # If row is an integer index, get the widget
         if isinstance(row, int) and 0 <= row < len(self.application_rows):
             row_widget = self.application_rows[row]
+        elif row is None and self.application_rows:
+            # Remove the last row by default
+            row_widget = self.application_rows[-1]
         else:
             row_widget = row
         
