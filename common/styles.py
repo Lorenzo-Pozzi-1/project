@@ -37,34 +37,37 @@ BUTTON_MIN_HEIGHT = 40
 FEATURE_BUTTON_SIZE = 180       # Size for large feature buttons on home page
 
 # Font configurations
-def get_title_font(size=24, bold=True):
-    """Returns a font configured for titles - Red Hat Display Black."""
-    font = QFont("Red Hat Display")
+def get_font(size=12, bold=False, family=None, weight=None):
+    """Returns a configured font based on parameters.
+    
+    Args:
+        size (int): Point size of the font
+        bold (bool): Whether the font should be bold
+        family (str): Font family name (None for system default)
+        weight (int): Font weight (None for default)
+    
+    Returns:
+        QFont: Configured font
+    """
+    font = QFont(family) if family else QFont()
     font.setPointSize(size)
     font.setBold(bold)
-    font.setWeight(QFont.Black)
+    if weight:
+        font.setWeight(weight)
     return font
+
+# Then define specific font types as:
+def get_title_font(size=24, bold=True):
+    return get_font(size, bold, "Red Hat Display", QFont.Black)
 
 def get_subtitle_font(size=18, bold=True):
-    """Returns a font configured for subtitles."""
-    font = QFont("Red Hat Display")
-    font.setPointSize(size)
-    font.setBold(bold)
-    return font
+    return get_font(size, bold, "Red Hat Display")
 
 def get_body_font(size=12, bold=False):
-    """Returns a default system font for body text."""
-    font = QFont()
-    font.setPointSize(size)
-    font.setBold(bold)
-    return font
+    return get_font(size, bold)
 
 def get_small_font(size=9, bold=False):
-    """Returns a default system font for small text."""
-    font = QFont()
-    font.setPointSize(size)
-    font.setBold(bold)
-    return font
+    return get_font(size, bold)
 
 # Style sheets
 FEATURE_BUTTON_STYLE = f"""

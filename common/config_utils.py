@@ -35,9 +35,7 @@ def load_config():
                 
                 # Merge with default config to ensure all keys exist
                 # (in case the config file is from an older version)
-                merged_config = DEFAULT_CONFIG.copy()
-                merged_config.update(config)
-                return merged_config
+                return {**DEFAULT_CONFIG, **config}
         except (json.JSONDecodeError, IOError) as e:
             print(f"Error loading config: {e}")
             return DEFAULT_CONFIG
