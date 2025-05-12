@@ -7,7 +7,7 @@ classification data.
 
 import csv
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from data.ai_model import ActiveIngredient
 
 class AIRepository:
@@ -36,6 +36,26 @@ class AIRepository:
             self._load_ingredients()
         return self._all_ingredients
     
+    def _get_standardized_ai(self, ai_name: str) -> Tuple[Optional[str], Optional[ActiveIngredient]]:
+        """Get standardized AI name and object if it exists.
+        
+        Args:
+            ai_name: The name of the active ingredient
+            
+        Returns:
+            tuple: (standardized_name, ai_object) or (None, None) if not found
+        """
+        if not self._all_ingredients:
+            self._load_ingredients()
+            
+        # Try to find the AI using normalized name mapping
+        ai_name_lower = ai_name.lower()
+        if ai_name_lower in self._name_to_ai_map:
+            std_name = self._name_to_ai_map[ai_name_lower]
+            return std_name, self._all_ingredients.get(std_name)
+            
+        return None, None
+    
     def get_moa_groups(self, ai_name: str) -> str:
         """
         Get formatted mode of action groups for an active ingredient.
@@ -46,25 +66,18 @@ class AIRepository:
         Returns:
             str: Formatted mode of action groups (e.g., "FRAC: 7, HRAC: A")
         """
-        if not self._all_ingredients:
-            self._load_ingredients()
+        _, ai = self._get_standardized_ai(ai_name)
+        
+        if ai:
+            groups = []
+            if ai.FRAC_group:
+                groups.append(f"FRAC: {ai.FRAC_group}")
+            if ai.HRAC_group:
+                groups.append(f"HRAC: {ai.HRAC_group}")
+            if ai.IRAC_group:
+                groups.append(f"IRAC: {ai.IRAC_group}")
             
-        # Try to find the AI using normalized name mapping
-        ai_name_lower = ai_name.lower()
-        if ai_name_lower in self._name_to_ai_map:
-            std_name = self._name_to_ai_map[ai_name_lower]
-            ai = self._all_ingredients.get(std_name)
-            
-            if ai:
-                groups = []
-                if ai.FRAC_group:
-                    groups.append(f"FRAC: {ai.FRAC_group}")
-                if ai.HRAC_group:
-                    groups.append(f"HRAC: {ai.HRAC_group}")
-                if ai.IRAC_group:
-                    groups.append(f"IRAC: {ai.IRAC_group}")
-                
-                return ", ".join(groups) if groups else ""
+            return ", ".join(groups) if groups else ""
                 
         return ""
     
@@ -78,20 +91,13 @@ class AIRepository:
         Returns:
             float or None: EIQ value if found, None otherwise
         """
-        if not self._all_ingredients:
-            self._load_ingredients()
-            
-        # Try to find the AI using normalized name mapping
-        ai_name_lower = ai_name.lower()
-        if ai_name_lower in self._name_to_ai_map:
-            std_name = self._name_to_ai_map[ai_name_lower]
-            ai = self._all_ingredients.get(std_name)
-            
-            if ai and ai.eiq is not None:
-                try:
-                    return float(ai.eiq)
-                except (ValueError, TypeError):
-                    return None
+        _, ai = self._get_standardized_ai(ai_name)
+        
+        if ai and ai.eiq is not None:
+            try:
+                return float(ai.eiq)
+            except (ValueError, TypeError):
+                return None
                 
         return None
     
@@ -116,9 +122,4 @@ class AIRepository:
     
     def _build_name_mapping(self) -> None:
         """Build a mapping of name variations to standardized names."""
-        self._name_to_ai_map = {}
-        
-        # For now, just use lowercase mapping
-        # This can be enhanced with fuzzy matching or alternate names in the future
-        for name in self._all_ingredients.keys():
-            self._name_to_ai_map[name.lower()] = name
+        self._name_to_ai_map = {name.lower(): name for name in self._all_ingredients.keys()}

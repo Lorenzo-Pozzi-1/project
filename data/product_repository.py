@@ -59,38 +59,34 @@ class ProductRepository:
     def apply_filters(self, country: Optional[str], region: Optional[str]) -> List[Product]:
         """Apply filters and return filtered products."""
         products = self.get_all_products()
-        filtered = []
         
-        if country and country != "None of the above":
-            if region and region != "None of the above":
-                # Filter by both country and region
-                filtered = [p for p in products if p.country == country and 
-                           (p.region == region or not p.region)]
-            else:
-                # Filter by country only
-                filtered = [p for p in products if p.country == country]
-        else:
-            # No country filter, show all products
-            filtered = products
+        # If no country filter, return all products
+        if not country or country == "None of the above":
+            self._filtered_products = products
+            return products
+        
+        # Start with country filter
+        filtered = [p for p in products if p.country == country]
+        
+        # Apply region filter if specified
+        if region and region != "None of the above":
+            filtered = [p for p in filtered if p.region == region or not p.region]
         
         self._filtered_products = filtered
         return filtered
     
     def _load_products(self) -> None:
         """Load all products from the CSV file."""
-        products = []
-        
         try:
             with open(self.csv_file, 'r', newline='', encoding='cp1252') as csvfile:
                 reader = csv.DictReader(csvfile)
-                for row in reader:
-                    # Clean row data
-                    cleaned_row = {k.strip(): v.strip() if isinstance(v, str) else v 
-                                   for k, v in row.items() if k is not None}
-                    product = Product.from_dict(cleaned_row)
-                    products.append(product)
-            
-            self._all_products = products
+                cleaned_rows = [
+                    {k.strip(): v.strip() if isinstance(v, str) else v 
+                     for k, v in row.items() if k is not None}
+                    for row in reader
+                ]
+                
+            self._all_products = [Product.from_dict(row) for row in cleaned_rows]
             
         except Exception as e:
             print(f"Error loading product data: {e}")
@@ -136,20 +132,14 @@ class ProductRepository:
         Returns:
             list: List of dictionaries with product data
         """
-        product_data = []
-        
         try:
-            # Use cp1252 encoding for the NEW_products.csv file
             with open(csv_file, 'r', newline='', encoding='cp1252') as file:
-                # Explicitly set quoting parameters to handle strings with commas
                 reader = csv.DictReader(file, quotechar='"', skipinitialspace=True)
-                for row in reader:
-                    # Clean the row keys to handle potential whitespace in headers
-                    cleaned_row = {k.strip(): v.strip() if isinstance(v, str) else v 
-                                  for k, v in row.items() if k is not None}
-                    product_data.append(cleaned_row)
-            
-            return product_data
+                return [
+                    {k.strip(): v.strip() if isinstance(v, str) else v 
+                     for k, v in row.items() if k is not None}
+                    for row in reader
+                ]
         
         except (IOError, csv.Error) as e:
             print(f"Error reading CSV file: {e}")

@@ -92,22 +92,19 @@ class Product:
         self.rei_hours = self._convert_to_int(rei_hours)
         self.phi_days = self._convert_to_int(phi_days)
         
-        # Active ingredient 1 (primary)
+        # Active ingredients
         self.ai1 = ai1
         self.ai1_concentration = self._convert_to_float(ai1_concentration)
         self.ai1_concentration_uom = ai1_concentration_uom
         
-        # Active ingredient 2 (if present)
         self.ai2 = ai2
         self.ai2_concentration = self._convert_to_float(ai2_concentration)
         self.ai2_concentration_uom = ai2_concentration_uom
         
-        # Active ingredient 3 (if present)
         self.ai3 = ai3
         self.ai3_concentration = self._convert_to_float(ai3_concentration)
         self.ai3_concentration_uom = ai3_concentration_uom
         
-        # Active ingredient 4 (if present)
         self.ai4 = ai4
         self.ai4_concentration = self._convert_to_float(ai4_concentration)
         self.ai4_concentration_uom = ai4_concentration_uom
@@ -130,6 +127,24 @@ class Product:
         except (ValueError, TypeError):
             return None
     
+    def _get_ai_info(self, idx):
+        """Get active ingredient information for the given index.
+        
+        Args:
+            idx (int): The index of the active ingredient (1-4)
+            
+        Returns:
+            tuple: (name, concentration, uom) or (None, None, None) if not present
+        """
+        name = getattr(self, f"ai{idx}", None)
+        if not name:
+            return None, None, None
+            
+        concentration = getattr(self, f"ai{idx}_concentration", None)
+        uom = getattr(self, f"ai{idx}_concentration_uom", None)
+        
+        return name, concentration, uom
+    
     @property
     def display_name(self):
         """Get display name with all active ingredients."""
@@ -143,29 +158,16 @@ class Product:
     def active_ingredients(self):
         """Get a list of all active ingredients in the product."""
         ingredients = []
-        if self.ai1:
-            ingredients.append(self.ai1)
-        if self.ai2:
-            ingredients.append(self.ai2)
-        if self.ai3:
-            ingredients.append(self.ai3)
-        if self.ai4:
-            ingredients.append(self.ai4)
+        for idx in range(1, 5):  # Process AI1 through AI4
+            name, _, _ = self._get_ai_info(idx)
+            if name:
+                ingredients.append(name)
         return ingredients
     
     @property
     def number_of_ai(self):
         """Calculate the number of active ingredients."""
-        count = 0
-        if self.ai1:
-            count += 1
-        if self.ai2:
-            count += 1
-        if self.ai3:
-            count += 1
-        if self.ai4:
-            count += 1
-        return count
+        return sum(1 for idx in range(1, 5) if getattr(self, f"ai{idx}", None))
     
     def to_dict(self):
         """
@@ -253,17 +255,7 @@ class Product:
         from data.ai_repository import AIRepository
         
         ai_repo = AIRepository.get_instance()
-        ai_groups = []
-        
-        # Process all active ingredients
-        for ai_name in self.active_ingredients:
-            if not ai_name:
-                continue
-                
-            groups = ai_repo.get_moa_groups(ai_name)
-            ai_groups.append(groups)
-        
-        return ai_groups
+        return [ai_repo.get_moa_groups(ai_name) for ai_name in self.active_ingredients if ai_name]
     
     def get_ai_eiq(self, ai_name):
         """
@@ -288,50 +280,23 @@ class Product:
             list: List of dictionaries with name, eiq, percent for each AI
         """
         from data.ai_repository import AIRepository
+        from math_module.eiq_conversions import convert_concentration_to_percent
         
         ai_repo = AIRepository.get_instance()
         ai_data = []
         
-        # Check AI1
-        if self.ai1:
-            eiq = ai_repo.get_ai_eiq(self.ai1)
-            percent = convert_concentration_to_percent(self.ai1_concentration, self.ai1_concentration_uom)
+        # Process all active ingredients in a loop
+        for idx in range(1, 5):  # Process AI1 through AI4
+            name, concentration, uom = self._get_ai_info(idx)
+            if not name:
+                continue
+                
+            eiq = ai_repo.get_ai_eiq(name)
+            percent = convert_concentration_to_percent(concentration, uom)
+            
             if eiq is not None and percent is not None:
                 ai_data.append({
-                    'name': self.ai1,
-                    'eiq': eiq,
-                    'percent': percent
-                })
-        
-        # Check AI2
-        if self.ai2:
-            eiq = ai_repo.get_ai_eiq(self.ai2)
-            percent = convert_concentration_to_percent(self.ai2_concentration, self.ai2_concentration_uom)
-            if eiq is not None and percent is not None:
-                ai_data.append({
-                    'name': self.ai2,
-                    'eiq': eiq,
-                    'percent': percent
-                })
-        
-        # Check AI3
-        if self.ai3:
-            eiq = ai_repo.get_ai_eiq(self.ai3)
-            percent = convert_concentration_to_percent(self.ai3_concentration, self.ai3_concentration_uom)
-            if eiq is not None and percent is not None:
-                ai_data.append({
-                    'name': self.ai3,
-                    'eiq': eiq,
-                    'percent': percent
-                })
-        
-        # Check AI4
-        if self.ai4:
-            eiq = ai_repo.get_ai_eiq(self.ai4)
-            percent = convert_concentration_to_percent(self.ai4_concentration, self.ai4_concentration_uom)
-            if eiq is not None and percent is not None:
-                ai_data.append({
-                    'name': self.ai4,
+                    'name': name,
                     'eiq': eiq,
                     'percent': percent
                 })
