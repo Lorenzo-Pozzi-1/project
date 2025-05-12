@@ -5,7 +5,7 @@ This module provides improved functions for calculating Environmental Impact Quo
 (EIQ) for pesticide products and applications with proper unit of measure handling.
 """
 
-from eiq_calculator.eiq_conversions import standardize_eiq_calculation, get_uom_category
+from eiq_calculator_page.eiq_conversions import standardize_eiq_calculation, get_uom_category
 
 def calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications=1):
     """

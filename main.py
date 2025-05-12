@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QApplication
 from common.config_utils import load_config
 from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository
-from main_window.main_window import MainWindow
+from main_page.main_window import MainWindow
 
 # Clear the terminal screen
 print("\033c", end="")

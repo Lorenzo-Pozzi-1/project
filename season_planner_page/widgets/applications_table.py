@@ -8,7 +8,7 @@ application rows in the season planner.
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QScrollArea, QFrame,
                              QLabel, QSizePolicy, QHBoxLayout)
 from PySide6.QtCore import Qt, Signal
-from season_planner.widgets.application_row import ApplicationRowWidget
+from season_planner_page.widgets.application_row import ApplicationRowWidget
 
 
 class ApplicationsTableContainer(QWidget):

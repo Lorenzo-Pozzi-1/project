@@ -10,9 +10,9 @@ from PySide6.QtCore import Qt
 from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
-from eiq_calculator.eiq_ui_components import get_products_from_csv, ColorCodedEiqItem
-from eiq_calculator.eiq_calculations import calculate_product_field_eiq
-from eiq_calculator.eiq_conversions import convert_concentration_to_percent, APPLICATION_RATE_CONVERSION
+from eiq_calculator_page.eiq_ui_components import get_products_from_csv, ColorCodedEiqItem
+from eiq_calculator_page.eiq_calculations import calculate_product_field_eiq
+from eiq_calculator_page.eiq_conversions import convert_concentration_to_percent, APPLICATION_RATE_CONVERSION
 
 
 class ProductComparisonCalculator(QWidget):

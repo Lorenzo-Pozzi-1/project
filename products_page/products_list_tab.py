@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, Q
 from PySide6.QtCore import Qt
 from common.styles import PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from data.product_repository import ProductRepository
-from products.filter_row import FilterRow
+from products_page.filter_row import FilterRow
 
 
 class ProductsListTab(QWidget):

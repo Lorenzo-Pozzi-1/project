@@ -10,8 +10,8 @@ from PySide6.QtWidgets import (QWidget, QHBoxLayout, QLineEdit, QComboBox,
 from PySide6.QtCore import Qt, Signal, QSize, QEvent
 from PySide6.QtGui import QWheelEvent
 from data.product_repository import ProductRepository
-from eiq_calculator.eiq_conversions import convert_concentration_to_percent
-from eiq_calculator.eiq_calculations import calculate_product_field_eiq
+from eiq_calculator_page.eiq_conversions import convert_concentration_to_percent
+from eiq_calculator_page.eiq_calculations import calculate_product_field_eiq
 
 
 # Create a subclass of QDoubleSpinBox that ignores wheel events unless focused

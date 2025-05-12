@@ -5,9 +5,9 @@ This package provides specialized widgets used in the Season Planner feature
 for managing season plans and applications.
 """
 
-from season_planner.widgets.metadata_row import SeasonPlanMetadataWidget
-from season_planner.widgets.application_row import ApplicationRowWidget
-from season_planner.widgets.applications_table import ApplicationsTableContainer
+from season_planner_page.widgets.metadata_row import SeasonPlanMetadataWidget
+from season_planner_page.widgets.application_row import ApplicationRowWidget
+from season_planner_page.widgets.applications_table import ApplicationsTableContainer
 
 __all__ = [
     'SeasonPlanMetadataWidget',
