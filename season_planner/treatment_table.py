@@ -87,6 +87,8 @@ class TreatmentTable(QTableWidget):
     
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.drag_start_position = None
+        self.drag_start_row = -1
         self.setup_table()
         
     def setup_table(self):
@@ -109,8 +111,10 @@ class TreatmentTable(QTableWidget):
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setEditTriggers(QAbstractItemView.DoubleClicked | 
                             QAbstractItemView.EditKeyPressed)
-        self.cellDoubleClicked.connect(self.cellDoubleClicked)
-        self.cellChanged.connect(self.cellChanged)
+                            
+        # Connect signals
+        self.cellDoubleClicked.connect(self.on_cell_double_clicked)
+        self.cellChanged.connect(self.on_cell_changed)
         
         # Setup style
         self.setAlternatingRowColors(True)
@@ -177,19 +181,31 @@ class TreatmentTable(QTableWidget):
         self.setItem(row, 8, eiq_item)
         
     def mousePressEvent(self, event):
-        """Handle mouse press events for drag and drop."""
-        super().mousePressEvent(event)
-        
+        """Handle mouse press events for drag-and-drop and add button."""
         # Check if we clicked the add treatment row
         row = self.rowAt(event.position().y())
+        
         if row == self.rowCount() - 1:
             # Check if it's our add treatment row
             item = self.item(row, 0)
             if item and "add treatment" in item.text():
                 self.add_treatment_clicked.emit()
+                event.accept()
                 return
+        
+        # Check if we clicked on a drag handle
+        if event.button() == Qt.LeftButton:
+            column = self.columnAt(event.position().x())
+            if column == 0 and row < self.rowCount() - 1:  # Skip add row
+                self.drag_start_position = event.position()
+                self.drag_start_row = row
+                event.accept()
+                # Let the event propagate to parent class for regular selection
+        
+        # Call the parent class implementation to handle other clicks
+        super().mousePressEvent(event)
             
-    def cellDoubleClicked(self, row, column):
+    def on_cell_double_clicked(self, row, column):
         """Handle double-click on a cell."""
         # Skip the add treatment row
         if row == self.rowCount() - 1:
@@ -305,6 +321,10 @@ class TreatmentTable(QTableWidget):
             super().mouseMoveEvent(event)
             return
             
+        if self.drag_start_position is None or self.drag_start_row < 0:
+            super().mouseMoveEvent(event)
+            return
+            
         # Check if we've moved far enough to start a drag
         if ((event.position() - self.drag_start_position).manhattanLength() 
             < QApplication.startDragDistance()):
@@ -324,6 +344,13 @@ class TreatmentTable(QTableWidget):
             self.treatment_changed.emit()
         
         super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        """Handle mouse release for drag & drop."""
+        # Reset drag tracking
+        self.drag_start_position = None
+        self.drag_start_row = -1
+        super().mouseReleaseEvent(event)
 
     def _swap_rows(self, row1, row2):
         """Swap two rows in the table."""
@@ -371,7 +398,7 @@ class TreatmentTable(QTableWidget):
             else:
                 self.selectRow(row)
 
-    def cellChanged(self, row, column):
+    def on_cell_changed(self, row, column):
         """Handle cell content changes."""
         # Skip the add treatment row
         if row == self.rowCount() - 1:
