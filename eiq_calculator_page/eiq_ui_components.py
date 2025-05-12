@@ -17,7 +17,7 @@ from math_module.eiq_calculations import format_eiq_result, get_impact_category
 # Data Handling Functions
 #------------------------
 
-def get_products_from_csv():
+def get_products_from_repo():
     """
     Load products from repository.
     If filtered data is not available, return an empty list.
@@ -29,16 +29,6 @@ def get_products_from_csv():
     except Exception as e:
         print(f"Error loading filtered products: {e}")
         return []
-
-def get_product_display_names():
-    """
-    Get a list of product display names from CSV data.
-    """
-    products = get_products_from_csv()
-    if products:
-        # Use display_name property if available
-        return ["Select a product..."] + [p.display_name for p in products]
-    return ["Select a product..."]
 
 def get_product_info(product_name):
     """
@@ -55,10 +45,9 @@ def get_product_info(product_name):
     product = products_repo.get_product_by_name(product_name.split(" (")[0])
     
     if product:
-        # Now using AI1 EIQ instead of base EIQ
-        ai1_eiq = product.ai1_eiq if product.ai1_eiq is not None else 0.0
         
         # Get concentration and convert to percent based on UOM
+        ai1_eiq = product.ai1_eiq if product.ai1_eiq is not None else 0.0
         ai_percent = 0.0
         if product.ai1_concentration is not None:
             ai_percent = convert_concentration_to_percent(
