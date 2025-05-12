@@ -42,7 +42,7 @@ class HomePage(QWidget):
         title_label.setFont(get_title_font())
         main_layout.addWidget(title_label)
         
-        # country and region selection area
+        # Country and region selection area
         filter_frame = QFrame()
         filter_frame.setFrameShape(QFrame.NoFrame)
         filter_layout = QHBoxLayout(filter_frame)
@@ -83,32 +83,23 @@ class HomePage(QWidget):
         
         main_layout.addWidget(filter_frame)
         
-        # Buttons area
+        # Create the feature buttons
         buttons_layout = QHBoxLayout()
         buttons_layout.setSpacing(15)
         
-        # Create the main feature buttons
-        self.products_button = FeatureButton(
-            "Products List and Comparison",
-            "View and compare products with quick fact sheets"
-        )
-        self.products_button.clicked.connect(lambda: self.parent.navigate_to_page(1))
+        feature_buttons = [
+            ("Products List and Comparison", 
+             "View and compare products with quick fact sheets", 1),
+            ("EIQ Season Planner", 
+             "Plan applications\nCompare scenarios\nImport and work from previous years plans", 2),
+            ("EIQ Calculator", 
+             "Calculate Environmental Impact Quotients\nCompare EIQ of different applications\nCalculate your seasonal EIQ", 3)
+        ]
         
-        self.season_planner_button = FeatureButton(
-            "EIQ Season Planner",
-            "Plan applications\nCompare scenarios\nImport and work from previous years plans"
-        )
-        self.season_planner_button.clicked.connect(lambda: self.parent.navigate_to_page(2))
-        
-        self.eiq_calculator_button = FeatureButton(
-            "EIQ Calculator",
-            "Calculate Environmental Impact Quotients\nCompare EIQ of different applications\nCalculate your seasonal EIQ"
-        )
-        self.eiq_calculator_button.clicked.connect(lambda: self.parent.navigate_to_page(3))
-        
-        buttons_layout.addWidget(self.products_button)
-        buttons_layout.addWidget(self.season_planner_button)
-        buttons_layout.addWidget(self.eiq_calculator_button)
+        for title, description, page_index in feature_buttons:
+            button = FeatureButton(title, description)
+            button.clicked.connect(lambda checked=False, idx=page_index: self.parent.navigate_to_page(idx))
+            buttons_layout.addWidget(button)
         
         main_layout.addLayout(buttons_layout)
         
@@ -163,51 +154,54 @@ class HomePage(QWidget):
         # Reduce spacing between frames
         main_layout.addSpacing(5)
 
-    def on_country_changed(self, _):
-        """Handle country selection change."""
-        if self.initializing:
-            return  # Skip during initialization      
-        country = self.country_combo.currentText()
-        print(f"Country changed to: {country}")
-        
-        # Update the region dropdown based on the selected country
-        old_block_state = self.region_combo.blockSignals(True)  # Block signals temporarily to prevent cascading events  
-        self.update_regions_dropdown() # Update regions dropdown based on selected country
-        self.region_combo.setCurrentIndex(0) # Reset region selection to "None of the above" 
-        region = self.region_combo.currentText() # Get the new region value after reset
-        self.region_combo.blockSignals(old_block_state) # Restore original signal blocking state
-        self.country_changed.emit(country) # Emit signal for the country change
-        
-        # Also update the region in the parent window to ensure synchronization
-        if self.parent and hasattr(self.parent, 'selected_region'):
-            self.parent.selected_region = region
-    
+    def get_regions_for_country(self, country):
+        """Get region options for a specific country."""
+        regions = {
+            "United States": ["Washington", "Idaho", "Wisconsin", "Maine"],
+            "Canada": ["New Brunswick", "Prince Edward Island", "Alberta", "Manitoba", "Quebec", "Saskatchewan"]
+        }
+        return regions.get(country, [])
+
     def update_regions_dropdown(self):
         """Update regions dropdown based on selected country."""
-        # Store current selection if any
         current_region = self.region_combo.currentText()
+        country = self.country_combo.currentText()
         
-        # Clear the dropdown
+        # Clear and add default option
         self.region_combo.clear()
         self.region_combo.addItem("None of the above")
         
-        # Get the selected country
-        country = self.country_combo.currentText()
+        # Add country-specific regions
+        self.region_combo.addItems(self.get_regions_for_country(country))
         
-        # Add regions based on selected country
-        if country == "United States":
-            self.region_combo.addItems(["Washington", "Idaho", "Wisconsin", "Maine"])
-        elif country == "Canada":
-            self.region_combo.addItems(["New Brunswick", "Prince Edward Island", "Alberta", "Manitoba", "Quebec", "Saskatchewan"])
-        
-        # Try to restore previous selection if it's still available
+        # Try to restore previous selection if available
         index = self.region_combo.findText(current_region)
-        if index >= 0:
-            self.region_combo.setCurrentIndex(index)
-        else:
-            self.region_combo.setCurrentIndex(0)  # Default to "None of the above"
+        self.region_combo.setCurrentIndex(max(0, index))  # Default to "None of the above" if not found
     
-    def on_region_changed(self, index):
+    def on_country_changed(self, _):
+        """Handle country selection change."""
+        if self.initializing:
+            return  # Skip during initialization
+            
+        country = self.country_combo.currentText()
+        print(f"Country changed to: {country}")
+        
+        # Block signals during dropdown update to prevent cascading events
+        self.region_combo.blockSignals(True)
+        self.update_regions_dropdown()
+        self.region_combo.blockSignals(False)
+        
+        # Get the new region value
+        region = self.region_combo.currentText()
+        
+        # Emit signal for the country change
+        self.country_changed.emit(country)
+        
+        # Also update the region in the parent window
+        if self.parent and hasattr(self.parent, 'selected_region'):
+            self.parent.selected_region = region
+    
+    def on_region_changed(self, _):
         """Handle region selection change."""
         if self.initializing:
             return  # Skip during initialization
