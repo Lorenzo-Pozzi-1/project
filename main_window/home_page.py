@@ -150,6 +150,7 @@ class HomePage(QWidget):
             "- <b>Ecological risk</b> (fish, birds, bees, and beneficial insects)<br><br>"
             "Higher scores indicate greater environmental impact. The <b>Field Use EIQ</b> (= EIQ × %AI × Rate) "
             "adjusts for real-world application conditions, supporting sustainable pest management decisions."
+            "\n\n CONCISE EXPLANATION EIQ MOLECULE vs EIQ FIELD USE"
         )
 
         info_text.setWordWrap(True)
