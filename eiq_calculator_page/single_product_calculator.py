@@ -4,6 +4,7 @@ Single Product EIQ Calculator for the LORENZO POZZI Pesticide App.
 This module provides the SingleProductCalculator widget for calculating EIQ
 of a single pesticide product with search and suggestions functionality.
 It supports displaying multiple active ingredients (up to 4) with improved UOM handling.
+Updated to get EIQ values from active ingredients repository instead of products.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QFormLayout, QDoubleSpinBox, QTableWidget, QTableWidgetItem, QHeaderView, QSizePolicy
@@ -11,9 +12,10 @@ from PySide6.QtCore import Qt
 from common.styles import get_body_font
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
+from data.ai_repository import AIRepository
 from eiq_calculator_page.eiq_ui_components import ProductSearchField, EiqResultDisplay
 from math_module.eiq_calculations import calculate_product_field_eiq
-from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
+from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION, convert_concentration_to_percent
 
 
 class SingleProductCalculator(QWidget):
@@ -38,6 +40,9 @@ class SingleProductCalculator(QWidget):
         
         # Currently selected product data
         self.current_product = None
+        
+        # Initialize the AI repository for EIQ lookups
+        self.ai_repo = AIRepository.get_instance()
         
         self.setup_ui()
     
@@ -239,55 +244,55 @@ class SingleProductCalculator(QWidget):
             # Clear active ingredients table
             self.clear_ai_table()
             
-            # Add rows for each active ingredient that has data
+            # Get AI data with EIQ from repository
             ai_data = []
             
-            # Check AI1 data
+            # Check AI1
             if self.current_product.ai1:
-                concentration = self.current_product.ai1_concentration
-                uom = self.current_product.ai1_concentration_uom
+                # Get EIQ from repository
+                eiq = self.ai_repo.get_ai_eiq(self.current_product.ai1)
                 
                 ai_data.append({
                     "name": self.current_product.ai1,
-                    "eiq": self.current_product.ai1_eiq if self.current_product.ai1_eiq is not None else "--",
-                    "concentration": concentration if concentration is not None else "--",
-                    "uom": uom if uom is not None else ""
+                    "eiq": eiq if eiq is not None else "--",
+                    "concentration": self.current_product.ai1_concentration if self.current_product.ai1_concentration is not None else "--",
+                    "uom": self.current_product.ai1_concentration_uom if self.current_product.ai1_concentration_uom is not None else ""
                 })
             
-            # Check AI2 data
+            # Check AI2
             if self.current_product.ai2:
-                concentration = self.current_product.ai2_concentration
-                uom = self.current_product.ai2_concentration_uom
+                # Get EIQ from repository
+                eiq = self.ai_repo.get_ai_eiq(self.current_product.ai2)
                 
                 ai_data.append({
                     "name": self.current_product.ai2,
-                    "eiq": self.current_product.ai2_eiq if self.current_product.ai2_eiq is not None else "--",
-                    "concentration": concentration if concentration is not None else "--",
-                    "uom": uom if uom is not None else ""
+                    "eiq": eiq if eiq is not None else "--",
+                    "concentration": self.current_product.ai2_concentration if self.current_product.ai2_concentration is not None else "--",
+                    "uom": self.current_product.ai2_concentration_uom if self.current_product.ai2_concentration_uom is not None else ""
                 })
             
-            # Check AI3 data
+            # Check AI3
             if self.current_product.ai3:
-                concentration = self.current_product.ai3_concentration
-                uom = self.current_product.ai3_concentration_uom
+                # Get EIQ from repository
+                eiq = self.ai_repo.get_ai_eiq(self.current_product.ai3)
                 
                 ai_data.append({
                     "name": self.current_product.ai3,
-                    "eiq": self.current_product.ai3_eiq if self.current_product.ai3_eiq is not None else "--",
-                    "concentration": concentration if concentration is not None else "--",
-                    "uom": uom if uom is not None else ""
+                    "eiq": eiq if eiq is not None else "--",
+                    "concentration": self.current_product.ai3_concentration if self.current_product.ai3_concentration is not None else "--",
+                    "uom": self.current_product.ai3_concentration_uom if self.current_product.ai3_concentration_uom is not None else ""
                 })
             
-            # Check AI4 data
+            # Check AI4
             if self.current_product.ai4:
-                concentration = self.current_product.ai4_concentration
-                uom = self.current_product.ai4_concentration_uom
+                # Get EIQ from repository
+                eiq = self.ai_repo.get_ai_eiq(self.current_product.ai4)
                 
                 ai_data.append({
                     "name": self.current_product.ai4,
-                    "eiq": self.current_product.ai4_eiq if self.current_product.ai4_eiq is not None else "--",
-                    "concentration": concentration if concentration is not None else "--",
-                    "uom": uom if uom is not None else ""
+                    "eiq": eiq if eiq is not None else "--",
+                    "concentration": self.current_product.ai4_concentration if self.current_product.ai4_concentration is not None else "--",
+                    "uom": self.current_product.ai4_concentration_uom if self.current_product.ai4_concentration_uom is not None else ""
                 })
             
             # Add rows to table
@@ -399,20 +404,38 @@ class SingleProductCalculator(QWidget):
                 name_item = self.ai_table.item(row, 0)
                 eiq_item = self.ai_table.item(row, 1)
                 percent_item = self.ai_table.item(row, 2)
+                uom_item = self.ai_table.item(row, 3)
                 
                 if not eiq_item or not percent_item or eiq_item.text() == "--" or percent_item.text() == "--":
                     continue
                 
-                # Extract percent value without '%' sign if present
-                percent_text = percent_item.text()
-                if "%" in percent_text:
-                    percent_value = float(percent_text.replace("%", "").strip())
-                else:
-                    percent_value = float(percent_text)
+                # Get the correct EIQ and concentration values
+                ai_name = name_item.text() if name_item else ""
+                
+                # Get EIQ directly from repository
+                eiq_value = self.ai_repo.get_ai_eiq(ai_name)
+                if eiq_value is None:
+                    # Try to parse from the table
+                    try:
+                        eiq_value = float(eiq_item.text())
+                    except (ValueError, TypeError):
+                        continue
+                
+                # Convert concentration to percent based on UOM
+                concentration = percent_item.text()
+                uom = uom_item.text() if uom_item else ""
+                
+                percent_value = convert_concentration_to_percent(concentration, uom)
+                if percent_value is None:
+                    # If conversion failed, try treating it as a direct percentage value
+                    try:
+                        percent_value = float(concentration)
+                    except (ValueError, TypeError):
+                        continue
                 
                 active_ingredients.append({
-                    'name': name_item.text() if name_item else "",
-                    'eiq': float(eiq_item.text()),
+                    'name': ai_name,
+                    'eiq': eiq_value,
                     'percent': percent_value
                 })
             
@@ -422,7 +445,6 @@ class SingleProductCalculator(QWidget):
             unit = self.rate_unit_combo.currentText()
             
             # Calculate total Field EIQ using the improved function with proper UOM handling
-            # This now uses our enhanced standardize_eiq_calculation under the hood
             total_field_eiq = calculate_product_field_eiq(
                 active_ingredients, rate, unit, applications)
             

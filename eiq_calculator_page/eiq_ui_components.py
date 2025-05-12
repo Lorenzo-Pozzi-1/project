@@ -2,6 +2,7 @@
 EIQ UI Components for the LORENZO POZZI Pesticide App.
 
 This module provides UI components for EIQ calculations and display.
+Updated to get EIQ values from active ingredients repository.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QFrame, QScrollArea, QTableWidgetItem
@@ -10,6 +11,7 @@ from PySide6.QtGui import QBrush
 from common.styles import get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR
 from common.widgets import ScoreBar
 from data.product_repository import ProductRepository
+from data.ai_repository import AIRepository
 from math_module.eiq_conversions import convert_concentration_to_percent
 from math_module.eiq_calculations import format_eiq_result, get_impact_category
 
@@ -38,22 +40,15 @@ def get_product_info(product_name):
         product_name (str): Name of the product
         
     Returns:
-        dict: Product data containing ai1_eiq, ai_percent, etc.
+        dict: Product data containing ai_data, default_rate, default_unit
     """
     # First try to get product from repository
     products_repo = ProductRepository.get_instance()
     product = products_repo.get_product_by_name(product_name.split(" (")[0])
     
     if product:
-        
-        # Get concentration and convert to percent based on UOM
-        ai1_eiq = product.ai1_eiq if product.ai1_eiq is not None else 0.0
-        ai_percent = 0.0
-        if product.ai1_concentration is not None:
-            ai_percent = convert_concentration_to_percent(
-                product.ai1_concentration, 
-                product.ai1_concentration_uom
-            ) or 0.0
+        # Get AI data with EIQ values from AIRepository
+        ai_data = product.get_ai_data()
         
         # Use maximum rate if available, otherwise minimum rate
         if product.label_maximum_rate is not None:
@@ -66,16 +61,14 @@ def get_product_info(product_name):
         unit = product.rate_uom or "lbs/acre"
         
         return {
-            "ai1_eiq": ai1_eiq,
-            "ai_percent": ai_percent,
+            "ai_data": ai_data,
             "default_rate": rate,
             "default_unit": unit
         }
     
     # Default values if product not found
     return {
-        "ai1_eiq": 0.0,
-        "ai_percent": 0.0,
+        "ai_data": [],
         "default_rate": 0.0,
         "default_unit": "lbs/acre"
     }

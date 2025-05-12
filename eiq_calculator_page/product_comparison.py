@@ -3,6 +3,7 @@ Product Comparison Calculator for the LORENZO POZZI Pesticide App.
 
 This module provides the ProductComparisonCalculator widget for comparing EIQ
 values of multiple pesticide products with improved UOM management.
+Updated to get EIQ values from active ingredients repository instead of products.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox
@@ -10,6 +11,7 @@ from PySide6.QtCore import Qt
 from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
+from data.ai_repository import AIRepository
 from eiq_calculator_page.eiq_ui_components import get_products_from_repo, ColorCodedEiqItem
 from math_module.eiq_calculations import calculate_product_field_eiq
 from math_module.eiq_conversions import convert_concentration_to_percent, APPLICATION_RATE_CONVERSION
@@ -23,6 +25,7 @@ class ProductComparisonCalculator(QWidget):
         super().__init__(parent)
         self.parent = parent
         self.products_data = []  # List to track product data
+        self.ai_repo = AIRepository.get_instance()  # AI Repository for EIQ lookups
         self.setup_ui()
     
     def setup_ui(self):
@@ -258,56 +261,64 @@ class ProductComparisonCalculator(QWidget):
             if 0 <= row < len(self.products_data):
                 self.products_data[row]["product"] = product
                 
-                # Get active ingredients
+                # Get active ingredients with EIQ values from AI repository
                 ai_data = []
                 
                 # Check AI1 data
                 if product.ai1:
+                    eiq = self.ai_repo.get_ai_eiq(product.ai1)
                     concentration = product.ai1_concentration
                     uom = product.ai1_concentration_uom
                     percent_value = convert_concentration_to_percent(concentration, uom)
                     
-                    ai_data.append({
-                        "name": product.ai1,
-                        "eiq": product.ai1_eiq if product.ai1_eiq is not None else "--",
-                        "percent": percent_value if percent_value is not None else "--"
-                    })
+                    if eiq is not None and percent_value is not None:
+                        ai_data.append({
+                            "name": product.ai1,
+                            "eiq": eiq,
+                            "percent": percent_value
+                        })
                 
                 # Check AI2 data
                 if product.ai2:
+                    eiq = self.ai_repo.get_ai_eiq(product.ai2)
                     concentration = product.ai2_concentration
                     uom = product.ai2_concentration_uom
                     percent_value = convert_concentration_to_percent(concentration, uom)
                     
-                    ai_data.append({
-                        "name": product.ai2,
-                        "eiq": product.ai2_eiq if product.ai2_eiq is not None else "--",
-                        "percent": percent_value if percent_value is not None else "--"
-                    })
+                    if eiq is not None and percent_value is not None:
+                        ai_data.append({
+                            "name": product.ai2,
+                            "eiq": eiq,
+                            "percent": percent_value
+                        })
                 
                 # Check AI3 data
                 if product.ai3:
+                    eiq = self.ai_repo.get_ai_eiq(product.ai3)
                     concentration = product.ai3_concentration
                     uom = product.ai3_concentration_uom
                     percent_value = convert_concentration_to_percent(concentration, uom)
                     
-                    ai_data.append({
-                        "name": product.ai3,
-                        "eiq": product.ai3_eiq if product.ai3_eiq is not None else "--",
-                        "percent": percent_value if percent_value is not None else "--"
-                    })
+                    if eiq is not None and percent_value is not None:
+                        ai_data.append({
+                            "name": product.ai3,
+                            "eiq": eiq,
+                            "percent": percent_value
+                        })
                 
                 # Check AI4 data
                 if product.ai4:
+                    eiq = self.ai_repo.get_ai_eiq(product.ai4)
                     concentration = product.ai4_concentration
                     uom = product.ai4_concentration_uom
                     percent_value = convert_concentration_to_percent(concentration, uom)
                     
-                    ai_data.append({
-                        "name": product.ai4,
-                        "eiq": product.ai4_eiq if product.ai4_eiq is not None else "--",
-                        "percent": percent_value if percent_value is not None else "--"
-                    })
+                    if eiq is not None and percent_value is not None:
+                        ai_data.append({
+                            "name": product.ai4,
+                            "eiq": eiq,
+                            "percent": percent_value
+                        })
                 
                 self.products_data[row]["active_ingredients"] = ai_data
                 

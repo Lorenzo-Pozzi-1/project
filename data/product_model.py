@@ -2,16 +2,17 @@
 Product model for the LORENZO POZZI Pesticide App.
 
 This module defines the Product class and related functionality.
-Updated to support multiple active ingredients and detailed EIQ data.
-Adapted for the NEW_products.csv format.
+Updated to support multiple active ingredients without EIQ data in the product.
 """
+
+from math_module.eiq_conversions import convert_concentration_to_percent
 
 class Product:
     """
     Represents a pesticide product.
     
     Stores information about a pesticide product including country, region, name, active ingredients,
-    EIQ values, application rates, and safety intervals.
+    application rates, and safety intervals.
     """
     
     def __init__(self, 
@@ -32,19 +33,15 @@ class Product:
                  ai1=None,
                  ai1_concentration=None,
                  ai1_concentration_uom=None,
-                 ai1_eiq=None,
                  ai2=None,
                  ai2_concentration=None,
                  ai2_concentration_uom=None,
-                 ai2_eiq=None,
                  ai3=None,
                  ai3_concentration=None,
                  ai3_concentration_uom=None,
-                 ai3_eiq=None,
                  ai4=None,
                  ai4_concentration=None,
-                 ai4_concentration_uom=None,
-                 ai4_eiq=None):
+                 ai4_concentration_uom=None):
         """
         Initialize a Product instance.
         
@@ -66,19 +63,15 @@ class Product:
             ai1 (str): First active ingredient name
             ai1_concentration (float): Concentration of first active ingredient
             ai1_concentration_uom (str): Unit of measure for first active ingredient concentration
-            ai1_eiq (float): EIQ value for first active ingredient
             ai2 (str): Second active ingredient name (if applicable)
             ai2_concentration (float): Concentration of second active ingredient
             ai2_concentration_uom (str): Unit of measure for second active ingredient concentration
-            ai2_eiq (float): EIQ value for second active ingredient
             ai3 (str): Third active ingredient name (if applicable)
             ai3_concentration (float): Concentration of third active ingredient
             ai3_concentration_uom (str): Unit of measure for third active ingredient concentration
-            ai3_eiq (float): EIQ value for third active ingredient
             ai4 (str): Fourth active ingredient name (if applicable)
             ai4_concentration (float): Concentration of fourth active ingredient
             ai4_concentration_uom (str): Unit of measure for fourth active ingredient concentration
-            ai4_eiq (float): EIQ value for fourth active ingredient
         """
         self.country = country
         self.region = region
@@ -103,25 +96,21 @@ class Product:
         self.ai1 = ai1
         self.ai1_concentration = self._convert_to_float(ai1_concentration)
         self.ai1_concentration_uom = ai1_concentration_uom
-        self.ai1_eiq = self._convert_to_float(ai1_eiq)
         
         # Active ingredient 2 (if present)
         self.ai2 = ai2
         self.ai2_concentration = self._convert_to_float(ai2_concentration)
         self.ai2_concentration_uom = ai2_concentration_uom
-        self.ai2_eiq = self._convert_to_float(ai2_eiq)
         
         # Active ingredient 3 (if present)
         self.ai3 = ai3
         self.ai3_concentration = self._convert_to_float(ai3_concentration)
         self.ai3_concentration_uom = ai3_concentration_uom
-        self.ai3_eiq = self._convert_to_float(ai3_eiq)
         
         # Active ingredient 4 (if present)
         self.ai4 = ai4
         self.ai4_concentration = self._convert_to_float(ai4_concentration)
         self.ai4_concentration_uom = ai4_concentration_uom
-        self.ai4_eiq = self._convert_to_float(ai4_eiq)
     
     def _convert_to_float(self, value):
         """Convert a value to float, handling None and empty strings."""
@@ -203,19 +192,15 @@ class Product:
             "AI1": self.ai1,
             "[AI1]": self.ai1_concentration,
             "[AI1]UOM": self.ai1_concentration_uom,
-            "AI1 EIQ": self.ai1_eiq,
             "AI2": self.ai2,
             "[AI2]": self.ai2_concentration,
             "[AI2]UOM": self.ai2_concentration_uom,
-            "AI2 EIQ": self.ai2_eiq,
             "AI3": self.ai3,
             "[AI3]": self.ai3_concentration,
             "[AI3]UOM": self.ai3_concentration_uom,
-            "AI3 EIQ": self.ai3_eiq,
             "AI4": self.ai4,
             "[AI4]": self.ai4_concentration,
-            "[AI4]UOM": self.ai4_concentration_uom,
-            "AI4 EIQ": self.ai4_eiq
+            "[AI4]UOM": self.ai4_concentration_uom
         }
     
     @classmethod
@@ -247,19 +232,15 @@ class Product:
             ai1=data.get("AI1"),
             ai1_concentration=data.get("[AI1]"),
             ai1_concentration_uom=data.get("[AI1]UOM"),
-            ai1_eiq=data.get("AI1 EIQ"),
             ai2=data.get("AI2"),
             ai2_concentration=data.get("[AI2]"),
             ai2_concentration_uom=data.get("[AI2]UOM"),
-            ai2_eiq=data.get("AI2 EIQ"),
             ai3=data.get("AI3"),
             ai3_concentration=data.get("[AI3]"),
             ai3_concentration_uom=data.get("[AI3]UOM"),
-            ai3_eiq=data.get("AI3 EIQ"),
             ai4=data.get("AI4"),
             ai4_concentration=data.get("[AI4]"),
-            ai4_concentration_uom=data.get("[AI4]UOM"),
-            ai4_eiq=data.get("AI4 EIQ")
+            ai4_concentration_uom=data.get("[AI4]UOM")
         )
     
     def get_ai_groups(self):
@@ -283,3 +264,76 @@ class Product:
             ai_groups.append(groups)
         
         return ai_groups
+    
+    def get_ai_eiq(self, ai_name):
+        """
+        Get the EIQ value for a specific active ingredient in the product.
+        
+        Args:
+            ai_name (str): Name of the active ingredient to look up
+            
+        Returns:
+            float or None: EIQ value if found, None otherwise
+        """
+        from data.ai_repository import AIRepository
+        
+        ai_repo = AIRepository.get_instance()
+        return ai_repo.get_ai_eiq(ai_name)
+        
+    def get_ai_data(self):
+        """
+        Get all active ingredients data with their EIQ values from the repository.
+        
+        Returns:
+            list: List of dictionaries with name, eiq, percent for each AI
+        """
+        from data.ai_repository import AIRepository
+        
+        ai_repo = AIRepository.get_instance()
+        ai_data = []
+        
+        # Check AI1
+        if self.ai1:
+            eiq = ai_repo.get_ai_eiq(self.ai1)
+            percent = convert_concentration_to_percent(self.ai1_concentration, self.ai1_concentration_uom)
+            if eiq is not None and percent is not None:
+                ai_data.append({
+                    'name': self.ai1,
+                    'eiq': eiq,
+                    'percent': percent
+                })
+        
+        # Check AI2
+        if self.ai2:
+            eiq = ai_repo.get_ai_eiq(self.ai2)
+            percent = convert_concentration_to_percent(self.ai2_concentration, self.ai2_concentration_uom)
+            if eiq is not None and percent is not None:
+                ai_data.append({
+                    'name': self.ai2,
+                    'eiq': eiq,
+                    'percent': percent
+                })
+        
+        # Check AI3
+        if self.ai3:
+            eiq = ai_repo.get_ai_eiq(self.ai3)
+            percent = convert_concentration_to_percent(self.ai3_concentration, self.ai3_concentration_uom)
+            if eiq is not None and percent is not None:
+                ai_data.append({
+                    'name': self.ai3,
+                    'eiq': eiq,
+                    'percent': percent
+                })
+        
+        # Check AI4
+        if self.ai4:
+            eiq = ai_repo.get_ai_eiq(self.ai4)
+            percent = convert_concentration_to_percent(self.ai4_concentration, self.ai4_concentration_uom)
+            if eiq is not None and percent is not None:
+                ai_data.append({
+                    'name': self.ai4,
+                    'eiq': eiq,
+                    'percent': percent
+                })
+        
+        return ai_data

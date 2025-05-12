@@ -2,7 +2,7 @@
 Products comparison tab for the Lorenzo Pozzi Pesticide App
 
 This module defines the ProductsComparisonTab class which handles the product
-comparison functionality.
+comparison functionality. Updated to reflect the new data structure without EIQ fields in products.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
@@ -63,11 +63,21 @@ class ProductsComparisonTab(QWidget):
         all_columns = list(first_product.keys())
         
         # Filter out columns we don't want to compare
+        # Updated to remove references to EIQ fields which no longer exist in the product model
         columns_to_hide = [
-            "region", "number of ai", "ai1 eiq", "ai1concentration", "uom",
-            "ai2", "ai2 eiq", "ai2 group", "ai2concentration", "uom.1",
-            "ai3", "ai3 eiq", "ai3 group", "ai3concentration", "uom.2",
-            "ai4", "ai4 eiq", "ai4 group", "ai4concentration", "uom.3",
+            "region", 
+            "number of ai", 
+            "ai1concentration", 
+            "uom",
+            "ai2", 
+            "ai2concentration", 
+            "uom.1",
+            "ai3", 
+            "ai3concentration", 
+            "uom.2",
+            "ai4", 
+            "ai4concentration", 
+            "uom.3",
         ]
         
         # Filter the column keys to only include visible columns
@@ -84,7 +94,7 @@ class ProductsComparisonTab(QWidget):
         headers = ["Property"]
         for product in selected_products:
             product_dict = product.to_dict()
-            product_name_key = "product name"  # Default key for product name
+            product_name_key = "name"  # Default key for product name
             # If product name column isn't available, use first column that contains "name"
             if product_name_key not in product_dict:
                 for key in product_dict.keys():

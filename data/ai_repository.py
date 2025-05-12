@@ -68,6 +68,33 @@ class AIRepository:
                 
         return ""
     
+    def get_ai_eiq(self, ai_name: str) -> Optional[float]:
+        """
+        Get the EIQ value for an active ingredient.
+        
+        Args:
+            ai_name: The name of the active ingredient
+            
+        Returns:
+            float or None: EIQ value if found, None otherwise
+        """
+        if not self._all_ingredients:
+            self._load_ingredients()
+            
+        # Try to find the AI using normalized name mapping
+        ai_name_lower = ai_name.lower()
+        if ai_name_lower in self._name_to_ai_map:
+            std_name = self._name_to_ai_map[ai_name_lower]
+            ai = self._all_ingredients.get(std_name)
+            
+            if ai and ai.eiq is not None:
+                try:
+                    return float(ai.eiq)
+                except (ValueError, TypeError):
+                    return None
+                
+        return None
+    
     def _load_ingredients(self) -> None:
         """Load all active ingredients from the CSV file."""
         try:
