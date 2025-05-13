@@ -1,12 +1,11 @@
 """
-Main products page for the LORENZO POZZI Pesticide App.
+Products page for the Lorenzo Pozzi Pesticide App
 
 This module defines the ProductsPage class which acts as a container for the
 product listing and comparison tabs, coordinating between them.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTabWidget
-from PySide6.QtCore import Qt
 from common.styles import MARGIN_LARGE, SPACING_MEDIUM, SECONDARY_BUTTON_STYLE
 from common.widgets import HeaderWithBackButton
 from products_page.products_list_tab import ProductsListTab
