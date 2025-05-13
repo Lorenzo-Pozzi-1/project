@@ -1,9 +1,4 @@
-"""
-Season Planner page for the LORENZO POZZI Pesticide App.
-
-This module defines the SeasonPlannerPage class which provides functionality
-for planning and managing seasonal pesticide applications.
-"""
+"""Season Planner page for the LORENZO POZZI Pesticide App."""
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton)
 from PySide6.QtCore import Qt
@@ -12,19 +7,49 @@ from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE,
 from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar
 from season_planner_page.widgets import SeasonPlanMetadataWidget, ApplicationsTableContainer
 
+
 class SeasonPlannerPage(QWidget):
-    """
-    Season Planner page for managing seasonal application plans.
-    
-    This page allows users to create, edit, and compare seasonal pesticide
-    application plans to optimize EIQ impact across multiple fields.
-    """
+    """Season Planner page for managing seasonal pesticide application plans."""
     
     def __init__(self, parent=None):
         """Initialize the season planner page."""
         super().__init__(parent)
         self.parent = parent
         self.setup_ui()
+    
+    def _create_label(self, text, layout, title=False, size=None):
+        """Create a label with specified styling and add it to layout."""
+        label = QLabel(text)
+        font_func = get_title_font if title else get_body_font
+        if size is not None:  # Only pass size parameter if it's not None
+            label.setFont(font_func(size=size))
+        else:
+            label.setFont(font_func())  # Use default size
+        layout.addWidget(label)
+        return label
+    
+    def _create_button(self, text, style, callback, layout=None, max_width=None):
+        """Create a button with specified styling and callback."""
+        button = QPushButton(text)
+        button.setStyleSheet(style)
+        if max_width:
+            button.setMaximumWidth(max_width)
+        button.clicked.connect(callback)
+        if layout:
+            layout.addWidget(button)
+        return button
+    
+    def _create_content_frame(self, title, main_layout):
+        """Create a content frame with a title."""
+        frame = ContentFrame()
+        layout = QVBoxLayout()
+        
+        # Add title
+        self._create_label(title, layout, title=True, size=16)
+            
+        frame.layout.addLayout(layout)
+        main_layout.addWidget(frame)
+        return frame, layout
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -34,23 +59,14 @@ class SeasonPlannerPage(QWidget):
         main_layout.setSpacing(SPACING_MEDIUM)
         
         # Header with back button and compare button
-        header_layout = QHBoxLayout()
-        
-        # Header with back button
         header = HeaderWithBackButton("Season Planner")
         header.back_clicked.connect(self.parent.go_home)
         
-        # Add Compare button directly to the header (right side)
-        compare_button = QPushButton("Compare Plans")
-        compare_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        compare_button.setMaximumWidth(150)
-        # Placeholder for compare functionality
-        compare_button.clicked.connect(self.compare_plans)
+        # Add Compare button to the header (right side)
+        self._create_button("Compare Plans", PRIMARY_BUTTON_STYLE, 
+                           self.compare_plans, max_width=150, 
+                           layout=header.layout())
         
-        # Add the Compare button to the header's layout (right side)
-        header.layout().addWidget(compare_button)
-        
-        # Add the header to the main layout
         main_layout.addWidget(header)
         
         # Season Plan Metadata Widget
@@ -59,13 +75,7 @@ class SeasonPlannerPage(QWidget):
         main_layout.addWidget(self.metadata_widget)
         
         # Applications Table Frame
-        applications_frame = ContentFrame()
-        applications_layout = QVBoxLayout()
-        
-        # Table Header
-        table_header = QLabel("Applications")
-        table_header.setFont(get_title_font(size=16))
-        applications_layout.addWidget(table_header)
+        applications_frame, applications_layout = self._create_content_frame("Applications", main_layout)
         
         # Applications Table Container
         self.applications_container = ApplicationsTableContainer()
@@ -74,71 +84,37 @@ class SeasonPlannerPage(QWidget):
         
         # Buttons for table actions
         buttons_layout = QHBoxLayout()
-        
-        add_application_button = QPushButton("Add Application")
-        add_application_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        add_application_button.clicked.connect(self.add_application)
-        buttons_layout.addWidget(add_application_button)
-        
-        remove_application_button = QPushButton("Remove Selected")
-        remove_application_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        remove_application_button.clicked.connect(self.remove_application)
-        buttons_layout.addWidget(remove_application_button)
-        
-        # Add spacer to push buttons to the left
-        buttons_layout.addStretch(1)
+        self._create_button("Add Application", PRIMARY_BUTTON_STYLE, 
+                           self.add_application, buttons_layout)
+        self._create_button("Remove Selected", SECONDARY_BUTTON_STYLE, 
+                           self.remove_application, buttons_layout)
+        buttons_layout.addStretch(1)  # Add spacer to push buttons to the left
         
         applications_layout.addLayout(buttons_layout)
-        applications_frame.layout.addLayout(applications_layout)
-        main_layout.addWidget(applications_frame)
         
         # EIQ Results Display with Score Bar
-        results_frame = ContentFrame()
-        results_layout = QVBoxLayout()
-        
-        results_title = QLabel("Season EIQ Impact")
-        results_title.setFont(get_title_font(size=16))
-        results_layout.addWidget(results_title)
+        results_frame, results_layout = self._create_content_frame("Season EIQ Impact", main_layout)
         
         # Score bar for EIQ visualization
         self.eiq_score_bar = ScoreBar()
-        # Set initial value to 0 (will be updated later with actual calculations)
         self.eiq_score_bar.set_value(0, "No applications")
         results_layout.addWidget(self.eiq_score_bar)
         
-        # Add some additional information labels
-        eiq_info_layout = QHBoxLayout()        
+        # Add information labels (EIQ and application count)
+        eiq_info_layout = QHBoxLayout()
+        self._create_label("Total Field EIQ:", eiq_info_layout)
+        self.total_eiq_value = self._create_label("0", eiq_info_layout)
         
-        # Total EIQ Label
-        total_eiq_label = QLabel("Total Field EIQ:")
-        total_eiq_label.setFont(get_body_font())
-        eiq_info_layout.addWidget(total_eiq_label)
+        eiq_info_layout.addSpacing(20)
         
-        self.total_eiq_value = QLabel("0")
-        self.total_eiq_value.setFont(get_body_font())
-        eiq_info_layout.addWidget(self.total_eiq_value)
-        
-        eiq_info_layout.addSpacing(20)  # Add some spacing between the two sets of labels
-
-        # Applications count label
-        applications_count_label = QLabel("Applications Count:")
-        applications_count_label.setFont(get_body_font())
-        eiq_info_layout.addWidget(applications_count_label)
-        
-        self.applications_count_value = QLabel("0")
-        self.applications_count_value.setFont(get_body_font())
-        eiq_info_layout.addWidget(self.applications_count_value)
+        self._create_label("Applications Count:", eiq_info_layout)
+        self.applications_count_value = self._create_label("0", eiq_info_layout)
         
         eiq_info_layout.addStretch(1)
-
         results_layout.addLayout(eiq_info_layout)
-        
-        results_frame.layout.addLayout(results_layout)
-        main_layout.addWidget(results_frame)
     
     def on_metadata_changed(self):
         """Handle changes to season plan metadata."""
-        # Update field area in applications container
         metadata = self.metadata_widget.get_metadata()
         self.applications_container.set_field_area(
             metadata["field_area"], 
@@ -152,15 +128,12 @@ class SeasonPlannerPage(QWidget):
     def remove_application(self):
         """Remove the selected application row from the container."""
         # This is a placeholder - currently we can't select rows in the container
-        # We will need to implement selection in the ApplicationsTableContainer
         print("Remove Application clicked")
     
     def update_eiq_display(self):
         """Update the EIQ display based on current applications."""
-        # Get total field EIQ
+        # Get total field EIQ and application count
         total_eiq = self.applications_container.get_total_field_eiq()
-        
-        # Get applications count
         applications = self.applications_container.get_applications()
         application_count = len(applications)
         
@@ -171,22 +144,14 @@ class SeasonPlannerPage(QWidget):
             self.eiq_score_bar.set_value(0, "No applications")
         
         # Update labels
-        ha_text = f"{total_eiq:.2f}"
-        self.total_eiq_value.setText(ha_text)
+        self.total_eiq_value.setText(f"{total_eiq:.2f}")
         self.applications_count_value.setText(str(application_count))
     
     def compare_plans(self):
         """Placeholder function for comparing multiple plans."""
-        # This will be implemented later
         print("Compare Plans clicked")
     
     def refresh_product_data(self):
-        """
-        Refresh product data based on the filtered products.
-        
-        This method is called when filtered data changes in the main window.
-        """
-        # Since the applications container loads products dynamically, 
-        # we need to rebuild any existing rows with the new product list
+        """Refresh product data when filtered products change in the main window."""
         applications = self.applications_container.get_applications()
         self.applications_container.set_applications(applications)
