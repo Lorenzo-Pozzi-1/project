@@ -319,7 +319,7 @@ class ProductComparisonCalculator(QWidget):
         # Skip calculation if no valid product or active ingredients
         if not product or not active_ingredients:
             # Remove this product from results table if it exists
-            self.update_results_for_row(row, None, None)
+            self.update_results_for_row(row, None)
             return
             
         try:
@@ -342,7 +342,7 @@ class ProductComparisonCalculator(QWidget):
         except (ValueError, ZeroDivisionError, AttributeError) as e:
             print(f"Error calculating EIQ for row {row}: {e}")
             # Clear results for this row
-            self.update_results_for_row(row, None, None)
+            self.update_results_for_row(row, None)
     
     def update_results_for_row(self, selection_row, field_eiq_ha):
         """
