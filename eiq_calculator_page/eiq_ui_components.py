@@ -196,12 +196,9 @@ class EiqResultDisplay(QWidget):
         # Labels for both ha and acre values
         self.field_eiq_result_ha = QLabel("-- /ha")
         self.field_eiq_result_ha.setFont(get_subtitle_font(bold=True))
-        self.field_eiq_result_acre = QLabel("-- /acre")
-        self.field_eiq_result_acre.setFont(get_subtitle_font(bold=True))
         
         field_eiq_layout.addWidget(field_eiq_label)
         field_eiq_layout.addWidget(self.field_eiq_result_ha)
-        field_eiq_layout.addWidget(self.field_eiq_result_acre)
         field_eiq_layout.addStretch(1)
         
         layout.addLayout(field_eiq_layout)
@@ -222,16 +219,14 @@ class EiqResultDisplay(QWidget):
         self.score_bar.set_value(field_eiq, rating)
 
     def set_field_eiq_text(self, field_eiq):
-        """Set the field EIQ text for both ha and acre."""
+        """Set the field EIQ text"""
         if field_eiq <= 0:
             self.field_eiq_result_ha.setText(f"{PLACEHOLDER_TEXT} /ha")
-            self.field_eiq_result_acre.setText(f"{PLACEHOLDER_TEXT} /acre")
             self.score_bar.set_value(0, "No calculation")
             return
         
-        ha_text, acre_text = format_eiq_result(field_eiq)
+        ha_text = format_eiq_result(field_eiq)
         self.field_eiq_result_ha.setText(ha_text)
-        self.field_eiq_result_acre.setText(acre_text)
 
 class ColorCodedEiqItem(QTableWidgetItem):
     """A table item specifically for EIQ values with automatic color coding."""

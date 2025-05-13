@@ -90,9 +90,9 @@ class ProductComparisonCalculator(QWidget):
         results_layout.addWidget(results_title)
         
         # Results table
-        self.comparison_results_table = QTableWidget(0, 3)
+        self.comparison_results_table = QTableWidget(0, 2)
         self.comparison_results_table.setHorizontalHeaderLabels([
-            "Product", "Field EIQ / ha", "Field EIQ / acre"
+            "Product", "Field EIQ / ha"
         ])
         
         # Set up table properties - all columns equal width
@@ -336,18 +336,15 @@ class ProductComparisonCalculator(QWidget):
             total_field_eiq = calculate_product_field_eiq(
                 active_ingredients, rate, unit, applications)
             
-            # For the comparison table, we show both per-ha and per-acre values
-            field_eiq_per_acre = total_field_eiq / 2.47105  # Convert ha to acre
-            
             # Update the results table for this row
-            self.update_results_for_row(row, field_eiq_per_acre, total_field_eiq)
+            self.update_results_for_row(row, total_field_eiq)
             
         except (ValueError, ZeroDivisionError, AttributeError) as e:
             print(f"Error calculating EIQ for row {row}: {e}")
             # Clear results for this row
             self.update_results_for_row(row, None, None)
     
-    def update_results_for_row(self, selection_row, field_eiq_acre, field_eiq_ha):
+    def update_results_for_row(self, selection_row, field_eiq_ha):
         """
         Update the results table for a specific row.
         """
@@ -394,14 +391,6 @@ class ProductComparisonCalculator(QWidget):
             high_threshold=100
         )
         self.comparison_results_table.setItem(found_row, 1, eiq_ha_item)
-        
-        # Field EIQ / acre with color coding
-        eiq_acre_item = ColorCodedEiqItem(
-            field_eiq_acre,
-            low_threshold=LOW_THRESHOLD / 2.47105,  # Adjust thresholds for acre
-            high_threshold=HIGH_THRESHOLD / 2.47105
-        )
-        self.comparison_results_table.setItem(found_row, 2, eiq_acre_item)
     
     def refresh_all_calculations(self):
         """Calculate and display EIQ comparison results for all rows."""
