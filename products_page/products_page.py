@@ -76,7 +76,7 @@ class ProductsPage(QWidget):
         self.tabs.setCurrentIndex(1)
     
     def reset(self):
-        """Refresh product data from CSV file and reload the products list."""
+        """Reset the page and refresh product data."""
         products_repo = ProductRepository.get_instance()
         if products_repo.refresh_from_csv():
             # Clear any selections
@@ -84,6 +84,9 @@ class ProductsPage(QWidget):
             
             # Reload the product data in the list tab
             self.products_list_tab.load_product_data()
+            
+            # Reset the filters
+            self.products_list_tab.reset_filters()
             
             # Reset the comparison tab
             self.comparison_tab.clear_comparison()

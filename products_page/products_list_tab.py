@@ -197,6 +197,22 @@ class ProductsListTab(QWidget):
         
         # Apply filters to the table
         self.products_table.apply_filters(filters)
+
+    def reset_filters(self):
+        """Reset all filter rows and show all products."""
+        # Clear existing filter rows
+        while self.filter_rows:
+            row = self.filter_rows.pop()
+            self.filter_rows_layout.removeWidget(row)
+            row.deleteLater()
+        
+        # Add a single empty filter row
+        if self.visible_columns:
+            self.add_filter_row()
+        
+        # Show all rows in the table
+        for row in range(self.products_table.rowCount()):
+            self.products_table.showRow(row)
     
     def on_selection_changed(self, selected_products):
         """Handle selection changes from the table."""

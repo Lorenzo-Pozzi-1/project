@@ -26,19 +26,9 @@ class ComparisonTable(QTableWidget):
         self.setup_ui()
         self.columns_to_hide = []
         self.set_columns_to_hide([
-            "region", 
-            "number of ai", 
-            "ai1concentration", 
-            "uom",
-            "ai2", 
-            "ai2concentration", 
-            "uom.1",
-            "ai3", 
-            "ai3concentration", 
-            "uom.2",
-            "ai4", 
-            "ai4concentration", 
-            "uom.3",
+            "country","region","number of ai", 
+            "[AI1]","[AI2]","[AI3]","[AI4]",
+            "[AI1]UOM","[AI2]UOM","[AI3]UOM","[AI4]UOM"
         ])
     
     def setup_ui(self):
