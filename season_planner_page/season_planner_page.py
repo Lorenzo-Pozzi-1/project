@@ -95,8 +95,14 @@ class SeasonPlannerPage(QWidget):
         # EIQ Results Display with Score Bar
         results_frame, results_layout = self._create_content_frame("Season EIQ Impact", main_layout)
         
-        # Score bar for EIQ visualization
-        self.eiq_score_bar = ScoreBar()
+        # Create score bar with custom thresholds and labels
+        self.eiq_score_bar = ScoreBar(
+            thresholds=[200, 500, 800],
+            labels=["Leading", "Advanced", "Engaged", "Onboarding"],
+            min_value=0,
+            max_value=800,
+            title_text="RegenAg framework class:"
+        )
         self.eiq_score_bar.set_value(0, "No applications")
         results_layout.addWidget(self.eiq_score_bar)
         

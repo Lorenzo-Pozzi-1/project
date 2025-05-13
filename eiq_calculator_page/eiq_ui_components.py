@@ -13,7 +13,6 @@ from math_module.eiq_calculations import format_eiq_result, get_impact_category
 
 LOW_THRESHOLD = 33.3
 HIGH_THRESHOLD = 66.6
-PLACEHOLDER_TEXT = "--"
 
 def get_eiq_color(eiq_value, low_threshold=LOW_THRESHOLD, high_threshold=HIGH_THRESHOLD):
     """Get color for EIQ value based on thresholds."""
@@ -203,10 +202,11 @@ class EiqResultDisplay(QWidget):
         
         layout.addLayout(field_eiq_layout)
         
-        # Score bar
+        # Create score bar with default thresholds and labels
         self.score_bar = ScoreBar(
-            low_threshold=LOW_THRESHOLD,
-            high_threshold=HIGH_THRESHOLD
+            thresholds=[LOW_THRESHOLD, HIGH_THRESHOLD],
+            labels=["Low", "Medium", "High", "EXTREME"],
+            title_text="Field EIQ score:"
         )
         layout.addWidget(self.score_bar)
     
@@ -221,7 +221,7 @@ class EiqResultDisplay(QWidget):
     def set_field_eiq_text(self, field_eiq):
         """Set the field EIQ text"""
         if field_eiq <= 0:
-            self.field_eiq_result_ha.setText(f"{PLACEHOLDER_TEXT} /ha")
+            self.field_eiq_result_ha.setText("-- /ha")
             self.score_bar.set_value(0, "No calculation")
             return
         
