@@ -3,7 +3,7 @@ Product Comparison Calculator for the LORENZO POZZI Pesticide App.
 
 This module provides the ProductComparisonCalculator widget for comparing EIQ
 values of multiple pesticide products with improved UOM management.
-Updated to get EIQ values from active ingredients repository instead of products.
+Refactored to fully leverage the Product model's get_ai_data method.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox
@@ -11,10 +11,9 @@ from PySide6.QtCore import Qt
 from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
-from data.ai_repository import AIRepository
-from eiq_calculator_page.eiq_ui_components import get_products_from_repo, ColorCodedEiqItem
+from eiq_calculator_page.eiq_ui_components import ColorCodedEiqItem
 from math_module.eiq_calculations import calculate_product_field_eiq
-from math_module.eiq_conversions import convert_concentration_to_percent, APPLICATION_RATE_CONVERSION
+from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
 
 class ProductComparisonCalculator(QWidget):
@@ -25,7 +24,7 @@ class ProductComparisonCalculator(QWidget):
         super().__init__(parent)
         self.parent = parent
         self.products_data = []  # List to track product data
-        self.ai_repo = AIRepository.get_instance()  # AI Repository for EIQ lookups
+        self.products_repo = ProductRepository.get_instance()  # Product repository for product lookups
         self.setup_ui()
     
     def setup_ui(self):
@@ -114,7 +113,7 @@ class ProductComparisonCalculator(QWidget):
         type_combo.addItem("Select type...")
         
         # Load product types
-        products = get_products_from_repo()
+        products = self.get_filtered_products()
         product_types = []
         if products:
             product_types = sorted(list(set(p.product_type for p in products if p.product_type)))
@@ -166,6 +165,14 @@ class ProductComparisonCalculator(QWidget):
             "active_ingredients": []
         })
     
+    def get_filtered_products(self):
+        """Get filtered products from repository."""
+        try:
+            return self.products_repo.get_filtered_products()
+        except Exception as e:
+            print(f"Error loading filtered products: {e}")
+            return []
+    
     def remove_selected_row(self):
         """Remove the selected row from the table."""
         selected_rows = self.comparison_selection_table.selectionModel().selectedRows()
@@ -206,8 +213,7 @@ class ProductComparisonCalculator(QWidget):
             return
         
         # Get products filtered by type
-        products_repo = ProductRepository.get_instance()
-        products = products_repo.get_filtered_products()
+        products = self.get_filtered_products()
         filtered_products = [p for p in products if p.product_type == product_type]
         
         # Update product combo
@@ -247,12 +253,7 @@ class ProductComparisonCalculator(QWidget):
         
         try:
             # Find the product in the database
-            products = get_products_from_repo()
-            product = None
-            for p in products:
-                if p.product_name == product_name:
-                    product = p
-                    break
+            product = self.products_repo.get_product_by_name(product_name)
             
             if not product:
                 raise ValueError(f"Product '{product_name}' not found")
@@ -261,68 +262,11 @@ class ProductComparisonCalculator(QWidget):
             if 0 <= row < len(self.products_data):
                 self.products_data[row]["product"] = product
                 
-                # Get active ingredients with EIQ values from AI repository
-                ai_data = []
-                
-                # Check AI1 data
-                if product.ai1:
-                    eiq = self.ai_repo.get_ai_eiq(product.ai1)
-                    concentration = product.ai1_concentration
-                    uom = product.ai1_concentration_uom
-                    percent_value = convert_concentration_to_percent(concentration, uom)
-                    
-                    if eiq is not None and percent_value is not None:
-                        ai_data.append({
-                            "name": product.ai1,
-                            "eiq": eiq,
-                            "percent": percent_value
-                        })
-                
-                # Check AI2 data
-                if product.ai2:
-                    eiq = self.ai_repo.get_ai_eiq(product.ai2)
-                    concentration = product.ai2_concentration
-                    uom = product.ai2_concentration_uom
-                    percent_value = convert_concentration_to_percent(concentration, uom)
-                    
-                    if eiq is not None and percent_value is not None:
-                        ai_data.append({
-                            "name": product.ai2,
-                            "eiq": eiq,
-                            "percent": percent_value
-                        })
-                
-                # Check AI3 data
-                if product.ai3:
-                    eiq = self.ai_repo.get_ai_eiq(product.ai3)
-                    concentration = product.ai3_concentration
-                    uom = product.ai3_concentration_uom
-                    percent_value = convert_concentration_to_percent(concentration, uom)
-                    
-                    if eiq is not None and percent_value is not None:
-                        ai_data.append({
-                            "name": product.ai3,
-                            "eiq": eiq,
-                            "percent": percent_value
-                        })
-                
-                # Check AI4 data
-                if product.ai4:
-                    eiq = self.ai_repo.get_ai_eiq(product.ai4)
-                    concentration = product.ai4_concentration
-                    uom = product.ai4_concentration_uom
-                    percent_value = convert_concentration_to_percent(concentration, uom)
-                    
-                    if eiq is not None and percent_value is not None:
-                        ai_data.append({
-                            "name": product.ai4,
-                            "eiq": eiq,
-                            "percent": percent_value
-                        })
-                
+                # Get active ingredients data directly from the product model
+                ai_data = product.get_ai_data()
                 self.products_data[row]["active_ingredients"] = ai_data
                 
-                # Display first active ingredient in the table or "None" if no AI
+                # Display active ingredients in the table or "None" if no AI
                 ai_display = ", ".join(product.active_ingredients) if product.active_ingredients else "None"
                 self.comparison_selection_table.item(row, 2).setText(ai_display)
                 
@@ -388,14 +332,12 @@ class ProductComparisonCalculator(QWidget):
             unit = unit_combo.currentText() if unit_combo else "lbs/acre"
             applications = int(apps_spin.value()) if apps_spin else 1
             
-            # Calculate total Field EIQ using the improved function with proper UOM handling
-            # This now uses our enhanced standardize_eiq_calculation under the hood
+            # Calculate total Field EIQ using the math module function
             total_field_eiq = calculate_product_field_eiq(
                 active_ingredients, rate, unit, applications)
             
-            # For the comparison table, we prefer to show per-ha values as the primary metric
-            # But also calculate per-acre for display
-            field_eiq_per_acre = total_field_eiq / 2.47  # Convert ha to acre
+            # For the comparison table, we show both per-ha and per-acre values
+            field_eiq_per_acre = total_field_eiq / 2.47105  # Convert ha to acre
             
             # Update the results table for this row
             self.update_results_for_row(row, field_eiq_per_acre, total_field_eiq)
@@ -455,7 +397,7 @@ class ProductComparisonCalculator(QWidget):
         
         # Field EIQ / acre with color coding
         eiq_acre_item = ColorCodedEiqItem(
-            field_eiq_ha / 2.47105,  # Convert ha to acre
+            field_eiq_acre,
             low_threshold=50 / 2.47105,  # Adjust thresholds for acre
             high_threshold=100 / 2.47105
         )

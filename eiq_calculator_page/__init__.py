@@ -9,8 +9,8 @@ from eiq_calculator_page.eiq_calculator_page import EiqCalculatorPage
 from eiq_calculator_page.single_product_calculator import SingleProductCalculator
 from eiq_calculator_page.product_comparison import ProductComparisonCalculator
 from eiq_calculator_page.eiq_ui_components import (
-    ProductSearchField, EiqResultDisplay, ColorCodedEiqItem,
-    get_products_from_repo, get_product_info, get_eiq_color
+    ColorCodedEiqItem, EiqResultDisplay, 
+    ProductSearchField, get_eiq_color
 )
 from math_module.eiq_calculations import (
     calculate_field_eiq, calculate_product_field_eiq, 
@@ -42,7 +42,5 @@ __all__ = [
     'ProductSearchField',
     'EiqResultDisplay',
     'ColorCodedEiqItem',
-    'get_products_from_repo',
-    'get_product_info',
     'get_eiq_color'
 ]
