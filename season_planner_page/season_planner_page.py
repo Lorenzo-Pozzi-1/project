@@ -153,9 +153,7 @@ class SeasonPlannerPage(QWidget):
         """Remove the selected application row from the container."""
         # This is a placeholder - currently we can't select rows in the container
         # We will need to implement selection in the ApplicationsTableContainer
-        # or simply remove the last added row for now
-        if self.applications_container.count() > 0:
-            self.applications_container.remove_application_row(self.applications_container.count() - 1)
+        print("Remove Application clicked")
     
     def update_eiq_display(self):
         """Update the EIQ display based on current applications."""

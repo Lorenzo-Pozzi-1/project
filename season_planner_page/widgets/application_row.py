@@ -5,15 +5,13 @@ This module defines a custom widget representing a single application row
 in the season planner. Updated to get EIQ values from active ingredients repository.
 """
 
-from PySide6.QtWidgets import (QWidget, QHBoxLayout, QLineEdit, QComboBox, 
+from PySide6.QtWidgets import (QHBoxLayout, QLineEdit, QComboBox, 
                              QDoubleSpinBox, QLabel, QSizePolicy, QFrame)
-from PySide6.QtCore import Qt, Signal, QSize, QEvent
-from PySide6.QtGui import QWheelEvent
+from PySide6.QtCore import Qt, Signal, QSize
 from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository
-from math_module.eiq_conversions import convert_concentration_to_decimal, convert_concentration_to_percent
+from math_module.eiq_conversions import convert_concentration_to_decimal
 from math_module.eiq_calculations import calculate_product_field_eiq
-
 
 # Create a subclass of QDoubleSpinBox that ignores wheel events unless focused
 class NoScrollSpinBox(QDoubleSpinBox):
@@ -81,6 +79,28 @@ class ApplicationRowWidget(QFrame):  # Changed from QWidget to QFrame
         self.setup_ui()
         self.load_product_types()
     
+    def _create_spin_box(self, min_val=0.0, max_val=9999.99, decimals=2, initial_val=0.0):
+        """Helper method to create spin boxes with standard settings."""
+        spin_box = NoScrollSpinBox()
+        spin_box.setRange(min_val, max_val)
+        spin_box.setDecimals(decimals)
+        spin_box.setValue(initial_val)
+        spin_box.valueChanged.connect(self.on_data_changed)
+        return spin_box
+        
+    def _create_combo_box(self, items=None, placeholder=None, signal_handler=None):
+        """Helper method to create combo boxes with standard settings."""
+        combo_box = QComboBox()
+        if placeholder:
+            combo_box.addItem(placeholder)
+        if items:
+            combo_box.addItems(items)
+        if signal_handler:
+            combo_box.currentIndexChanged.connect(signal_handler)
+        else:
+            combo_box.currentIndexChanged.connect(self.on_data_changed)
+        return combo_box
+    
     def setup_ui(self):
         """Set up the UI components."""
         # Main layout - horizontal row
@@ -95,46 +115,36 @@ class ApplicationRowWidget(QFrame):  # Changed from QWidget to QFrame
         layout.addWidget(self.date_edit)
         
         # Product Type selection
-        self.product_type_combo = QComboBox()
-        self.product_type_combo.addItem("Select type...")
-        self.product_type_combo.currentIndexChanged.connect(self.on_product_type_changed)
+        self.product_type_combo = self._create_combo_box(
+            placeholder="Select type...",
+            signal_handler=self.on_product_type_changed
+        )
         layout.addWidget(self.product_type_combo)
         
         # Product selection
-        self.product_combo = QComboBox()
-        self.product_combo.addItem("Select a product...")
-        self.product_combo.currentIndexChanged.connect(self.on_product_changed)
+        self.product_combo = self._create_combo_box(
+            placeholder="Select a product...",
+            signal_handler=self.on_product_changed
+        )
         layout.addWidget(self.product_combo)
         
-        # Application rate - using our custom spin box that ignores wheel events unless focused
-        self.rate_spin = NoScrollSpinBox()
-        self.rate_spin.setRange(0.0, 9999.99)
-        self.rate_spin.setDecimals(2)
-        self.rate_spin.setValue(0.0)
-        self.rate_spin.valueChanged.connect(self.on_data_changed)
+        # Application rate
+        self.rate_spin = self._create_spin_box(decimals=2, initial_val=0.0)
         layout.addWidget(self.rate_spin)
         
         # Rate UOM
-        self.uom_combo = QComboBox()
         common_uoms = ["kg/ha", "l/ha", "g/ha", "ml/ha", "lbs/acre", "fl oz/acre", "oz/acre"]
-        self.uom_combo.addItems(common_uoms)
-        self.uom_combo.currentIndexChanged.connect(self.on_data_changed)
+        self.uom_combo = self._create_combo_box(items=common_uoms)
         layout.addWidget(self.uom_combo)
         
-        # Area treated - using our custom spin box that ignores wheel events unless focused
-        self.area_spin = NoScrollSpinBox()
-        self.area_spin.setRange(0.0, 9999.99)
-        self.area_spin.setDecimals(1)
-        self.area_spin.setValue(self.field_area)  # Default to field area
-        self.area_spin.valueChanged.connect(self.on_data_changed)
+        # Area treated
+        self.area_spin = self._create_spin_box(decimals=1, initial_val=self.field_area)
         layout.addWidget(self.area_spin)
         
         # Application method
-        self.method_combo = QComboBox()
         method_options = ["Broadcast", "Band", "Foliar spray", "Soil incorporation",
-                       "Seed treatment", "Spot treatment", "Chemigation"]
-        self.method_combo.addItems(method_options)
-        self.method_combo.currentIndexChanged.connect(self.on_data_changed)
+                      "Seed treatment", "Spot treatment", "Chemigation"]
+        self.method_combo = self._create_combo_box(items=method_options)
         layout.addWidget(self.method_combo)
         
         # AI Groups (read-only)
@@ -240,13 +250,7 @@ class ApplicationRowWidget(QFrame):  # Changed from QWidget to QFrame
         
         # Find product in repository
         products_repo = ProductRepository.get_instance()
-        products = products_repo.get_filtered_products()
-        product = None
-        
-        for p in products:
-            if p.product_name == product_name:
-                product = p
-                break
+        product = self._get_product_by_name(product_name)
         
         if not product:
             return
@@ -274,6 +278,39 @@ class ApplicationRowWidget(QFrame):  # Changed from QWidget to QFrame
         # Emit data changed signal
         self.on_data_changed()
     
+    def _get_product_by_name(self, product_name):
+        """Helper method to get product by name from repository."""
+        products_repo = ProductRepository.get_instance()
+        products = products_repo.get_filtered_products()
+        
+        for p in products:
+            if p.product_name == product_name:
+                return p
+        return None
+    
+    def _get_ai_data(self, product, ai_name, ai_concentration, ai_concentration_uom):
+        """Helper method to get active ingredient data for EIQ calculation."""
+        if not ai_name:
+            return None
+            
+        eiq = self.ai_repo.get_ai_eiq(ai_name)
+        if eiq is None or ai_concentration is None:
+            return None
+            
+        ai_decimal = convert_concentration_to_decimal(
+            ai_concentration, 
+            ai_concentration_uom
+        )
+        
+        if ai_decimal is None:
+            return None
+            
+        return {
+            'name': ai_name,
+            'eiq': eiq,
+            'percent': ai_decimal * 100
+        }
+    
     def calculate_field_eiq(self):
         """Calculate and update the Field EIQ for this application."""
         try:
@@ -287,14 +324,7 @@ class ApplicationRowWidget(QFrame):  # Changed from QWidget to QFrame
             rate_uom = self.uom_combo.currentText()
             
             # Get product from repository
-            products_repo = ProductRepository.get_instance()
-            products = products_repo.get_filtered_products()
-            product = None
-            
-            for p in products:
-                if p.product_name == product_name:
-                    product = p
-                    break
+            product = self._get_product_by_name(product_name)
             
             if not product:
                 self.field_eiq_label.setText("")
@@ -303,92 +333,17 @@ class ApplicationRowWidget(QFrame):  # Changed from QWidget to QFrame
             # Prepare active ingredients data for calculation
             active_ingredients = []
             
-            # AI1
-            if product.ai1:
-                # Get EIQ from repository
-                eiq = self.ai_repo.get_ai_eiq(product.ai1)
-                if eiq is not None and product.ai1_concentration is not None:
-                    # Convert concentration to decimal (0-1) using appropriate conversion function
-                    ai_decimal = convert_concentration_to_decimal(
-                        product.ai1_concentration, 
-                        product.ai1_concentration_uom
-                    )
-                    
-                    if ai_decimal is not None:
-                        # Convert decimal to percent for the calculate_field_eiq function
-                        ai_percent = ai_decimal * 100
-                        
-                        active_ingredients.append({
-                            'name': product.ai1,
-                            'eiq': eiq,
-                            'percent': ai_percent
-                        })
+            # Process each AI
+            for ai_num in range(1, 5):
+                ai_name = getattr(product, f'ai{ai_num}', None)
+                ai_conc = getattr(product, f'ai{ai_num}_concentration', None)
+                ai_conc_uom = getattr(product, f'ai{ai_num}_concentration_uom', None)
+                
+                ai_data = self._get_ai_data(product, ai_name, ai_conc, ai_conc_uom)
+                if ai_data:
+                    active_ingredients.append(ai_data)
             
-            # AI2
-            if product.ai2:
-                # Get EIQ from repository
-                eiq = self.ai_repo.get_ai_eiq(product.ai2)
-                if eiq is not None and product.ai2_concentration is not None:
-                    # Convert concentration to decimal (0-1)
-                    ai_decimal = convert_concentration_to_decimal(
-                        product.ai2_concentration, 
-                        product.ai2_concentration_uom
-                    )
-                    
-                    if ai_decimal is not None:
-                        # Convert decimal to percent
-                        ai_percent = ai_decimal * 100
-                        
-                        active_ingredients.append({
-                            'name': product.ai2,
-                            'eiq': eiq,
-                            'percent': ai_percent
-                        })
-            
-            # AI3
-            if product.ai3:
-                # Get EIQ from repository
-                eiq = self.ai_repo.get_ai_eiq(product.ai3)
-                if eiq is not None and product.ai3_concentration is not None:
-                    # Convert concentration to decimal (0-1)
-                    ai_decimal = convert_concentration_to_decimal(
-                        product.ai3_concentration, 
-                        product.ai3_concentration_uom
-                    )
-                    
-                    if ai_decimal is not None:
-                        # Convert decimal to percent
-                        ai_percent = ai_decimal * 100
-                        
-                        active_ingredients.append({
-                            'name': product.ai3,
-                            'eiq': eiq,
-                            'percent': ai_percent
-                        })
-            
-            # AI4
-            if product.ai4:
-                # Get EIQ from repository
-                eiq = self.ai_repo.get_ai_eiq(product.ai4)
-                if eiq is not None and product.ai4_concentration is not None:
-                    # Convert concentration to decimal (0-1)
-                    ai_decimal = convert_concentration_to_decimal(
-                        product.ai4_concentration, 
-                        product.ai4_concentration_uom
-                    )
-                    
-                    if ai_decimal is not None:
-                        # Convert decimal to percent
-                        ai_percent = ai_decimal * 100
-                        
-                        active_ingredients.append({
-                            'name': product.ai4,
-                            'eiq': eiq,
-                            'percent': ai_percent
-                        })
-            
-            # Calculate Field EIQ using the function from math_module that expects
-            # active ingredients with eiq, percent, and name
+            # Calculate Field EIQ
             field_eiq = calculate_product_field_eiq(
                 active_ingredients, application_rate, rate_uom, applications=1
             )
@@ -472,37 +427,23 @@ class ApplicationRowWidget(QFrame):  # Changed from QWidget to QFrame
         # Block signals temporarily to prevent multiple data_changed signals
         self.blockSignals(True)
         
-        if "application_date" in data:
-            self.date_edit.setText(data["application_date"])
+        field_value_pairs = [
+            ("application_date", self.date_edit.setText),
+            ("product_type", lambda val: self._set_combo_value(self.product_type_combo, val)),
+            ("product_name", lambda val: self._set_combo_value(self.product_combo, val)),
+            ("rate", self.rate_spin.setValue),
+            ("rate_uom", lambda val: self._set_combo_value(self.uom_combo, val)),
+            ("area", self.area_spin.setValue),
+            ("application_method", lambda val: self._set_combo_value(self.method_combo, val)),
+        ]
         
-        if "product_type" in data:
-            index = self.product_type_combo.findText(data["product_type"])
-            if index >= 0:
-                self.product_type_combo.setCurrentIndex(index)
+        for field, setter in field_value_pairs:
+            if field in data:
+                setter(data[field])
                 
-                # Need to update product list after setting type
-                self.on_product_type_changed()
-        
-        if "product_name" in data:
-            index = self.product_combo.findText(data["product_name"])
-            if index >= 0:
-                self.product_combo.setCurrentIndex(index)
-        
-        if "rate" in data:
-            self.rate_spin.setValue(data["rate"])
-        
-        if "rate_uom" in data:
-            index = self.uom_combo.findText(data["rate_uom"])
-            if index >= 0:
-                self.uom_combo.setCurrentIndex(index)
-        
-        if "area" in data:
-            self.area_spin.setValue(data["area"])
-        
-        if "application_method" in data:
-            index = self.method_combo.findText(data["application_method"])
-            if index >= 0:
-                self.method_combo.setCurrentIndex(index)
+                # Update product list after setting type
+                if field == "product_type":
+                    self.on_product_type_changed()
         
         # Unblock signals
         self.blockSignals(False)
@@ -512,3 +453,9 @@ class ApplicationRowWidget(QFrame):  # Changed from QWidget to QFrame
         
         # Emit data changed signal
         self.data_changed.emit(self)
+        
+    def _set_combo_value(self, combo, value):
+        """Helper method to set combo box value by text."""
+        index = combo.findText(value)
+        if index >= 0:
+            combo.setCurrentIndex(index)
