@@ -94,10 +94,6 @@ class ApplicationsTableContainer(QWidget):
         """
         self.field_area = area
         self.field_area_uom = uom
-        
-        # Update field area in all existing application rows
-        for row in self.application_rows:
-            row.set_field_area(area, uom)
     
     def add_application_row(self):
         """
