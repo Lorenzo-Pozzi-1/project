@@ -204,7 +204,9 @@ class EiqResultDisplay(QWidget):
         
         # Create score bar with default thresholds and labels
         self.score_bar = ScoreBar(
-            thresholds=[LOW_THRESHOLD, HIGH_THRESHOLD],
+            thresholds=[LOW_THRESHOLD, HIGH_THRESHOLD, 100],
+            min_value=0,
+            max_value=100,
             labels=["Low", "Medium", "High", "EXTREME"],
             title_text="Field EIQ score:"
         )

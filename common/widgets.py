@@ -311,25 +311,17 @@ class ScoreBar(QWidget):
     
     def get_score_color(self):
         """Get the color for the current score level."""
-        # Define standard text colors
-        low_text_color = QColor("#1E8449")    # Dark green
-        medium_text_color = QColor("#B7950B") # Dark yellow
-        high_text_color = QColor("#B03A2E")   # Dark red
-        
         # Handle extreme case
         if self.current_value > self.max_value:
-            return high_text_color
+            return self.text_colors[-1]  # Use the last text color for values beyond max
         
-        # Get relative position within the range
-        relative_pos = (self.current_value - self.min_value) / (self.max_value - self.min_value)
+        # Find which region the value falls into - using the same logic as get_score_level()
+        for i, threshold in enumerate(self.thresholds):
+            if self.current_value < threshold:
+                return self.text_colors[i]
         
-        # Use appropriate text color based on position
-        if relative_pos < 0.33:
-            return low_text_color
-        elif relative_pos < 0.66:
-            return medium_text_color
-        else:
-            return high_text_color
+        # If we're past all thresholds but not beyond max_value
+        return self.text_colors[-1]  # Last text color
     
     def paintEvent(self, event):
         """Paint the gradient bar and all other elements."""
