@@ -14,6 +14,8 @@ UOM_DATA = {
     "oz/acre": {"category": "weight", "factor": 0.070053, "standard": "kg/ha"},  # 1 [oz/acre] = 0.070053 [kg/ha]
     "kg/ha": {"category": "weight", "factor": 1.0, "standard": "kg/ha"},         # Already in standard unit
     "g/ha": {"category": "weight", "factor": 0.001, "standard": "kg/ha"},        # 1 [g/ha] = 0.001 [kg/ha]
+    "kg/acre": {"category": "weight", "factor": 2.47105, "standard": "kg/ha"},     # 1 [kg/acre] = 2.47105 [kg/ha]
+    "g/acre": {"category": "weight", "factor": 0.00247105, "standard": "kg/ha"},   # 1 [g/acre] = 0.00247105 [kg/ha]
     
     # Volume-based application rates (standard: l/ha)
     "fl oz/acre": {"category": "volume", "factor": 0.073078, "standard": "l/ha"},  # 1 [fl oz/acre] = 0.073078 [l/ha]
@@ -21,6 +23,7 @@ UOM_DATA = {
     "qt/acre": {"category": "volume", "factor": 2.33849, "standard": "l/ha"},      # 1 [qt/acre] = 2.33849 [l/ha]
     "gal/acre": {"category": "volume", "factor": 9.35396, "standard": "l/ha"},     # 1 [gal/acre] = 9.35396 [l/ha]
     "l/ha": {"category": "volume", "factor": 1.0, "standard": "l/ha"},             # Already in standard unit
+    "l/acre": {"category": "volume", "factor": 2.47105, "standard": "l/ha"},        # 1 [l/acre] = 2.47105 [l/ha]
     "ml/ha": {"category": "volume", "factor": 0.001, "standard": "l/ha"},          # 1 [ml/ha] = 0.001 [l/ha]
     "ml/acre": {"category": "volume", "factor": 0.00247105, "standard": "l/ha"},   # 1 [ml/acre] = 0.00247105 [l/ha]
     
