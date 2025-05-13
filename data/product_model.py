@@ -93,21 +93,14 @@ class Product:
         self.phi_days = self._convert_to_int(phi_days)
         
         # Active ingredients
-        self.ai1 = ai1
-        self.ai1_concentration = self._convert_to_float(ai1_concentration)
-        self.ai1_concentration_uom = ai1_concentration_uom
-        
-        self.ai2 = ai2
-        self.ai2_concentration = self._convert_to_float(ai2_concentration)
-        self.ai2_concentration_uom = ai2_concentration_uom
-        
-        self.ai3 = ai3
-        self.ai3_concentration = self._convert_to_float(ai3_concentration)
-        self.ai3_concentration_uom = ai3_concentration_uom
-        
-        self.ai4 = ai4
-        self.ai4_concentration = self._convert_to_float(ai4_concentration)
-        self.ai4_concentration_uom = ai4_concentration_uom
+        for idx in range(1, 5):  # Process AI1 through AI4
+            name_attr = f"ai{idx}"
+            conc_attr = f"ai{idx}_concentration"
+            uom_attr = f"ai{idx}_concentration_uom"
+            
+            setattr(self, name_attr, locals()[name_attr])
+            setattr(self, conc_attr, self._convert_to_float(locals()[conc_attr]))
+            setattr(self, uom_attr, locals()[uom_attr])
     
     def _convert_to_float(self, value):
         """Convert a value to float, handling None and empty strings."""

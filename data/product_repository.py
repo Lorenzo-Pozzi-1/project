@@ -61,16 +61,28 @@ class ProductRepository:
         products = self.get_all_products()
         
         # If no country filter, return all products
-        if not country or country == "None of the above":
+        if not country or country == "None of these":
             self._filtered_products = products
             return products
         
         # Start with country filter
         filtered = [p for p in products if p.country == country]
         
+        # Grouped Canadian regions
+        east_CA = ["Quebec", "Prince Edward Island", "New Brunswick"]
+        west_CA = ["Saskatchewan", "Manitoba"]
+        
         # Apply region filter if specified
-        if region and region != "None of the above":
-            filtered = [p for p in filtered if p.region == region or not p.region]
+        if region and region != "None of these":
+            if region in east_CA and country == "Canada":
+                # For these regions, include products from all three Eastern Canada regions
+                filtered = [p for p in filtered if (p.region in east_CA) or not p.region]
+            elif region in west_CA and country == "Canada":
+                # For these regions, include products from both Prairie provinces
+                filtered = [p for p in filtered if (p.region in west_CA) or not p.region]
+            else:
+                # Standard filtering for other regions
+                filtered = [p for p in filtered if p.region == region or not p.region]
         
         self._filtered_products = filtered
         return filtered

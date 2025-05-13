@@ -169,7 +169,7 @@ class HomePage(QWidget):
         
         # Clear and add default option
         self.region_combo.clear()
-        self.region_combo.addItem("None of the above")
+        self.region_combo.addItem("None of these")
         
         # Add country-specific regions
         self.region_combo.addItems(self.get_regions_for_country(country))
