@@ -173,7 +173,7 @@ class SeasonPlannerPage(QWidget):
             self.eiq_score_bar.set_value(0, "No applications")
         
         # Update labels
-        ha_text = f"{total_eiq}"
+        ha_text = f"{total_eiq:.2f}"
         self.total_eiq_value.setText(ha_text)
         self.applications_count_value.setText(str(application_count))
     
