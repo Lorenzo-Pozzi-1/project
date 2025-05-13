@@ -110,7 +110,7 @@ def get_small_font(size=SMALL_FONT_SIZE, bold=False):
 # STYLE SHEETS
 # ----------------------
 
-# Main button styles
+# Buttons to pages styles
 FEATURE_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {WHITE};
@@ -168,7 +168,7 @@ SECONDARY_BUTTON_STYLE = f"""
 FRAME_STYLE = f"""
     QFrame {{
         background-color: {WHITE};
-        border: 1px solid #DDDDDD;
+        border: 1px solid transparent;
         border-radius: 4px;
     }}
 """
