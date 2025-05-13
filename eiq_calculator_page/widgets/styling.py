@@ -12,7 +12,7 @@ MEDIUM_THRESHOLD = 66.6
 HIGH_THRESHOLD = 100.0
 
 # EIQ color constants
-EIQ_LOW_COLOR = QColor(50, 205, 50)     # Green
+EIQ_LOW_COLOR = QColor(50, 205, 50)      # Green
 EIQ_MEDIUM_COLOR = QColor(255, 165, 0)   # Orange
 EIQ_HIGH_COLOR = QColor(255, 0, 0)       # Red
 EIQ_EXTREME_COLOR = QColor(139, 0, 0)    # Dark Red

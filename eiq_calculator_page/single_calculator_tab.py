@@ -5,15 +5,11 @@ This module provides the SingleProductCalculatorTab widget for calculating EIQ
 of a single pesticide product with improved UI and component architecture.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QLabel, QTableWidgetItem
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem
 from PySide6.QtCore import Qt
-from common.styles import get_body_font
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
-from eiq_calculator_page.widgets import (
-    ProductSelectionWidget, ApplicationParamsWidget, 
-    EiqResultDisplay
-)
+from eiq_calculator_page.widgets import ProductSelectionWidget, ApplicationParamsWidget, EiqResultDisplay
 from math_module.eiq_calculations import calculate_product_field_eiq
 
 

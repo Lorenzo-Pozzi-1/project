@@ -53,6 +53,11 @@ class ProductCard(QFrame):
             }
         """)
         
+        # Set fixed width for horizontal layout
+        self.setFixedWidth(300)
+        # Add minimum height to ensure visibility of all content
+        self.setMinimumHeight(250)
+        
         self.setup_ui()
     
     def setup_ui(self):
@@ -198,6 +203,23 @@ class ProductCard(QFrame):
             "unit": params["unit"],
             "applications": params["applications"]
         }
+    
+    def update_title(self, index):
+        """
+        Update the card title based on new index.
+        
+        Args:
+            index (int): The new index for this card
+        """
+        self.index = index
+        
+        # Find the title label in the header layout and update it
+        header_layout = self.layout().itemAt(0).layout()
+        for i in range(header_layout.count()):
+            item = header_layout.itemAt(i)
+            if item.widget() and isinstance(item.widget(), QLabel):
+                item.widget().setText(f"Product {self.index + 1}")
+                break
 
 
 class ProductComparisonCalculatorTab(QWidget):
@@ -230,14 +252,17 @@ class ProductComparisonCalculatorTab(QWidget):
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setFrameStyle(QFrame.NoFrame)
-        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # Change to horizontal scrollbar
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         
         # Container for product cards
         self.cards_container = QWidget()
-        self.cards_layout = QVBoxLayout(self.cards_container)
+        # Change vertical layout to horizontal layout
+        self.cards_layout = QHBoxLayout(self.cards_container)
         self.cards_layout.setContentsMargins(0, 0, 0, 0)
         self.cards_layout.setSpacing(10)
-        self.cards_layout.addStretch(1)  # Push cards to top
+        self.cards_layout.addStretch(1)  # Push cards to left
         
         self.scroll_area.setWidget(self.cards_container)
         
@@ -315,9 +340,10 @@ class ProductComparisonCalculatorTab(QWidget):
         # Remove from list
         self.product_cards.pop(index)
         
-        # Update indices of remaining cards
+        # Update indices and titles of remaining cards
         for i, card in enumerate(self.product_cards):
             card.index = i
+            card.update_title(i)
         
         # Recalculate all products
         self.refresh_calculations()
@@ -325,11 +351,10 @@ class ProductComparisonCalculatorTab(QWidget):
     def refresh_product_data(self):
         """Refresh product data based on the filtered products."""
         # Clear existing cards
-        for card in self.product_cards:
+        while self.product_cards:
+            card = self.product_cards.pop()
             self.cards_layout.removeWidget(card)
             card.deleteLater()
-        
-        self.product_cards = []
         
         # Clear comparison table
         self.comparison_table.clear_results()
@@ -355,7 +380,7 @@ class ProductComparisonCalculatorTab(QWidget):
         
         if not product_data:
             # Remove from comparison table if no valid data
-            self.comparison_table.remove_product(product_id=index)
+            self.comparison_table.remove_product(product_id=f"card_{index}")
             return
         
         try:
@@ -372,16 +397,16 @@ class ProductComparisonCalculatorTab(QWidget):
                 self.comparison_table.add_product_result(
                     product_data["product_name"],
                     field_eiq,
-                    product_id=index
+                    product_id=f"card_{index}"  # Use a string with index to make it unique
                 )
             else:
                 # Remove from table if calculation failed
-                self.comparison_table.remove_product(product_id=index)
+                self.comparison_table.remove_product(product_id=f"card_{index}")
             
         except Exception as e:
             print(f"Error calculating EIQ for product {index}: {e}")
             # Remove from table on error
-            self.comparison_table.remove_product(product_id=index)
+            self.comparison_table.remove_product(product_id=f"card_{index}")
     
     def refresh_calculations(self):
         """Recalculate EIQ for all products."""
