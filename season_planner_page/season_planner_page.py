@@ -11,8 +11,6 @@ from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE,
                          SECONDARY_BUTTON_STYLE, get_title_font, get_body_font)
 from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar
 from season_planner_page.widgets import SeasonPlanMetadataWidget, ApplicationsTableContainer
-from math_module.eiq_calculations import format_eiq_result
-
 
 class SeasonPlannerPage(QWidget):
     """
@@ -111,6 +109,18 @@ class SeasonPlannerPage(QWidget):
         # Add some additional information labels
         eiq_info_layout = QHBoxLayout()        
         
+        # Total EIQ Label
+        total_eiq_label = QLabel("Total Field EIQ:")
+        total_eiq_label.setFont(get_body_font())
+        eiq_info_layout.addWidget(total_eiq_label)
+        
+        self.total_eiq_value = QLabel("0")
+        self.total_eiq_value.setFont(get_body_font())
+        eiq_info_layout.addWidget(self.total_eiq_value)
+        
+        eiq_info_layout.addSpacing(20)  # Add some spacing between the two sets of labels
+
+        # Applications count label
         applications_count_label = QLabel("Applications Count:")
         applications_count_label.setFont(get_body_font())
         eiq_info_layout.addWidget(applications_count_label)
@@ -163,7 +173,7 @@ class SeasonPlannerPage(QWidget):
             self.eiq_score_bar.set_value(0, "No applications")
         
         # Update labels
-        ha_text = format_eiq_result(total_eiq)
+        ha_text = f"{total_eiq}"
         self.total_eiq_value.setText(ha_text)
         self.applications_count_value.setText(str(application_count))
     
