@@ -225,6 +225,64 @@ COMPARISON_HEADER_STYLE = f"""
     }}
 """
 
+# Product card style
+PRODUCT_CARD_STYLE = f"""
+    QFrame {{
+        background-color: {WHITE};
+        border: 1px solid #DDDDDD;
+        border-radius: 4px;
+    }}
+"""
+
+# Remove button style
+REMOVE_BUTTON_STYLE = """
+    QPushButton {
+        background-color: #f44336;
+        color: white;
+        border-radius: 12px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    QPushButton:hover {
+        background-color: #d32f2f;
+    }
+"""
+
+# Warning title style
+WARNING_TITLE_STYLE = f"""
+    color: red; 
+    font-weight: bold; 
+    background-color: #FFEEEE; 
+    padding: 5px;
+"""
+
+# Suggestions container style
+SUGGESTIONS_CONTAINER_STYLE = f"""
+    QFrame {{
+        border: 1px solid #CCCCCC;
+        background-color: {WHITE};
+        border-radius: 3px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }}
+"""
+
+# Suggestions list style
+SUGGESTIONS_LIST_STYLE = f"""
+    QListWidget {{
+        border: none;
+        outline: none;
+    }}
+    QListWidget::item {{
+        padding: 5px;
+    }}
+    QListWidget::item:hover {{
+        background-color: {LIGHT_BG_COLOR};
+    }}
+    QListWidget::item:selected {{
+        background-color: #E0E0E0;
+    }}
+"""
+
 # ----------------------
 # UTILITY FUNCTIONS
 # ----------------------

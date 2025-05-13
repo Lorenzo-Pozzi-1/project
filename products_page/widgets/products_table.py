@@ -5,8 +5,7 @@ This module defines the ProductTable widget which provides a tabular
 view of products with selection, filtering, and sorting capabilities.
 """
 
-from PySide6.QtWidgets import (QTableWidget, QTableWidgetItem, QHeaderView, 
-                              QCheckBox, QWidget, QHBoxLayout)
+from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QCheckBox, QWidget, QHBoxLayout
 from PySide6.QtCore import Qt, Signal
 
 

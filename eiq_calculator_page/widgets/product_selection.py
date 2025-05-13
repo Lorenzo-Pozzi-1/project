@@ -4,11 +4,9 @@ Product selection widgets for the LORENZO POZZI Pesticide App.
 This module provides reusable widgets for selecting pesticide products.
 """
 
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                              QLineEdit, QListWidget, QFrame, QScrollArea, 
-                              QApplication, QComboBox, QFormLayout)
+from PySide6.QtWidgets import QApplication, QComboBox, QFormLayout, QFrame, QLineEdit, QListWidget, QScrollArea, QVBoxLayout, QWidget
 from PySide6.QtCore import Qt, Signal, QTimer
-from common.styles import get_body_font
+from common.styles import SUGGESTIONS_CONTAINER_STYLE, SUGGESTIONS_LIST_STYLE, get_body_font
 from data.product_repository import ProductRepository
 
 
@@ -60,14 +58,7 @@ class ProductSearchField(QWidget):
         self.suggestions_container = QFrame(QApplication.instance().activeWindow())
         self.suggestions_container.setWindowFlags(Qt.Popup | Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint)
         self.suggestions_container.setFrameStyle(QFrame.StyledPanel)
-        self.suggestions_container.setStyleSheet("""
-            QFrame {
-                border: 1px solid #CCCCCC;
-                background-color: white;
-                border-radius: 3px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            }
-        """)
+        self.suggestions_container.setStyleSheet(SUGGESTIONS_CONTAINER_STYLE)
         
         # Scroll area for suggestions to handle large lists
         scroll_area = QScrollArea(self.suggestions_container)
@@ -79,21 +70,7 @@ class ProductSearchField(QWidget):
         self.suggestions_list = QListWidget()
         self.suggestions_list.setFrameStyle(QFrame.NoFrame)
         self.suggestions_list.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.suggestions_list.setStyleSheet("""
-            QListWidget {
-                border: none;
-                outline: none;
-            }
-            QListWidget::item {
-                padding: 5px;
-            }
-            QListWidget::item:hover {
-                background-color: #F5F5F5;
-            }
-            QListWidget::item:selected {
-                background-color: #E0E0E0;
-            }
-        """)
+        self.suggestions_list.setStyleSheet(SUGGESTIONS_LIST_STYLE)
         self.suggestions_list.itemClicked.connect(self.select_suggestion)
         scroll_area.setWidget(self.suggestions_list)
         

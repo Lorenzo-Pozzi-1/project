@@ -5,17 +5,14 @@ This module provides the ProductComparisonCalculatorTab widget for comparing EIQ
 values of multiple pesticide products with card-based UI and improved UX.
 """
 
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-                               QLabel, QFrame, QScrollArea, QSizePolicy)
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFrame, QScrollArea
 from PySide6.QtCore import Qt, Signal
-from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
+from common.styles import REMOVE_BUTTON_STYLE, get_subtitle_font, PRIMARY_BUTTON_STYLE
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
-from eiq_calculator_page.widgets import (
-    ProductSelectionWidget, ApplicationParamsWidget, 
-    EiqComparisonTable
-)
+from eiq_calculator_page.widgets import ProductSelectionWidget, ApplicationParamsWidget, EiqComparisonTable
 from math_module.eiq_calculations import calculate_product_field_eiq
+from common.styles import PRODUCT_CARD_STYLE
 
 
 class ProductCard(QFrame):
@@ -45,13 +42,7 @@ class ProductCard(QFrame):
         
         # Apply card styling
         self.setFrameStyle(QFrame.StyledPanel | QFrame.Raised)
-        self.setStyleSheet("""
-            ProductCard {
-                background-color: white;
-                border: 1px solid #DDDDDD;
-                border-radius: 4px;
-            }
-        """)
+        self.setStyleSheet(PRODUCT_CARD_STYLE)
         
         # Set fixed width for horizontal layout
         self.setFixedWidth(300)
@@ -81,18 +72,7 @@ class ProductCard(QFrame):
         # Remove button
         remove_button = QPushButton("✕")  # Unicode ✕ character for X
         remove_button.setFixedSize(24, 24)
-        remove_button.setStyleSheet("""
-            QPushButton {
-                background-color: #f44336;
-                color: white;
-                border-radius: 12px;
-                font-weight: bold;
-                font-size: 16px;
-            }
-            QPushButton:hover {
-                background-color: #d32f2f;
-            }
-        """)
+        remove_button.setStyleSheet(REMOVE_BUTTON_STYLE)
         remove_button.clicked.connect(lambda: self.remove_requested.emit(self.index))
         header_layout.addWidget(remove_button)
         

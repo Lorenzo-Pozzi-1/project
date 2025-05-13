@@ -1,7 +1,6 @@
 """Application Row Widget for the LORENZO POZZI Pesticide App."""
 
-from PySide6.QtWidgets import (QHBoxLayout, QLineEdit, QComboBox, 
-                             QDoubleSpinBox, QLabel, QSizePolicy, QFrame)
+from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, QSizePolicy, QFrame
 from PySide6.QtCore import Qt, Signal
 from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository

@@ -5,7 +5,6 @@ This module defines the Product class and related functionality.
 Updated to support multiple active ingredients without EIQ data in the product.
 """
 
-from math_module.eiq_conversions import convert_concentration_to_percent
 
 class Product:
     """

@@ -1,7 +1,6 @@
 """Season Planner page for the LORENZO POZZI Pesticide App."""
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton)
-from PySide6.QtCore import Qt
 from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, 
                          SECONDARY_BUTTON_STYLE, get_title_font, get_body_font)
 from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar

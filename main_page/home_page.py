@@ -7,7 +7,7 @@ screen for the application.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QFrame
 from PySide6.QtCore import Qt, Signal
-from common.styles import get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE
+from common.styles import WARNING_TITLE_STYLE, get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE
 from common.widgets import FeatureButton, ContentFrame
 
 class HomePage(QWidget):
@@ -112,7 +112,7 @@ class HomePage(QWidget):
         
         warning_title = QLabel("! ALWAYS CHECK LABELS !") 
         warning_title.setFont(get_subtitle_font(size=20))
-        warning_title.setStyleSheet("color: red; font-weight: bold; background-color: #FFEEEE; padding: 5px;")
+        warning_title.setStyleSheet(WARNING_TITLE_STYLE)
         warning_title.setAlignment(Qt.AlignCenter)
         warning_layout.addWidget(warning_title)
         

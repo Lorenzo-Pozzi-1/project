@@ -4,8 +4,8 @@ Application parameters widgets for the LORENZO POZZI Pesticide App.
 This module provides widgets for entering application rate, units, and other parameters.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QComboBox, QLabel, QFormLayout
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QComboBox, QFormLayout
+from PySide6.QtCore import Signal
 from common.styles import get_body_font
 from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
