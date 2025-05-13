@@ -7,6 +7,7 @@ from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository
 from math_module.eiq_calculations import calculate_product_field_eiq
 from contextlib import contextmanager
+from common.styles import APPLICATION_ROW_STYLE
 
 
 class ApplicationRowWidget(QFrame):
@@ -36,7 +37,7 @@ class ApplicationRowWidget(QFrame):
         # Set frame properties
         self.setFrameShape(QFrame.StyledPanel)
         self.setFrameShadow(QFrame.Plain)
-        self.setStyleSheet("ApplicationRowWidget {border: 1px solid #ccc; border-radius: 4px; background-color: #f8f8f8; margin: 1px;}")
+        self.setStyleSheet(APPLICATION_ROW_STYLE)
         
         # Set fixed height and size policy
         self.setFixedHeight(self.ROW_HEIGHT)

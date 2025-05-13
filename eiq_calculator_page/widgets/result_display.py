@@ -10,7 +10,7 @@ from PySide6.QtGui import QBrush
 from common.styles import get_subtitle_font, get_body_font
 from common.widgets import ScoreBar
 from math_module.eiq_calculations import format_eiq_result, get_impact_category
-from eiq_calculator_page.widgets.styling import get_eiq_color, get_eiq_rating, LOW_THRESHOLD, MEDIUM_THRESHOLD, HIGH_THRESHOLD
+from common.styles import get_eiq_color, get_eiq_rating, EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD
 
 
 class ColorCodedEiqItem(QTableWidgetItem):

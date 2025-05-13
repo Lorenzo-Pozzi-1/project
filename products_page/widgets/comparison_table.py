@@ -8,7 +8,7 @@ side-by-side comparison of product properties.
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
-from products_page.widgets.styling import COMPARISON_HEADER_STYLE
+from common.styles import COMPARISON_HEADER_STYLE, apply_table_header_style
 from common.styles import get_body_font
 
 
@@ -50,8 +50,7 @@ class ComparisonTable(QTableWidget):
         self.verticalHeader().setVisible(False)
         
         # Configure horizontal header
-        self.horizontalHeader().setStyleSheet(COMPARISON_HEADER_STYLE)
-        self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
+        apply_table_header_style(self.horizontalHeader())
         
         # Configure row heights
         self.verticalHeader().setDefaultSectionSize(40)

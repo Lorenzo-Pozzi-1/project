@@ -13,7 +13,7 @@ from eiq_calculator_page.multi_calculator_tab import ProductComparisonCalculator
 from eiq_calculator_page.widgets.product_selection import ProductSelectionWidget, ProductSearchField
 from eiq_calculator_page.widgets.application_params import ApplicationParamsWidget
 from eiq_calculator_page.widgets.result_display import EiqResultDisplay, ColorCodedEiqItem
-from eiq_calculator_page.widgets.styling import get_eiq_color, LOW_THRESHOLD, MEDIUM_THRESHOLD, HIGH_THRESHOLD
+from common.styles import get_eiq_color, EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD
 
 # Re-export math module functions that are used by EIQ calculator
 from math_module.eiq_calculations import (
