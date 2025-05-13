@@ -11,7 +11,7 @@ from PySide6.QtCore import Qt
 from common.styles import get_subtitle_font, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
-from eiq_calculator_page.eiq_ui_components import ColorCodedEiqItem
+from eiq_calculator_page.eiq_ui_components import ColorCodedEiqItem, LOW_THRESHOLD, HIGH_THRESHOLD
 from math_module.eiq_calculations import calculate_product_field_eiq
 from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
@@ -398,8 +398,8 @@ class ProductComparisonCalculator(QWidget):
         # Field EIQ / acre with color coding
         eiq_acre_item = ColorCodedEiqItem(
             field_eiq_acre,
-            low_threshold=50 / 2.47105,  # Adjust thresholds for acre
-            high_threshold=100 / 2.47105
+            low_threshold=LOW_THRESHOLD / 2.47105,  # Adjust thresholds for acre
+            high_threshold=HIGH_THRESHOLD / 2.47105
         )
         self.comparison_results_table.setItem(found_row, 2, eiq_acre_item)
     

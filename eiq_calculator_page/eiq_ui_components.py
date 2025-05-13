@@ -2,7 +2,6 @@
 EIQ UI Components for the LORENZO POZZI Pesticide App.
 
 This module provides UI components for EIQ calculations and display.
-Refactored to better leverage product and AI repository methods.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QListWidget, QFrame, QScrollArea, QTableWidgetItem
@@ -12,11 +11,11 @@ from common.styles import get_subtitle_font, get_body_font, EIQ_LOW_COLOR, EIQ_M
 from common.widgets import ScoreBar
 from math_module.eiq_calculations import format_eiq_result, get_impact_category
 
-#------------------------
-# Helper Functions
-#------------------------
+LOW_THRESHOLD = 33.3
+HIGH_THRESHOLD = 66.6
+PLACEHOLDER_TEXT = "--"
 
-def get_eiq_color(eiq_value, low_threshold=33.3, high_threshold=66.6):
+def get_eiq_color(eiq_value, low_threshold=LOW_THRESHOLD, high_threshold=HIGH_THRESHOLD):
     """Get color for EIQ value based on thresholds."""
     if eiq_value < low_threshold:
         return EIQ_LOW_COLOR
@@ -24,10 +23,6 @@ def get_eiq_color(eiq_value, low_threshold=33.3, high_threshold=66.6):
         return EIQ_MEDIUM_COLOR
     else:
         return EIQ_HIGH_COLOR
-
-#------------------------
-# UI Components
-#------------------------
 
 class ProductSearchField(QWidget):
     """A custom search field with suggestions displayed underneath."""
@@ -110,36 +105,21 @@ class ProductSearchField(QWidget):
         self.suggestions_container.setVisible(False)
     
     def on_focus_in(self, event):
-        """Show all suggestions when the field gets focus."""
-        # Call the original focusInEvent
-        QLineEdit.focusInEvent(self.search_field, event)
-        
-        # Show all items if there's no search text
-        if not self.search_field.text():
-            self.filtered_items = self.all_items.copy()
-            self.suggestions_list.clear()
-            self.suggestions_list.addItems(self.filtered_items)
-            
-            # Only show if we have items
-            has_suggestions = len(self.filtered_items) > 0
-            self.suggestions_container.setVisible(has_suggestions)
-            
-            # Set fixed height based on number of items
-            if has_suggestions:
-                item_height = self.suggestions_list.sizeHintForRow(0)
-                num_visible_items = min(8, len(self.filtered_items))
-                list_height = item_height * num_visible_items + 4
-                self.suggestions_list.setFixedHeight(list_height)
-    
+        self.handle_focus(event, is_focused=True)
+
     def on_focus_out(self, event):
-        """Hide suggestions when the field loses focus."""
-        # Call the original focusOutEvent
-        QLineEdit.focusOutEvent(self.search_field, event)
-        
-        # Hide suggestions immediately
-        # This is fine since the click event on an item will be processed
-        # before the focus out event
-        self.suggestions_container.setVisible(False)
+        self.handle_focus(event, is_focused=False)
+
+    def handle_focus(self, event, is_focused):
+        """Handle focus in/out events."""
+        if is_focused:
+            QLineEdit.focusInEvent(self.search_field, event)
+            if not self.search_field.text():
+                self.filtered_items = self.all_items.copy()
+                self.update_suggestions(self.search_field.text())
+        else:
+            QLineEdit.focusOutEvent(self.search_field, event)
+            self.suggestions_container.setVisible(False)
     
     def update_suggestions(self, text):
         """Update suggestions based on input text."""
@@ -161,15 +141,16 @@ class ProductSearchField(QWidget):
         self.suggestions_list.addItems(self.filtered_items)
         
         # Show suggestions if there are any matches
+        self.update_suggestions_visibility()
+    
+    def update_suggestions_visibility(self):
+        """Show or hide the suggestions container based on available items."""
         has_suggestions = len(self.filtered_items) > 0
         self.suggestions_container.setVisible(has_suggestions)
-        
-        # Set fixed height based on number of items
         if has_suggestions:
             item_height = self.suggestions_list.sizeHintForRow(0)
             num_visible_items = min(8, len(self.filtered_items))
-            list_height = item_height * num_visible_items + 4
-            self.suggestions_list.setFixedHeight(list_height)
+            self.suggestions_list.setFixedHeight(item_height * num_visible_items + 4)
     
     def select_suggestion(self, item):
         """Handle selection of a suggestion."""
@@ -225,34 +206,37 @@ class EiqResultDisplay(QWidget):
         
         layout.addLayout(field_eiq_layout)
         
-        # Score bar (replacing the gauge)
+        # Score bar
         self.score_bar = ScoreBar(
-            low_threshold=33.3,  # Adjust based on your EIQ thresholds
-            high_threshold=66.6  # Adjust based on your EIQ thresholds
+            low_threshold=LOW_THRESHOLD,
+            high_threshold=HIGH_THRESHOLD
         )
         layout.addWidget(self.score_bar)
     
     def update_result(self, field_eiq):
         """Update the EIQ result display with the calculated value."""
-        if field_eiq <= 0:
-            self.field_eiq_result_ha.setText("-- /ha")
-            self.field_eiq_result_acre.setText("-- /acre")
-            self.score_bar.set_value(0, "No calculation")
-            return
-            
-        # Format result with per-ha and per-acre values
-        ha_text, acre_text = format_eiq_result(field_eiq)
-        self.field_eiq_result_ha.setText(ha_text)
-        self.field_eiq_result_acre.setText(acre_text)
+        self.set_field_eiq_text(field_eiq)
         
         # Update score bar
         rating, _ = get_impact_category(field_eiq)
         self.score_bar.set_value(field_eiq, rating)
 
+    def set_field_eiq_text(self, field_eiq):
+        """Set the field EIQ text for both ha and acre."""
+        if field_eiq <= 0:
+            self.field_eiq_result_ha.setText(f"{PLACEHOLDER_TEXT} /ha")
+            self.field_eiq_result_acre.setText(f"{PLACEHOLDER_TEXT} /acre")
+            self.score_bar.set_value(0, "No calculation")
+            return
+        
+        ha_text, acre_text = format_eiq_result(field_eiq)
+        self.field_eiq_result_ha.setText(ha_text)
+        self.field_eiq_result_acre.setText(acre_text)
+
 class ColorCodedEiqItem(QTableWidgetItem):
     """A table item specifically for EIQ values with automatic color coding."""
     
-    def __init__(self, eiq_value, low_threshold=33.3, high_threshold=66.6):
+    def __init__(self, eiq_value, low_threshold=LOW_THRESHOLD, high_threshold=HIGH_THRESHOLD):
         """
         Initialize with EIQ value and thresholds.
         
