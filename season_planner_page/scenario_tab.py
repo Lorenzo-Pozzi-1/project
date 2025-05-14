@@ -6,11 +6,11 @@ This module provides a tab for viewing and editing the individual scenarios.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import Signal
-from datetime import date
 from common.styles import MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, get_title_font
 from common.widgets import ContentFrame
 from season_planner_page.widgets import SeasonPlanMetadataWidget, ApplicationsTableContainer
 from data.scenario_model import Scenario
+from data.application_model import Application
 
 class ScenarioTabPage(QWidget):
     """
@@ -45,28 +45,24 @@ class ScenarioTabPage(QWidget):
         
         # Scenario Metadata Widget
         self.metadata_widget = SeasonPlanMetadataWidget()
-        self.metadata_widget.metadata_changed.connect(self.on_metadata_changed)
+        self.metadata_widget.metadata_changed.connect(self.update_scenario)
         main_layout.addWidget(self.metadata_widget)
         
         # Applications Table Frame
         applications_frame = ContentFrame()
         applications_layout = QVBoxLayout()
-        
-        # Title
-        title_label = QLabel("Applications")
-        title_label.setFont(get_title_font(size=16))
-        applications_layout.addWidget(title_label)
+        applications_layout.addWidget(QLabel("Applications", font=get_title_font(size=16)))
         
         # Applications Table Container
         self.applications_container = ApplicationsTableContainer()
-        self.applications_container.applications_changed.connect(self.on_applications_changed)
+        self.applications_container.applications_changed.connect(self.update_scenario)
         applications_layout.addWidget(self.applications_container)
         
-        # Button to add new application
+        # Add application button
         buttons_layout = QHBoxLayout()
         add_button = QPushButton("Add Application")
         add_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        add_button.clicked.connect(self.add_application)
+        add_button.clicked.connect(self.applications_container.add_application_row)
         buttons_layout.addWidget(add_button)
         buttons_layout.addStretch(1)
         
@@ -76,69 +72,39 @@ class ScenarioTabPage(QWidget):
     
     def load_scenario_data(self):
         """Load data from the scenario into the UI."""
-        if not self.scenario:
-            return
-            
-        # Set metadata with safe defaults
+        # Set metadata with defaults
         metadata = {
             "crop_year": self.scenario.crop_year,
             "grower_name": self.scenario.grower_name or "",
             "field_name": self.scenario.field_name or "",
-            "field_area": 10.0 if self.scenario.field_area is None else self.scenario.field_area,
+            "field_area": self.scenario.field_area or 10.0,
             "field_area_uom": self.scenario.field_area_uom or "ha",
             "variety": self.scenario.variety or ""
         }
         self.metadata_widget.set_metadata(metadata)
         
-        # Set applications
-        self.applications_container.set_applications(
-            [app.to_dict() for app in self.scenario.applications]
-        )
+        # Set applications and default field area
+        self.applications_container.set_applications([app.to_dict() for app in self.scenario.applications])
+        self.applications_container.set_field_area(metadata["field_area"], metadata["field_area_uom"])
     
-    def on_metadata_changed(self):
-        """Handle changes to scenario metadata."""
-        if not self.scenario:
-            return
-            
+    def update_scenario(self):
+        """Update scenario with current UI data and emit change signal."""
+        # Update metadata
         metadata = self.metadata_widget.get_metadata()
-        
-        # Update scenario with new metadata
-        self.scenario.crop_year = metadata["crop_year"]
-        self.scenario.grower_name = metadata["grower_name"]
-        self.scenario.field_name = metadata["field_name"]
-        self.scenario.field_area = metadata["field_area"]
-        self.scenario.field_area_uom = metadata["field_area_uom"]
-        self.scenario.variety = metadata["variety"]
-        
-        # Update default field area in applications container for new rows only
-        self.applications_container.set_field_area(
-            metadata["field_area"], 
-            metadata["field_area_uom"]
-        )
-        
-        # Emit signal
-        self.scenario_changed.emit(self.scenario)
-    
-    def on_applications_changed(self):
-        """Handle changes to applications."""
-        if not self.scenario:
-            return
+        for key, value in metadata.items():
+            setattr(self.scenario, key, value)
             
-        # Get applications from container
-        applications = self.applications_container.get_applications()
+        # Update field area in applications container
+        self.applications_container.set_field_area(metadata["field_area"], metadata["field_area_uom"])
         
-        # Update scenario with applications
-        from data.application_model import Application
+        # Update applications
         self.scenario.applications = [
-            Application.from_dict(app_data) for app_data in applications
+            Application.from_dict(app_data) 
+            for app_data in self.applications_container.get_applications()
         ]
         
         # Emit signal
         self.scenario_changed.emit(self.scenario)
-    
-    def add_application(self):
-        """Add a new application row to the container."""
-        self.applications_container.add_application_row()
     
     def get_total_field_eiq(self):
         """Calculate the total Field EIQ for all applications."""
@@ -146,8 +112,7 @@ class ScenarioTabPage(QWidget):
     
     def refresh_product_data(self):
         """Refresh product data when filtered products change in the main window."""
-        applications = self.applications_container.get_applications()
-        self.applications_container.set_applications(applications)
+        self.applications_container.set_applications(self.applications_container.get_applications())
         
     def get_scenario(self):
         """Get the current scenario object."""

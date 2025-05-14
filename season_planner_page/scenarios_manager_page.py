@@ -37,46 +37,35 @@ class ScenariosManagerPage(QWidget):
         main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
         main_layout.setSpacing(SPACING_MEDIUM)
         
-        # Header with back button
+        # Header with back button and operation buttons
         header = HeaderWithBackButton("Season Planner - Scenarios")
         header.back_clicked.connect(self.parent.go_home)
         
-        # Add buttons for scenario operations
+        # Create buttons with fixed width
+        buttons = {
+            "New Scenario": (PRIMARY_BUTTON_STYLE, self.add_new_scenario),
+            "Clone Current": (SECONDARY_BUTTON_STYLE, self.clone_current_scenario),
+            "Rename": (SECONDARY_BUTTON_STYLE, self.rename_current_scenario),
+            "Delete": (SECONDARY_BUTTON_STYLE, self.delete_current_scenario),
+            "Compare Scenarios": (PRIMARY_BUTTON_STYLE, self.compare_scenarios)
+        }
+        
         buttons_layout = QHBoxLayout()
+        self.action_buttons = {}
         
-        self.add_scenario_btn = QPushButton("New Scenario")
-        self.add_scenario_btn.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        self.add_scenario_btn.clicked.connect(self.add_new_scenario)
-        
-        self.clone_scenario_btn = QPushButton("Clone Current")
-        self.clone_scenario_btn.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        self.clone_scenario_btn.clicked.connect(self.clone_current_scenario)
-        
-        self.rename_scenario_btn = QPushButton("Rename")
-        self.rename_scenario_btn.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        self.rename_scenario_btn.clicked.connect(self.rename_current_scenario)
-        
-        self.delete_scenario_btn = QPushButton("Delete")
-        self.delete_scenario_btn.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        self.delete_scenario_btn.clicked.connect(self.delete_current_scenario)
-        
-        self.compare_btn = QPushButton("Compare Scenarios")
-        self.compare_btn.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        self.compare_btn.clicked.connect(self.compare_scenarios)
-        
-        buttons_layout.addWidget(self.add_scenario_btn)
-        buttons_layout.addWidget(self.clone_scenario_btn)
-        buttons_layout.addWidget(self.rename_scenario_btn)
-        buttons_layout.addWidget(self.delete_scenario_btn)
-        buttons_layout.addSpacerItem(QSpacerItem(20, 10))
-        buttons_layout.addWidget(self.compare_btn)
-        buttons_layout.addStretch(1)
-        
-        # Set fixed width for buttons
-        for btn in [self.add_scenario_btn, self.clone_scenario_btn, 
-                   self.rename_scenario_btn, self.delete_scenario_btn, 
-                   self.compare_btn]:
+        for text, (style, callback) in buttons.items():
+            btn = QPushButton(text)
+            btn.setStyleSheet(style)
+            btn.clicked.connect(callback)
             btn.setFixedWidth(150)
+            buttons_layout.addWidget(btn)
+            self.action_buttons[text] = btn
+            
+            # Add spacer before Compare button
+            if text == "Delete":
+                buttons_layout.addSpacerItem(QSpacerItem(20, 10))
+                
+        buttons_layout.addStretch(1)
         
         header_widget = QWidget()
         header_widget.setLayout(buttons_layout)
@@ -86,20 +75,16 @@ class ScenariosManagerPage(QWidget):
         
         # Tab widget for scenarios
         self.tab_widget = QTabWidget()
-        # self.tab_widget.setTabsClosable(True)                                      # Uncomment to have "x" button on each tab
-        # self.tab_widget.tabCloseRequested.connect(self.on_tab_close_requested)     # Uncomment to have "x" button on each tab
-        self.tab_widget.currentChanged.connect(self.on_current_tab_changed)
+        # self.tab_widget.setTabsClosable(True)                                     
+        # self.tab_widget.tabCloseRequested.connect(self.on_tab_close_requested)    
+        self.tab_widget.currentChanged.connect(self.update_ui_state)
         
         main_layout.addWidget(self.tab_widget)
         
-        # EIQ Results Display with Score Bar
+        # EIQ Results Display
         results_frame = ContentFrame()
         results_layout = QVBoxLayout()
-        
-        # Title
-        results_title = QLabel("Scenario EIQ Impact")
-        results_title.setFont(get_title_font(size=16))
-        results_layout.addWidget(results_title)
+        results_layout.addWidget(QLabel("Scenario EIQ Impact", font=get_title_font(size=16)))
         
         # Create score bar with custom thresholds and labels
         self.eiq_score_bar = ScoreBar(
@@ -112,7 +97,7 @@ class ScenariosManagerPage(QWidget):
         self.eiq_score_bar.set_value(0, "No applications")
         results_layout.addWidget(self.eiq_score_bar)
         
-        # Add information labels (EIQ and application count)
+        # Add information labels
         eiq_info_layout = QHBoxLayout()
         eiq_info_layout.addWidget(QLabel("Total Field EIQ:"))
         self.total_eiq_value = QLabel("0")
@@ -129,97 +114,69 @@ class ScenariosManagerPage(QWidget):
         
         results_frame.layout.addLayout(results_layout)
         main_layout.addWidget(results_frame)
-        
-        # Update button states
-        self.update_buttons_state()
     
     def add_new_scenario(self, scenario=None):
-        """
-        Add a new scenario tab.
-        
-        Args:
-            scenario: Existing Scenario object or None for a new one
-        """
+        """Add a new scenario tab."""
         if not isinstance(scenario, Scenario):
-            # Ensure we create a proper Scenario object
             scenario = Scenario(f"Scenario {len(self.scenarios) + 1}")
         
         # Create tab page
-        scenario_page = ScenarioTabPage(self, scenario)
-        scenario_page.scenario_changed.connect(self.on_scenario_changed)
+        tab_page = ScenarioTabPage(self, scenario)
+        tab_page.scenario_changed.connect(self.on_scenario_changed)
         
-        # Add to tab widget - ensure scenario.name exists and is a string
-        tab_name = getattr(scenario, 'name', f"Scenario {len(self.scenarios) + 1}")
-        tab_index = self.tab_widget.addTab(scenario_page, tab_name)
+        # Add to tab widget
+        tab_index = self.tab_widget.addTab(tab_page, scenario.name)
         self.tab_widget.setCurrentIndex(tab_index)
         
         # Store references
         self.scenarios.append(scenario)
-        self.scenario_tabs[tab_name] = scenario_page
+        self.scenario_tabs[scenario.name] = tab_page
         
         # Update UI state
-        self.update_buttons_state()
-        self.update_eiq_display()
+        self.update_ui_state()
+    
+    def get_current_scenario_page(self):
+        """Get the current scenario page and its index."""
+        index = self.tab_widget.currentIndex()
+        if index < 0:
+            return None, -1
+        return self.tab_widget.widget(index), index
     
     def clone_current_scenario(self):
         """Clone the current scenario and add it as a new tab."""
-        current_index = self.tab_widget.currentIndex()
-        if current_index < 0:
-            return
-        
-        current_page = self.tab_widget.widget(current_index)
-        current_scenario = current_page.get_scenario()
-        
-        # Clone the scenario
-        new_scenario = current_scenario.clone()
-        
-        # Add as new tab
-        self.add_new_scenario(new_scenario)
+        page, _ = self.get_current_scenario_page()
+        if page:
+            self.add_new_scenario(page.get_scenario().clone())
     
     def rename_current_scenario(self):
         """Rename the current scenario tab."""
-        current_index = self.tab_widget.currentIndex()
-        if current_index < 0:
+        page, index = self.get_current_scenario_page()
+        if not page:
             return
-        
-        current_page = self.tab_widget.widget(current_index)
-        current_scenario = current_page.get_scenario()
+            
+        scenario = page.get_scenario()
+        old_name = scenario.name
         
         # Show dialog to get new name
         new_name, ok = QInputDialog.getText(
             self, "Rename Scenario", "Enter new scenario name:", 
-            text=current_scenario.name
+            text=old_name
         )
         
         if ok and new_name:
-            # Update scenario name
-            old_name = current_scenario.name
-            current_scenario.name = new_name
-            
-            # Update tab name
-            self.tab_widget.setTabText(current_index, new_name)
-            
-            # Update dictionary entry
+            scenario.name = new_name
+            self.tab_widget.setTabText(index, new_name)
             self.scenario_tabs[new_name] = self.scenario_tabs.pop(old_name)
-            
-            # Emit change signal
-            self.on_scenario_changed(current_scenario)
+            self.update_ui_state()
     
     def delete_current_scenario(self):
         """Delete the current scenario tab with confirmation."""
-        current_index = self.tab_widget.currentIndex()
-        if current_index < 0:
-            return
-        
-        self.on_tab_close_requested(current_index)
+        _, index = self.get_current_scenario_page()
+        if index >= 0:
+            self.on_tab_close_requested(index)
     
     def on_tab_close_requested(self, index):
-        """
-        Handle tab close request with confirmation.
-        
-        Args:
-            index: Index of the tab to close
-        """
+        """Handle tab close request with confirmation."""
         # Prevent closing the last tab
         if self.tab_widget.count() <= 1:
             QMessageBox.information(
@@ -228,10 +185,10 @@ class ScenariosManagerPage(QWidget):
             )
             return
         
-        scenario_page = self.tab_widget.widget(index)
-        scenario = scenario_page.get_scenario()
+        page = self.tab_widget.widget(index)
+        scenario = page.get_scenario()
         
-        # Confirm deletion with dialog
+        # Confirm deletion
         result = QMessageBox.question(
             self, "Confirm Deletion",
             f"Are you sure you want to remove this scenario? '{scenario.name}'",
@@ -242,84 +199,56 @@ class ScenariosManagerPage(QWidget):
         if result == QMessageBox.Yes:
             self.tab_widget.removeTab(index)
             self.scenarios.remove(scenario)
-            del self.scenario_tabs[scenario.name]  # Using name instead of ID
-            self.update_buttons_state()
-            self.update_eiq_display()
-    
-    def on_current_tab_changed(self, index):
-        """
-        Handle tab selection change.
-        
-        Args:
-            index: Index of the newly selected tab
-        """
-        self.update_buttons_state()
-        self.update_eiq_display()
+            del self.scenario_tabs[scenario.name]
+            self.update_ui_state()
     
     def on_scenario_changed(self, scenario):
-        """
-        Handle changes to a scenario.
-        
-        Args:
-            scenario: The changed Scenario object
-        """
-        # Find the scenario page - we need this since name may have changed
-        scenario_page = None
-        for page in [self.tab_widget.widget(i) for i in range(self.tab_widget.count())]:
+        """Handle changes to a scenario."""
+        # Find the scenario page
+        for i in range(self.tab_widget.count()):
+            page = self.tab_widget.widget(i)
             if page.get_scenario() is scenario:
-                scenario_page = page
+                # Update tab text
+                self.tab_widget.setTabText(i, scenario.name)
+                
+                # Update dictionary if name changed
+                for old_name in list(self.scenario_tabs.keys()):
+                    if self.scenario_tabs[old_name] is page and old_name != scenario.name:
+                        self.scenario_tabs[scenario.name] = page
+                        del self.scenario_tabs[old_name]
+                        break
+                        
                 break
-        
-        if scenario_page:
-            # Find the tab index
-            for i in range(self.tab_widget.count()):
-                if self.tab_widget.widget(i) is scenario_page:
-                    # Update tab text
-                    self.tab_widget.setTabText(i, scenario.name)
-                    break
-                    
-            # Update the scenario tabs dictionary if name changed
-            for old_name in list(self.scenario_tabs.keys()):
-                if self.scenario_tabs[old_name] is scenario_page and old_name != scenario.name:
-                    # The name changed, so update the dictionary
-                    self.scenario_tabs[scenario.name] = scenario_page
-                    del self.scenario_tabs[old_name]
-                    break
-        
-        self.update_eiq_display()
+                
+        self.update_ui_state()
     
-    def update_buttons_state(self):
-        """Update the enabled state of buttons based on current state."""
+    def update_ui_state(self):
+        """Update buttons state and EIQ display based on current state."""
+        # Update buttons state
         has_tabs = self.tab_widget.count() > 0
+        multiple_tabs = self.tab_widget.count() > 1
         
-        # Enable/disable buttons that require a current tab
-        self.clone_scenario_btn.setEnabled(has_tabs)
-        self.rename_scenario_btn.setEnabled(has_tabs)
-        self.delete_scenario_btn.setEnabled(has_tabs and self.tab_widget.count() > 1)
-        self.compare_btn.setEnabled(self.tab_widget.count() > 1)
-    
-    def update_eiq_display(self):
-        """Update the EIQ display based on current scenario."""
-        current_index = self.tab_widget.currentIndex()
-        if current_index < 0:
-            # No tabs, reset display
+        self.action_buttons["Clone Current"].setEnabled(has_tabs)
+        self.action_buttons["Rename"].setEnabled(has_tabs)
+        self.action_buttons["Delete"].setEnabled(has_tabs and multiple_tabs)
+        self.action_buttons["Compare Scenarios"].setEnabled(multiple_tabs)
+        
+        # Update EIQ display
+        page, _ = self.get_current_scenario_page()
+        if not page:
             self.eiq_score_bar.set_value(0, "No scenario selected")
             self.total_eiq_value.setText("0")
             self.applications_count_value.setText("0")
             return
         
-        # Get current scenario page and data
-        current_page = self.tab_widget.widget(current_index)
-        total_eiq = current_page.get_total_field_eiq()
-        applications = current_page.applications_container.get_applications()
+        total_eiq = page.get_total_field_eiq()
+        applications = page.applications_container.get_applications()
         
-        # Update score bar
         self.eiq_score_bar.set_value(
             total_eiq if total_eiq > 0 else 0, 
             "" if total_eiq > 0 else "No applications"
         )
         
-        # Update labels
         self.total_eiq_value.setText(f"{total_eiq:.2f}")
         self.applications_count_value.setText(str(len(applications)))
     
@@ -332,5 +261,5 @@ class ScenariosManagerPage(QWidget):
     
     def refresh_product_data(self):
         """Refresh product data when filtered products change in the main window."""
-        for name, tab_page in self.scenario_tabs.items():
+        for tab_page in self.scenario_tabs.values():
             tab_page.refresh_product_data()
