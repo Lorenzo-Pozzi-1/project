@@ -115,10 +115,27 @@ class ScenariosManagerPage(QWidget):
         results_frame.layout.addLayout(results_layout)
         main_layout.addWidget(results_frame)
     
+    def generate_unique_name(self, base_name):
+        """Generate a unique scenario name based on the given base name."""
+        if base_name not in self.scenario_tabs:
+            return base_name
+            
+        counter = 1
+        while f"{base_name} ({counter})" in self.scenario_tabs:
+            counter += 1
+            
+        return f"{base_name} ({counter})"
+    
     def add_new_scenario(self, scenario=None):
         """Add a new scenario tab."""
         if not isinstance(scenario, Scenario):
-            scenario = Scenario(f"Scenario {len(self.scenarios) + 1}")
+            # Create a new scenario with a unique name
+            base_name = f"Scenario {len(self.scenarios) + 1}"
+            unique_name = self.generate_unique_name(base_name)
+            scenario = Scenario(unique_name)
+        else:
+            # Ensure cloned scenario has a unique name
+            scenario.name = self.generate_unique_name(scenario.name)
         
         # Create tab page
         tab_page = ScenarioTabPage(self, scenario)
@@ -157,17 +174,31 @@ class ScenariosManagerPage(QWidget):
         scenario = page.get_scenario()
         old_name = scenario.name
         
-        # Show dialog to get new name
-        new_name, ok = QInputDialog.getText(
-            self, "Rename Scenario", "Enter new scenario name:", 
-            text=old_name
-        )
-        
-        if ok and new_name:
+        while True:
+            # Show dialog to get new name
+            new_name, ok = QInputDialog.getText(
+                self, "Rename Scenario", "Enter new scenario name:", 
+                text=old_name
+            )
+            
+            if not ok or new_name == old_name:
+                return
+                
+            # Check if name already exists
+            if new_name in self.scenario_tabs and new_name != old_name:
+                QMessageBox.warning(
+                    self, "Name Already Exists", 
+                    "Scenario names must be unique.",
+                    QMessageBox.Ok
+                )
+                continue
+                
+            # Valid name - update scenario
             scenario.name = new_name
             self.tab_widget.setTabText(index, new_name)
             self.scenario_tabs[new_name] = self.scenario_tabs.pop(old_name)
             self.update_ui_state()
+            break
     
     def delete_current_scenario(self):
         """Delete the current scenario tab with confirmation."""
@@ -208,16 +239,27 @@ class ScenariosManagerPage(QWidget):
         for i in range(self.tab_widget.count()):
             page = self.tab_widget.widget(i)
             if page.get_scenario() is scenario:
-                # Update tab text
-                self.tab_widget.setTabText(i, scenario.name)
+                old_name = self.tab_widget.tabText(i)
                 
-                # Update dictionary if name changed
-                for old_name in list(self.scenario_tabs.keys()):
-                    if self.scenario_tabs[old_name] is page and old_name != scenario.name:
+                # Validate name uniqueness if it has changed
+                if old_name != scenario.name:
+                    # If the new name already exists, revert to old name
+                    if scenario.name in self.scenario_tabs and self.scenario_tabs[scenario.name] is not page:
+                        QMessageBox.warning(
+                            self, "Name Already Exists", 
+                            "Scenario names must be unique.",
+                            QMessageBox.Ok
+                        )
+                        # Revert the name
+                        scenario.name = old_name
+                    else:
+                        # Update tab text
+                        self.tab_widget.setTabText(i, scenario.name)
+                        
+                        # Update dictionary if name changed
                         self.scenario_tabs[scenario.name] = page
                         del self.scenario_tabs[old_name]
-                        break
-                        
+                
                 break
                 
         self.update_ui_state()
