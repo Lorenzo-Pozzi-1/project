@@ -128,6 +128,7 @@ class ApplicationRowWidget(QFrame):
         delete_button.setFixedSize(24, 24)
         delete_button.setCursor(Qt.PointingHandCursor)
         delete_button.setToolTip("Remove application")
+        delete_button.setStyleSheet("color: #EF4026; font-weight: bold;")
         delete_button.clicked.connect(self.confirm_delete)
         
         # Add widgets to layout
@@ -142,7 +143,7 @@ class ApplicationRowWidget(QFrame):
             layout.addWidget(widget)
         
         # Set stretch factors
-        stretches = [0, 1, 2, 1, 3, 1, 1, 1, 2, 2, 1, 0]
+        stretches = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
         for i, stretch in enumerate(stretches):
             layout.setStretch(i, stretch)
     

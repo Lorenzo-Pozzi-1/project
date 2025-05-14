@@ -36,12 +36,12 @@ class ApplicationsTableContainer(QWidget):
         
         # Header row
         header_layout = QHBoxLayout()
-        header_layout.setContentsMargins(5, 5, 5, 5)
+        header_layout.setContentsMargins(2, 1, 2, 1)
         header_layout.setSpacing(5)
         
         # Define headers and their stretch factors
         headers = ["", "App. No", "Date", "Type", "Product", "Rate", "UOM", "Area", "Method", "AI Groups", "Field EIQ"]
-        stretches = [0, 1, 2, 1, 3, 1, 1, 1, 2, 2, 1]
+        stretches = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
         
         # Create and add header labels
         for i, header_text in enumerate(headers):

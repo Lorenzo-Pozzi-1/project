@@ -142,9 +142,8 @@ class SeasonPlanMetadataWidget(QWidget):
     
     def clear(self):
         """Clear all metadata fields."""
-        current_year = date.today().year
         default_metadata = {
-            "crop_year": current_year,
+            "crop_year": "",
             "grower_name": "",
             "field_name": "",
             "field_area": "",
