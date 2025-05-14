@@ -78,15 +78,15 @@ class ScenarioTabPage(QWidget):
         if not self.scenario:
             return
             
-        # Set metadata
+        # Set metadata with safe defaults
         season_plan = self.scenario.season_plan
         metadata = {
-            "crop_year": season_plan.crop_year,
-            "grower_name": season_plan.grower_name,
-            "field_name": season_plan.field_name,
-            "field_area": season_plan.field_area,
+            "crop_year": season_plan.crop_year or "",
+            "grower_name": season_plan.grower_name or "",
+            "field_name": season_plan.field_name or "",
+            "field_area": 0 if season_plan.field_area is None else season_plan.field_area,
             "field_area_uom": season_plan.field_area_uom,
-            "variety": season_plan.variety
+            "variety": season_plan.variety or ""
         }
         self.metadata_widget.set_metadata(metadata)
         

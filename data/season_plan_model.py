@@ -17,13 +17,13 @@ class SeasonPlan:
     """
     
     def __init__(self, 
-                 crop_year=None,
-                 grower_name=None,
-                 field_name=None,
-                 field_area=None,
-                 field_area_uom="ha",
-                 variety=None,
-                 applications=None):
+                crop_year=None,
+                grower_name=None,
+                field_name=None,
+                field_area=None,
+                field_area_uom="acre",
+                variety=None,
+                applications=None):
         """
         Initialize a SeasonPlan instance.
         
@@ -32,17 +32,17 @@ class SeasonPlan:
             grower_name (str): Name of the grower
             field_name (str): Name of the field
             field_area (float): Size of the field
-            field_area_uom (str): Unit of measure for field area (default: ha)
+            field_area_uom (str): Unit of measure for field area (default: acre)
             variety (str): Potato variety planted
             applications (list): List of Application objects
         """
         # Set default crop year to current year if not provided
-        self.crop_year = crop_year if crop_year else date.today().year
-        self.grower_name = grower_name
-        self.field_name = field_name
-        self.field_area = field_area
+        self.crop_year = crop_year if crop_year is not None else date.today().year
+        self.grower_name = grower_name or ""
+        self.field_name = field_name or ""
+        self.field_area = 0 if field_area is None else field_area  # Default to 0
         self.field_area_uom = field_area_uom
-        self.variety = variety
+        self.variety = variety or ""
         self.applications = applications if applications else []
         
         # Additional metadata

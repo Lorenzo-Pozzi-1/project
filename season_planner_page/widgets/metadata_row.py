@@ -115,24 +115,25 @@ class SeasonPlanMetadataWidget(QWidget):
         self.blockSignals(True)
         try:
             # Set crop year
-            if "crop_year" in metadata:
+            if "crop_year" in metadata and metadata["crop_year"] is not None:
                 current_year = date.today().year
                 year_offset = metadata["crop_year"] - (current_year - 5)
                 if 0 <= year_offset < self.crop_year_combo.count():
                     self.crop_year_combo.setCurrentIndex(year_offset)
             
             # Set text fields
-            if "grower_name" in metadata:
-                self.grower_name_edit.setText(metadata["grower_name"])
-            if "field_name" in metadata:
-                self.field_name_edit.setText(metadata["field_name"])
-            if "variety" in metadata:
-                self.variety_edit.setText(metadata["variety"])
+            self.grower_name_edit.setText(metadata.get("grower_name", ""))
+            self.field_name_edit.setText(metadata.get("field_name", ""))
+            self.variety_edit.setText(metadata.get("variety", ""))
             
-            # Set numeric/combo fields
-            if "field_area" in metadata:
-                self.field_area_spin.setValue(metadata["field_area"])
-            if "field_area_uom" in metadata:
+            # Set numeric/combo fields - ensure we have valid values
+            field_area = metadata.get("field_area")
+            if field_area is not None:
+                self.field_area_spin.setValue(float(field_area))
+            else:
+                self.field_area_spin.setValue(0)  # Safe default
+                
+            if "field_area_uom" in metadata and metadata["field_area_uom"]:
                 index = self.field_area_uom_combo.findText(metadata["field_area_uom"])
                 if index >= 0:
                     self.field_area_uom_combo.setCurrentIndex(index)
