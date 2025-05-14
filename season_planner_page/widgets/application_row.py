@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
 )
 from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository
-from common.styles import APPLICATION_ROW_STYLE
+from common.styles import APPLICATION_ROW_STYLE, DRAGGING_ROW_STYLE
 from math_module.eiq_calculations import calculate_product_field_eiq
 from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
@@ -68,7 +68,6 @@ class ApplicationRowWidget(QFrame):
         self.drag_handle = QLabel("≡")
         self.drag_handle.setAlignment(Qt.AlignCenter)
         self.drag_handle.setFixedWidth(16)
-        self.drag_handle.setStyleSheet("color: #666; font-size: 16px;")
         self.drag_handle.setCursor(Qt.OpenHandCursor)
         
         # Application number
@@ -332,11 +331,7 @@ class ApplicationRowWidget(QFrame):
         drag.setMimeData(mimedata)
         
         # Set drag appearance
-        self.setStyleSheet(APPLICATION_ROW_STYLE + """
-            background-color: #f0f9ff;
-            border-left: 3px solid #3b82f6;
-            border-right: 3px solid #3b82f6;
-        """)
+        self.setStyleSheet(APPLICATION_ROW_STYLE + DRAGGING_ROW_STYLE if self.is_dragging else "")
         
         # Signal drag started
         self.is_dragging = True
@@ -352,33 +347,22 @@ class ApplicationRowWidget(QFrame):
     
     def set_drag_appearance(self, is_dragging):
         """Update visual appearance during drag."""
-        self.setStyleSheet(APPLICATION_ROW_STYLE + ("""
-            background-color: #f0f9ff;
-            border-left: 3px solid #3b82f6;
-            border-right: 3px solid #3b82f6;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        """ if is_dragging else ""))
+        self.setStyleSheet(APPLICATION_ROW_STYLE + DRAGGING_ROW_STYLE if is_dragging else "")
         
         if is_dragging:
             self.raise_()
     
     def confirm_delete(self):
         """Show confirmation dialog for deleting the application."""
-        product_name = "this application" if self.product_combo.currentText() == "Select a product..." \
-                      else self.product_combo.currentText()
+        product_name = "" if self.product_combo.currentText() == "Select a product..." else self.product_combo.currentText()
         
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle("Confirm Removal")
-        msg_box.setText(f"Are you sure you want to remove this application: {product_name}?")
+        msg_box.setText(f"Are you sure you want to remove this application?\n<div align='center'><b>{product_name}</b></div>")
+        msg_box.setTextFormat(Qt.RichText)  # Set format to interpret HTML tags
         msg_box.setIcon(QMessageBox.Question)
         msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         msg_box.setDefaultButton(QMessageBox.No)
-        msg_box.setStyleSheet("""
-            QMessageBox { background-color: white; }
-            QPushButton { padding: 6px 12px; border-radius: 4px; }
-            QPushButton[text="Yes"] { background-color: #EF4444; color: white; }
-            QPushButton[text="No"] { background-color: #E5E7EB; color: #1F2937; }
-        """)
         
         if msg_box.exec_() == QMessageBox.Yes:
             self.delete_requested.emit(self)

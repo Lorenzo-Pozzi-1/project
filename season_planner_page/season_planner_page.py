@@ -16,40 +16,6 @@ class SeasonPlannerPage(QWidget):
         self.parent = parent
         self.setup_ui()
     
-    def _create_label(self, text, layout, title=False, size=None):
-        """Create a label with specified styling and add it to layout."""
-        label = QLabel(text)
-        font_func = get_title_font if title else get_body_font
-        if size is not None:  # Only pass size parameter if it's not None
-            label.setFont(font_func(size=size))
-        else:
-            label.setFont(font_func())  # Use default size
-        layout.addWidget(label)
-        return label
-    
-    def _create_button(self, text, style, callback, layout=None, max_width=None):
-        """Create a button with specified styling and callback."""
-        button = QPushButton(text)
-        button.setStyleSheet(style)
-        if max_width:
-            button.setMaximumWidth(max_width)
-        button.clicked.connect(callback)
-        if layout:
-            layout.addWidget(button)
-        return button
-    
-    def _create_content_frame(self, title, main_layout):
-        """Create a content frame with a title."""
-        frame = ContentFrame()
-        layout = QVBoxLayout()
-        
-        # Add title
-        self._create_label(title, layout, title=True, size=16)
-            
-        frame.layout.addLayout(layout)
-        main_layout.addWidget(frame)
-        return frame, layout
-    
     def setup_ui(self):
         """Set up the UI components."""
         # Main layout
@@ -61,10 +27,12 @@ class SeasonPlannerPage(QWidget):
         header = HeaderWithBackButton("Season Planner")
         header.back_clicked.connect(self.parent.go_home)
         
-        # Add Compare button to the header (right side)
-        self._create_button("Compare Plans", PRIMARY_BUTTON_STYLE, 
-                           self.compare_plans, max_width=150, 
-                           layout=header.layout())
+        # Add Compare button to the header
+        compare_button = QPushButton("Compare Plans")
+        compare_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
+        compare_button.setMaximumWidth(150)
+        compare_button.clicked.connect(self.compare_plans)
+        header.layout().addWidget(compare_button)
         
         main_layout.addWidget(header)
         
@@ -74,7 +42,13 @@ class SeasonPlannerPage(QWidget):
         main_layout.addWidget(self.metadata_widget)
         
         # Applications Table Frame
-        applications_frame, applications_layout = self._create_content_frame("Applications", main_layout)
+        applications_frame = ContentFrame()
+        applications_layout = QVBoxLayout()
+        
+        # Title
+        title_label = QLabel("Applications")
+        title_label.setFont(get_title_font(size=16))
+        applications_layout.addWidget(title_label)
         
         # Applications Table Container
         self.applications_container = ApplicationsTableContainer()
@@ -83,14 +57,24 @@ class SeasonPlannerPage(QWidget):
         
         # Button to add new application
         buttons_layout = QHBoxLayout()
-        self._create_button("Add Application", PRIMARY_BUTTON_STYLE, 
-                           self.add_application, buttons_layout)
-        buttons_layout.addStretch(1)  # Add spacer to push buttons to the left
+        add_button = QPushButton("Add Application")
+        add_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
+        add_button.clicked.connect(self.add_application)
+        buttons_layout.addWidget(add_button)
+        buttons_layout.addStretch(1)
         
         applications_layout.addLayout(buttons_layout)
+        applications_frame.layout.addLayout(applications_layout)
+        main_layout.addWidget(applications_frame)
         
         # EIQ Results Display with Score Bar
-        results_frame, results_layout = self._create_content_frame("Season EIQ Impact", main_layout)
+        results_frame = ContentFrame()
+        results_layout = QVBoxLayout()
+        
+        # Title
+        results_title = QLabel("Season EIQ Impact")
+        results_title.setFont(get_title_font(size=16))
+        results_layout.addWidget(results_title)
         
         # Create score bar with custom thresholds and labels
         self.eiq_score_bar = ScoreBar(
@@ -105,16 +89,21 @@ class SeasonPlannerPage(QWidget):
         
         # Add information labels (EIQ and application count)
         eiq_info_layout = QHBoxLayout()
-        self._create_label("Total Field EIQ:", eiq_info_layout)
-        self.total_eiq_value = self._create_label("0", eiq_info_layout)
+        eiq_info_layout.addWidget(QLabel("Total Field EIQ:"))
+        self.total_eiq_value = QLabel("0")
+        eiq_info_layout.addWidget(self.total_eiq_value)
         
         eiq_info_layout.addSpacing(20)
         
-        self._create_label("Applications Count:", eiq_info_layout)
-        self.applications_count_value = self._create_label("0", eiq_info_layout)
+        eiq_info_layout.addWidget(QLabel("Applications Count:"))
+        self.applications_count_value = QLabel("0")
+        eiq_info_layout.addWidget(self.applications_count_value)
         
         eiq_info_layout.addStretch(1)
         results_layout.addLayout(eiq_info_layout)
+        
+        results_frame.layout.addLayout(results_layout)
+        main_layout.addWidget(results_frame)
     
     def on_metadata_changed(self):
         """Handle changes to season plan metadata."""
@@ -130,20 +119,16 @@ class SeasonPlannerPage(QWidget):
     
     def update_eiq_display(self):
         """Update the EIQ display based on current applications."""
-        # Get total field EIQ and application count
         total_eiq = self.applications_container.get_total_field_eiq()
         applications = self.applications_container.get_applications()
-        application_count = len(applications)
         
         # Update score bar
-        if total_eiq > 0:
-            self.eiq_score_bar.set_value(total_eiq)
-        else:
-            self.eiq_score_bar.set_value(0, "No applications")
+        self.eiq_score_bar.set_value(total_eiq if total_eiq > 0 else 0, 
+                                     "" if total_eiq > 0 else "No applications")
         
         # Update labels
         self.total_eiq_value.setText(f"{total_eiq:.2f}")
-        self.applications_count_value.setText(str(application_count))
+        self.applications_count_value.setText(str(len(applications)))
     
     def compare_plans(self):
         """Placeholder function for comparing multiple plans."""

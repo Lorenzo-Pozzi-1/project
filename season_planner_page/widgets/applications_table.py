@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel
 from PySide6.QtCore import Qt, Signal, QEasingCurve, QParallelAnimationGroup, QPropertyAnimation
 from PySide6.QtGui import QPalette, QColor
 from season_planner_page.widgets.application_row import ApplicationRowWidget
-from common.styles import COMPARISON_HEADER_STYLE
+from common.styles import COMPARISON_HEADER_STYLE, DROP_INDICATOR_STYLE
 
 
 class ApplicationsTableContainer(QWidget):
@@ -21,6 +21,7 @@ class ApplicationsTableContainer(QWidget):
         self.field_area_uom = "ha"  # Default unit of measure
         self.application_rows = []  # List to track application row widgets
         self.dragged_row = None     # Currently dragged row
+        self.dragged_row_index = -1  # Index of dragged row
         self.drop_indicator_index = -1  # Index where drop indicator should be shown
         self.setup_ui()
         
@@ -34,18 +35,7 @@ class ApplicationsTableContainer(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
         
-        # ----- HEADER SECTION -----
-        self._setup_header(main_layout)
-        
-        # ----- SCROLLABLE CONTENT AREA -----
-        self._setup_scroll_area(main_layout)
-        
-        # ----- DROP INDICATOR -----
-        self._create_drop_indicator()
-    
-    def _setup_header(self, main_layout):
-        """Set up the header section of the table."""
-        # Create header row
+        # Header row
         header_layout = QHBoxLayout()
         header_layout.setContentsMargins(5, 5, 5, 5)
         header_layout.setSpacing(5)
@@ -65,33 +55,27 @@ class ApplicationsTableContainer(QWidget):
             header_layout.addWidget(label)
             header_layout.setStretch(i, stretches[i])
         
-        # Create header widget with fixed height
+        # Extra column for delete button
+        header_layout.addWidget(QLabel(""))
+        header_layout.setStretch(len(headers), 0)
+        
+        # Create header widget
         header_widget = QWidget()
         header_widget.setFixedHeight(ApplicationRowWidget.ROW_HEIGHT)
         header_widget.setLayout(header_layout)
         header_widget.setStyleSheet(COMPARISON_HEADER_STYLE)
         
         main_layout.addWidget(header_widget)
-    
-    def _setup_scroll_area(self, main_layout):
-        """Set up the scrollable area for application rows."""
+        
         # Create scroll area
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setFrameShape(QFrame.NoFrame)
         
-        # Create container widget for rows
+        # Create container for rows
         self.rows_container = QWidget()
         self.rows_container.setObjectName("rowsContainer")
-        
-        # Set styling for container including drop indicator
-        self.rows_container.setStyleSheet("""
-            QWidget#dropIndicator {
-                background-color: #3b82f6;
-                height: 3px;
-                margin: 0 5px;
-            }
-        """)
+        self.rows_container.setStyleSheet(DROP_INDICATOR_STYLE)
         
         # Create layout for rows
         self.rows_layout = QVBoxLayout(self.rows_container)
@@ -102,14 +86,13 @@ class ApplicationsTableContainer(QWidget):
         # Set up the scroll area
         self.scroll_area.setWidget(self.rows_container)
         main_layout.addWidget(self.scroll_area)
-    
-    def _create_drop_indicator(self):
-        """Create the drop indicator for drag and drop operations."""
+        
+        # Create drop indicator
         self.drop_indicator = QFrame(self.rows_container)
         self.drop_indicator.setObjectName("dropIndicator")
         self.drop_indicator.setFixedHeight(3)
         self.drop_indicator.setVisible(False)
-        
+    
     def add_application_row(self):
         """Add a new application row and return the created widget."""
         index = len(self.application_rows)
@@ -130,7 +113,7 @@ class ApplicationsTableContainer(QWidget):
         self.rows_layout.insertWidget(self.rows_layout.count() - 1, row_widget)
         self.application_rows.append(row_widget)
         
-        # Update all row numbers (or just set this one)
+        # Update row number
         row_widget.update_app_number(index + 1)
 
         # Apply alternating row colors
@@ -150,12 +133,8 @@ class ApplicationsTableContainer(QWidget):
     
     def get_applications(self):
         """Get all applications as a list of dictionaries, excluding empty ones."""
-        applications = []
-        for row_widget in self.application_rows:
-            app_data = row_widget.get_application_data()
-            if app_data:  # Only include rows with a product selected
-                applications.append(app_data)
-        return applications
+        return [app_data for row_widget in self.application_rows 
+                if (app_data := row_widget.get_application_data())]
 
     def set_applications(self, applications):
         """Set the container contents from a list of application dictionaries."""
@@ -168,11 +147,16 @@ class ApplicationsTableContainer(QWidget):
     def clear_applications(self):
         """Clear all application rows from the container."""
         while self.application_rows:
-            self.remove_application_row(0)  # Remove first row each time
+            self.remove_application_row(self.application_rows[0])
 
-    def count(self):
-        """Get the number of application rows."""
-        return len(self.application_rows)
+    def set_field_area(self, area, uom):
+        """Set the field area for new applications."""
+        self.field_area = area
+        self.field_area_uom = uom
+        
+        # Update existing rows
+        for row in self.application_rows:
+            row.set_field_area(area, uom)
 
     def on_application_data_changed(self, row_widget):
         """Handle changes to application data in any row."""
@@ -181,7 +165,6 @@ class ApplicationsTableContainer(QWidget):
     def on_row_drag_started(self, row_widget):
         """Handle start of row dragging."""
         self.dragged_row = row_widget
-        # Store original position
         self.dragged_row_index = row_widget.index
     
     def on_row_drag_ended(self, row_widget):
@@ -189,14 +172,13 @@ class ApplicationsTableContainer(QWidget):
         self.dragged_row = None
         self.drop_indicator.setVisible(False)
         self.drop_indicator_index = -1
-        # Renumber indices
         self.update_row_indices()
     
     def update_row_indices(self):
         """Update the indices of all rows after reordering."""
         for i, row in enumerate(self.application_rows):
             row.set_index(i)
-            row.update_app_number(i + 1)  # Application numbers are 1-based
+            row.update_app_number(i + 1)
     
     def dragEnterEvent(self, event):
         """Handle drag enter events."""
@@ -210,32 +192,24 @@ class ApplicationsTableContainer(QWidget):
             
         event.acceptProposedAction()
         
-        # Calculate drop index based on cursor position
-        pos = event.pos()
-        drop_y = pos.y()
+        # Find drop position
+        drop_y = event.pos().y()
+        target_index = len(self.application_rows)
         
-        # Find the index where the row would be dropped
-        target_index = -1
         for i, row in enumerate(self.application_rows):
             if row is not self.dragged_row:
-                # Get row position
                 row_pos = row.pos()
-                row_height = row.height()
-                row_center = row_pos.y() + row_height / 2
+                row_center = row_pos.y() + row.height() / 2
                 
                 if drop_y < row_center:
                     target_index = i
                     break
         
-        # If still -1, drop at the end
-        if target_index == -1:
-            target_index = len(self.application_rows)
-            
         # Don't allow dropping at original position
         if target_index == self.dragged_row_index:
             return
             
-        # Update drop indicator
+        # Update drop indicator if position changed
         if target_index != self.drop_indicator_index:
             self.drop_indicator_index = target_index
             self.update_drop_indicator()
@@ -250,19 +224,17 @@ class ApplicationsTableContainer(QWidget):
         if self.drop_indicator_index < len(self.application_rows):
             # Position at top of the target row
             row = self.application_rows[self.drop_indicator_index]
-            pos = row.pos()
-            self.drop_indicator.move(5, pos.y() - 1)
+            self.drop_indicator.move(5, row.pos().y() - 1)
         else:
             # Position after the last row
             if self.application_rows:
                 last_row = self.application_rows[-1]
-                pos = last_row.pos()
-                self.drop_indicator.move(5, pos.y() + last_row.height() + 1)
+                self.drop_indicator.move(5, last_row.pos().y() + last_row.height() + 1)
             else:
                 # No rows, position at top
                 self.drop_indicator.move(5, 5)
         
-        # Make visible and size to container width
+        # Size and show
         self.drop_indicator.setFixedWidth(self.rows_container.width() - 10)
         self.drop_indicator.setVisible(True)
     
@@ -271,11 +243,11 @@ class ApplicationsTableContainer(QWidget):
         if not event.mimeData().hasFormat("application/x-applicationrow-index"):
             return
             
-        # Get source row index
+        # Get source and target indices
         source_index = int(event.mimeData().data("application/x-applicationrow-index").data().decode())
         target_index = self.drop_indicator_index
         
-        # Ensure valid indices
+        # Validate indices
         if target_index < 0 or source_index < 0 or source_index >= len(self.application_rows):
             event.ignore()
             return
@@ -284,12 +256,12 @@ class ApplicationsTableContainer(QWidget):
         if target_index > source_index:
             target_index -= 1
             
-        # Skip if source and target are the same
+        # Skip if same position
         if target_index == source_index:
             event.ignore()
             return
             
-        # Move the row in the list and layout
+        # Move the row
         self.move_row(source_index, target_index)
         event.acceptProposedAction()
         
@@ -298,46 +270,34 @@ class ApplicationsTableContainer(QWidget):
         self.drop_indicator_index = -1
     
     def move_row(self, source_index, target_index):
-        """
-        Move a row from source index to target index with animation.
-        
-        Args:
-            source_index: The index of the row to move
-            target_index: The target index to move the row to
-        """
+        """Move a row from source index to target index with animation."""
         if source_index == target_index:
             return
             
-        # Get the widgets
+        # Get the source row
         source_row = self.application_rows[source_index]
         
-        # Remove from layout but don't delete
+        # Remove from list and layout
         self.rows_layout.removeWidget(source_row)
-        
-        # Remove from list and insert at new position
         self.application_rows.pop(source_index)
+        
+        # Insert at new position
         self.application_rows.insert(target_index, source_row)
         
-        # Insert into layout at new position with animation
+        # Create animation group
         anim_group = QParallelAnimationGroup(self)
         
-        # Calculate number of rows to animate
+        # Determine affected range
         min_idx = min(source_index, target_index)
         max_idx = max(source_index, target_index)
         
-        # Animate all affected rows
+        # Reinsert all rows with animation for affected range
         for i, row in enumerate(self.application_rows):
-            # Remove from layout first
             self.rows_layout.removeWidget(row)
+            self.rows_layout.insertWidget(i, row)
             
-            # Add at current position without animation for rows not affected
-            if i < min_idx or i > max_idx:
-                self.rows_layout.insertWidget(i, row)
-            else:
-                # Animate affected rows
-                self.rows_layout.insertWidget(i, row)
-                
-                # Create animation for opacity
+            # Animate affected rows
+            if min_idx <= i <= max_idx:
                 fade_effect = QGraphicsOpacityEffect(row)
                 row.setGraphicsEffect(fade_effect)
                 fade_effect.setOpacity(0.8)
@@ -350,48 +310,22 @@ class ApplicationsTableContainer(QWidget):
                 
                 anim_group.addAnimation(fade_anim)
         
-        # Update row indices
+        # Update indices and start animation
         self.update_row_indices()
-        
-        # Start animation
         anim_group.start()
-        
-        # Emit signal as the order has changed
         self.applications_changed.emit()
 
-    def remove_application_row(self, row=None):
-        """
-        Remove an application row from the container.
-        
-        Args:
-            row: Row widget, index, or None (to remove last row)
-                
-        Returns:
-            bool: True if a row was removed
-        """
-        # Determine which row widget to remove
-        if isinstance(row, int) and 0 <= row < len(self.application_rows):
-            row_widget = self.application_rows[row]
-        elif row is None and self.application_rows:
-            row_widget = self.application_rows[-1]
-        else:
-            row_widget = row
-        
-        # Remove the widget if found
-        if row_widget in self.application_rows:
-            # Get the index for later use
-            index = self.application_rows.index(row_widget)
+    def remove_application_row(self, row):
+        """Remove an application row from the container."""
+        if row not in self.application_rows:
+            return False
             
-            # Remove from list and layout
-            self.application_rows.remove(row_widget)
-            self.rows_layout.removeWidget(row_widget)
-            row_widget.deleteLater()
-            
-            # Update indices and app numbers
-            self.update_row_indices()
-            
-            # Emit signal that applications changed
-            self.applications_changed.emit()
-            return True
+        # Remove from list and layout
+        self.application_rows.remove(row)
+        self.rows_layout.removeWidget(row)
+        row.deleteLater()
         
-        return False
+        # Update indices
+        self.update_row_indices()
+        self.applications_changed.emit()
+        return True

@@ -17,31 +17,11 @@ class SeasonPlanMetadataWidget(QWidget):
         super().__init__(parent)
         self.setup_ui()
     
-    def _create_field_label(self, text):
-        """Create a bold label for a form field."""
-        label = QLabel(f"{text}:")
-        label.setFont(get_body_font(bold=True))
-        return label
-    
-    def _create_line_edit(self, placeholder):
-        """Create a line edit with placeholder text and signal connection."""
-        edit = QLineEdit()
-        edit.setPlaceholderText(placeholder)
-        edit.textChanged.connect(self.on_metadata_changed)
-        return edit
-    
-    def _add_field_section(self, layout, label_text, widget, stretch=1):
-        """Add a field section with label and widget to the layout."""
-        layout.addWidget(self._create_field_label(label_text))
-        layout.addWidget(widget, stretch)
-        layout.addSpacing(10)  # Space between field groups
-    
     def setup_ui(self):
         """Set up the UI components for the metadata form."""
         # Main layout
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(0)
         
         # Create content frame and layout
         metadata_frame = ContentFrame()
@@ -49,27 +29,25 @@ class SeasonPlanMetadataWidget(QWidget):
         metadata_layout.setSpacing(15)
         
         # --- Crop Year ---
-        self.crop_year_combo = QComboBox()
         current_year = date.today().year
-        current_index = 5  # Default position (current year) in 11-year range
-        
-        # Add years in CY format (±5 years from current)
-        for i, year in enumerate(range(current_year - 5, current_year + 6)):
-            self.crop_year_combo.addItem(f"CY{str(year)[-2:]}", year)
-            if year == current_year:
-                current_index = i
-                
-        self.crop_year_combo.setCurrentIndex(current_index)
+        self.crop_year_combo = QComboBox()
+        years = list(range(current_year - 5, current_year + 6))
+        self.crop_year_combo.addItems([f"CY{str(year)[-2:]}" for year in years])
+        self.crop_year_combo.setCurrentIndex(5)  # Current year
         self.crop_year_combo.currentIndexChanged.connect(self.on_metadata_changed)
-        self._add_field_section(metadata_layout, "Crop Year", self.crop_year_combo)
+        self._add_field(metadata_layout, "Crop Year", self.crop_year_combo)
         
         # --- Grower Name ---
-        self.grower_name_edit = self._create_line_edit("Enter grower name")
-        self._add_field_section(metadata_layout, "Grower", self.grower_name_edit, 2)
+        self.grower_name_edit = QLineEdit()
+        self.grower_name_edit.setPlaceholderText("Enter grower name")
+        self.grower_name_edit.textChanged.connect(self.on_metadata_changed)
+        self._add_field(metadata_layout, "Grower", self.grower_name_edit, 2)
         
         # --- Field Name ---
-        self.field_name_edit = self._create_line_edit("Enter field name")
-        self._add_field_section(metadata_layout, "Field", self.field_name_edit, 2)
+        self.field_name_edit = QLineEdit()
+        self.field_name_edit.setPlaceholderText("Enter field name")
+        self.field_name_edit.textChanged.connect(self.on_metadata_changed)
+        self._add_field(metadata_layout, "Field", self.field_name_edit, 2)
         
         # --- Field Area with UOM ---
         area_layout = QHBoxLayout()
@@ -87,19 +65,30 @@ class SeasonPlanMetadataWidget(QWidget):
         self.field_area_uom_combo.currentIndexChanged.connect(self.on_metadata_changed)
         area_layout.addWidget(self.field_area_uom_combo)
         
-        metadata_layout.addWidget(self._create_field_label("Area"))
+        label = QLabel("Area:")
+        label.setFont(get_body_font(bold=True))
+        metadata_layout.addWidget(label)
         metadata_layout.addLayout(area_layout)
         metadata_layout.addSpacing(10)
         
         # --- Variety ---
-        self.variety_edit = self._create_line_edit("Enter potato variety")
-        self._add_field_section(metadata_layout, "Variety", self.variety_edit, 2)
+        self.variety_edit = QLineEdit()
+        self.variety_edit.setPlaceholderText("Enter potato variety")
+        self.variety_edit.textChanged.connect(self.on_metadata_changed)
+        self._add_field(metadata_layout, "Variety", self.variety_edit, 2)
         
-        # Remove the last spacing that was added
         metadata_layout.setContentsMargins(0, 0, 10, 0)
         
         metadata_frame.layout.addLayout(metadata_layout)
         main_layout.addWidget(metadata_frame)
+    
+    def _add_field(self, layout, label_text, widget, stretch=1):
+        """Add a field with label to the layout."""
+        label = QLabel(f"{label_text}:")
+        label.setFont(get_body_font(bold=True))
+        layout.addWidget(label)
+        layout.addWidget(widget, stretch)
+        layout.addSpacing(10)
     
     def on_metadata_changed(self):
         """Handle changes to any metadata field."""
@@ -107,8 +96,12 @@ class SeasonPlanMetadataWidget(QWidget):
     
     def get_metadata(self):
         """Get the current metadata values as a dictionary."""
+        current_year = date.today().year
+        selected_index = self.crop_year_combo.currentIndex()
+        year = current_year - 5 + selected_index
+        
         return {
-            "crop_year": self.crop_year_combo.currentData(),
+            "crop_year": year,
             "crop_year_display": self.crop_year_combo.currentText(),
             "grower_name": self.grower_name_edit.text(),
             "field_name": self.field_name_edit.text(),
@@ -119,63 +112,43 @@ class SeasonPlanMetadataWidget(QWidget):
     
     def set_metadata(self, metadata):
         """Set the metadata values from a dictionary."""
-        with self._blocked_signals():
+        self.blockSignals(True)
+        try:
             # Set crop year
             if "crop_year" in metadata:
-                year = metadata["crop_year"]
-                for i in range(self.crop_year_combo.count()):
-                    if self.crop_year_combo.itemData(i) == year:
-                        self.crop_year_combo.setCurrentIndex(i)
-                        break
+                current_year = date.today().year
+                year_offset = metadata["crop_year"] - (current_year - 5)
+                if 0 <= year_offset < self.crop_year_combo.count():
+                    self.crop_year_combo.setCurrentIndex(year_offset)
             
             # Set text fields
-            fields = {
-                "grower_name": self.grower_name_edit,
-                "field_name": self.field_name_edit,
-                "variety": self.variety_edit
-            }
-            
-            for field, widget in fields.items():
-                if field in metadata:
-                    widget.setText(metadata[field])
+            if "grower_name" in metadata:
+                self.grower_name_edit.setText(metadata["grower_name"])
+            if "field_name" in metadata:
+                self.field_name_edit.setText(metadata["field_name"])
+            if "variety" in metadata:
+                self.variety_edit.setText(metadata["variety"])
             
             # Set numeric/combo fields
             if "field_area" in metadata:
                 self.field_area_spin.setValue(metadata["field_area"])
-            
             if "field_area_uom" in metadata:
                 index = self.field_area_uom_combo.findText(metadata["field_area_uom"])
                 if index >= 0:
                     self.field_area_uom_combo.setCurrentIndex(index)
-        
-        # Signal is emitted after unblock in context manager
+        finally:
+            self.blockSignals(False)
+            self.metadata_changed.emit()
     
     def clear(self):
         """Clear all metadata fields."""
-        # Create default metadata and apply it
         current_year = date.today().year
         default_metadata = {
             "crop_year": current_year,
             "grower_name": "",
             "field_name": "",
-            "field_area": 10.0,
+            "field_area": "",
             "field_area_uom": "acre",
             "variety": ""
         }
         self.set_metadata(default_metadata)
-    
-    def _blocked_signals(self):
-        """Context manager to temporarily block widget signals."""
-        class SignalBlocker:
-            def __init__(self, widget):
-                self.widget = widget
-            
-            def __enter__(self):
-                self.widget.blockSignals(True)
-                return self.widget
-            
-            def __exit__(self, *args):
-                self.widget.blockSignals(False)
-                self.widget.metadata_changed.emit()
-        
-        return SignalBlocker(self)
