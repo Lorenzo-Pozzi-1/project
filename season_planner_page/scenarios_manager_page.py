@@ -5,15 +5,10 @@ This module provides the main interface for managing multiple pesticide
 application scenarios through tabs.
 """
 
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
-    QTabWidget, QMessageBox, QInputDialog, QSpacerItem
-)
-from PySide6.QtCore import Qt, Signal
-from common.styles import (
-    MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, 
-    SECONDARY_BUTTON_STYLE, get_title_font, YELLOW_BAR_STYLE
-)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
+    QTabWidget, QMessageBox, QInputDialog, QSpacerItem)
+from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, 
+    SECONDARY_BUTTON_STYLE, get_title_font)
 from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar
 from season_planner_page.scenario_tab_page import ScenarioTabPage
 from data.scenario_model import Scenario
@@ -145,20 +140,22 @@ class ScenariosManagerPage(QWidget):
         Args:
             scenario: Existing Scenario object or None for a new one
         """
-        if scenario is None:
+        if not isinstance(scenario, Scenario):
+            # Ensure we create a proper Scenario object
             scenario = Scenario(f"Scenario {len(self.scenarios) + 1}")
         
         # Create tab page
         scenario_page = ScenarioTabPage(self, scenario)
         scenario_page.scenario_changed.connect(self.on_scenario_changed)
         
-        # Add to tab widget
-        tab_index = self.tab_widget.addTab(scenario_page, scenario.name)
+        # Add to tab widget - ensure scenario.name exists and is a string
+        tab_name = getattr(scenario, 'name', f"Scenario {len(self.scenarios) + 1}")
+        tab_index = self.tab_widget.addTab(scenario_page, tab_name)
         self.tab_widget.setCurrentIndex(tab_index)
         
         # Store references
         self.scenarios.append(scenario)
-        self.scenario_tabs[scenario.name] = scenario_page  # Using name as key instead of ID
+        self.scenario_tabs[tab_name] = scenario_page
         
         # Update UI state
         self.update_buttons_state()
@@ -196,11 +193,14 @@ class ScenariosManagerPage(QWidget):
         
         if ok and new_name:
             # Update scenario name
+            old_name = current_scenario.name
             current_scenario.name = new_name
-            current_scenario.mark_modified()
             
             # Update tab name
             self.tab_widget.setTabText(current_index, new_name)
+            
+            # Update dictionary entry
+            self.scenario_tabs[new_name] = self.scenario_tabs.pop(old_name)
             
             # Emit change signal
             self.on_scenario_changed(current_scenario)
