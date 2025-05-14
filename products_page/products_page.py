@@ -91,6 +91,10 @@ class ProductsPage(QWidget):
             # Reset the comparison tab
             self.comparison_tab.clear_comparison()
 
+            # Go back to products list tab if user is in comparison tab
+            if self.tabs.currentIndex() == 1:
+                self.tabs.setCurrentIndex(0)
+
     def refresh_product_data(self):
         """Refresh product data based on the updated filtered products."""
         # Clear any selections

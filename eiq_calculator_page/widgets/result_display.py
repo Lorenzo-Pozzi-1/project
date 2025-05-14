@@ -80,7 +80,7 @@ class EiqResultDisplay(QWidget):
         field_eiq_label.setFont(get_subtitle_font(bold=True))
 
         # Label for ha value
-        self.field_eiq_result_ha = QLabel("-- /ha")
+        self.field_eiq_result_ha = QLabel("--")
         self.field_eiq_result_ha.setFont(get_subtitle_font(bold=True))
         
         field_eiq_layout.addWidget(field_eiq_label)
@@ -120,7 +120,7 @@ class EiqResultDisplay(QWidget):
             field_eiq (float): The Field EIQ value to display
         """
         if field_eiq <= 0:
-            self.field_eiq_result_ha.setText("-- /ha")
+            self.field_eiq_result_ha.setText("--")
             self.score_bar.set_value(0, "No calculation")
             return
         
@@ -143,7 +143,7 @@ class EiqComparisonTable(QTableWidget):
     def setup_ui(self):
         """Set up the UI components."""
         # Set header labels
-        self.setHorizontalHeaderLabels(["Product", "Field EIQ / ha"])
+        self.setHorizontalHeaderLabels(["Product", "Field EIQ"])
         
         # Set up table properties
         header = self.horizontalHeader()

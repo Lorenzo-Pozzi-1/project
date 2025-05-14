@@ -104,9 +104,9 @@ def format_eiq_result(field_eiq) :
         string: result eiq/ha formatted
     """
     if field_eiq <= 0:
-        return "0.00 /ha"
+        return "0.00"
     
-    return f"{field_eiq:.2f} /ha"
+    return f"{field_eiq:.2f}"
 
 def get_impact_category(field_eiq):
     """

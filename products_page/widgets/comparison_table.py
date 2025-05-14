@@ -8,8 +8,9 @@ side-by-side comparison of product properties.
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
-from common.styles import apply_table_header_style
+from common.styles import apply_table_header_style, get_eiq_color
 from common.styles import get_body_font
+from math_module.eiq_calculations import calculate_product_field_eiq
 
 
 class ComparisonTable(QTableWidget):
@@ -26,7 +27,7 @@ class ComparisonTable(QTableWidget):
         self.setup_ui()
         self.columns_to_hide = []
         self.set_columns_to_hide([
-            "country","region","number of ai", 
+            "country","region","number of ai","name",
             "[AI1]","[AI2]","[AI3]","[AI4]",
             "[AI1]UOM","[AI2]UOM","[AI3]UOM","[AI4]UOM"
         ])
@@ -41,6 +42,8 @@ class ComparisonTable(QTableWidget):
         
         # Configure horizontal header
         apply_table_header_style(self.horizontalHeader())
+        header_font = get_body_font(bold=True)
+        self.horizontalHeader().setFont(header_font)
         
         # Configure row heights
         self.verticalHeader().setDefaultSectionSize(40)
@@ -77,11 +80,11 @@ class ComparisonTable(QTableWidget):
                 visible_columns.append(key)
         
         # Set up comparison table
-        self.setRowCount(len(visible_columns))
+        self.setRowCount(len(visible_columns) + 1)  # +1 for Field EIQ row
         self.setColumnCount(len(products) + 1)
         
         # Set headers
-        headers = ["Property"]
+        headers = ["Product"]
         for product in products:
             product_dict = product.to_dict()
             product_name_key = "name"  # Default key for product name
@@ -99,6 +102,11 @@ class ComparisonTable(QTableWidget):
         for row, property_name in enumerate(visible_columns):
             self.setItem(row, 0, self.create_table_item(property_name, bold=True))
         
+        # Add Field EIQ row label
+        field_eiq_row = len(visible_columns)
+        self.setItem(field_eiq_row, 0, self.create_table_item("Field EIQ\n1 application, max. rate", bold=True))
+        self.resizeRowToContents(field_eiq_row)
+        
         # Populate product data
         for col, product in enumerate(products, 1):
             # Convert product object to dictionary
@@ -108,11 +116,59 @@ class ComparisonTable(QTableWidget):
             for row, property_name in enumerate(visible_columns):
                 value = product_dict.get(property_name, "")
                 self.setItem(row, col, self.create_table_item(str(value) if value is not None else ""))
+            
+            # Calculate Field EIQ using max rate
+            field_eiq = self.calculate_product_field_eiq(product)
+            
+            # Add Field EIQ value with color coding
+            eiq_item = self.create_table_item(f"{field_eiq:.2f}" if field_eiq > 0 else "--")
+            if field_eiq > 0:
+                bg_color = get_eiq_color(field_eiq)
+                eiq_item.setBackground(QBrush(bg_color))
+            self.setItem(field_eiq_row, col, eiq_item)
         
         # Resize columns to fit content
         self.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
         for col in range(1, self.columnCount()):
             self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
+    
+    def calculate_product_field_eiq(self, product):
+        """
+        Calculate the Field EIQ for a product using its maximum application rate.
+        
+        Args:
+            product: The product object
+            
+        Returns:
+            float: Calculated Field EIQ or 0 if calculation fails
+        """
+        try:
+            # Check if product has active ingredients with EIQ data
+            ai_data = product.get_ai_data()
+            if not ai_data:
+                return 0
+            
+            # Use maximum rate if available, otherwise minimum rate
+            rate = product.label_maximum_rate
+            if rate is None:
+                rate = product.label_minimum_rate
+            
+            # If no rate available, return 0
+            if rate is None or product.rate_uom is None:
+                return 0
+            
+            # Calculate Field EIQ using 1 application
+            field_eiq = calculate_product_field_eiq(
+                ai_data,
+                rate,
+                product.rate_uom,
+                applications=1
+            )
+            
+            return field_eiq
+        except Exception as e:
+            print(f"Error calculating Field EIQ: {e}")
+            return 0
     
     def create_table_item(self, text, bold=False, background_color=None):
         """
@@ -128,8 +184,8 @@ class ComparisonTable(QTableWidget):
         """
         item = QTableWidgetItem(text)
         
-        # Set alignment
-        item.setTextAlignment(Qt.AlignCenter)
+        # Set alignment and word wrap
+        item.setTextAlignment(Qt.AlignCenter | Qt.TextWordWrap)
         
         # Set font
         font = get_body_font(bold=bold)
