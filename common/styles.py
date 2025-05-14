@@ -283,6 +283,26 @@ SUGGESTIONS_LIST_STYLE = f"""
     }}
 """
 
+# Row dragging styles
+DRAGGING_ROW_STYLE = """
+    QFrame {
+        background-color: #f0f9ff;
+        border: 1px solid #ccc;
+        border-left: 3px solid #3b82f6;
+        border-right: 3px solid #3b82f6;
+        border-radius: 4px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+"""
+
+DROP_INDICATOR_STYLE = """
+    QFrame#dropIndicator {
+        background-color: #3b82f6;
+        height: 3px;
+        border-radius: 1px;
+    }
+"""
+
 # ----------------------
 # UTILITY FUNCTIONS
 # ----------------------

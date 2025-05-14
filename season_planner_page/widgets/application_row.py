@@ -1,21 +1,25 @@
-"""Application Row Widget for the LORENZO POZZI Pesticide App."""
+"""Application Row Widget for the LORENZO POZZI Pesticide App with drag support."""
 
-from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, QSizePolicy, QFrame
-from PySide6.QtCore import Qt, Signal
+from contextlib import contextmanager
+from PySide6.QtCore import Qt, Signal, QMimeData
+from PySide6.QtGui import QDrag
+from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, QSizePolicy, QFrame, QApplication
 from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository
-from math_module.eiq_calculations import calculate_product_field_eiq
-from contextlib import contextmanager
 from common.styles import APPLICATION_ROW_STYLE
+from math_module.eiq_calculations import calculate_product_field_eiq
+from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
 
 class ApplicationRowWidget(QFrame):
-    """Widget representing a single pesticide application row."""
+    """Widget representing a single pesticide application row with drag & drop."""
     
     data_changed = Signal(object)  # Emitted when any data in the row changes
+    drag_started = Signal(object)  # Emitted when a drag starts
+    drag_ended = Signal(object)    # Emitted when a drag ends
     ROW_HEIGHT = 40
     
-    def __init__(self, parent=None, field_area=10.0, field_area_uom="ha"):
+    def __init__(self, parent=None, field_area=10.0, field_area_uom="ha", index=0):
         """
         Initialize the application row widget.
         
@@ -23,11 +27,15 @@ class ApplicationRowWidget(QFrame):
             parent: Parent widget
             field_area: Default field area to use
             field_area_uom: Unit of measure for field area
+            index: Row index in the container
         """
         super().__init__(parent)
         self.field_area = field_area
         self.field_area_uom = field_area_uom
         self.product_types = []
+        self.index = index  # Store the row index
+        self.drag_start_position = None
+        self.is_dragging = False
         
         # Store repository instances
         self.products_repo = ProductRepository.get_instance()
@@ -43,6 +51,9 @@ class ApplicationRowWidget(QFrame):
         size_policy = self.sizePolicy()
         size_policy.setVerticalPolicy(QSizePolicy.Fixed)
         self.setSizePolicy(size_policy)
+        
+        # Enable drag support
+        self.setAcceptDrops(True)
         
         self.setup_ui()
         self.load_product_types()
@@ -81,6 +92,14 @@ class ApplicationRowWidget(QFrame):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(2, 2, 2, 2)
         layout.setSpacing(5)
+
+        # Add drag handle
+        drag_handle = QLabel("≡")
+        drag_handle.setAlignment(Qt.AlignCenter)
+        drag_handle.setFixedWidth(16) 
+        drag_handle.setStyleSheet("color: #666; font-size: 16px;")
+        drag_handle.setCursor(Qt.OpenHandCursor)
+        layout.addWidget(drag_handle)
         
         # Date field
         self.date_edit = QLineEdit()
@@ -107,8 +126,7 @@ class ApplicationRowWidget(QFrame):
         layout.addWidget(self.rate_spin)
         
         # Rate UOM
-        common_uoms = ["kg/ha", "l/ha", "g/ha", "ml/ha", "lbs/acre", "fl oz/acre", "oz/acre"]
-        self.uom_combo = self._create_combo_box(items=common_uoms)
+        self.uom_combo = self._create_combo_box(items=sorted(APPLICATION_RATE_CONVERSION.keys()))
         layout.addWidget(self.uom_combo)
         
         # Area treated
@@ -313,3 +331,66 @@ class ApplicationRowWidget(QFrame):
         index = combo.findText(value)
         if index >= 0:
             combo.setCurrentIndex(index)
+
+    # Add drag & drop methods
+    def mousePressEvent(self, event):
+        """Handle mouse press events to initiate drag."""
+        if event.button() == Qt.LeftButton:
+            self.drag_start_position = event.pos()
+    
+    def mouseMoveEvent(self, event):
+        """Handle mouse move events for drag operations."""
+        if not (event.buttons() & Qt.LeftButton):
+            return
+            
+        # Only start drag after moving a certain distance
+        if ((event.pos() - self.drag_start_position).manhattanLength() 
+                < QApplication.startDragDistance()):
+            return
+            
+        # Create drag object
+        drag = QDrag(self)
+        mimedata = QMimeData()
+        
+        # Store the row index in the mime data
+        mimedata.setData("application/x-applicationrow-index", str(self.index).encode())
+        drag.setMimeData(mimedata)
+        
+        # Apply visual effect for being dragged
+        original_style = self.styleSheet()
+        self.setStyleSheet(original_style + """
+            background-color: #f0f9ff;
+            border-left: 3px solid #3b82f6;
+            border-right: 3px solid #3b82f6;
+        """)
+        self.setGraphicsEffect(None)  # Remove any existing effects
+        
+        # Emit signal that drag has started
+        self.is_dragging = True
+        self.drag_started.emit(self)
+        
+        # Execute drag operation
+        result = drag.exec_(Qt.MoveAction)
+        
+        # Reset style after drag
+        self.setStyleSheet(original_style)
+        self.is_dragging = False
+        self.drag_ended.emit(self)
+    
+    def set_drag_appearance(self, is_dragging):
+        """Update visual appearance during drag."""
+        original_style = APPLICATION_ROW_STYLE
+        if is_dragging:
+            self.setStyleSheet(original_style + """
+                background-color: #f0f9ff;
+                border-left: 3px solid #3b82f6;
+                border-right: 3px solid #3b82f6;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            """)
+            self.raise_()  # Bring to front
+        else:
+            self.setStyleSheet(original_style)
+    
+    def set_index(self, index):
+        """Update the row index."""
+        self.index = index
