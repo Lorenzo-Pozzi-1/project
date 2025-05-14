@@ -3,13 +3,10 @@
 from contextlib import contextmanager
 from PySide6.QtCore import Qt, Signal, QMimeData
 from PySide6.QtGui import QDrag
-from PySide6.QtWidgets import (
-    QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, 
-    QSizePolicy, QFrame, QApplication, QMessageBox, QPushButton
-)
+from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QPushButton
 from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository
-from common.styles import APPLICATION_ROW_STYLE, DRAGGING_ROW_STYLE
+from common.styles import APPLICATION_ROW_STYLE
 from math_module.eiq_calculations import calculate_product_field_eiq
 from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
@@ -331,7 +328,7 @@ class ApplicationRowWidget(QFrame):
         drag.setMimeData(mimedata)
         
         # Set drag appearance
-        self.setStyleSheet(APPLICATION_ROW_STYLE + DRAGGING_ROW_STYLE if self.is_dragging else "")
+        self.setStyleSheet(APPLICATION_ROW_STYLE)
         
         # Signal drag started
         self.is_dragging = True
@@ -344,13 +341,6 @@ class ApplicationRowWidget(QFrame):
         self.setStyleSheet(APPLICATION_ROW_STYLE)
         self.is_dragging = False
         self.drag_ended.emit(self)
-    
-    def set_drag_appearance(self, is_dragging):
-        """Update visual appearance during drag."""
-        self.setStyleSheet(APPLICATION_ROW_STYLE + DRAGGING_ROW_STYLE if is_dragging else "")
-        
-        if is_dragging:
-            self.raise_()
     
     def confirm_delete(self):
         """Show confirmation dialog for deleting the application."""

@@ -203,9 +203,6 @@ APPLICATION_ROW_STYLE = """
         background-color: transparent;
         padding: 2px;
     }
-    QFrame:hover {
-        background-color: #EAEFF5;
-    }
 """
 
 # Yellow bar style for bottom of pages

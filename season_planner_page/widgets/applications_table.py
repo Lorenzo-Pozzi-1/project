@@ -1,11 +1,10 @@
 """Applications Table Container for the LORENZO POZZI Pesticide App with drag and drop support."""
 
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel, 
-                              QHBoxLayout, QGraphicsOpacityEffect, QSizePolicy)
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel, QHBoxLayout, QGraphicsOpacityEffect
 from PySide6.QtCore import Qt, Signal, QEasingCurve, QParallelAnimationGroup, QPropertyAnimation
 from PySide6.QtGui import QPalette, QColor
 from season_planner_page.widgets.application_row import ApplicationRowWidget
-from common.styles import COMPARISON_HEADER_STYLE, DROP_INDICATOR_STYLE
+from common.styles import COMPARISON_HEADER_STYLE, DROP_INDICATOR_STYLE, WHITE, ALTERNATE_ROW_COLOR
 
 
 class ApplicationsTableContainer(QWidget):
@@ -116,16 +115,23 @@ class ApplicationsTableContainer(QWidget):
         # Update row number
         row_widget.update_app_number(index + 1)
 
-        # Apply alternating row colors
-        if index % 2 == 1:  # Odd rows
-            palette = row_widget.palette()
-            palette.setColor(QPalette.Window, QColor("#F5F7FA"))
-            row_widget.setPalette(palette)
-            row_widget.setAutoFillBackground(True)
+        # Update row colors after adding new row
+        self.update_row_colors()
 
         # Emit signal for the new row
         self.applications_changed.emit()
         return row_widget
+    
+    def update_row_colors(self):
+        """Apply alternating background colors to all rows."""
+        for i, row in enumerate(self.application_rows):
+            palette = row.palette()
+            if i % 2 == 1:  # Odd rows
+                palette.setColor(QPalette.Window, QColor(ALTERNATE_ROW_COLOR))
+            else:  # Even rows
+                palette.setColor(QPalette.Window, QColor(WHITE))
+            row.setPalette(palette)
+            row.setAutoFillBackground(True)
     
     def get_total_field_eiq(self):
         """Calculate the total Field EIQ for all applications."""
@@ -143,6 +149,9 @@ class ApplicationsTableContainer(QWidget):
         for app_data in applications:
             row_widget = self.add_application_row()
             row_widget.set_application_data(app_data)
+        
+        # Make sure colors are correctly applied after loading applications
+        self.update_row_colors()
 
     def clear_applications(self):
         """Clear all application rows from the container."""
@@ -179,7 +188,10 @@ class ApplicationsTableContainer(QWidget):
         for i, row in enumerate(self.application_rows):
             row.set_index(i)
             row.update_app_number(i + 1)
-    
+        
+        # Update row colors whenever indices are updated
+        self.update_row_colors()
+
     def dragEnterEvent(self, event):
         """Handle drag enter events."""
         if event.mimeData().hasFormat("application/x-applicationrow-index"):
