@@ -54,9 +54,8 @@ class SeasonPlanMetadataWidget(QWidget):
         area_layout.setSpacing(2)
         
         self.field_area_spin = QDoubleSpinBox()
-        self.field_area_spin.setRange(0.1, 9999.9)
+        self.field_area_spin.setRange(0, 9999.9)
         self.field_area_spin.setDecimals(1)
-        self.field_area_spin.setValue(10.0)
         self.field_area_spin.valueChanged.connect(self.on_metadata_changed)
         area_layout.addWidget(self.field_area_spin)
         

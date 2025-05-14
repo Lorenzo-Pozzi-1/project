@@ -86,8 +86,8 @@ class ScenariosManagerPage(QWidget):
         
         # Tab widget for scenarios
         self.tab_widget = QTabWidget()
-        self.tab_widget.setTabsClosable(True)
-        self.tab_widget.tabCloseRequested.connect(self.on_tab_close_requested)
+        # self.tab_widget.setTabsClosable(True)                                      # Uncomment to have "x" button on each tab
+        # self.tab_widget.tabCloseRequested.connect(self.on_tab_close_requested)     # Uncomment to have "x" button on each tab
         self.tab_widget.currentChanged.connect(self.on_current_tab_changed)
         
         main_layout.addWidget(self.tab_widget)
@@ -234,7 +234,7 @@ class ScenariosManagerPage(QWidget):
         # Confirm deletion with dialog
         result = QMessageBox.question(
             self, "Confirm Deletion",
-            f"Are you sure you want to remove scenario '{scenario.name}'?",
+            f"Are you sure you want to remove this scenario? '{scenario.name}'",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )

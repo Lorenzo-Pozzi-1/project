@@ -22,7 +22,7 @@ class Scenario:
                  grower_name=None,
                  field_name=None,
                  field_area=None,
-                 field_area_uom="ha",
+                 field_area_uom="acre",
                  variety=None,
                  applications=None):
         """
@@ -45,8 +45,8 @@ class Scenario:
         self.crop_year = crop_year if crop_year is not None else date.today().year
         self.grower_name = grower_name or ""
         self.field_name = field_name or ""
-        self.field_area = 10.0 if field_area is None else field_area  # Default to 10.0
-        self.field_area_uom = field_area_uom or "ha"
+        self.field_area = 0 if field_area is None else field_area  # Default to 0
+        self.field_area_uom = field_area_uom or "acre"
         self.variety = variety or ""
         
         # Applications
@@ -157,7 +157,7 @@ class Scenario:
         # Extract field area with safe default
         field_area = data.get("field_area")
         if field_area is None:
-            field_area = 10.0
+            field_area = 0
         
         # Create scenario with basic properties
         scenario = cls(
@@ -166,7 +166,7 @@ class Scenario:
             grower_name=data.get("grower_name", ""),
             field_name=data.get("field_name", ""),
             field_area=field_area,
-            field_area_uom=data.get("field_area_uom", "ha"),
+            field_area_uom=data.get("field_area_uom", "acre"),
             variety=data.get("variety", "")
         )
         

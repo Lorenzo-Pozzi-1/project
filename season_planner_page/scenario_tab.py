@@ -62,7 +62,7 @@ class ScenarioTabPage(QWidget):
         self.applications_container.applications_changed.connect(self.on_applications_changed)
         applications_layout.addWidget(self.applications_container)
         
-        # Button to add new application (moved from the original)
+        # Button to add new application
         buttons_layout = QHBoxLayout()
         add_button = QPushButton("Add Application")
         add_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
@@ -110,7 +110,7 @@ class ScenarioTabPage(QWidget):
         self.scenario.field_area_uom = metadata["field_area_uom"]
         self.scenario.variety = metadata["variety"]
         
-        # Update field area in applications container
+        # Update default field area in applications container for new rows only
         self.applications_container.set_field_area(
             metadata["field_area"], 
             metadata["field_area_uom"]

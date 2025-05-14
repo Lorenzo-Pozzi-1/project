@@ -159,13 +159,9 @@ class ApplicationsTableContainer(QWidget):
             self.remove_application_row(self.application_rows[0])
 
     def set_field_area(self, area, uom):
-        """Set the field area for new applications."""
+        """Set the default field area for new applications."""
         self.field_area = area
         self.field_area_uom = uom
-        
-        # Update existing rows
-        for row in self.application_rows:
-            row.set_field_area(area, uom)
 
     def on_application_data_changed(self, row_widget):
         """Handle changes to application data in any row."""
@@ -341,3 +337,10 @@ class ApplicationsTableContainer(QWidget):
         self.update_row_indices()
         self.applications_changed.emit()
         return True
+    
+    def update_default_field_area(self, area, uom):
+        """
+        Update the default field area for new applications without changing existing rows.
+        """
+        self.field_area = area
+        self.field_area_uom = uom
