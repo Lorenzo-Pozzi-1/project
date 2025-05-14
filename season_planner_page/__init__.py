@@ -5,6 +5,6 @@ This package provides components for planning and managing pesticide application
 """
 
 from season_planner_page.scenarios_manager_page import ScenariosManagerPage
-from season_planner_page.scenario_tab_page import ScenarioTabPage
+from season_planner_page.scenario_tab import ScenarioTabPage
 
 __all__ = ['ScenariosManagerPage', 'ScenarioTabPage']

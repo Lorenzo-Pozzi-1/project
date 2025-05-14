@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushB
 from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, 
     SECONDARY_BUTTON_STYLE, get_title_font)
 from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar
-from season_planner_page.scenario_tab_page import ScenarioTabPage
+from season_planner_page.scenario_tab import ScenarioTabPage
 from data.scenario_model import Scenario
 
 class ScenariosManagerPage(QWidget):

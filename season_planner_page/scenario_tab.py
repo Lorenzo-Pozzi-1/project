@@ -1,7 +1,7 @@
 """
-Scenario tab page for the LORENZO POZZI Pesticide App.
+Scenario tab for the LORENZO POZZI Pesticide App.
 
-This module provides a tab page for viewing and editing a single scenario.
+This module provides a tab for viewing and editing the individual scenarios.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
