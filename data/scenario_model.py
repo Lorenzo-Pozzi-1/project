@@ -2,39 +2,56 @@
 Scenario model for the LORENZO POZZI Pesticide App.
 
 This module defines the Scenario class which represents a complete
-pesticide application scenario for comparison.
+pesticide application scenario for a season.
 """
 
 import copy
 from datetime import date
-from data.season_plan_model import SeasonPlan
 
 class Scenario:
     """
-    Represents a pesticide application scenario for comparison.
+    Represents a pesticide application scenario.
     
-    A scenario contains a full season plan with metadata and applications,
-    along with additional properties for scenario management and comparison.
+    Stores information about a seasonal pesticide application plan including
+    grower details, field information, and all planned applications.
     """
     
-    def __init__(self, name="New Scenario", season_plan=None, scenario_id=None):
+    def __init__(self, 
+                 name="New Scenario",
+                 crop_year=None,
+                 grower_name=None,
+                 field_name=None,
+                 field_area=None,
+                 field_area_uom="ha",
+                 variety=None,
+                 applications=None):
         """
         Initialize a Scenario instance.
         
         Args:
             name (str): User-friendly name for the scenario
-            season_plan (SeasonPlan): Season plan containing metadata and applications
-            scenario_id (str): Unique identifier for the scenario, generated if None
+            crop_year (int): Year of the crop/season
+            grower_name (str): Name of the grower
+            field_name (str): Name of the field
+            field_area (float): Size of the field
+            field_area_uom (str): Unit of measure for field area (default: ha)
+            variety (str): Crop variety planted
+            applications (list): List of Application objects
         """
-        import uuid
-        
+        # Scenario name
         self.name = name
-        self.season_plan = season_plan or SeasonPlan()
-        self.scenario_id = scenario_id or str(uuid.uuid4())
-        self.is_baseline = False
+        
+        # Field information
+        self.crop_year = crop_year if crop_year is not None else date.today().year
+        self.grower_name = grower_name or ""
+        self.field_name = field_name or ""
+        self.field_area = 10.0 if field_area is None else field_area  # Default to 10.0
+        self.field_area_uom = field_area_uom or "ha"
+        self.variety = variety or ""
+        
+        # Applications
+        self.applications = applications if applications else []
         self.creation_date = date.today()
-        self.last_modified = date.today()
-        self.notes = ""
     
     def clone(self, new_name=None):
         """
@@ -50,23 +67,55 @@ class Scenario:
         if new_name is None:
             new_name = f"Copy of {self.name}"
             
-        # Create deep copy of the season plan
-        new_plan = copy.deepcopy(self.season_plan)
+        # Create deep copy of the applications
+        new_applications = copy.deepcopy(self.applications)
         
-        # Create new scenario with copied data but new ID
+        # Create new scenario with copied data
         new_scenario = Scenario(
             name=new_name,
-            season_plan=new_plan
+            crop_year=self.crop_year,
+            grower_name=self.grower_name,
+            field_name=self.field_name,
+            field_area=self.field_area,
+            field_area_uom=self.field_area_uom,
+            variety=self.variety,
+            applications=new_applications
         )
-        
-        # Copy notes but not baseline status
-        new_scenario.notes = self.notes
         
         return new_scenario
     
-    def mark_modified(self):
-        """Mark the scenario as modified with current timestamp."""
-        self.last_modified = date.today()
+    def add_application(self, application):
+        """
+        Add an application to the scenario.
+        
+        Args:
+            application: Application object to add
+        """
+        self.applications.append(application)
+    
+    def remove_application(self, index):
+        """
+        Remove an application from the scenario.
+        
+        Args:
+            index (int): Index of the application to remove
+            
+        Returns:
+            bool: True if successful, False if index out of range
+        """
+        if 0 <= index < len(self.applications):
+            self.applications.pop(index)
+            return True
+        return False
+    
+    def get_total_eiq(self):
+        """
+        Calculate the total Field EIQ for all applications in the scenario.
+        
+        Returns:
+            float: Sum of all application EIQs
+        """
+        return sum(app.field_eiq for app in self.applications if app.field_eiq is not None)
     
     def to_dict(self):
         """
@@ -76,13 +125,20 @@ class Scenario:
             dict: Scenario data as dictionary
         """
         return {
+            # Scenario name
             "name": self.name,
-            "scenario_id": self.scenario_id,
-            "is_baseline": self.is_baseline,
-            "creation_date": self.creation_date.isoformat(),
-            "last_modified": self.last_modified.isoformat(),
-            "notes": self.notes,
-            "season_plan": self.season_plan.to_dict()
+            
+            # Field information
+            "crop_year": self.crop_year,
+            "grower_name": self.grower_name,
+            "field_name": self.field_name,
+            "field_area": self.field_area,
+            "field_area_uom": self.field_area_uom,
+            "variety": self.variety,
+            
+            # Applications
+            "applications": [app.to_dict() for app in self.applications],
+            "creation_date": self.creation_date.isoformat()
         }
     
     @classmethod
@@ -96,33 +152,33 @@ class Scenario:
         Returns:
             Scenario: New Scenario instance
         """
-        # Create season plan from nested data
-        season_plan = None
-        if "season_plan" in data:
-            season_plan = SeasonPlan.from_dict(data["season_plan"])
+        from data.application_model import Application
+        
+        # Extract field area with safe default
+        field_area = data.get("field_area")
+        if field_area is None:
+            field_area = 10.0
         
         # Create scenario with basic properties
         scenario = cls(
             name=data.get("name", "Unnamed Scenario"),
-            season_plan=season_plan,
-            scenario_id=data.get("scenario_id")
+            crop_year=data.get("crop_year"),
+            grower_name=data.get("grower_name", ""),
+            field_name=data.get("field_name", ""),
+            field_area=field_area,
+            field_area_uom=data.get("field_area_uom", "ha"),
+            variety=data.get("variety", "")
         )
         
-        # Set additional properties
-        scenario.is_baseline = data.get("is_baseline", False)
-        scenario.notes = data.get("notes", "")
+        # Convert application dictionaries to Application objects
+        if "applications" in data and isinstance(data["applications"], list):
+            scenario.applications = [Application.from_dict(app_data) for app_data in data["applications"]]
         
-        # Convert date strings to date objects
+        # Set creation date if provided
         if "creation_date" in data and isinstance(data["creation_date"], str):
             try:
                 scenario.creation_date = date.fromisoformat(data["creation_date"])
             except ValueError:
                 scenario.creation_date = date.today()
-                
-        if "last_modified" in data and isinstance(data["last_modified"], str):
-            try:
-                scenario.last_modified = date.fromisoformat(data["last_modified"])
-            except ValueError:
-                scenario.last_modified = date.today()
         
         return scenario

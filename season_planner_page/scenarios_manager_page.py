@@ -31,7 +31,7 @@ class ScenariosManagerPage(QWidget):
         super().__init__(parent)
         self.parent = parent
         self.scenarios = []  # List of all scenarios
-        self.scenario_tabs = {}  # Map scenario IDs to tab pages
+        self.scenario_tabs = {}  # Map scenario names to tab pages
         self.setup_ui()
         self.add_new_scenario()  # Start with one default scenario
     
@@ -158,7 +158,7 @@ class ScenariosManagerPage(QWidget):
         
         # Store references
         self.scenarios.append(scenario)
-        self.scenario_tabs[scenario.scenario_id] = scenario_page
+        self.scenario_tabs[scenario.name] = scenario_page  # Using name as key instead of ID
         
         # Update UI state
         self.update_buttons_state()
@@ -242,7 +242,7 @@ class ScenariosManagerPage(QWidget):
         if result == QMessageBox.Yes:
             self.tab_widget.removeTab(index)
             self.scenarios.remove(scenario)
-            del self.scenario_tabs[scenario.scenario_id]
+            del self.scenario_tabs[scenario.name]  # Using name instead of ID
             self.update_buttons_state()
             self.update_eiq_display()
     
@@ -263,12 +263,28 @@ class ScenariosManagerPage(QWidget):
         Args:
             scenario: The changed Scenario object
         """
-        # Update tab text if name changed
-        for i in range(self.tab_widget.count()):
-            page = self.tab_widget.widget(i)
-            if page.get_scenario().scenario_id == scenario.scenario_id:
-                self.tab_widget.setTabText(i, scenario.name)
+        # Find the scenario page - we need this since name may have changed
+        scenario_page = None
+        for page in [self.tab_widget.widget(i) for i in range(self.tab_widget.count())]:
+            if page.get_scenario() is scenario:
+                scenario_page = page
                 break
+        
+        if scenario_page:
+            # Find the tab index
+            for i in range(self.tab_widget.count()):
+                if self.tab_widget.widget(i) is scenario_page:
+                    # Update tab text
+                    self.tab_widget.setTabText(i, scenario.name)
+                    break
+                    
+            # Update the scenario tabs dictionary if name changed
+            for old_name in list(self.scenario_tabs.keys()):
+                if self.scenario_tabs[old_name] is scenario_page and old_name != scenario.name:
+                    # The name changed, so update the dictionary
+                    self.scenario_tabs[scenario.name] = scenario_page
+                    del self.scenario_tabs[old_name]
+                    break
         
         self.update_eiq_display()
     
@@ -316,5 +332,5 @@ class ScenariosManagerPage(QWidget):
     
     def refresh_product_data(self):
         """Refresh product data when filtered products change in the main window."""
-        for scenario_id, tab_page in self.scenario_tabs.items():
+        for name, tab_page in self.scenario_tabs.items():
             tab_page.refresh_product_data()

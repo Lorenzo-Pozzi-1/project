@@ -6,6 +6,7 @@ This module provides a tab page for viewing and editing a single scenario.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import Signal
+from datetime import date
 from common.styles import MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, get_title_font
 from common.widgets import ContentFrame
 from season_planner_page.widgets import SeasonPlanMetadataWidget, ApplicationsTableContainer
@@ -42,7 +43,7 @@ class ScenarioTabPage(QWidget):
         main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
         main_layout.setSpacing(SPACING_MEDIUM)
         
-        # Season Plan Metadata Widget
+        # Scenario Metadata Widget
         self.metadata_widget = SeasonPlanMetadataWidget()
         self.metadata_widget.metadata_changed.connect(self.on_metadata_changed)
         main_layout.addWidget(self.metadata_widget)
@@ -79,45 +80,41 @@ class ScenarioTabPage(QWidget):
             return
             
         # Set metadata with safe defaults
-        season_plan = self.scenario.season_plan
         metadata = {
-            "crop_year": season_plan.crop_year or "",
-            "grower_name": season_plan.grower_name or "",
-            "field_name": season_plan.field_name or "",
-            "field_area": 0 if season_plan.field_area is None else season_plan.field_area,
-            "field_area_uom": season_plan.field_area_uom,
-            "variety": season_plan.variety or ""
+            "crop_year": self.scenario.crop_year,
+            "grower_name": self.scenario.grower_name or "",
+            "field_name": self.scenario.field_name or "",
+            "field_area": 10.0 if self.scenario.field_area is None else self.scenario.field_area,
+            "field_area_uom": self.scenario.field_area_uom or "ha",
+            "variety": self.scenario.variety or ""
         }
         self.metadata_widget.set_metadata(metadata)
         
         # Set applications
         self.applications_container.set_applications(
-            [app.to_dict() for app in season_plan.applications]
+            [app.to_dict() for app in self.scenario.applications]
         )
     
     def on_metadata_changed(self):
-        """Handle changes to season plan metadata."""
+        """Handle changes to scenario metadata."""
         if not self.scenario:
             return
             
         metadata = self.metadata_widget.get_metadata()
         
         # Update scenario with new metadata
-        self.scenario.season_plan.crop_year = metadata["crop_year"]
-        self.scenario.season_plan.grower_name = metadata["grower_name"]
-        self.scenario.season_plan.field_name = metadata["field_name"]
-        self.scenario.season_plan.field_area = metadata["field_area"]
-        self.scenario.season_plan.field_area_uom = metadata["field_area_uom"]
-        self.scenario.season_plan.variety = metadata["variety"]
+        self.scenario.crop_year = metadata["crop_year"]
+        self.scenario.grower_name = metadata["grower_name"]
+        self.scenario.field_name = metadata["field_name"]
+        self.scenario.field_area = metadata["field_area"]
+        self.scenario.field_area_uom = metadata["field_area_uom"]
+        self.scenario.variety = metadata["variety"]
         
         # Update field area in applications container
         self.applications_container.set_field_area(
             metadata["field_area"], 
             metadata["field_area_uom"]
         )
-        
-        # Mark scenario as modified
-        self.scenario.mark_modified()
         
         # Emit signal
         self.scenario_changed.emit(self.scenario)
@@ -132,12 +129,9 @@ class ScenarioTabPage(QWidget):
         
         # Update scenario with applications
         from data.application_model import Application
-        self.scenario.season_plan.applications = [
+        self.scenario.applications = [
             Application.from_dict(app_data) for app_data in applications
         ]
-        
-        # Mark scenario as modified
-        self.scenario.mark_modified()
         
         # Emit signal
         self.scenario_changed.emit(self.scenario)
