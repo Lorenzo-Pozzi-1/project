@@ -146,7 +146,7 @@ class SeasonPlanMetadataWidget(QWidget):
             "crop_year": "",
             "grower_name": "",
             "field_name": "",
-            "field_area": "",
+            "field_area": "0",
             "field_area_uom": "acre",
             "variety": ""
         }

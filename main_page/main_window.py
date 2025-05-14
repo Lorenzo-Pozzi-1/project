@@ -11,7 +11,7 @@ from PySide6.QtCore import Signal
 from data.product_repository import ProductRepository
 from main_page.home_page import HomePage
 from products_page.products_page import ProductsPage
-from season_planner_page.season_planner_page import SeasonPlannerPage
+from season_planner_page.scenarios_manager_page import ScenariosManagerPage
 from eiq_calculator_page.eiq_calculator_page import EiqCalculatorPage
 from common.styles import YELLOW_BAR_STYLE
 
@@ -64,9 +64,9 @@ class MainWindow(QMainWindow):
         self.products_page = ProductsPage(self)
         self.stacked_widget.addWidget(self.products_page)
         
-        # Create and add the season planner page (index 2)
-        self.season_planner_page = SeasonPlannerPage(self)
-        self.stacked_widget.addWidget(self.season_planner_page)
+        # Create and add the scenarios manager page (index 2)
+        self.scenarios_manager_page = ScenariosManagerPage(self)
+        self.stacked_widget.addWidget(self.scenarios_manager_page)
         
         # Create and add the EIQ calculator page (index 3)
         self.eiq_calculator_page = EiqCalculatorPage(self)
@@ -119,7 +119,8 @@ class MainWindow(QMainWindow):
         """Refresh all pages to get product data up to date with filters."""
         self.eiq_calculator_page.refresh_product_data()
         self.products_page.refresh_product_data()
-        # In the future add any other pages here
+        self.scenarios_manager_page.refresh_product_data()
+        # in the future add any new page that needs to be refreshed
 
     def navigate_to_page(self, page_index):
         """Navigate to the specified page index."""
