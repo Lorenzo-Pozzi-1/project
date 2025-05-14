@@ -3,7 +3,7 @@
 from contextlib import contextmanager
 from PySide6.QtCore import Qt, Signal, QMimeData
 from PySide6.QtGui import QDrag
-from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, QSizePolicy, QFrame, QApplication
+from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox
 from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository
 from common.styles import APPLICATION_ROW_STYLE
@@ -17,6 +17,7 @@ class ApplicationRowWidget(QFrame):
     data_changed = Signal(object)  # Emitted when any data in the row changes
     drag_started = Signal(object)  # Emitted when a drag starts
     drag_ended = Signal(object)    # Emitted when a drag ends
+    delete_requested = Signal(object)  # Emitted when delete is confirmed
     ROW_HEIGHT = 40
     
     def __init__(self, parent=None, field_area=10.0, field_area_uom="ha", index=0):
@@ -90,7 +91,7 @@ class ApplicationRowWidget(QFrame):
         """Set up the UI components for the application row."""
         # Main layout - horizontal row
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(2, 2, 2, 2)
+        layout.setContentsMargins(2, 1, 2, 1)
         layout.setSpacing(5)
 
         # Add drag handle
@@ -101,6 +102,12 @@ class ApplicationRowWidget(QFrame):
         drag_handle.setCursor(Qt.OpenHandCursor)
         layout.addWidget(drag_handle)
         
+        # Add application number label
+        self.app_number_label = QLabel(str(self.index + 1))  # +1 for human-readable numbering
+        self.app_number_label.setAlignment(Qt.AlignCenter)
+        self.app_number_label.setStyleSheet("font-weight: bold;")
+        layout.addWidget(self.app_number_label)
+
         # Date field
         self.date_edit = QLineEdit()
         self.date_edit.setPlaceholderText("Enter date or description")
@@ -150,11 +157,23 @@ class ApplicationRowWidget(QFrame):
         self.field_eiq_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.field_eiq_label)
         
-        # Set stretch factors
-        stretches = [2, 1, 3, 1, 1, 1, 2, 2, 1]  # Date, Type, Product, Rate, UOM, Area, Method, AIGroups, EIQ
+        # Add delete button at the end
+        delete_button = QLabel("✕")
+        delete_button.setFixedSize(24, 24)
+        delete_button.setCursor(Qt.PointingHandCursor)
+        delete_button.setToolTip("Remove application")
+        delete_button.clicked.connect(self.confirm_delete)
+        layout.addWidget(delete_button)
+        
+        # Update stretch factors for the new delete button
+        stretches = [0, 1, 2, 1, 3, 1, 1, 1, 2, 2, 1, 0]  # Added 0 for non-stretching delete button
         for i, stretch in enumerate(stretches):
             layout.setStretch(i, stretch)
     
+    def update_app_number(self, number):
+        """Update the displayed application number."""
+        self.app_number_label.setText(str(number))
+
     def _clear_product_fields(self):
         """Clear product-specific fields like AI groups and EIQ."""
         self.ai_groups_label.setText("")
@@ -332,7 +351,6 @@ class ApplicationRowWidget(QFrame):
         if index >= 0:
             combo.setCurrentIndex(index)
 
-    # Add drag & drop methods
     def mousePressEvent(self, event):
         """Handle mouse press events to initiate drag."""
         if event.button() == Qt.LeftButton:
@@ -394,3 +412,43 @@ class ApplicationRowWidget(QFrame):
     def set_index(self, index):
         """Update the row index."""
         self.index = index
+
+    def confirm_delete(self):
+        """Show confirmation dialog for deleting the application."""
+        product_name = self.product_combo.currentText()
+        if product_name == "Select a product...":
+            product_name = "this application"
+        
+        # Create message box
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Confirm Removal")
+        msg_box.setText(f"Are you sure you want to remove this application: {product_name}?")
+        msg_box.setIcon(QMessageBox.Question)
+        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg_box.setDefaultButton(QMessageBox.No)  # Default to No for safety
+        
+        # Style the message box to match your app's aesthetics
+        msg_box.setStyleSheet("""
+            QMessageBox {
+                background-color: white;
+            }
+            QPushButton {
+                padding: 6px 12px;
+                border-radius: 4px;
+            }
+            QPushButton[text="Yes"] {
+                background-color: #EF4444;
+                color: white;
+            }
+            QPushButton[text="No"] {
+                background-color: #E5E7EB;
+                color: #1F2937;
+            }
+        """)
+        
+        # Show the dialog and process the result
+        result = msg_box.exec_()
+        
+        if result == QMessageBox.Yes:
+            # Signal parent to remove this row
+            self.delete_requested.emit(self)

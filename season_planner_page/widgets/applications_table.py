@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel
 from PySide6.QtCore import Qt, Signal, QEasingCurve, QParallelAnimationGroup, QPropertyAnimation
 from PySide6.QtGui import QPalette, QColor
 from season_planner_page.widgets.application_row import ApplicationRowWidget
+from common.styles import COMPARISON_HEADER_STYLE
 
 
 class ApplicationsTableContainer(QWidget):
@@ -33,45 +34,57 @@ class ApplicationsTableContainer(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
         
+        # ----- HEADER SECTION -----
+        self._setup_header(main_layout)
+        
+        # ----- SCROLLABLE CONTENT AREA -----
+        self._setup_scroll_area(main_layout)
+        
+        # ----- DROP INDICATOR -----
+        self._create_drop_indicator()
+    
+    def _setup_header(self, main_layout):
+        """Set up the header section of the table."""
         # Create header row
         header_layout = QHBoxLayout()
         header_layout.setContentsMargins(5, 5, 5, 5)
         header_layout.setSpacing(5)
         
-        # Add drag column to header
-        drag_label = QLabel("")
-        drag_label.setFixedWidth(20)
-        header_layout.addWidget(drag_label)
+        # Define headers and their stretch factors
+        headers = ["", "App. No", "Date", "Type", "Product", "Rate", "UOM", "Area", "Method", "AI Groups", "Field EIQ"]
+        stretches = [0, 1, 2, 1, 3, 1, 1, 1, 2, 2, 1]
+        
+        # Create and add header labels
+        for i, header_text in enumerate(headers):
+            label = QLabel(header_text)
+            label.setAlignment(Qt.AlignCenter)
+            if i > 0:  # Skip styling for the drag handle column
+                label.setStyleSheet("font-weight: bold;")
+            if i == 0:  # Drag handle column
+                label.setFixedWidth(20)
+            header_layout.addWidget(label)
+            header_layout.setStretch(i, stretches[i])
         
         # Create header widget with fixed height
         header_widget = QWidget()
         header_widget.setFixedHeight(ApplicationRowWidget.ROW_HEIGHT)
         header_widget.setLayout(header_layout)
-        
-        # Add header labels
-        headers = ["Date", "Type", "Product", "Rate", "UOM", "Area", "Method", "AI Groups", "Field EIQ"]
-        for header_text in headers:
-            label = QLabel(header_text)
-            label.setAlignment(Qt.AlignCenter)
-            header_layout.addWidget(label)
-        
-        # Set stretch factors matching those in ApplicationRowWidget
-        stretches = [2, 1, 3, 1, 1, 1, 2, 2, 1]  # Date, Type, Product, Rate, UOM, Area, Method, AIGroups, EIQ
-        for i, stretch in enumerate(stretches):
-            header_layout.setStretch(i, stretch)
+        header_widget.setStyleSheet(COMPARISON_HEADER_STYLE)
         
         main_layout.addWidget(header_widget)
-        
-        # Create scroll area for application rows
+    
+    def _setup_scroll_area(self, main_layout):
+        """Set up the scrollable area for application rows."""
+        # Create scroll area
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setFrameShape(QFrame.NoFrame)
         
         # Create container widget for rows
         self.rows_container = QWidget()
-        self.rows_container.setObjectName("rowsContainer")  # For styling
+        self.rows_container.setObjectName("rowsContainer")
         
-        # Add style for drop indicator
+        # Set styling for container including drop indicator
         self.rows_container.setStyleSheet("""
             QWidget#dropIndicator {
                 background-color: #3b82f6;
@@ -80,15 +93,18 @@ class ApplicationsTableContainer(QWidget):
             }
         """)
         
+        # Create layout for rows
         self.rows_layout = QVBoxLayout(self.rows_container)
         self.rows_layout.setContentsMargins(5, 5, 5, 5)
-        self.rows_layout.setSpacing(4)
-        self.rows_layout.addStretch(1)  # Add stretch to push rows to the top
+        self.rows_layout.setSpacing(1)
+        self.rows_layout.addStretch(1)  # Push rows to the top
         
+        # Set up the scroll area
         self.scroll_area.setWidget(self.rows_container)
         main_layout.addWidget(self.scroll_area)
-        
-        # Create drop indicator widget
+    
+    def _create_drop_indicator(self):
+        """Create the drop indicator for drag and drop operations."""
         self.drop_indicator = QFrame(self.rows_container)
         self.drop_indicator.setObjectName("dropIndicator")
         self.drop_indicator.setFixedHeight(3)
@@ -103,16 +119,27 @@ class ApplicationsTableContainer(QWidget):
             field_area_uom=self.field_area_uom,
             index=index
         )
-        
+
         # Connect signals
         row_widget.data_changed.connect(self.on_application_data_changed)
         row_widget.drag_started.connect(self.on_row_drag_started)
         row_widget.drag_ended.connect(self.on_row_drag_ended)
+        row_widget.delete_requested.connect(self.remove_application_row)
         
         # Add to layout and tracking list
         self.rows_layout.insertWidget(self.rows_layout.count() - 1, row_widget)
         self.application_rows.append(row_widget)
         
+        # Update all row numbers (or just set this one)
+        row_widget.update_app_number(index + 1)
+
+        # Apply alternating row colors
+        if index % 2 == 1:  # Odd rows
+            palette = row_widget.palette()
+            palette.setColor(QPalette.Window, QColor("#F5F7FA"))
+            row_widget.setPalette(palette)
+            row_widget.setAutoFillBackground(True)
+
         # Emit signal for the new row
         self.applications_changed.emit()
         return row_widget
@@ -169,6 +196,7 @@ class ApplicationsTableContainer(QWidget):
         """Update the indices of all rows after reordering."""
         for i, row in enumerate(self.application_rows):
             row.set_index(i)
+            row.update_app_number(i + 1)  # Application numbers are 1-based
     
     def dragEnterEvent(self, event):
         """Handle drag enter events."""
@@ -330,3 +358,40 @@ class ApplicationsTableContainer(QWidget):
         
         # Emit signal as the order has changed
         self.applications_changed.emit()
+
+    def remove_application_row(self, row=None):
+        """
+        Remove an application row from the container.
+        
+        Args:
+            row: Row widget, index, or None (to remove last row)
+                
+        Returns:
+            bool: True if a row was removed
+        """
+        # Determine which row widget to remove
+        if isinstance(row, int) and 0 <= row < len(self.application_rows):
+            row_widget = self.application_rows[row]
+        elif row is None and self.application_rows:
+            row_widget = self.application_rows[-1]
+        else:
+            row_widget = row
+        
+        # Remove the widget if found
+        if row_widget in self.application_rows:
+            # Get the index for later use
+            index = self.application_rows.index(row_widget)
+            
+            # Remove from list and layout
+            self.application_rows.remove(row_widget)
+            self.rows_layout.removeWidget(row_widget)
+            row_widget.deleteLater()
+            
+            # Update indices and app numbers
+            self.update_row_indices()
+            
+            # Emit signal that applications changed
+            self.applications_changed.emit()
+            return True
+        
+        return False

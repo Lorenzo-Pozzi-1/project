@@ -81,12 +81,10 @@ class SeasonPlannerPage(QWidget):
         self.applications_container.applications_changed.connect(self.update_eiq_display)
         applications_layout.addWidget(self.applications_container)
         
-        # Buttons for table actions
+        # Button to add new application
         buttons_layout = QHBoxLayout()
         self._create_button("Add Application", PRIMARY_BUTTON_STYLE, 
                            self.add_application, buttons_layout)
-        self._create_button("Remove Selected", SECONDARY_BUTTON_STYLE, 
-                           self.remove_application, buttons_layout)
         buttons_layout.addStretch(1)  # Add spacer to push buttons to the left
         
         applications_layout.addLayout(buttons_layout)
@@ -129,11 +127,6 @@ class SeasonPlannerPage(QWidget):
     def add_application(self):
         """Add a new application row to the container."""
         self.applications_container.add_application_row()
-    
-    def remove_application(self):
-        """Remove the selected application row from the container."""
-        # This is a placeholder - currently we can't select rows in the container
-        print("Remove Application clicked")
     
     def update_eiq_display(self):
         """Update the EIQ display based on current applications."""

@@ -196,13 +196,16 @@ FILTER_ROW_STYLE = f"""
 """
 
 # Application row style
-APPLICATION_ROW_STYLE = f"""
-    QFrame {{
-        border: 1px solid #ccc; 
-        border-radius: 4px; 
-        background-color: #f8f8f8; 
-        margin: 1px;
-    }}
+APPLICATION_ROW_STYLE = """
+    QFrame {
+        border: none;
+        border-bottom: 1px solid #E0E5EB;
+        background-color: transparent;
+        padding: 2px;
+    }
+    QFrame:hover {
+        background-color: #EAEFF5;
+    }
 """
 
 # Yellow bar style for bottom of pages
