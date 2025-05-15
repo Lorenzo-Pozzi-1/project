@@ -271,20 +271,33 @@ class ApplicationRowWidget(QFrame):
     def set_application_data(self, data):
         """Set the application data from a dictionary."""
         with self.blocked_signals():
+            # Set date first (unrelated to product selection)
             if "application_date" in data:
                 self.date_edit.setText(data["application_date"])
-                
-            if "product_type" in data:
-                index = self.product_type_combo.findText(data["product_type"])
+            
+            # Handle product type first
+            product_type = data.get("product_type")
+            product_name = data.get("product_name")
+            
+            # Step 1: Set the product type if available
+            if product_type:
+                index = self.product_type_combo.findText(product_type)
                 if index >= 0:
                     self.product_type_combo.setCurrentIndex(index)
-                self.on_product_type_changed()
-                
-            if "product_name" in data:
-                index = self.product_combo.findText(data["product_name"])
+                    # Manually call this to update product list without emitting signals
+                    self.on_product_type_changed()
+                else:
+                    print(f"Warning: Product type '{product_type}' not found in dropdown")
+            
+            # Step 2: Now set the product name after product list is populated
+            if product_name:
+                index = self.product_combo.findText(product_name)
                 if index >= 0:
                     self.product_combo.setCurrentIndex(index)
-                
+                else:
+                    print(f"Warning: Product name '{product_name}' not found in dropdown for type '{product_type}'")
+            
+            # Set the remaining fields
             if "rate" in data:
                 self.rate_spin.setValue(data["rate"])
                 
@@ -301,6 +314,7 @@ class ApplicationRowWidget(QFrame):
                 if index >= 0:
                     self.method_combo.setCurrentIndex(index)
         
+        # Now let the signals propagate normally
         self.calculate_field_eiq()
         self.data_changed.emit(self)
     

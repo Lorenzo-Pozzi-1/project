@@ -32,12 +32,7 @@ class ScenarioTabPage(QWidget):
         """
         super().__init__(parent)
         self.parent = parent
-        self.scenario = scenario or Scenario()
-        
-        # DEBUGGING: Check scenario at initialization
-        print(f"ScenarioTabPage initialized with: {self.scenario.name}")
-        print(f"Applications count at init: {len(self.scenario.applications)}")
-        
+        self.scenario = scenario or Scenario()        
         self.setup_ui()
         self.load_scenario_data()
     
@@ -76,30 +71,25 @@ class ScenarioTabPage(QWidget):
         main_layout.addWidget(applications_frame)
     
     def load_scenario_data(self):
-        """Load data from the scenario into the UI."""
-        # DEBUGGING: Check applications before loading
-        print(f"Loading scenario data for: {self.scenario.name}")
-        print(f"Applications count before loading: {len(self.scenario.applications)}")
+        """Populate the UI with data from the current scenario object."""
         
-        # Set metadata with defaults
+        # Convert application objects to dictionaries for the table widget
+        app_dicts = [app.to_dict() for app in self.scenario.applications]
+
+        # Update the metadata widget with the scenario's values with safe defaults
         metadata = {
             "crop_year": self.scenario.crop_year,
             "grower_name": self.scenario.grower_name or "",
             "field_name": self.scenario.field_name or "",
-            "field_area": self.scenario.field_area or 10.0,
-            "field_area_uom": self.scenario.field_area_uom or "ha",
+            "field_area": self.scenario.field_area or 0,
+            "field_area_uom": self.scenario.field_area_uom or "acre",
             "variety": self.scenario.variety or ""
         }
         self.metadata_widget.set_metadata(metadata)
-        
-        # DEBUGGING: Convert applications to dict and print
-        app_dicts = [app.to_dict() for app in self.scenario.applications]
-        print(f"Application dicts created: {len(app_dicts)}")
-        
-        # Set applications and default field area
+
+        # Populate the applications table with the scenario's application data
         self.applications_container.set_applications(app_dicts)
-        self.applications_container.set_field_area(metadata["field_area"], metadata["field_area_uom"])
-    
+        
     def update_scenario(self):
         """Update scenario with current UI data and emit change signal."""
         # Update metadata

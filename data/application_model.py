@@ -18,6 +18,7 @@ class Application:
     
     def __init__(self, 
                  application_date=None,
+                 product_type=None,
                  product_name=None,
                  rate=None,
                  rate_uom=None,
@@ -29,7 +30,8 @@ class Application:
         Initialize an Application instance.
         
         Args:
-            application_date (date): Date of application
+            application_date (str): Date of application
+            product_type (str): Type of product applied
             product_name (str): Name of the product applied
             rate (float): Application rate
             rate_uom (str): Unit of measure for application rate
@@ -38,7 +40,8 @@ class Application:
             ai_groups (list): Active ingredient groups used (for resistance management)
             field_eiq (float): Calculated field EIQ for this application
         """
-        self.application_date = application_date if application_date else date.today()
+        self.application_date = application_date if application_date else None
+        self.product_type = product_type
         self.product_name = product_name
         self.rate = rate
         self.rate_uom = rate_uom
@@ -55,7 +58,8 @@ class Application:
             dict: Application data as dictionary
         """
         return {
-            "application_date": self.application_date.isoformat() if isinstance(self.application_date, date) else self.application_date,
+            "application_date": self.application_date,
+            "product_type": self.product_type,
             "product_name": self.product_name,
             "rate": self.rate,
             "rate_uom": self.rate_uom,
@@ -79,15 +83,8 @@ class Application:
         app = cls()
         
         # Convert date string to date object if needed
-        if "application_date" in data:
-            if isinstance(data["application_date"], str):
-                try:
-                    app.application_date = date.fromisoformat(data["application_date"])
-                except ValueError:
-                    app.application_date = None
-            else:
-                app.application_date = data["application_date"]
-        
+        app.application_date = data.get("application_date")
+        app.product_type = data.get("product_type")
         app.product_name = data.get("product_name")
         app.rate = data.get("rate")
         app.rate_uom = data.get("rate_uom")

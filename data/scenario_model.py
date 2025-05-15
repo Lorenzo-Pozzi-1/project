@@ -5,8 +5,8 @@ This module defines the Scenario class which represents a complete
 pesticide application scenario for a season.
 """
 
-import copy
 from datetime import date
+
 
 class Scenario:
     """
@@ -51,22 +51,14 @@ class Scenario:
         
         # Applications
         self.applications = applications if applications else []
-        self.creation_date = date.today()
     
-    def clone(self, new_name=None):
+    def clone(self):
         """
         Create a copy of this scenario with a new name.
-        
-        Args:
-            new_name (str): Name for the new scenario, defaults to "Copy of [original]"
             
         Returns:
             Scenario: New scenario instance with copied data
         """
-        # Create default name if not provided
-        if new_name is None:
-            new_name = f"Copy of {self.name}"
-            
         # Copy applications using the Application model's to_dict/from_dict methods for deep cloning
         from data.application_model import Application
         new_applications = []
@@ -74,10 +66,10 @@ class Scenario:
             app_dict = app.to_dict()
             new_app = Application.from_dict(app_dict)
             new_applications.append(new_app)
-            
+        
         # Create new scenario with copied data
         new_scenario = Scenario(
-            name=new_name,
+            name=f"Copy of {self.name}",
             crop_year=self.crop_year,
             grower_name=self.grower_name,
             field_name=self.field_name,
@@ -143,7 +135,6 @@ class Scenario:
             
             # Applications
             "applications": [app.to_dict() for app in self.applications],
-            "creation_date": self.creation_date.isoformat()
         }
     
     @classmethod
@@ -178,12 +169,5 @@ class Scenario:
         # Convert application dictionaries to Application objects
         if "applications" in data and isinstance(data["applications"], list):
             scenario.applications = [Application.from_dict(app_data) for app_data in data["applications"]]
-        
-        # Set creation date if provided
-        if "creation_date" in data and isinstance(data["creation_date"], str):
-            try:
-                scenario.creation_date = date.fromisoformat(data["creation_date"])
-            except ValueError:
-                scenario.creation_date = date.today()
         
         return scenario
