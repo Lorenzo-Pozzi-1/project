@@ -8,7 +8,7 @@ application scenarios through tabs.
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
     QTabWidget, QMessageBox, QInputDialog, QSpacerItem)
 from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, 
-    SECONDARY_BUTTON_STYLE, get_title_font)
+    SECONDARY_BUTTON_STYLE, SUBTITLE_FONT_SIZE, get_title_font)
 from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar
 from season_planner_page.scenario_tab import ScenarioTabPage
 from data.scenario_model import Scenario
@@ -79,7 +79,7 @@ class ScenariosManagerPage(QWidget):
         # EIQ Results Display
         results_frame = ContentFrame()
         results_layout = QVBoxLayout()
-        results_layout.addWidget(QLabel("Scenario EIQ Impact", font=get_title_font(size=16)))
+        results_layout.addWidget(QLabel("Scenario EIQ Impact", font=get_title_font(SUBTITLE_FONT_SIZE)))
         
         # Create score bar with custom thresholds and labels
         self.eiq_score_bar = ScoreBar(

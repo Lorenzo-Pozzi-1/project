@@ -6,7 +6,7 @@ from PySide6.QtGui import QDrag
 from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QPushButton
 from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository
-from common.styles import APPLICATION_ROW_STYLE
+from common.styles import APPLICATION_ROW_STYLE, REMOVE_BUTTON_STYLE
 from math_module.eiq_calculations import calculate_product_field_eiq
 from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
@@ -129,7 +129,7 @@ class ApplicationRowWidget(QFrame):
         delete_button.setFixedSize(24, 24)
         delete_button.setCursor(Qt.PointingHandCursor)
         delete_button.setToolTip("Remove application")
-        delete_button.setStyleSheet("color: #EF4026; font-weight: bold;")
+        delete_button.setStyleSheet(REMOVE_BUTTON_STYLE)
         delete_button.clicked.connect(self.confirm_delete)
         
         # Add widgets to layout
