@@ -7,7 +7,7 @@ values of multiple pesticide products with card-based UI and improved UX.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFrame, QScrollArea
 from PySide6.QtCore import Qt, Signal
-from common.styles import REMOVE_BUTTON_STYLE, get_subtitle_font, PRIMARY_BUTTON_STYLE
+from common.styles import FRAME_STYLE, MARGIN_MEDIUM, REMOVE_BUTTON_STYLE, SPACING_LARGE, SPACING_MEDIUM, get_subtitle_font, PRIMARY_BUTTON_STYLE
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
 from eiq_calculator_page.widgets import ProductSelectionWidget, ApplicationParamsWidget, EiqComparisonTable
@@ -55,16 +55,21 @@ class ProductCard(QFrame):
         """Set up the UI components."""
         # Main layout
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(10, 10, 10, 10)
-        layout.setSpacing(10)
+        layout.setContentsMargins(MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM)
+        layout.setSpacing(SPACING_MEDIUM)
+        
+        # Set minimum sizes, allowing for resizing
+        self.setMinimumWidth(400)
+        self.setMinimumHeight(250)
         
         # Header with card title and remove button
         header_layout = QHBoxLayout()
         
-        # Card title
-        card_title = QLabel(f"Product {self.index + 1}")
-        card_title.setFont(get_subtitle_font())
-        header_layout.addWidget(card_title)
+        # Card title - store reference
+        self.card_title = QLabel(f"Product {self.index + 1}")
+        self.card_title.setFont(get_subtitle_font())
+        self.card_title.setStyleSheet(FRAME_STYLE)
+        header_layout.addWidget(self.card_title)
         
         # Push remove button to right
         header_layout.addStretch(1)
@@ -81,9 +86,14 @@ class ProductCard(QFrame):
         # Product selection widget
         self.product_selection = ProductSelectionWidget()
         self.product_selection.product_selected.connect(self.update_product_info)
+        self.product_selection.setStyleSheet(FRAME_STYLE)
         layout.addWidget(self.product_selection)
         
-        # Active ingredients label
+        # Active ingredients section
+        ai_frame = QFrame()
+        ai_frame.setStyleSheet(FRAME_STYLE)
+        ai_frame_layout = QVBoxLayout(ai_frame)
+        
         ai_layout = QHBoxLayout()
         ai_layout.addWidget(QLabel("Active Ingredients:"))
         
@@ -91,11 +101,13 @@ class ProductCard(QFrame):
         self.ai_label.setWordWrap(True)
         ai_layout.addWidget(self.ai_label, 1)  # Give label stretch factor
         
-        layout.addLayout(ai_layout)
+        ai_frame_layout.addLayout(ai_layout)
+        layout.addWidget(ai_frame)
         
         # Application parameters
         self.app_params = ApplicationParamsWidget()
         self.app_params.params_changed.connect(lambda: self.data_changed.emit(self.index))
+        self.app_params.setStyleSheet(FRAME_STYLE)
         layout.addWidget(self.app_params)
     
     def refresh_product_types(self):
@@ -118,8 +130,10 @@ class ProductCard(QFrame):
             products_repo = ProductRepository.get_instance()
             self.product = products_repo.get_product_by_name(product_name)
             
+            # If product doesn't exist, clear and return
             if not self.product:
-                raise ValueError(f"Product '{product_name}' not found")
+                self.clear_product()
+                return
             
             # Get active ingredients data
             self.active_ingredients = self.product.get_ai_data()
@@ -128,13 +142,8 @@ class ProductCard(QFrame):
             ai_display = ", ".join(self.product.active_ingredients) if self.product.active_ingredients else "None"
             self.ai_label.setText(ai_display)
             
-            # Update application parameters
-            # Set application rate to max rate if available, otherwise min rate
-            rate = 0.0
-            if self.product.label_maximum_rate is not None:
-                rate = self.product.label_maximum_rate
-            elif self.product.label_minimum_rate is not None:
-                rate = self.product.label_minimum_rate
+            # Update application parameters - simplified rate selection
+            rate = self.product.label_maximum_rate or self.product.label_minimum_rate or 0.0
             
             # Set unit to product's UOM if available
             unit = self.product.rate_uom
@@ -192,14 +201,7 @@ class ProductCard(QFrame):
             index (int): The new index for this card
         """
         self.index = index
-        
-        # Find the title label in the header layout and update it
-        header_layout = self.layout().itemAt(0).layout()
-        for i in range(header_layout.count()):
-            item = header_layout.itemAt(i)
-            if item.widget() and isinstance(item.widget(), QLabel):
-                item.widget().setText(f"Product {self.index + 1}")
-                break
+        self.card_title.setText(f"Product {self.index + 1}")
 
 
 class ProductComparisonCalculatorTab(QWidget):
@@ -216,8 +218,8 @@ class ProductComparisonCalculatorTab(QWidget):
         """Set up the UI components."""
         # Main layout
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(10, 10, 10, 10)
-        main_layout.setSpacing(15)
+        main_layout.setContentsMargins(MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM)
+        main_layout.setSpacing(SPACING_LARGE)
         
         # Products selection section
         selection_frame = ContentFrame()
@@ -232,14 +234,13 @@ class ProductComparisonCalculatorTab(QWidget):
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setFrameStyle(QFrame.NoFrame)
-        # Change to horizontal scrollbar
         self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         
         # Container for product cards
         self.cards_container = QWidget()
-        # Change vertical layout to horizontal layout
         self.cards_layout = QHBoxLayout(self.cards_container)
+        self.cards_container.setStyleSheet("background-color: white;")
         self.cards_layout.setContentsMargins(0, 0, 0, 0)
         self.cards_layout.setSpacing(10)
         self.cards_layout.addStretch(1)  # Push cards to left
@@ -305,7 +306,7 @@ class ProductComparisonCalculatorTab(QWidget):
         Args:
             index (int): Index of the card to remove
         """
-        if index < 0 or index >= len(self.product_cards):
+        if not (0 <= index < len(self.product_cards)):
             return
         
         # Get the card
@@ -322,15 +323,13 @@ class ProductComparisonCalculatorTab(QWidget):
         
         # Update indices and titles of remaining cards
         for i, card in enumerate(self.product_cards):
-            card.index = i
             card.update_title(i)
         
         # Recalculate all products
         self.refresh_calculations()
     
-    def refresh_product_data(self):
-        """Refresh product data based on the filtered products."""
-        # Clear existing cards
+    def clear_all_cards(self):
+        """Clear all product cards."""
         while self.product_cards:
             card = self.product_cards.pop()
             self.cards_layout.removeWidget(card)
@@ -338,6 +337,11 @@ class ProductComparisonCalculatorTab(QWidget):
         
         # Clear comparison table
         self.comparison_table.clear_results()
+    
+    def refresh_product_data(self):
+        """Refresh product data based on the filtered products."""
+        # Clear existing cards
+        self.clear_all_cards()
         
         # Add a new empty card
         self.add_product_card()
@@ -349,18 +353,18 @@ class ProductComparisonCalculatorTab(QWidget):
         Args:
             index (int): Index of the product card to calculate
         """
-        if index < 0 or index >= len(self.product_cards):
+        # Validate index
+        if not (0 <= index < len(self.product_cards)):
             return
         
-        # Get the card
+        # Get the card and product data
         card = self.product_cards[index]
-        
-        # Get product data
         product_data = card.get_product_data()
+        product_id = f"card_{index}"
         
+        # Remove product if no valid data
         if not product_data:
-            # Remove from comparison table if no valid data
-            self.comparison_table.remove_product(product_id=f"card_{index}")
+            self.comparison_table.remove_product(product_id=product_id)
             return
         
         try:
@@ -372,21 +376,19 @@ class ProductComparisonCalculatorTab(QWidget):
                 product_data["applications"]
             )
             
-            # Update comparison table
+            # Update or remove from comparison table based on result
             if field_eiq > 0:
                 self.comparison_table.add_product_result(
                     product_data["product_name"],
                     field_eiq,
-                    product_id=f"card_{index}"  # Use a string with index to make it unique
+                    product_id=product_id
                 )
             else:
-                # Remove from table if calculation failed
-                self.comparison_table.remove_product(product_id=f"card_{index}")
+                self.comparison_table.remove_product(product_id=product_id)
             
         except Exception as e:
             print(f"Error calculating EIQ for product {index}: {e}")
-            # Remove from table on error
-            self.comparison_table.remove_product(product_id=f"card_{index}")
+            self.comparison_table.remove_product(product_id=product_id)
     
     def refresh_calculations(self):
         """Recalculate EIQ for all products."""

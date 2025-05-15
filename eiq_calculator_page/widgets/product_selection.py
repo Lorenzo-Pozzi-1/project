@@ -4,35 +4,30 @@ Product selection widgets for the LORENZO POZZI Pesticide App.
 This module provides reusable widgets for selecting pesticide products.
 """
 
-from PySide6.QtWidgets import QApplication, QComboBox, QFormLayout, QFrame, QLineEdit, QListWidget, QScrollArea, QVBoxLayout, QWidget
-from PySide6.QtCore import Qt, Signal, QTimer
-from common.styles import SUGGESTIONS_CONTAINER_STYLE, SUGGESTIONS_LIST_STYLE, get_body_font
+from PySide6.QtCore import Qt, Signal, QStringListModel, QEvent
+from PySide6.QtWidgets import QComboBox, QCompleter, QFormLayout, QLineEdit, QVBoxLayout, QWidget, QAbstractItemView
+from common.styles import get_body_font, SUGGESTIONS_LIST_STYLE
 from data.product_repository import ProductRepository
 
 
 class ProductSearchField(QWidget):
     """
-    A custom search field with popup suggestions for product selection.
-    
-    This widget provides a text input field with autocomplete suggestions
-    that appear in a popup that's not constrained by parent containers.
+    A search field with filtered popup suggestions for product selection.
+    Shows all available items when focused even without user input.
     """
     
     # Signal emitted when a product is selected
     product_selected = Signal(str)
     
-    def __init__(self, parent=None, min_popup_width=250):
+    def __init__(self, parent=None):
         """
         Initialize the product search field.
         
         Args:
             parent (QWidget): Parent widget
-            min_popup_width (int): Minimum width for the popup suggestions list
         """
         super().__init__(parent)
-        self.all_items = []  # All available products
-        self.filtered_items = []  # Filtered products based on search
-        self.min_popup_width = min_popup_width
+        self.all_items = []
         self.setup_ui()
     
     def setup_ui(self):
@@ -45,144 +40,80 @@ class ProductSearchField(QWidget):
         self.search_field = QLineEdit()
         self.search_field.setPlaceholderText("Type to search products...")
         self.search_field.setFont(get_body_font())
-        self.search_field.textChanged.connect(self.update_suggestions)
-        
-        # Add focus events to show/hide suggestions
-        self.search_field.focusInEvent = self.on_focus_in
-        self.search_field.focusOutEvent = self.on_focus_out
-        
         layout.addWidget(self.search_field)
         
-        # Create suggestions popup as a child of the application's top-level window
-        # so it can float over other widgets without being constrained
-        self.suggestions_container = QFrame(QApplication.instance().activeWindow())
-        self.suggestions_container.setWindowFlags(Qt.Popup | Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint)
-        self.suggestions_container.setFrameStyle(QFrame.StyledPanel)
-        self.suggestions_container.setStyleSheet(SUGGESTIONS_CONTAINER_STYLE)
+        # Create completer for suggestions
+        self.completer = QCompleter(self)
+        self.completer.setCaseSensitivity(Qt.CaseInsensitive)
+        self.completer.setFilterMode(Qt.MatchContains)
+        self.completer.setCompletionMode(QCompleter.PopupCompletion)
         
-        # Scroll area for suggestions to handle large lists
-        scroll_area = QScrollArea(self.suggestions_container)
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setFrameStyle(QFrame.NoFrame)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # Style the popup and configure its height behavior
+        popup = self.completer.popup()
+        popup.setStyleSheet(SUGGESTIONS_LIST_STYLE)
         
-        # Suggestions list
-        self.suggestions_list = QListWidget()
-        self.suggestions_list.setFrameStyle(QFrame.NoFrame)
-        self.suggestions_list.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.suggestions_list.setStyleSheet(SUGGESTIONS_LIST_STYLE)
-        self.suggestions_list.itemClicked.connect(self.select_suggestion)
-        scroll_area.setWidget(self.suggestions_list)
+        # Set maximum height but allow it to resize based on content
+        popup.setMaximumHeight(300)  # Maximum height (adjust as needed)
+        popup.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        popup.setSizeAdjustPolicy(QAbstractItemView.AdjustToContents)
+        popup.setMinimumHeight(50)  # Minimum height for very few items
         
-        # Add scroll area to suggestions container
-        suggestions_layout = QVBoxLayout(self.suggestions_container)
-        suggestions_layout.setContentsMargins(0, 0, 0, 0)
-        suggestions_layout.addWidget(scroll_area)
+        # Connect completer to search field
+        self.search_field.setCompleter(self.completer)
         
-        # Initially hide suggestions
-        self.suggestions_container.setVisible(False)
+        # Connect signals
+        self.completer.activated.connect(self.on_item_selected)
+        self.search_field.returnPressed.connect(self.on_return_pressed)
+        
+        # Custom focus events to show all suggestions on focus
+        self.search_field.installEventFilter(self)
     
-    def on_focus_in(self, event):
-        """Handle focus in event for the search field."""
-        self.handle_focus(event, is_focused=True)
-
-    def on_focus_out(self, event):
-        """Handle focus out event for the search field."""
-        self.handle_focus(event, is_focused=False)
-
-    def handle_focus(self, event, is_focused):
+    def eventFilter(self, obj, event):
         """
-        Handle focus in/out events.
+        Event filter to handle focus events for the search field.
+        Shows all suggestions when the field receives focus.
+        """
+        if obj == self.search_field and event.type() == QEvent.Type.FocusIn:
+            # Show all items when the field gets focus
+            self.completer.complete()
+            return False  # Let the event continue to be processed
+        return super().eventFilter(obj, event)
+    
+    def on_item_selected(self, text):
+        """
+        Handle selection of an item from the completer.
         
         Args:
-            event (QFocusEvent): The focus event
-            is_focused (bool): Whether the widget is gaining focus
+            text (str): The selected text
         """
-        if is_focused:
-            QLineEdit.focusInEvent(self.search_field, event)
-            if not self.search_field.text():
-                self.filtered_items = self.all_items.copy()
-                self.update_suggestions(self.search_field.text())
-        else:
-            QLineEdit.focusOutEvent(self.search_field, event)
-            # Use a short delay before hiding to allow for clicking on suggestions
-            QTimer.singleShot(200, lambda: self.suggestions_container.setVisible(False))
+        self.search_field.setText(text)
+        self.product_selected.emit(text)
     
-    def update_suggestions(self, text):
-        """
-        Update suggestions based on input text.
-        
-        Args:
-            text (str): The search text to filter suggestions
-        """
-        # Clear selection when search text changes
-        self.suggestions_list.clearSelection()
-        
-        if not text:
-            # Show all items when text is cleared
-            self.filtered_items = self.all_items.copy()
-        else:
-            # Filter items based on search text
-            self.filtered_items = [
-                item for item in self.all_items 
-                if text.lower() in item.lower()
-            ]
-        
-        # Update suggestions list
-        self.suggestions_list.clear()
-        self.suggestions_list.addItems(self.filtered_items)
-        
-        # Show suggestions if there are any matches
-        self.update_suggestions_visibility()
-    
-    def update_suggestions_visibility(self):
-        """Show or hide the suggestions container based on available items."""
-        has_suggestions = len(self.filtered_items) > 0
-        
-        if has_suggestions:
-            # Calculate the position of the dropdown relative to the search field
-            global_pos = self.search_field.mapToGlobal(self.search_field.rect().bottomLeft())
-            
-            # Set the size and position of the suggestions container
-            width = max(self.search_field.width(), self.min_popup_width)
-            item_height = self.suggestions_list.sizeHintForRow(0) if self.filtered_items else 20
-            num_visible_items = min(8, len(self.filtered_items))
-            height = item_height * num_visible_items + 10
-            
-            self.suggestions_container.setFixedSize(width, height)
-            self.suggestions_container.move(global_pos)
-            self.suggestions_container.setVisible(True)
-            self.suggestions_container.raise_()
-        else:
-            self.suggestions_container.setVisible(False)
-    
-    def select_suggestion(self, item):
-        """
-        Handle selection of a suggestion.
-        
-        Args:
-            item (QListWidgetItem): The selected item
-        """
-        selected_text = item.text()
-        self.search_field.setText(selected_text)
-        self.suggestions_container.setVisible(False)
-        self.product_selected.emit(selected_text)
+    def on_return_pressed(self):
+        """Handle return key press in the search field."""
+        text = self.search_field.text()
+        if text:
+            self.product_selected.emit(text)
     
     def set_items(self, items):
         """
-        Set the full list of available items.
+        Set the list of available items for autocomplete.
         
         Args:
             items (list): List of string items to show in suggestions
         """
         self.all_items = items
-        self.update_suggestions(self.search_field.text())
+        model = QStringListModel(items, self.completer)
+        self.completer.setModel(model)
+        
+        # Show popup if field is focused
+        if self.search_field.hasFocus():
+            self.completer.complete()
     
     def clear(self):
-        """Clear the search field and hide suggestions."""
+        """Clear the search field."""
         self.search_field.clear()
-        self.suggestions_container.setVisible(False)
-        
+    
     def text(self):
         """Get the current text in the search field."""
         return self.search_field.text()
@@ -195,7 +126,6 @@ class ProductSearchField(QWidget):
             text (str): Text to set
         """
         self.search_field.setText(text)
-
 
 class ProductTypeSelector(QComboBox):
     """
@@ -281,7 +211,7 @@ class ProductSelectionWidget(QWidget):
         self.type_selector.currentIndexChanged.connect(self.update_product_list)
         form_layout.addRow("Product Type:", self.type_selector)
         
-        # Product search field
+        # Product search field - now using simplified version
         self.product_search = ProductSearchField(self)
         self.product_search.product_selected.connect(self.on_product_selected)
         form_layout.addRow("Product:", self.product_search)

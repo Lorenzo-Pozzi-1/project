@@ -8,7 +8,7 @@ It initializes the application, sets up the main window, and starts the event lo
 
 import os, sys
 from PySide6.QtCore import QDir, QObject, QEvent
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QComboBox, QDoubleSpinBox
 from common.config_utils import load_config
 from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository
@@ -20,26 +20,26 @@ print("\033c", end="")
 # Silence messages when resizing the window
 os.environ['QT_LOGGING_RULES'] = '*=false' 
 
-class ComboBoxWheelFilter(QObject):
-    """Prevents QComboBox widgets from changing values when scrolling without clicking first."""
+class WheelProtectionFilter(QObject):
+    """Prevents widgets from changing values when scrolling without clicking first."""
     def __init__(self):
         super().__init__()
-        self.clicked_combos = set()  # Track which combo boxes have been clicked
+        self.clicked_widgets = set()  # Track which widgets have been clicked
 
     def eventFilter(self, obj, event):
-        # Track combo boxes that have been clicked
+        # Track widgets that have been clicked
         if event.type() in (QEvent.MouseButtonPress, QEvent.KeyPress):
-            self.clicked_combos.add(obj)
+            self.clicked_widgets.add(obj)
         
-        # Block wheel events for combo boxes that haven't been clicked
-        elif event.type() == QEvent.Wheel and obj not in self.clicked_combos:
+        # Block wheel events for widgets that haven't been clicked
+        elif event.type() == QEvent.Wheel and obj not in self.clicked_widgets:
             return True  # Block the event
         
         # Reset clicked state when dropdown closes or focus is lost
         elif event.type() == QEvent.Hide and hasattr(obj, 'view'):
-            self.clicked_combos.discard(obj)
+            self.clicked_widgets.discard(obj)
         elif event.type() == QEvent.FocusOut:
-            self.clicked_combos.discard(obj)
+            self.clicked_widgets.discard(obj)
         
         # Let other events pass through
         return super().eventFilter(obj, event)
@@ -57,8 +57,18 @@ def main():
     app.setStyle("Fusion")
     app.setApplicationName("Pesticides App")
     
-    # Improve QComboBox behavior to prevent accidental scrolling
-    app.installEventFilter(ComboBoxWheelFilter())
+    # Prevent accidental scrolling value changes
+    wheel_filter = WheelProtectionFilter()
+    original_combo_init = QComboBox.__init__
+    def filtered_combo_init(self, *args, **kwargs):
+        original_combo_init(self, *args, **kwargs)
+        self.installEventFilter(wheel_filter)
+    QComboBox.__init__ = filtered_combo_init
+    # original_spinbox_init = QDoubleSpinBox.__init__
+    # def filtered_spinbox_init(self, *args, **kwargs):
+    #     original_spinbox_init(self, *args, **kwargs)
+    #     self.installEventFilter(wheel_filter)
+    # QDoubleSpinBox.__init__ = filtered_spinbox_init
     
     # Load application configuration
     config = load_config()
