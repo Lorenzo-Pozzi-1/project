@@ -36,6 +36,7 @@ class ApplicationRowWidget(QFrame):
         self.ai_repo = AIRepository.get_instance()
         
         # Set frame properties
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setFrameShape(QFrame.StyledPanel)
         self.setFrameShadow(QFrame.Plain)
         self.setStyleSheet(APPLICATION_ROW_STYLE)
