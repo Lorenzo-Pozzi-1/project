@@ -33,6 +33,11 @@ class ScenarioTabPage(QWidget):
         super().__init__(parent)
         self.parent = parent
         self.scenario = scenario or Scenario()
+        
+        # DEBUGGING: Check scenario at initialization
+        print(f"ScenarioTabPage initialized with: {self.scenario.name}")
+        print(f"Applications count at init: {len(self.scenario.applications)}")
+        
         self.setup_ui()
         self.load_scenario_data()
     
@@ -72,6 +77,10 @@ class ScenarioTabPage(QWidget):
     
     def load_scenario_data(self):
         """Load data from the scenario into the UI."""
+        # DEBUGGING: Check applications before loading
+        print(f"Loading scenario data for: {self.scenario.name}")
+        print(f"Applications count before loading: {len(self.scenario.applications)}")
+        
         # Set metadata with defaults
         metadata = {
             "crop_year": self.scenario.crop_year,
@@ -83,8 +92,12 @@ class ScenarioTabPage(QWidget):
         }
         self.metadata_widget.set_metadata(metadata)
         
+        # DEBUGGING: Convert applications to dict and print
+        app_dicts = [app.to_dict() for app in self.scenario.applications]
+        print(f"Application dicts created: {len(app_dicts)}")
+        
         # Set applications and default field area
-        self.applications_container.set_applications([app.to_dict() for app in self.scenario.applications])
+        self.applications_container.set_applications(app_dicts)
         self.applications_container.set_field_area(metadata["field_area"], metadata["field_area_uom"])
     
     def update_scenario(self):

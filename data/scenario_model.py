@@ -67,9 +67,14 @@ class Scenario:
         if new_name is None:
             new_name = f"Copy of {self.name}"
             
-        # Create deep copy of the applications
-        new_applications = copy.deepcopy(self.applications)
-        
+        # Copy applications using the Application model's to_dict/from_dict methods for deep cloning
+        from data.application_model import Application
+        new_applications = []
+        for app in self.applications:
+            app_dict = app.to_dict()
+            new_app = Application.from_dict(app_dict)
+            new_applications.append(new_app)
+            
         # Create new scenario with copied data
         new_scenario = Scenario(
             name=new_name,

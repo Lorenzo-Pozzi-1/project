@@ -163,7 +163,23 @@ class ScenariosManagerPage(QWidget):
         """Clone the current scenario and add it as a new tab."""
         page, _ = self.get_current_scenario_page()
         if page:
-            self.add_new_scenario(page.get_scenario().clone())
+            original_scenario = page.get_scenario()
+            
+            # DEBUGGING: Check original scenario applications
+            print(f"Original scenario: {original_scenario.name}")
+            print(f"Original applications count: {len(original_scenario.applications)}")
+            for app in original_scenario.applications:
+                print(f"  - Application: {app.to_dict().get('product_name', 'Unknown')}")
+            
+            new_scenario = original_scenario.clone()
+            
+            # DEBUGGING: Check cloned scenario applications
+            print(f"Cloned scenario: {new_scenario.name}")
+            print(f"Cloned applications count: {len(new_scenario.applications)}")
+            for app in new_scenario.applications:
+                print(f"  - Application: {app.to_dict().get('product_name', 'Unknown')}")
+            
+            self.add_new_scenario(new_scenario)
     
     def rename_current_scenario(self):
         """Rename the current scenario tab."""
