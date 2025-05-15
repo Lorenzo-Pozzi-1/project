@@ -47,7 +47,8 @@ class ScenariosManagerPage(QWidget):
             "Clone Current": (SECONDARY_BUTTON_STYLE, self.clone_current_scenario),
             "Rename": (SECONDARY_BUTTON_STYLE, self.rename_current_scenario),
             "Delete": (SECONDARY_BUTTON_STYLE, self.delete_current_scenario),
-            "Compare Scenarios": (PRIMARY_BUTTON_STYLE, self.compare_scenarios)
+            "Compare Scenarios": (PRIMARY_BUTTON_STYLE, self.compare_scenarios),
+            "Export": (PRIMARY_BUTTON_STYLE, self.export)
         }
         
         buttons_layout = QHBoxLayout()
@@ -60,13 +61,7 @@ class ScenariosManagerPage(QWidget):
             btn.setFixedWidth(150)
             buttons_layout.addWidget(btn)
             self.action_buttons[text] = btn
-            
-            # Add spacer before Compare button
-            if text == "Delete":
-                buttons_layout.addSpacerItem(QSpacerItem(20, 10))
-                
-        buttons_layout.addStretch(1)
-        
+                    
         header_widget = QWidget()
         header_widget.setLayout(buttons_layout)
         header.layout().addWidget(header_widget)
@@ -75,7 +70,7 @@ class ScenariosManagerPage(QWidget):
         
         # Tab widget for scenarios
         self.tab_widget = QTabWidget()
-        # self.tab_widget.setTabsClosable(True)                                     
+        # self.tab_widget.setTabsClosable(True)      # uncomment to get the x next to the tabs                               
         # self.tab_widget.tabCloseRequested.connect(self.on_tab_close_requested)    
         self.tab_widget.currentChanged.connect(self.update_ui_state)
         
@@ -205,19 +200,9 @@ class ScenariosManagerPage(QWidget):
     def delete_current_scenario(self):
         """Delete the current scenario tab with confirmation."""
         _, index = self.get_current_scenario_page()
-        if index >= 0:
-            self.on_tab_close_requested(index)
-    
-    def on_tab_close_requested(self, index):
-        """Handle tab close request with confirmation."""
-        # Prevent closing the last tab
-        if self.tab_widget.count() <= 1:
-            QMessageBox.information(
-                self, "Cannot Delete", 
-                "Cannot delete the last scenario. At least one scenario must remain."
-            )
+        if index < 0:
             return
-        
+            
         page = self.tab_widget.widget(index)
         scenario = page.get_scenario()
         
@@ -230,10 +215,27 @@ class ScenariosManagerPage(QWidget):
         )
         
         if result == QMessageBox.Yes:
-            self.tab_widget.removeTab(index)
-            self.scenarios.remove(scenario)
-            del self.scenario_tabs[scenario.name]
+            # Handle deletion
+            if self.tab_widget.count() <= 1:
+                # Last tab - remove it and create a new blank one
+                self.tab_widget.removeTab(index)
+                self.scenarios.remove(scenario)
+                del self.scenario_tabs[scenario.name]
+                
+                # Create a new blank scenario
+                self.add_new_scenario()
+            else:
+                # Normal deletion - just remove the tab
+                self.tab_widget.removeTab(index)
+                self.scenarios.remove(scenario)
+                del self.scenario_tabs[scenario.name]
+                
             self.update_ui_state()
+    
+    def on_tab_close_requested(self, index):
+        """Handle tab close request with confirmation."""
+        # Just call the delete_current_scenario with the current index
+        self.delete_current_scenario()
     
     def on_scenario_changed(self, scenario):
         """Handle changes to a scenario."""
@@ -274,7 +276,8 @@ class ScenariosManagerPage(QWidget):
         
         self.action_buttons["Clone Current"].setEnabled(has_tabs)
         self.action_buttons["Rename"].setEnabled(has_tabs)
-        self.action_buttons["Delete"].setEnabled(has_tabs and multiple_tabs)
+        # Always allow deletion, even with a single tab
+        self.action_buttons["Delete"].setEnabled(has_tabs)
         self.action_buttons["Compare Scenarios"].setEnabled(multiple_tabs)
         
         # Update EIQ display
@@ -307,3 +310,10 @@ class ScenariosManagerPage(QWidget):
         """Refresh product data when filtered products change in the main window."""
         for tab_page in self.scenario_tabs.values():
             tab_page.refresh_product_data()
+
+    def export(self):
+        """Export functionality placeholder."""
+        QMessageBox.information(
+            self, "Coming Soon", 
+            "Export functionality will be developed in a future update."
+        )

@@ -68,8 +68,8 @@ FEATURE_BUTTON_SIZE = 180       # Size for large feature buttons on home page
 # Font sizes
 TITLE_FONT_SIZE = 24
 SUBTITLE_FONT_SIZE = 18
-BODY_FONT_SIZE = 12
-SMALL_FONT_SIZE = 9
+BODY_FONT_SIZE = 14
+SMALL_FONT_SIZE = 12
 
 def get_font(size=BODY_FONT_SIZE, bold=False, family=None, weight=None):
     """Returns a configured font based on parameters.
