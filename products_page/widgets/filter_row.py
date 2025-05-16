@@ -7,7 +7,7 @@ filter control for table filtering.
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton
 from PySide6.QtCore import Signal
-from common.styles import FILTER_ROW_STYLE
+from common.styles import REMOVE_BUTTON_STYLE
 
 class FilterRow(QWidget):
     """
@@ -63,7 +63,7 @@ class FilterRow(QWidget):
         self.remove_button = QPushButton("×")  # Using × character for close icon
         self.remove_button.setFixedSize(24, 24)
         self.remove_button.setToolTip("Remove this filter")
-        self.remove_button.setStyleSheet(FILTER_ROW_STYLE)
+        self.remove_button.setStyleSheet(REMOVE_BUTTON_STYLE)
         self.remove_button.clicked.connect(self.request_remove)
         layout.addWidget(self.remove_button)
     

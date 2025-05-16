@@ -29,9 +29,9 @@ class HeaderWithBackButton(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         
         # Back button
-        self.back_button = QPushButton("Back to Home")
+        self.back_button = QPushButton("Home")
         self.back_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        self.back_button.setMaximumWidth(150)
+        self.back_button.setFixedWidth(75)
         self.back_button.clicked.connect(self.back_clicked.emit)
         layout.addWidget(self.back_button)
         
@@ -210,7 +210,7 @@ class ScoreBar(QWidget):
         ]
         
         # Text colors for up to 3 regions (4 with extreme)
-        default_text_colors = [
+        default_BLACKs = [
             QColor("#1E8449"),  # Dark green
             QColor("#B7950B"),  # Dark yellow
             QColor("#B03A2E"),  # Dark red
@@ -223,7 +223,7 @@ class ScoreBar(QWidget):
         # Use default colors if we have 4 or fewer regions
         if num_regions <= 4:
             self.region_colors = default_colors[:num_regions]
-            self.text_colors = default_text_colors[:num_regions]
+            self.BLACKs = default_BLACKs[:num_regions]
         else:
             # Generate colors along a gradient from green to red
             for i in range(num_regions):
@@ -235,7 +235,7 @@ class ScoreBar(QWidget):
                 self.region_colors.append(QColor(r, g, b, 180))  # Add some transparency
                 
                 # Generate darker text colors
-                self.text_colors.append(QColor(r * 0.7, g * 0.7, b * 0.7))
+                self.BLACKs.append(QColor(r * 0.7, g * 0.7, b * 0.7))
     
     def configure(self, thresholds=None, labels=None, 
                  min_value=None, max_value=None, title_text=None):
@@ -307,15 +307,15 @@ class ScoreBar(QWidget):
         """Get the color for the current score level."""
         # Handle extreme case
         if self.current_value > self.max_value:
-            return self.text_colors[-1]  # Use the last text color for values beyond max
+            return self.BLACKs[-1]  # Use the last text color for values beyond max
         
         # Find which region the value falls into - using the same logic as get_score_level()
         for i, threshold in enumerate(self.thresholds):
             if self.current_value < threshold:
-                return self.text_colors[i]
+                return self.BLACKs[i]
         
         # If we're past all thresholds but not beyond max_value
-        return self.text_colors[-1]  # Last text color
+        return self.BLACKs[-1]  # Last text color
     
     def paintEvent(self, event):
         """Paint the gradient bar and all other elements."""

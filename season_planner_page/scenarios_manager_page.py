@@ -8,7 +8,7 @@ application scenarios through tabs.
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
     QTabWidget, QMessageBox, QInputDialog, QSpacerItem)
 from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, 
-    SECONDARY_BUTTON_STYLE, SUBTITLE_FONT_SIZE, get_title_font)
+    SECONDARY_BUTTON_STYLE, SPECIAL_BUTTON_STYLE, SUBTITLE_FONT_SIZE, get_title_font)
 from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar
 from season_planner_page.scenario_tab import ScenarioTabPage
 from data.scenario_model import Scenario
@@ -48,7 +48,7 @@ class ScenariosManagerPage(QWidget):
             "Rename": (SECONDARY_BUTTON_STYLE, self.rename_current_scenario),
             "Delete": (SECONDARY_BUTTON_STYLE, self.delete_current_scenario),
             "Compare Scenarios": (PRIMARY_BUTTON_STYLE, self.compare_scenarios),
-            "Export": (PRIMARY_BUTTON_STYLE, self.export)
+            "Export": (SPECIAL_BUTTON_STYLE, self.export)
         }
         
         buttons_layout = QHBoxLayout()

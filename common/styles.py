@@ -15,24 +15,25 @@ from PySide6.QtWidgets import QPushButton, QFormLayout
 # ----------------------
 
 # Primary color palette 
-PRIMARY_COLOR = "#fee000"       # Yellow
-SECONDARY_COLOR = "#000000"     # Black
-TEXT_COLOR = "#000000"          # Black for text
-LIGHT_BG_COLOR = "#F5F5F5"      # Light gray
-WHITE = "#FFFFFF"               # White
-RED_HIGHLIGHT = "#EC3400"       # Red for warnings/high values
-YELLOW_MEDIUM = "#fee000"       # Yellow for medium values
-GREEN_GOOD = "#009863"          # Green for good/low values
+YELLOW          = "#fee000"
+YELLOW_HOVER    = "#ffea66"
+BLACK           = "#000000"
+WHITE           = "#FFFFFF"
+GREEN           = "#009863"
+BLUE            = "#5D89E9"
+BLUE_HOVER      = "#789ded"
+LIGHT_GRAY      = "#D9DAE4"
+BEIGE           = "#C9BFB0"
+RED             = "#EC3400"
 
-# EIQ color coding using QColor objects
-EIQ_LOW_COLOR = QColor(0, 152, 99, 100)    # Light green for low EIQ
-EIQ_MEDIUM_COLOR = QColor(254, 224, 0, 100)  # Light yellow for medium EIQ
-EIQ_HIGH_COLOR = QColor(236, 52, 0, 100)   # Light red for high EIQ
-EIQ_EXTREME_COLOR = QColor(139, 0, 0, 100) # Dark red for extreme EIQ
+# EIQ color coding using hex color codes
+EIQ_LOW_COLOR = QColor("#009863")      # Green for low EIQ
+EIQ_MEDIUM_COLOR = QColor("#FEE000")   # Yellow for medium EIQ  
+EIQ_HIGH_COLOR = QColor("#EC3400")     # Red for high EIQ
+EIQ_EXTREME_COLOR = QColor("#8B0000")  # Dark red for extreme EIQ
 
 # Table and list styling colors
-HIGHLIGHT_COLOR = QColor(PRIMARY_COLOR)  # Primary yellow color for highlighting
-ALTERNATE_ROW_COLOR = QColor(LIGHT_BG_COLOR)  # Light gray for alternating rows
+ALTERNATE_ROW_COLOR = QColor(BEIGE)  # Beige for alternating rows
 
 # ----------------------
 # THRESHOLDS AND CONSTANTS
@@ -90,21 +91,11 @@ def get_font(size=BODY_FONT_SIZE, bold=False, family=None, weight=None):
         font.setWeight(weight)
     return font
 
-def get_title_font(size=TITLE_FONT_SIZE, bold=True):
-    """Returns a font suitable for page titles."""
-    return get_font(size, bold, "Red Hat Display", QFont.Black)
-
-def get_subtitle_font(size=SUBTITLE_FONT_SIZE, bold=True):
-    """Returns a font suitable for section titles."""
-    return get_font(size, bold, "Red Hat Display")
-
-def get_body_font(size=BODY_FONT_SIZE, bold=False):
-    """Returns a font suitable for regular text."""
-    return get_font(size, bold)
-
-def get_small_font(size=SMALL_FONT_SIZE, bold=False):
-    """Returns a font suitable for small text."""
-    return get_font(size, bold)
+# Quick font functions
+def get_title_font(size=TITLE_FONT_SIZE, bold=True): return get_font(size, bold, "Red Hat Display", QFont.Black)
+def get_subtitle_font(size=SUBTITLE_FONT_SIZE, bold=True): return get_font(size, bold, "Red Hat Display")
+def get_body_font(size=BODY_FONT_SIZE, bold=False): return get_font(size, bold)
+def get_small_font(size=SMALL_FONT_SIZE, bold=False): return get_font(size, bold)
 
 # ----------------------
 # STYLE SHEETS
@@ -114,53 +105,69 @@ def get_small_font(size=SMALL_FONT_SIZE, bold=False):
 FEATURE_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {WHITE};
-        border: 2px solid {PRIMARY_COLOR};
+        border: 2px solid {YELLOW};
         border-radius: 8px;
         padding: 10px;
     }}
     QPushButton:hover {{
-        background-color: #FFF8D9;
-        border: 2px solid {PRIMARY_COLOR};
+        background-color: {LIGHT_GRAY};
+        border: 2px solid {YELLOW};
     }}
     QPushButton:pressed {{
-        background-color: #FFF2B3;
+        background-color: {BEIGE};
     }}
 """
 
 PRIMARY_BUTTON_STYLE = f"""
     QPushButton {{
-        background-color: {PRIMARY_COLOR};
-        color: {SECONDARY_COLOR};
+        background-color: {YELLOW};
+        color: {BLACK};
         border: none;
         border-radius: 4px;
         padding: 8px 16px;
         font-weight: bold;
     }}
     QPushButton:hover {{
-        background-color: #ffea66;
+        background-color: {YELLOW_HOVER};
     }}
     QPushButton:pressed {{
-        background-color: #e6ca00;
+        background-color: {BEIGE};
     }}
     QPushButton:disabled {{
-        background-color: #CCCCCC;
-        color: #666666;
+        background-color: {LIGHT_GRAY};
+        color: {BEIGE};
     }}
 """
 
 SECONDARY_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {WHITE};
-        color: {SECONDARY_COLOR};
-        border: 1px solid {SECONDARY_COLOR};
+        color: {BLACK};
+        border: 1px solid {BLACK};
         border-radius: 4px;
         padding: 8px 16px;
     }}
     QPushButton:hover {{
-        background-color: #F5F5F5;
+        background-color: {LIGHT_GRAY};
     }}
     QPushButton:pressed {{
-        background-color: #E0E0E0;
+        background-color: {BEIGE};
+    }}
+"""
+
+SPECIAL_BUTTON_STYLE = f"""
+    QPushButton {{
+        background-color: {BLUE};
+        color: {BLACK};
+        border: 1px solid {BLACK};
+        border-radius: 4px;
+        padding: 8px 16px;
+    }}
+    QPushButton:hover {{
+        background-color: {BLUE_HOVER};
+    }}
+    QPushButton:pressed {{
+        background-color: {BEIGE};
     }}
 """
 
@@ -176,22 +183,9 @@ FRAME_STYLE = f"""
 FILTER_FRAME_STYLE = f"""
     QFrame {{
         background-color: {WHITE};
-        border: 1px solid #DDDDDD;
+        border: 1px solid {LIGHT_GRAY};
         border-radius: 4px;
         padding: 10px;
-    }}
-"""
-
-# Remove button in filter row
-FILTER_ROW_STYLE = f"""
-    QPushButton {{
-        color: red;
-        font-weight: bold;
-        border-radius: 12px;
-        border: 1px solid #ccc;
-    }}
-    QPushButton:hover {{
-        background-color: #ffeeee;
     }}
 """
 
@@ -199,7 +193,7 @@ FILTER_ROW_STYLE = f"""
 APPLICATION_ROW_STYLE = """
     QFrame {
         border: none;
-        border-bottom: 1px solid #E0E5EB;
+        border-bottom: 1px solid {LIGHT_GRAY};
         background-color: transparent;
         padding: 2px;
     }
@@ -208,7 +202,7 @@ APPLICATION_ROW_STYLE = """
 # Yellow bar style for bottom of pages
 YELLOW_BAR_STYLE = f"""
     QFrame {{
-        background-color: {PRIMARY_COLOR};
+        background-color: {YELLOW};
         min-height: 25px;
         max-height: 25px;
     }}
@@ -217,10 +211,10 @@ YELLOW_BAR_STYLE = f"""
 # Table header styles
 COMPARISON_HEADER_STYLE = f"""
     QHeaderView::section {{
-        background-color: {PRIMARY_COLOR};
-        color: {SECONDARY_COLOR};
+        background-color: {YELLOW};
+        color: {BLACK};
         padding: 5px;
-        border: 1px solid #dddddd;
+        border: 1px solid {LIGHT_GRAY};
         font-weight: bold;
     }}
 """
@@ -229,7 +223,7 @@ COMPARISON_HEADER_STYLE = f"""
 PRODUCT_CARD_STYLE = f"""
     QFrame {{
         background-color: {WHITE};
-        border: 1px solid #DDDDDD;
+        border: 1px solid {LIGHT_GRAY};
         border-radius: 4px;
     }}
 """
@@ -237,14 +231,14 @@ PRODUCT_CARD_STYLE = f"""
 # Remove button style
 REMOVE_BUTTON_STYLE = """
     QPushButton {
-        background-color: #f44336;
-        color: white;
+        background-color: transparent;
+        color: {RED};
         border-radius: 12px;
         font-weight: bold;
         font-size: 16px;
     }
     QPushButton:hover {
-        background-color: #d32f2f;
+        background-color: {BEIGE};
     }
 """
 
@@ -259,7 +253,7 @@ WARNING_TITLE_STYLE = f"""
 # Suggestions container style
 SUGGESTIONS_CONTAINER_STYLE = f"""
     QFrame {{
-        border: 1px solid #CCCCCC;
+        border: 1px solid {LIGHT_GRAY};
         background-color: {WHITE};
         border-radius: 3px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -276,10 +270,10 @@ SUGGESTIONS_LIST_STYLE = f"""
         padding: 5px;
     }}
     QListWidget::item:hover {{
-        background-color: {LIGHT_BG_COLOR};
+        background-color: {LIGHT_GRAY};
     }}
     QListWidget::item:selected {{
-        background-color: #E0E0E0;
+        background-color: {LIGHT_GRAY};
     }}
 """
 
@@ -288,8 +282,8 @@ DRAGGING_ROW_STYLE = """
     QFrame {
         background-color: #f0f9ff;
         border: 1px solid #ccc;
-        border-left: 3px solid #3b82f6;
-        border-right: 3px solid #3b82f6;
+        border-left: 3px solid {BLUE};
+        border-right: 3px solid {BLUE};
         border-radius: 4px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
@@ -297,7 +291,7 @@ DRAGGING_ROW_STYLE = """
 
 DROP_INDICATOR_STYLE = """
     QFrame#dropIndicator {
-        background-color: #3b82f6;
+        background-color: {BLUE};
         height: 3px;
         border-radius: 1px;
     }
@@ -313,15 +307,15 @@ def setup_app_palette(app):
     
     # Set up the color palette with white background
     palette.setColor(QPalette.Window, QColor(WHITE)) 
-    palette.setColor(QPalette.WindowText, QColor(TEXT_COLOR))
+    palette.setColor(QPalette.WindowText, QColor(BLACK))
     palette.setColor(QPalette.Base, QColor(WHITE))
-    palette.setColor(QPalette.AlternateBase, QColor(LIGHT_BG_COLOR)) 
-    palette.setColor(QPalette.Text, QColor(TEXT_COLOR))
+    palette.setColor(QPalette.AlternateBase, QColor(LIGHT_GRAY)) 
+    palette.setColor(QPalette.Text, QColor(BLACK))
     palette.setColor(QPalette.Button, QColor(WHITE))
-    palette.setColor(QPalette.ButtonText, QColor(TEXT_COLOR))
-    palette.setColor(QPalette.Link, QColor(PRIMARY_COLOR))
-    palette.setColor(QPalette.Highlight, QColor(PRIMARY_COLOR))
-    palette.setColor(QPalette.HighlightedText, QColor(SECONDARY_COLOR))
+    palette.setColor(QPalette.ButtonText, QColor(BLACK))
+    palette.setColor(QPalette.Link, QColor(YELLOW))
+    palette.setColor(QPalette.Highlight, QColor(YELLOW))
+    palette.setColor(QPalette.HighlightedText, QColor(BLACK))
     
     # Apply the palette
     app.setPalette(palette)
@@ -374,7 +368,7 @@ def get_eiq_rating(eiq_value, low_threshold=EIQ_LOW_THRESHOLD,
 
 def get_highlight_brush():
     """Get a brush with the highlight color."""
-    return QBrush(HIGHLIGHT_COLOR)
+    return QBrush(YELLOW)
 
 def get_alternate_row_brush():
     """Get a brush with the alternate row color."""
