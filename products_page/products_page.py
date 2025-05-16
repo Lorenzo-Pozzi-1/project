@@ -7,7 +7,7 @@ product listing and comparison tabs, coordinating between them.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTabWidget
 from common.styles import MARGIN_LARGE, SPACING_MEDIUM, SECONDARY_BUTTON_STYLE
-from common.widgets import HeaderWithBackButton
+from common.widgets import HeaderWithHomeButton
 from products_page.products_list_tab import ProductsListTab
 from products_page.products_comparison_tab import ProductsComparisonTab
 from data.product_repository import ProductRepository
@@ -37,7 +37,7 @@ class ProductsPage(QWidget):
         header_layout = QHBoxLayout()
         
         # Header with back button
-        header = HeaderWithBackButton("Products List and Comparison")
+        header = HeaderWithHomeButton("Products List and Comparison")
         header.back_clicked.connect(self.parent.go_home)
         
         # Add Reset button directly to the header

@@ -7,9 +7,9 @@ This module provides reusable custom widgets used throughout the application.
 from PySide6.QtCore import Qt, Signal, QRect, QPointF
 from PySide6.QtGui import QColor, QBrush, QPainter, QPen, QLinearGradient
 from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy, QWidget, QTableWidgetItem, QSpacerItem
-from common.styles import FEATURE_BUTTON_STYLE, FRAME_STYLE, SECONDARY_BUTTON_STYLE, get_title_font, get_body_font, MARGIN_MEDIUM, SPACING_MEDIUM
+from common.styles import FEATURE_BUTTON_STYLE, FRAME_STYLE, SECONDARY_BUTTON_STYLE, get_title_font, get_body_font, MARGIN_MEDIUM, SPACING_MEDIUM, MARGIN_SMALL
 
-class HeaderWithBackButton(QWidget):
+class HeaderWithHomeButton(QWidget):
     """
     A header widget with a title and back button.
     
@@ -28,12 +28,12 @@ class HeaderWithBackButton(QWidget):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         
-        # Back button
-        self.back_button = QPushButton("Home")
-        self.back_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        self.back_button.setFixedWidth(75)
-        self.back_button.clicked.connect(self.back_clicked.emit)
-        layout.addWidget(self.back_button)
+        # Home button
+        self.home_button = QPushButton("Home")
+        self.home_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
+        self.home_button.setFixedWidth(75)
+        self.home_button.clicked.connect(self.back_clicked.emit)
+        layout.addWidget(self.home_button)
         
         # Title
         self.title_label = QLabel(self.title)
@@ -140,8 +140,8 @@ class ContentFrame(QFrame):
         self.setFrameShape(QFrame.NoFrame)
         self.setStyleSheet(FRAME_STYLE)
         self.layout = QVBoxLayout(self)
-        self.layout.setContentsMargins(15, 15, 15, 15)
-        self.layout.setSpacing(10)
+        self.layout.setContentsMargins(MARGIN_SMALL, MARGIN_SMALL, MARGIN_SMALL, MARGIN_SMALL)
+        self.layout.setSpacing(SPACING_MEDIUM)
 
 
 class ScoreBar(QWidget):

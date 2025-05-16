@@ -133,10 +133,6 @@ PRIMARY_BUTTON_STYLE = f"""
     QPushButton:pressed {{
         background-color: {BEIGE};
     }}
-    QPushButton:disabled {{
-        background-color: {LIGHT_GRAY};
-        color: {BEIGE};
-    }}
 """
 
 SECONDARY_BUTTON_STYLE = f"""
@@ -175,17 +171,8 @@ SPECIAL_BUTTON_STYLE = f"""
 FRAME_STYLE = f"""
     QFrame {{
         background-color: {WHITE};
-        border: 1px solid transparent;
+        border: 1px solid {BLACK};
         border-radius: 4px;
-    }}
-"""
-
-FILTER_FRAME_STYLE = f"""
-    QFrame {{
-        background-color: {WHITE};
-        border: 1px solid {LIGHT_GRAY};
-        border-radius: 4px;
-        padding: 10px;
     }}
 """
 

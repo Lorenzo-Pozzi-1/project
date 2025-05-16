@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushB
     QTabWidget, QMessageBox, QInputDialog, QSpacerItem)
 from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, 
     SECONDARY_BUTTON_STYLE, SPECIAL_BUTTON_STYLE, SUBTITLE_FONT_SIZE, get_title_font)
-from common.widgets import HeaderWithBackButton, ContentFrame, ScoreBar
+from common.widgets import HeaderWithHomeButton, ContentFrame, ScoreBar
 from season_planner_page.scenario_tab import ScenarioTabPage
 from data.scenario_model import Scenario
 
@@ -38,7 +38,7 @@ class ScenariosManagerPage(QWidget):
         main_layout.setSpacing(SPACING_MEDIUM)
         
         # Header with back button and operation buttons
-        header = HeaderWithBackButton("Season Planner - Scenarios")
+        header = HeaderWithHomeButton("Season Planner - Scenarios")
         header.back_clicked.connect(self.parent.go_home)
         
         # Create buttons with fixed width
@@ -278,7 +278,6 @@ class ScenariosManagerPage(QWidget):
         self.action_buttons["Rename"].setEnabled(has_tabs)
         # Always allow deletion, even with a single tab
         self.action_buttons["Delete"].setEnabled(has_tabs)
-        self.action_buttons["Compare Scenarios"].setEnabled(multiple_tabs)
         
         # Update EIQ display
         page, _ = self.get_current_scenario_page()

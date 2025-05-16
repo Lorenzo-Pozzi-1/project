@@ -9,7 +9,7 @@ two EIQ calculator components:
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
 from common.styles import MARGIN_LARGE, SPACING_MEDIUM
-from common.widgets import HeaderWithBackButton
+from common.widgets import HeaderWithHomeButton
 from eiq_calculator_page.single_calculator_tab import SingleProductCalculatorTab
 from eiq_calculator_page.multi_calculator_tab import ProductComparisonCalculatorTab
 
@@ -34,7 +34,7 @@ class EiqCalculatorPage(QWidget):
         main_layout.setSpacing(SPACING_MEDIUM)
         
         # Header with back button
-        header = HeaderWithBackButton("EIQ Calculator")
+        header = HeaderWithHomeButton("EIQ Calculator")
         header.back_clicked.connect(self.parent.go_home)
         main_layout.addWidget(header)
         
