@@ -35,7 +35,7 @@ class EiqCalculatorPage(QWidget):
         
         # Header with back button
         header = HeaderWithHomeButton("EIQ Calculator")
-        header.back_clicked.connect(self.parent.go_home)
+        header.back_clicked.connect(lambda: self.parent.navigate_to_page(0))
         main_layout.addWidget(header)
         
         # Create tabs for different EIQ calculation methods

@@ -6,9 +6,9 @@ colors, fonts, dimensions, and style sheets for various components.
 It serves as the single source of truth for all styling in the application.
 """
 
-from PySide6.QtGui import QFont, QColor, QPalette, QBrush
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QPushButton, QFormLayout
+from PySide6.QtGui import QFont, QColor, QBrush
+from PySide6.QtWidgets import QPushButton, QVBoxLayout, QLabel, QSpacerItem, QSizePolicy
 
 # ----------------------
 # COLOR DEFINITIONS
@@ -343,25 +343,44 @@ def create_button(text, description=None, style='primary', callback=None, parent
     Returns:
         QPushButton: Styled button
     """
-    button = QPushButton(text, parent)
+    button = QPushButton(parent)
     
     # Apply the appropriate style based on the style parameter
     if style == 'primary':
         button.setStyleSheet(PRIMARY_BUTTON_STYLE)
+        button.setText(text)
     elif style == 'secondary':
         button.setStyleSheet(SECONDARY_BUTTON_STYLE)
+        button.setText(text)
     elif style == 'special':
         button.setStyleSheet(SPECIAL_BUTTON_STYLE)
+        button.setText(text)
     elif style == 'feature':
         button.setStyleSheet(FEATURE_BUTTON_STYLE)
-        # For feature buttons, format text as title and add description below
-        if description:
-            button.setText(f"{text}\n{description}")
+        
+        # Create a layout for the button content
+        layout = QVBoxLayout(button)
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(5)
+        
+        # Add title and description
+        title = QLabel(text)
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(get_subtitle_font())
+        layout.addWidget(title) 
+        description = QLabel(description)
+        description.setAlignment(Qt.AlignCenter)
+        description.setFont(get_body_font())
+        layout.addWidget(description)
+                    
     elif style == 'remove':
         button.setStyleSheet(REMOVE_BUTTON_STYLE)
+        button.setText(text)
     
     # Set minimum dimensions for regular buttons (not for remove buttons)
-    if style != 'remove':
+    if style == 'feature':
+        button.setMinimumSize(FEATURE_BUTTON_SIZE, FEATURE_BUTTON_SIZE)
+    elif style != 'remove':
         button.setMinimumSize(BUTTON_MIN_WIDTH, BUTTON_MIN_HEIGHT)
     
     # Connect callback if provided

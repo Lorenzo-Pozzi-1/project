@@ -130,13 +130,8 @@ class MainWindow(QMainWindow):
             return
             
         if 0 <= page_index < self.stacked_widget.count():
-            # Navigate to the page
             self.stacked_widget.setCurrentIndex(page_index)
-    
-    def go_home(self):
-        """Navigate back to the home page."""
-        self.stacked_widget.setCurrentIndex(0)
-    
+        
     def closeEvent(self, event):
         """Handle the close event, clean up __pycache__ directories."""
         try:
