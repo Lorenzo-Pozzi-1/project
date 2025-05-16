@@ -103,9 +103,13 @@ class ProductTable(QTableWidget):
         self.setHorizontalHeaderLabels(headers)
         
         # Hide columns and manage visibility
-        hide_columns = ["country", "region", "[ai1]", "[ai1]uom", "ai1 eiq", 
-                        "[ai2]", "[ai2]uom", "ai2 eiq", "[ai3]", "[ai3]uom", "ai3 eiq",
-                        "[ai4]", "[ai4]uom", "ai4 eiq", "ai2", "ai3", "ai4"]
+        hide_columns = [
+            "country", "region",
+            "[ai1]", "[ai1]uom", "ai1 eiq",
+            "[ai2]", "[ai2]uom", "ai2 eiq", "ai2",
+            "[ai3]", "[ai3]uom", "ai3 eiq", "ai3",
+            "[ai4]", "[ai4]uom", "ai4 eiq", "ai4"
+        ]
         
         # Setup column properties
         for col, key in enumerate(self.column_keys, start=1):

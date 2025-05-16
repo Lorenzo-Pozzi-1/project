@@ -404,14 +404,6 @@ def get_eiq_rating(eiq_value, low_threshold=EIQ_LOW_THRESHOLD,
     else:
         return "Extreme"
 
-def get_highlight_brush():
-    """Get a brush with the highlight color."""
-    return QBrush(YELLOW)
-
-def get_alternate_row_brush():
-    """Get a brush with the alternate row color."""
-    return QBrush(ALTERNATE_ROW_COLOR)
-
 # ----------------------
 # WIDGET FACTORY FUNCTIONS
 # ----------------------
