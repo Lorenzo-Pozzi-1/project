@@ -105,8 +105,8 @@ def get_small_font(size=SMALL_FONT_SIZE, bold=False): return get_font(size, bold
 FRAME_STYLE = f"""
     QFrame {{
         background-color: transparent;
-        border: 1px solid {LIGHT_GRAY};
-        border-radius: 4px;
+        border: 1px solid transparent;
+        border-radius: 0px;
     }}
 """
 
@@ -271,25 +271,6 @@ BLUE_LINE_DROP_STYLE = """
 # UTILITY FUNCTIONS
 # ----------------------
 
-def setup_app_palette(app):
-    """Configure the application-wide color palette."""
-    palette = QPalette()
-    
-    # Set up the color palette with white background
-    palette.setColor(QPalette.Window, QColor(WHITE)) 
-    palette.setColor(QPalette.WindowText, QColor(BLACK))
-    palette.setColor(QPalette.Base, QColor(WHITE))
-    palette.setColor(QPalette.AlternateBase, QColor(LIGHT_GRAY)) 
-    palette.setColor(QPalette.Text, QColor(BLACK))
-    palette.setColor(QPalette.Button, QColor(WHITE))
-    palette.setColor(QPalette.ButtonText, QColor(BLACK))
-    palette.setColor(QPalette.Link, QColor(YELLOW))
-    palette.setColor(QPalette.Highlight, QColor(YELLOW))
-    palette.setColor(QPalette.HighlightedText, QColor(BLACK))
-    
-    # Apply the palette
-    app.setPalette(palette)
-
 def get_eiq_color(eiq_value, low_threshold=EIQ_LOW_THRESHOLD, 
                   medium_threshold=EIQ_MEDIUM_THRESHOLD, high_threshold=EIQ_HIGH_THRESHOLD):
     """
@@ -348,31 +329,43 @@ def get_alternate_row_brush():
 # WIDGET FACTORY FUNCTIONS
 # ----------------------
 
-def create_primary_button(text, callback=None, parent=None):
-    """Create a primary button with consistent styling."""
+def create_button(text, description=None, style='primary', callback=None, parent=None):
+    """
+    Create a button with consistent styling.
+    
+    Args:
+        text (str): Button text
+        description (str): Optional description for feature buttons
+        style (str): Button style ('primary', 'secondary', 'special', 'feature', 'remove')
+        callback (callable): Function to call when button is clicked
+        parent (QWidget): Parent widget
+        
+    Returns:
+        QPushButton: Styled button
+    """
     button = QPushButton(text, parent)
-    button.setStyleSheet(PRIMARY_BUTTON_STYLE)
+    
+    # Apply the appropriate style based on the style parameter
+    if style == 'primary':
+        button.setStyleSheet(PRIMARY_BUTTON_STYLE)
+    elif style == 'secondary':
+        button.setStyleSheet(SECONDARY_BUTTON_STYLE)
+    elif style == 'special':
+        button.setStyleSheet(SPECIAL_BUTTON_STYLE)
+    elif style == 'feature':
+        button.setStyleSheet(FEATURE_BUTTON_STYLE)
+        # For feature buttons, format text as title and add description below
+        if description:
+            button.setText(f"{text}\n{description}")
+    elif style == 'remove':
+        button.setStyleSheet(REMOVE_BUTTON_STYLE)
+    
+    # Set minimum dimensions for regular buttons (not for remove buttons)
+    if style != 'remove':
+        button.setMinimumSize(BUTTON_MIN_WIDTH, BUTTON_MIN_HEIGHT)
+    
+    # Connect callback if provided
     if callback:
         button.clicked.connect(callback)
+        
     return button
-
-def create_secondary_button(text, callback=None, parent=None):
-    """Create a secondary button with consistent styling."""
-    button = QPushButton(text, parent)
-    button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-    if callback:
-        button.clicked.connect(callback)
-    return button
-
-def create_form_layout(parent=None):
-    """Create a form layout with consistent styling."""
-    form_layout = QFormLayout(parent)
-    form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-    form_layout.setContentsMargins(MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM)
-    form_layout.setSpacing(SPACING_MEDIUM)
-    return form_layout
-
-def apply_table_header_style(header):
-    """Apply consistent styling to a table header."""
-    header.setStyleSheet(COMPARISON_HEADER_STYLE)
-    header.setDefaultAlignment(Qt.AlignCenter)

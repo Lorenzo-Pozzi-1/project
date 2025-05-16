@@ -4,9 +4,9 @@ Scenario tab for the LORENZO POZZI Pesticide App.
 This module provides a tab for viewing and editing the individual scenarios.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PySide6.QtCore import Signal
-from common.styles import MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, SUBTITLE_FONT_SIZE, get_title_font
+from common.styles import MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, create_button, get_title_font
 from common.widgets import ContentFrame
 from season_planner_page.widgets import SeasonPlanMetadataWidget, ApplicationsTableContainer
 from data.scenario_model import Scenario
@@ -60,12 +60,9 @@ class ScenarioTabPage(QWidget):
         
         # Add application button
         buttons_layout = QHBoxLayout()
-        add_button = QPushButton("Add Application")
-        add_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        add_button.clicked.connect(self.applications_container.add_application_row)
+        add_button = create_button(text="Add Application", style="secondary", callback=self.applications_container.add_application_row, parent=self)
         buttons_layout.addWidget(add_button)
         buttons_layout.addStretch(1)
-        
         applications_layout.addLayout(buttons_layout)
         applications_frame.layout.addLayout(applications_layout)
         main_layout.addWidget(applications_frame)

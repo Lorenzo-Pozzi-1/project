@@ -5,9 +5,9 @@ This module defines the ProductsListTab class that provides product listing
 and filtering functionality using a table-based view.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFrame, QScrollArea
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFrame, QScrollArea)
 from PySide6.QtCore import Qt
-from common.styles import PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE, get_subtitle_font
+from common.styles import SECONDARY_BUTTON_STYLE, create_button, get_subtitle_font
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
 from products_page.widgets.filter_row import FilterRow
@@ -89,13 +89,8 @@ class ProductsListTab(QWidget):
         button_frame = ContentFrame()
         button_layout = QHBoxLayout()
         button_layout.setAlignment(Qt.AlignRight)  # Align to right
-        
-        compare_button = QPushButton("View Fact Sheet / Compare Selected Products")
-        compare_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        compare_button.clicked.connect(self.parent.compare_selected_products)
-        compare_button.setMinimumWidth(300)
+        compare_button = create_button(text="Compare Selected Products", style="secondary", callback=self.compare_selected_products, parent=self)
         button_layout.addWidget(compare_button)
-        
         button_frame.layout.addLayout(button_layout)
         main_layout.addWidget(button_frame)
     
@@ -234,3 +229,11 @@ class ProductsListTab(QWidget):
     def on_selection_changed(self, selected_products):
         """Handle selection changes from the table."""
         self.parent.selected_products = selected_products
+
+    def compare_selected_products(self):
+        """Switch to comparison tab and update the comparison view."""
+        # Pass the selected products to the comparison tab
+        self.comparison_tab.update_comparison_view(self.selected_products)
+        
+        # Switch to comparison tab
+        self.tabs.setCurrentIndex(1)

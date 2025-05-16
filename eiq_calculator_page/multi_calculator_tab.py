@@ -5,14 +5,13 @@ This module provides the ProductComparisonCalculatorTab widget for comparing EIQ
 values of multiple pesticide products with card-based UI and improved UX.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFrame, QScrollArea
 from PySide6.QtCore import Qt, Signal
-from common.styles import FRAME_STYLE, MARGIN_MEDIUM, REMOVE_BUTTON_STYLE, SPACING_LARGE, SPACING_MEDIUM, get_subtitle_font, PRIMARY_BUTTON_STYLE
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QScrollArea, QVBoxLayout, QWidget
+from common.styles import FRAME_STYLE, MARGIN_MEDIUM, PRODUCT_CARD_STYLE, REMOVE_BUTTON_STYLE, SPACING_LARGE, SPACING_MEDIUM, get_subtitle_font, create_button
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
-from eiq_calculator_page.widgets import ProductSelectionWidget, ApplicationParamsWidget, EiqComparisonTable
+from eiq_calculator_page.widgets import ApplicationParamsWidget, EiqComparisonTable, ProductSelectionWidget
 from math_module.eiq_calculations import calculate_product_field_eiq
-from common.styles import PRODUCT_CARD_STYLE
 
 
 class ProductCard(QFrame):
@@ -256,16 +255,10 @@ class ProductComparisonCalculatorTab(QWidget):
         
         # Add another product button
         add_button_layout = QHBoxLayout()
-        
-        add_product_button = QPushButton("Add Product")
-        add_product_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        add_product_button.clicked.connect(self.add_product_card)
+        add_product_button = create_button(text="Add Product", style="primary", callback=self.add_product_card, parent=self)
         add_button_layout.addWidget(add_product_button)
-        
         add_button_layout.addStretch(1)  # Push button to left
-        
         selection_layout.addLayout(add_button_layout)
-        
         selection_frame.layout.addLayout(selection_layout)
         main_layout.addWidget(selection_frame)
         

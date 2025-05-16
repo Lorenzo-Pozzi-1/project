@@ -6,8 +6,8 @@ This module provides reusable custom widgets used throughout the application.
 
 from PySide6.QtCore import Qt, Signal, QRect, QPointF
 from PySide6.QtGui import QColor, QBrush, QPainter, QPen, QLinearGradient
-from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QSizePolicy, QWidget, QTableWidgetItem, QSpacerItem
-from common.styles import FEATURE_BUTTON_STYLE, FRAME_STYLE, SECONDARY_BUTTON_STYLE, get_title_font, get_body_font, MARGIN_MEDIUM, SPACING_MEDIUM, MARGIN_SMALL
+from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QWidget, QTableWidgetItem, QSpacerItem
+from common.styles import FRAME_STYLE, SECONDARY_BUTTON_STYLE, get_title_font, get_body_font, SPACING_MEDIUM, MARGIN_SMALL
 
 class HeaderWithHomeButton(QWidget):
     """
@@ -43,45 +43,6 @@ class HeaderWithHomeButton(QWidget):
         
         # Add a spacer to balance the layout
         layout.addItem(QSpacerItem(150, 0))
-
-
-class FeatureButton(QPushButton):
-    """
-    A custom button for feature selection on the home page.
-    
-    Has a title, description, and consistent styling.
-    """
-    def __init__(self, title, description, parent=None):
-        """Initialize with the given title and description."""
-        super().__init__(parent)
-        self.title = title
-        self.description = description
-        self.setup_ui()
-    
-    def setup_ui(self):
-        """Set up the UI components."""
-        self.setMinimumSize(150, 150)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.setStyleSheet(FEATURE_BUTTON_STYLE)
-        
-        # Create layout for button contents
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM)
-        layout.setSpacing(SPACING_MEDIUM)
-        
-        # Title
-        title_label = QLabel(self.title)
-        title_label.setAlignment(Qt.AlignCenter)
-        title_label.setFont(get_title_font(size=14))
-        title_label.setWordWrap(True)
-        layout.addWidget(title_label)
-        
-        # Description label
-        desc_label = QLabel(self.description)
-        desc_label.setAlignment(Qt.AlignCenter)
-        desc_label.setFont(get_body_font())
-        desc_label.setWordWrap(True)
-        layout.addWidget(desc_label)
 
 
 class ColorCodedTableItem(QTableWidgetItem):

@@ -5,10 +5,10 @@ This module defines the HomePage class which serves as the main navigation
 screen for the application.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QFrame
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox
 from PySide6.QtCore import Qt, Signal
-from common.styles import TITLE_FONT_SIZE, get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE
-from common.widgets import FeatureButton, ContentFrame
+from common.styles import TITLE_FONT_SIZE, get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE, create_button
+from common.widgets import ContentFrame
 
 class HomePage(QWidget):
     """
@@ -89,18 +89,33 @@ class HomePage(QWidget):
         buttons_layout = QHBoxLayout()
         buttons_layout.setSpacing(15)
         
+        
         feature_buttons = [
-            ("Products List and Comparison", 
-            "View and compare products with quick fact sheets\n", 1),
-            ("EIQ Season Planner", 
-            "Plan applications, Compare scenarios\nImport and work from previous years plans", 2),
-            ("EIQ Calculator", 
-            "Calculate Environmental Impact Quotients\nCompare EIQ of different applications", 3)
+            {
+            "title": "Products List and Comparison",
+            "description": "View and compare products with quick fact sheets\n",
+            "page_index": 1
+            },
+            {
+            "title": "EIQ Season Planner",
+            "description": "Plan applications, Compare scenarios\nImport and work from previous years plans",
+            "page_index": 2
+            },
+            {
+            "title": "EIQ Calculator",
+            "description": "Calculate Environmental Impact Quotients\nCompare EIQ of different applications",
+            "page_index": 3
+            }
         ]
         
-        for title, description, page_index in feature_buttons:
-            button = FeatureButton(title, description)
-            button.clicked.connect(lambda checked=False, idx=page_index: self.parent.navigate_to_page(idx))
+        for info in feature_buttons:
+            button = create_button(
+                text=info["title"], 
+                description=info["description"], 
+                style="feature", 
+                callback=lambda idx=info["page_index"]: self.parent.navigate_to_page(idx),
+                parent=self
+            )
             buttons_layout.addWidget(button)
         
         buttons_frame.layout.addLayout(buttons_layout)

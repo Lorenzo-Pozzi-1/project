@@ -67,14 +67,6 @@ class ProductsPage(QWidget):
         
         main_layout.addWidget(self.tabs)
     
-    def compare_selected_products(self):
-        """Switch to comparison tab and update the comparison view."""
-        # Pass the selected products to the comparison tab
-        self.comparison_tab.update_comparison_view(self.selected_products)
-        
-        # Switch to comparison tab
-        self.tabs.setCurrentIndex(1)
-    
     def reset(self):
         """Reset the page and refresh product data."""
         products_repo = ProductRepository.get_instance()

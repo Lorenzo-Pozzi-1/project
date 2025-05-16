@@ -179,7 +179,6 @@ class ProductTypeSelector(QComboBox):
             if index >= 0:
                 self.setCurrentIndex(index)
 
-
 class ProductSelectionWidget(QWidget):
     """
     A widget combining product type selection and product search.
