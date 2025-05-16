@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableW
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush
 from common.styles import get_subtitle_font
-from common.widgets import ScoreBar
+from common.widgets import ContentFrame, ScoreBar
 from math_module.eiq_calculations import format_eiq_result
 from common.styles import get_eiq_color, get_eiq_rating, EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD
 
@@ -67,12 +67,16 @@ class EiqResultDisplay(QWidget):
         # Main layout
         layout = QVBoxLayout(self)
         layout.setContentsMargins(5, 5, 5, 5)
-        layout.setAlignment(Qt.AlignCenter)
+        
+        # CHANGE: Wrap content in ContentFrame
+        content_frame = ContentFrame()
+        content_layout = QVBoxLayout()
+        content_layout.setAlignment(Qt.AlignCenter)
         
         # Results title
         results_title = QLabel("EIQ Results")
         results_title.setFont(get_subtitle_font())
-        layout.addWidget(results_title)
+        content_layout.addWidget(results_title)
         
         # Field EIQ result layout
         field_eiq_layout = QHBoxLayout()
@@ -87,7 +91,7 @@ class EiqResultDisplay(QWidget):
         field_eiq_layout.addWidget(self.field_eiq_result_ha)
         field_eiq_layout.addStretch(1)
         
-        layout.addLayout(field_eiq_layout)
+        content_layout.addLayout(field_eiq_layout)
         
         # Create score bar with default thresholds and labels
         self.score_bar = ScoreBar(
@@ -97,7 +101,10 @@ class EiqResultDisplay(QWidget):
             labels=["Low", "Medium", "High", "EXTREME"],
             title_text="Field EIQ score:"
         )
-        layout.addWidget(self.score_bar)
+        content_layout.addWidget(self.score_bar)
+        
+        content_frame.layout.addLayout(content_layout)
+        layout.addWidget(content_frame)
     
     def update_result(self, field_eiq):
         """

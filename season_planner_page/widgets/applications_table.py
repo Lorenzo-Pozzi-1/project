@@ -3,8 +3,9 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel, QHBoxLayout, QGraphicsOpacityEffect
 from PySide6.QtCore import Qt, Signal, QEasingCurve, QParallelAnimationGroup, QPropertyAnimation
 from PySide6.QtGui import QPalette, QColor
+from common.widgets import ContentFrame
 from season_planner_page.widgets.application_row import ApplicationRowWidget
-from common.styles import COMPARISON_HEADER_STYLE, DROP_INDICATOR_STYLE, WHITE, ALTERNATE_ROW_COLOR
+from common.styles import COMPARISON_HEADER_STYLE, BLUE_LINE_DROP_STYLE, WHITE, ALTERNATE_ROW_COLOR
 
 
 class ApplicationsTableContainer(QWidget):
@@ -34,10 +35,14 @@ class ApplicationsTableContainer(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
         
+        # Wrap header in ContentFrame
+        header_frame = ContentFrame()
+        header_layout = QVBoxLayout()
+        
         # Header row
-        header_layout = QHBoxLayout()
-        header_layout.setContentsMargins(2, 1, 2, 1)
-        header_layout.setSpacing(5)
+        header_row_layout = QHBoxLayout()
+        header_row_layout.setContentsMargins(2, 1, 2, 1)
+        header_row_layout.setSpacing(5)
         
         # Define headers and their stretch factors
         headers = ["", "App. No", "Date", "Type", "Product", "Rate", "UOM", "Area", "Method", "AI Groups", "Field EIQ"]
@@ -51,20 +56,25 @@ class ApplicationsTableContainer(QWidget):
                 label.setStyleSheet("font-weight: bold;")
             if i == 0:  # Drag handle column
                 label.setFixedWidth(20)
-            header_layout.addWidget(label)
-            header_layout.setStretch(i, stretches[i])
+            header_row_layout.addWidget(label)
+            header_row_layout.setStretch(i, stretches[i])
         
         # Extra column for delete button
-        header_layout.addWidget(QLabel(""))
-        header_layout.setStretch(len(headers), 0)
+        header_row_layout.addWidget(QLabel(""))
+        header_row_layout.setStretch(len(headers), 0)
         
-        # Create header widget
-        header_widget = QWidget()
-        header_widget.setFixedHeight(ApplicationRowWidget.ROW_HEIGHT)
-        header_widget.setLayout(header_layout)
-        header_widget.setStyleSheet(COMPARISON_HEADER_STYLE)
+        header_layout.addLayout(header_row_layout)
+        header_frame.layout.addLayout(header_layout)
         
-        main_layout.addWidget(header_widget)
+        # Apply the comparison header style
+        header_frame.setStyleSheet(COMPARISON_HEADER_STYLE)
+        header_frame.setFixedHeight(ApplicationRowWidget.ROW_HEIGHT)
+        
+        main_layout.addWidget(header_frame)
+        
+        # Wrap scroll area in ContentFrame
+        content_frame = ContentFrame()
+        content_layout = QVBoxLayout()
         
         # Create scroll area
         self.scroll_area = QScrollArea()
@@ -74,7 +84,7 @@ class ApplicationsTableContainer(QWidget):
         # Create container for rows
         self.rows_container = QWidget()
         self.rows_container.setObjectName("rowsContainer")
-        self.rows_container.setStyleSheet(DROP_INDICATOR_STYLE)
+        self.rows_container.setStyleSheet(BLUE_LINE_DROP_STYLE)
         
         # Create layout for rows
         self.rows_layout = QVBoxLayout(self.rows_container)
@@ -84,7 +94,10 @@ class ApplicationsTableContainer(QWidget):
         
         # Set up the scroll area
         self.scroll_area.setWidget(self.rows_container)
-        main_layout.addWidget(self.scroll_area)
+        content_layout.addWidget(self.scroll_area)
+        
+        content_frame.layout.addLayout(content_layout)
+        main_layout.addWidget(content_frame)
         
         # Create drop indicator
         self.drop_indicator = QFrame(self.rows_container)

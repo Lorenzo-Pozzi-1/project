@@ -7,7 +7,8 @@ and filtering functionality using a table-based view.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFrame, QScrollArea
 from PySide6.QtCore import Qt
-from common.styles import PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE
+from common.styles import PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE, get_subtitle_font
+from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
 from products_page.widgets.filter_row import FilterRow
 from products_page.widgets.products_table import ProductTable
@@ -40,12 +41,13 @@ class ProductsListTab(QWidget):
         main_layout.setSpacing(5)
         
         # Filter section
-        filter_container = QWidget()
-        filter_layout = QVBoxLayout(filter_container)
-        filter_layout.setContentsMargins(10, 10, 10, 10)
+        filter_frame = ContentFrame()
+        filter_layout = QVBoxLayout()
         
         # Filter title
-        filter_layout.addWidget(QLabel("Filter Products"))
+        selection_title = QLabel("Filter Products")
+        selection_title.setFont(get_subtitle_font())
+        filter_layout.addWidget(selection_title)
         
         # Filter rows area
         self.filter_rows_container = QWidget()
@@ -68,19 +70,34 @@ class ProductsListTab(QWidget):
         add_filter_button.clicked.connect(self.add_filter_row)
         filter_layout.addWidget(add_filter_button, alignment=Qt.AlignLeft)
         
-        main_layout.addWidget(filter_container)
+        # Add layout to the frame
+        filter_frame.layout.addLayout(filter_layout)
+        main_layout.addWidget(filter_frame)
         
         # Products table
+        table_frame = ContentFrame()
+        table_layout = QVBoxLayout()
+        
         self.products_table = ProductTable()
         self.products_table.selection_changed.connect(self.on_selection_changed)
-        main_layout.addWidget(self.products_table, 1)
+        table_layout.addWidget(self.products_table)
+        
+        table_frame.layout.addLayout(table_layout)
+        main_layout.addWidget(table_frame, 1)  # Give stretch factor
         
         # Compare button
+        button_frame = ContentFrame()
+        button_layout = QHBoxLayout()
+        button_layout.setAlignment(Qt.AlignRight)  # Align to right
+        
         compare_button = QPushButton("View Fact Sheet / Compare Selected Products")
         compare_button.setStyleSheet(PRIMARY_BUTTON_STYLE)
         compare_button.clicked.connect(self.parent.compare_selected_products)
         compare_button.setMinimumWidth(300)
-        main_layout.addWidget(compare_button, alignment=Qt.AlignRight)
+        button_layout.addWidget(compare_button)
+        
+        button_frame.layout.addLayout(button_layout)
+        main_layout.addWidget(button_frame)
     
     def load_product_data(self):
         """Load product data from repository."""

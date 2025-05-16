@@ -41,6 +41,10 @@ class ScenariosManagerPage(QWidget):
         header = HeaderWithHomeButton("Season Planner - Scenarios")
         header.back_clicked.connect(self.parent.go_home)
         
+        # Wrap buttons in ContentFrame
+        buttons_frame = ContentFrame()
+        buttons_layout = QHBoxLayout()
+        
         # Create buttons with fixed width
         buttons = {
             "New Scenario": (PRIMARY_BUTTON_STYLE, self.add_new_scenario),
@@ -51,7 +55,6 @@ class ScenariosManagerPage(QWidget):
             "Export": (SPECIAL_BUTTON_STYLE, self.export)
         }
         
-        buttons_layout = QHBoxLayout()
         self.action_buttons = {}
         
         for text, (style, callback) in buttons.items():
@@ -61,12 +64,15 @@ class ScenariosManagerPage(QWidget):
             btn.setFixedWidth(150)
             buttons_layout.addWidget(btn)
             self.action_buttons[text] = btn
-                    
-        header_widget = QWidget()
-        header_widget.setLayout(buttons_layout)
-        header.layout().addWidget(header_widget)
+        
+        buttons_frame.layout.addLayout(buttons_layout)
+        header.layout().addWidget(buttons_frame)
         
         main_layout.addWidget(header)
+        
+        # Wrap tab widget in ContentFrame
+        tabs_frame = ContentFrame()
+        tabs_layout = QVBoxLayout()
         
         # Tab widget for scenarios
         self.tab_widget = QTabWidget()
@@ -74,7 +80,9 @@ class ScenariosManagerPage(QWidget):
         # self.tab_widget.tabCloseRequested.connect(self.on_tab_close_requested)    
         self.tab_widget.currentChanged.connect(self.update_ui_state)
         
-        main_layout.addWidget(self.tab_widget)
+        tabs_layout.addWidget(self.tab_widget)
+        tabs_frame.layout.addLayout(tabs_layout)
+        main_layout.addWidget(tabs_frame)
         
         # EIQ Results Display
         results_frame = ContentFrame()

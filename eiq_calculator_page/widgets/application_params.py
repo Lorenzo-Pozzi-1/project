@@ -7,6 +7,7 @@ This module provides widgets for entering application rate, units, and other par
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QComboBox, QFormLayout
 from PySide6.QtCore import Signal
 from common.styles import get_body_font
+from common.widgets import ContentFrame
 from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
 
@@ -113,6 +114,9 @@ class ApplicationParamsWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(10)
         
+        # Wrap content in ContentFrame
+        content_frame = ContentFrame()
+        
         # Form layout for inputs
         form_layout = QFormLayout()
         form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
@@ -130,7 +134,8 @@ class ApplicationParamsWidget(QWidget):
         self.applications_spin.valueChanged.connect(self.on_params_changed)
         form_layout.addRow("Number of Applications:", self.applications_spin)
         
-        layout.addLayout(form_layout)
+        content_frame.layout.addLayout(form_layout)
+        layout.addWidget(content_frame)
     
     def on_params_changed(self):
         """Handle parameter changes."""

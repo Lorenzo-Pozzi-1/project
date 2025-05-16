@@ -6,7 +6,7 @@ from PySide6.QtGui import QDrag
 from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QPushButton
 from data.product_repository import ProductRepository
 from data.ai_repository import AIRepository
-from common.styles import APPLICATION_ROW_STYLE, REMOVE_BUTTON_STYLE
+from common.styles import DRAGGING_ROW_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE
 from math_module.eiq_calculations import calculate_product_field_eiq
 from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
@@ -39,7 +39,7 @@ class ApplicationRowWidget(QFrame):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setFrameShape(QFrame.StyledPanel)
         self.setFrameShadow(QFrame.Plain)
-        self.setStyleSheet(APPLICATION_ROW_STYLE)
+        self.setStyleSheet(FRAME_STYLE)
         self.setFixedHeight(self.ROW_HEIGHT)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         self.setAcceptDrops(True)
@@ -344,7 +344,7 @@ class ApplicationRowWidget(QFrame):
         drag.setMimeData(mimedata)
         
         # Set drag appearance
-        self.setStyleSheet(APPLICATION_ROW_STYLE)
+        self.setStyleSheet(DRAGGING_ROW_STYLE)
         
         # Signal drag started
         self.is_dragging = True
@@ -354,7 +354,7 @@ class ApplicationRowWidget(QFrame):
         drag.exec_(Qt.MoveAction)
         
         # Reset appearance and signal drag ended
-        self.setStyleSheet(APPLICATION_ROW_STYLE)
+        self.setStyleSheet(FRAME_STYLE)
         self.is_dragging = False
         self.drag_ended.emit(self)
     

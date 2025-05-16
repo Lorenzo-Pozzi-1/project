@@ -7,7 +7,7 @@ screen for the application.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QFrame
 from PySide6.QtCore import Qt, Signal
-from common.styles import TITLE_FONT_SIZE, WARNING_TITLE_STYLE, get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE
+from common.styles import TITLE_FONT_SIZE, get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE
 from common.widgets import FeatureButton, ContentFrame
 
 class HomePage(QWidget):
@@ -43,9 +43,8 @@ class HomePage(QWidget):
         main_layout.addWidget(title_label)
         
         # Country and region selection area
-        filter_frame = QFrame()
-        filter_frame.setFrameShape(QFrame.NoFrame)
-        filter_layout = QHBoxLayout(filter_frame)
+        filter_frame = ContentFrame()
+        filter_layout = QHBoxLayout()
         filter_layout.setAlignment(Qt.AlignCenter)
         
         # Country selection
@@ -81,19 +80,22 @@ class HomePage(QWidget):
         filter_layout.addWidget(region_label)
         filter_layout.addWidget(self.region_combo)
         
+        # Add layout to the frame
+        filter_frame.layout.addLayout(filter_layout)
         main_layout.addWidget(filter_frame)
         
         # Create the feature buttons
+        buttons_frame = ContentFrame()
         buttons_layout = QHBoxLayout()
         buttons_layout.setSpacing(15)
         
         feature_buttons = [
             ("Products List and Comparison", 
-             "View and compare products with quick fact sheets", 1),
+            "View and compare products with quick fact sheets\n", 1),
             ("EIQ Season Planner", 
-             "Plan applications\nCompare scenarios\nImport and work from previous years plans", 2),
+            "Plan applications, Compare scenarios\nImport and work from previous years plans", 2),
             ("EIQ Calculator", 
-             "Calculate Environmental Impact Quotients\nCompare EIQ of different applications\nCalculate your seasonal EIQ", 3)
+            "Calculate Environmental Impact Quotients\nCompare EIQ of different applications", 3)
         ]
         
         for title, description, page_index in feature_buttons:
@@ -101,31 +103,23 @@ class HomePage(QWidget):
             button.clicked.connect(lambda checked=False, idx=page_index: self.parent.navigate_to_page(idx))
             buttons_layout.addWidget(button)
         
-        main_layout.addLayout(buttons_layout)
+        buttons_frame.layout.addLayout(buttons_layout)
+        main_layout.addWidget(buttons_frame)
         
         # Add a spacer before the info frames for better proportions
         main_layout.addStretch(1)
         
-        # Warning section in its own frame
-        warning_frame = ContentFrame()
-        warning_layout = QVBoxLayout()
-        
-        warning_title = QLabel("! ALWAYS CHECK LABELS !") 
-        warning_title.setFont(get_subtitle_font(TITLE_FONT_SIZE))
-        warning_title.setStyleSheet(WARNING_TITLE_STYLE)
-        warning_title.setAlignment(Qt.AlignCenter)
-        warning_layout.addWidget(warning_title)
-        
-        warning_frame.layout.addLayout(warning_layout)
-        main_layout.addWidget(warning_frame)
-        
-        # Add spacing between frames
-        main_layout.addSpacing(5)
-        
-        # EIQ info section
+        # Info frame
         info_frame = ContentFrame()
         info_layout = QVBoxLayout()
         
+        # Warning title
+        warning_title = QLabel("! ALWAYS CHECK LABELS !") 
+        warning_title.setFont(get_subtitle_font(TITLE_FONT_SIZE))
+        warning_title.setStyleSheet("color: red; font-weight: bold;")
+        warning_title.setAlignment(Qt.AlignCenter)
+        info_layout.addWidget(warning_title)
+                
         # EIQ info title
         info_title = QLabel("About Environmental Impact Quotient (EIQ)")
         info_title.setFont(get_subtitle_font())
@@ -140,8 +134,8 @@ class HomePage(QWidget):
             "- <b>Consumer risk</b> (food residue + groundwater effects)<br>"
             "- <b>Ecological risk</b> (fish, birds, bees, and beneficial insects)<br><br>"
             "Higher scores indicate greater environmental impact. The <b>Field Use EIQ</b> (= EIQ × %AI × Rate) "
-            "adjusts for real-world application conditions, supporting sustainable pest management decisions."
-            "\n\n CONCISE EXPLANATION EIQ MOLECULE vs EIQ FIELD USE"
+            "adjusts for real-world application conditions, supporting sustainable pest management decisions.<br>"
+            "ADD CONCISE EXPLANATION EIQ MOLECULE vs EIQ FIELD USE"
         )
 
         info_text.setWordWrap(True)
@@ -150,9 +144,6 @@ class HomePage(QWidget):
         
         info_frame.layout.addLayout(info_layout)
         main_layout.addWidget(info_frame)
-
-        # Reduce spacing between frames
-        main_layout.addSpacing(5)
 
     def get_regions_for_country(self, country):
         """Get region options for a specific country."""

@@ -230,6 +230,10 @@ class ProductComparisonCalculatorTab(QWidget):
         selection_title.setFont(get_subtitle_font())
         selection_layout.addWidget(selection_title)
         
+        # Wrap scroll area in ContentFrame
+        cards_frame = ContentFrame()
+        cards_frame_layout = QVBoxLayout()
+        
         # Scroll area for product cards
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
@@ -240,14 +244,15 @@ class ProductComparisonCalculatorTab(QWidget):
         # Container for product cards
         self.cards_container = QWidget()
         self.cards_layout = QHBoxLayout(self.cards_container)
-        self.cards_container.setStyleSheet("background-color: white;")
         self.cards_layout.setContentsMargins(0, 0, 0, 0)
         self.cards_layout.setSpacing(10)
         self.cards_layout.addStretch(1)  # Push cards to left
         
         self.scroll_area.setWidget(self.cards_container)
+        cards_frame_layout.addWidget(self.scroll_area)
         
-        selection_layout.addWidget(self.scroll_area)
+        cards_frame.layout.addLayout(cards_frame_layout)
+        selection_layout.addWidget(cards_frame)
         
         # Add another product button
         add_button_layout = QHBoxLayout()

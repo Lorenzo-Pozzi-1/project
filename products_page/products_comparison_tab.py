@@ -6,6 +6,7 @@ comparison of selected products using the ComparisonTable widget.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout
+from common.widgets import ContentFrame
 from products_page.widgets.comparison_table import ComparisonView
 
 
@@ -28,9 +29,16 @@ class ProductsComparisonTab(QWidget):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
         
+        # Wrap comparison view in ContentFrame
+        comparison_frame = ContentFrame()
+        comparison_layout = QVBoxLayout()
+        
         # Use the ComparisonView widget
         self.comparison_view = ComparisonView()
-        main_layout.addWidget(self.comparison_view)
+        comparison_layout.addWidget(self.comparison_view)
+        
+        comparison_frame.layout.addLayout(comparison_layout)
+        main_layout.addWidget(comparison_frame)
     
     def update_comparison_view(self, selected_products):
         """

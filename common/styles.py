@@ -101,7 +101,24 @@ def get_small_font(size=SMALL_FONT_SIZE, bold=False): return get_font(size, bold
 # STYLE SHEETS
 # ----------------------
 
-# Buttons to pages styles
+# Pages setup styles
+FRAME_STYLE = f"""
+    QFrame {{
+        background-color: transparent;
+        border: 1px solid {LIGHT_GRAY};
+        border-radius: 4px;
+    }}
+"""
+
+YELLOW_BAR_STYLE = f"""
+    QFrame {{
+        background-color: {YELLOW};
+        min-height: 25px;
+        max-height: 25px;
+    }}
+"""
+
+# Buttons styles
 FEATURE_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {WHITE};
@@ -167,31 +184,16 @@ SPECIAL_BUTTON_STYLE = f"""
     }}
 """
 
-# Frame styles
-FRAME_STYLE = f"""
-    QFrame {{
-        background-color: {WHITE};
-        border: 1px solid {BLACK};
-        border-radius: 4px;
-    }}
-"""
-
-# Application row style
-APPLICATION_ROW_STYLE = """
-    QFrame {
-        border: none;
-        border-bottom: 1px solid {LIGHT_GRAY};
+REMOVE_BUTTON_STYLE = f"""
+    QPushButton {{
         background-color: transparent;
-        padding: 2px;
-    }
-"""
-
-# Yellow bar style for bottom of pages
-YELLOW_BAR_STYLE = f"""
-    QFrame {{
-        background-color: {YELLOW};
-        min-height: 25px;
-        max-height: 25px;
+        color: {RED};
+        border-radius: 12px;
+        font-weight: bold;
+        font-size: 16px;
+    }}
+    QPushButton:hover {{
+        background-color: {BEIGE};
     }}
 """
 
@@ -215,28 +217,6 @@ PRODUCT_CARD_STYLE = f"""
     }}
 """
 
-# Remove button style
-REMOVE_BUTTON_STYLE = """
-    QPushButton {
-        background-color: transparent;
-        color: {RED};
-        border-radius: 12px;
-        font-weight: bold;
-        font-size: 16px;
-    }
-    QPushButton:hover {
-        background-color: {BEIGE};
-    }
-"""
-
-# Warning title style
-WARNING_TITLE_STYLE = f"""
-    color: red; 
-    font-weight: bold; 
-    background-color: #FFEEEE; 
-    padding: 5px;
-"""
-
 # Suggestions container style
 SUGGESTIONS_CONTAINER_STYLE = f"""
     QFrame {{
@@ -252,6 +232,8 @@ SUGGESTIONS_LIST_STYLE = f"""
     QListWidget {{
         border: none;
         outline: none;
+        color: {BLACK};
+        font-size: {SMALL_FONT_SIZE}pt;
     }}
     QListWidget::item {{
         padding: 5px;
@@ -276,10 +258,11 @@ DRAGGING_ROW_STYLE = """
     }
 """
 
-DROP_INDICATOR_STYLE = """
+BLUE_LINE_DROP_STYLE = """
     QFrame#dropIndicator {
         background-color: {BLUE};
         height: 3px;
+        border: 1px solid {BLUE};
         border-radius: 1px;
     }
 """

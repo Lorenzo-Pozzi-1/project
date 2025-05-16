@@ -7,6 +7,7 @@ This module provides reusable widgets for selecting pesticide products.
 from PySide6.QtCore import Qt, Signal, QStringListModel, QEvent
 from PySide6.QtWidgets import QComboBox, QCompleter, QFormLayout, QLineEdit, QVBoxLayout, QWidget, QAbstractItemView
 from common.styles import get_body_font, SUGGESTIONS_LIST_STYLE
+from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
 
 
@@ -202,6 +203,9 @@ class ProductSelectionWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(10)
         
+        # Wrap the content in ContentFrame
+        content_frame = ContentFrame()
+        
         # Form layout for inputs
         form_layout = QFormLayout()
         form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
@@ -211,12 +215,13 @@ class ProductSelectionWidget(QWidget):
         self.type_selector.currentIndexChanged.connect(self.update_product_list)
         form_layout.addRow("Product Type:", self.type_selector)
         
-        # Product search field - now using simplified version
+        # Product search field
         self.product_search = ProductSearchField(self)
         self.product_search.product_selected.connect(self.on_product_selected)
         form_layout.addRow("Product:", self.product_search)
         
-        layout.addLayout(form_layout)
+        content_frame.layout.addLayout(form_layout)
+        layout.addWidget(content_frame)
     
     def update_product_list(self):
         """Update the product list based on selected product type."""
