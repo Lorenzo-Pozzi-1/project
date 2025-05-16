@@ -8,8 +8,7 @@ side-by-side comparison of product properties.
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
-from common.styles import GENERIC_TABLE_STYLE, get_eiq_color
-from common.styles import get_body_font
+from common.styles import GENERIC_TABLE_STYLE, get_eiq_color, get_body_font
 from math_module.eiq_calculations import calculate_product_field_eiq
 
 
@@ -35,11 +34,16 @@ class ComparisonTable(QTableWidget):
     def setup_ui(self):
         """Set up the UI components."""
         # Set up visual style
-        self.setStyleSheet(GENERIC_TABLE_STYLE)
         self.setAlternatingRowColors(True)
         self.setSelectionBehavior(QTableWidget.SelectRows)
         self.setSelectionMode(QTableWidget.SingleSelection)
         self.verticalHeader().setVisible(False)
+        
+        # Style the horizontal header
+        self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
+        self.horizontalHeader().setFont(get_body_font(bold=True))
+        self.horizontalHeader().setMinimumHeight(40)
+        self.horizontalHeader().setStyleSheet(GENERIC_TABLE_STYLE)
         
         # Configure row heights
         self.verticalHeader().setDefaultSectionSize(40)
@@ -84,12 +88,6 @@ class ComparisonTable(QTableWidget):
         for product in products:
             product_dict = product.to_dict()
             product_name_key = "name"  # Default key for product name
-            # If product name column isn't available, use first column that contains "name"
-            if product_name_key not in product_dict:
-                for key in product_dict.keys():
-                    if "name" in key.lower():
-                        product_name_key = key
-                        break
             headers.append(product_dict.get(product_name_key, "Unknown Product"))
         
         self.setHorizontalHeaderLabels(headers)

@@ -7,11 +7,11 @@ It serves as the single source of truth for all styling in the application.
 """
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont, QColor, QBrush
+from PySide6.QtGui import QFont, QColor
 from PySide6.QtWidgets import QPushButton, QVBoxLayout, QLabel
 
 # ----------------------
-# COLOR DEFINITIONS
+#region COLOR DEFINITIONS
 # ----------------------
 
 # Primary color palette 
@@ -27,16 +27,16 @@ BEIGE           = "#C9BFB0"
 RED             = "#EC3400"
 
 # EIQ color coding using hex color codes
-EIQ_LOW_COLOR = QColor("#009863")      # Green for low EIQ
-EIQ_MEDIUM_COLOR = QColor("#FEE000")   # Yellow for medium EIQ  
-EIQ_HIGH_COLOR = QColor("#EC3400")     # Red for high EIQ
-EIQ_EXTREME_COLOR = QColor("#8B0000")  # Dark red for extreme EIQ
+EIQ_LOW_COLOR = QColor(200, 255, 200)      # Pastel green for low EIQ
+EIQ_MEDIUM_COLOR = QColor(255, 255, 200)   # Pastel yellow for medium EIQ  
+EIQ_HIGH_COLOR = QColor(255, 200, 200)     # Pastel red for high EIQ
+EIQ_EXTREME_COLOR = QColor("#D19B9B")    # Pastel dark red for extreme EIQ
 
 # Table and list styling colors
 ALTERNATE_ROW_COLOR = QColor(BEIGE)  # Beige for alternating rows
 
 # ----------------------
-# THRESHOLDS AND CONSTANTS
+#region EIQ THRESHOLDS, COLORS AND RATINGS
 # ----------------------
 
 # EIQ threshold constants
@@ -44,8 +44,54 @@ EIQ_LOW_THRESHOLD = 33.3
 EIQ_MEDIUM_THRESHOLD = 66.6
 EIQ_HIGH_THRESHOLD = 100.0
 
+def get_eiq_color(eiq_value, low_threshold=EIQ_LOW_THRESHOLD, 
+                  medium_threshold=EIQ_MEDIUM_THRESHOLD, high_threshold=EIQ_HIGH_THRESHOLD):
+    """
+    Get appropriate color for an EIQ value based on thresholds.
+    
+    Args:
+        eiq_value (float): The EIQ value to get a color for
+        low_threshold (float): Threshold between low and medium impact
+        medium_threshold (float): Threshold between medium and high impact
+        high_threshold (float): Threshold between high and extreme impact
+        
+    Returns:
+        QColor: Color corresponding to the EIQ value's impact level
+    """
+    if eiq_value < low_threshold:
+        return EIQ_LOW_COLOR
+    elif eiq_value < medium_threshold:
+        return EIQ_MEDIUM_COLOR
+    elif eiq_value < high_threshold:
+        return EIQ_HIGH_COLOR
+    else:
+        return EIQ_EXTREME_COLOR
+
+def get_eiq_rating(eiq_value, low_threshold=EIQ_LOW_THRESHOLD, 
+                  medium_threshold=EIQ_MEDIUM_THRESHOLD, high_threshold=EIQ_HIGH_THRESHOLD):
+    """
+    Get text rating for an EIQ value based on thresholds.
+    
+    Args:
+        eiq_value (float): The EIQ value to get a rating for
+        low_threshold (float): Threshold between low and medium impact
+        medium_threshold (float): Threshold between medium and high impact
+        high_threshold (float): Threshold between high and extreme impact
+        
+    Returns:
+        str: Rating as text ("Low", "Medium", "High", or "Extreme")
+    """
+    if eiq_value < low_threshold:
+        return "Low"
+    elif eiq_value < medium_threshold:
+        return "Medium"
+    elif eiq_value < high_threshold:
+        return "High"
+    else:
+        return "Extreme"
+
 # ----------------------
-# SPACING AND SIZES
+#region SPACING AND SIZES
 # ----------------------
 
 # Margins and spacing
@@ -63,7 +109,7 @@ BUTTON_MIN_HEIGHT = 40
 FEATURE_BUTTON_SIZE = 180       # Size for large feature buttons on home page
 
 # ----------------------
-# FONT CONFIGURATIONS
+#region FONT CONFIGURATIONS
 # ----------------------
 
 # Font sizes
@@ -98,7 +144,7 @@ def get_body_font(size=BODY_FONT_SIZE, bold=False): return get_font(size, bold)
 def get_small_font(size=SMALL_FONT_SIZE, bold=False): return get_font(size, bold)
 
 # ----------------------
-# STYLE SHEETS
+#region STYLE SHEETS
 # ----------------------
 
 # Pages setup styles
@@ -198,7 +244,7 @@ REMOVE_BUTTON_STYLE = f"""
     }}
 """
 
-# Tables styles
+# Tables style
 GENERIC_TABLE_STYLE = f"""
     /* Main table styling */
     QTableWidget {{
@@ -354,58 +400,9 @@ BLUE_LINE_DROP_STYLE = """
     }
 """
 
-# ----------------------
-# UTILITY FUNCTIONS
-# ----------------------
-
-def get_eiq_color(eiq_value, low_threshold=EIQ_LOW_THRESHOLD, 
-                  medium_threshold=EIQ_MEDIUM_THRESHOLD, high_threshold=EIQ_HIGH_THRESHOLD):
-    """
-    Get appropriate color for an EIQ value based on thresholds.
-    
-    Args:
-        eiq_value (float): The EIQ value to get a color for
-        low_threshold (float): Threshold between low and medium impact
-        medium_threshold (float): Threshold between medium and high impact
-        high_threshold (float): Threshold between high and extreme impact
-        
-    Returns:
-        QColor: Color corresponding to the EIQ value's impact level
-    """
-    if eiq_value < low_threshold:
-        return EIQ_LOW_COLOR
-    elif eiq_value < medium_threshold:
-        return EIQ_MEDIUM_COLOR
-    elif eiq_value < high_threshold:
-        return EIQ_HIGH_COLOR
-    else:
-        return EIQ_EXTREME_COLOR
-
-def get_eiq_rating(eiq_value, low_threshold=EIQ_LOW_THRESHOLD, 
-                  medium_threshold=EIQ_MEDIUM_THRESHOLD, high_threshold=EIQ_HIGH_THRESHOLD):
-    """
-    Get text rating for an EIQ value based on thresholds.
-    
-    Args:
-        eiq_value (float): The EIQ value to get a rating for
-        low_threshold (float): Threshold between low and medium impact
-        medium_threshold (float): Threshold between medium and high impact
-        high_threshold (float): Threshold between high and extreme impact
-        
-    Returns:
-        str: Rating as text ("Low", "Medium", "High", or "Extreme")
-    """
-    if eiq_value < low_threshold:
-        return "Low"
-    elif eiq_value < medium_threshold:
-        return "Medium"
-    elif eiq_value < high_threshold:
-        return "High"
-    else:
-        return "Extreme"
 
 # ----------------------
-# WIDGET FACTORY FUNCTIONS
+#region BUTTONS
 # ----------------------
 
 def create_button(text, description=None, style='primary', callback=None, parent=None):

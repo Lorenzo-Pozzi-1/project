@@ -92,7 +92,7 @@ class ProductTable(QTableWidget):
         self.setColumnCount(col_count)
         
         # Set header labels
-        headers = ["Select"] + self.column_keys
+        headers = ["          "] + self.column_keys #spaces to fit checkboxes
         # Insert Groups header after AI1
         if ai1_col >= 0:
             groups_col = ai1_col + 2  # +1 for checkbox, +1 for position after AI1
