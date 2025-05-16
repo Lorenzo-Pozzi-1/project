@@ -56,10 +56,7 @@ class SingleProductCalculatorTab(QWidget):
 
         # Configure table columns
         header = self.ai_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.Stretch)
-        header.setSectionResizeMode(1, QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QHeaderView.Stretch)
-        header.setSectionResizeMode(3, QHeaderView.Stretch)
+        for i in range(0,header.count()): header.setSectionResizeMode(i, QHeaderView.Stretch)
         
         # Set a reasonable height for the table
         self.ai_table.setMinimumHeight(120)
@@ -80,6 +77,7 @@ class SingleProductCalculatorTab(QWidget):
             "Application Method", "Min Rate", "Max Rate", "Rate UOM", 
             "REI (hours)", "PHI (days)", "Min Days Between Apps"
         ])
+        self.label_info_table.verticalHeader().setVisible(False)
 
         # Configure table columns
         header = self.label_info_table.horizontalHeader()
@@ -87,8 +85,7 @@ class SingleProductCalculatorTab(QWidget):
             header.setSectionResizeMode(i, QHeaderView.Stretch)
 
         # Set a reasonable height for the table
-        self.label_info_table.setMinimumHeight(80)
-        self.label_info_table.setMaximumHeight(100)
+        self.label_info_table.setFixedHeight(65)
         
         form_layout = QFormLayout()
         form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)

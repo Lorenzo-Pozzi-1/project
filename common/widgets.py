@@ -6,7 +6,7 @@ This module provides reusable custom widgets used throughout the application.
 
 from PySide6.QtCore import Qt, Signal, QRect, QPointF
 from PySide6.QtGui import QColor, QBrush, QPainter, QPen, QLinearGradient
-from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QWidget, QTableWidgetItem, QSpacerItem
+from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QWidget, QSpacerItem
 from common.styles import FRAME_STYLE, SECONDARY_BUTTON_STYLE, get_title_font, get_body_font, SPACING_MEDIUM, MARGIN_SMALL
 
 class HeaderWithHomeButton(QWidget):
