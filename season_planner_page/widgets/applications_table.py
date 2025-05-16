@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt, Signal, QEasingCurve, QParallelAnimationGroup, QP
 from PySide6.QtGui import QPalette, QColor
 from common.widgets import ContentFrame
 from season_planner_page.widgets.application_row import ApplicationRowWidget
-from common.styles import COMPARISON_HEADER_STYLE, BLUE_LINE_DROP_STYLE, WHITE, ALTERNATE_ROW_COLOR
+from common.styles import BLUE_LINE_DROP_STYLE, GENERIC_TABLE_STYLE, WHITE, ALTERNATE_ROW_COLOR
 
 
 class ApplicationsTableContainer(QWidget):
@@ -67,7 +67,7 @@ class ApplicationsTableContainer(QWidget):
         header_frame.layout.addLayout(header_layout)
         
         # Apply the comparison header style
-        header_frame.setStyleSheet(COMPARISON_HEADER_STYLE)
+        header_frame.setStyleSheet(GENERIC_TABLE_STYLE)
         header_frame.setFixedHeight(ApplicationRowWidget.ROW_HEIGHT)
         
         main_layout.addWidget(header_frame)

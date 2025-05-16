@@ -8,7 +8,7 @@ side-by-side comparison of product properties.
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
-from common.styles import COMPARISON_HEADER_STYLE, get_eiq_color
+from common.styles import GENERIC_TABLE_STYLE, get_eiq_color
 from common.styles import get_body_font
 from math_module.eiq_calculations import calculate_product_field_eiq
 
@@ -35,15 +35,11 @@ class ComparisonTable(QTableWidget):
     def setup_ui(self):
         """Set up the UI components."""
         # Set up visual style
+        self.setStyleSheet(GENERIC_TABLE_STYLE)
         self.setAlternatingRowColors(True)
         self.setSelectionBehavior(QTableWidget.SelectRows)
         self.setSelectionMode(QTableWidget.SingleSelection)
         self.verticalHeader().setVisible(False)
-        
-        # Configure horizontal header
-        self.setStyleSheet(COMPARISON_HEADER_STYLE)
-        header_font = get_body_font(bold=True)
-        self.horizontalHeader().setFont(header_font)
         
         # Configure row heights
         self.verticalHeader().setDefaultSectionSize(40)

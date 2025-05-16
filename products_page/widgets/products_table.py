@@ -8,6 +8,8 @@ view of products with selection, filtering, and sorting capabilities.
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QCheckBox, QWidget, QHBoxLayout
 from PySide6.QtCore import Qt, Signal
 
+from common.styles import GENERIC_TABLE_STYLE
+
 
 class ProductTable(QTableWidget):
     """
@@ -30,6 +32,7 @@ class ProductTable(QTableWidget):
     def setup_ui(self):
         """Set up the UI components."""
         # Configure table appearance
+        self.setStyleSheet(GENERIC_TABLE_STYLE)
         self.setAlternatingRowColors(True)
         self.verticalHeader().setVisible(False)
         self.setSelectionBehavior(QTableWidget.SelectRows)

@@ -7,6 +7,7 @@ of a single pesticide product with improved UI and component architecture.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem
 from PySide6.QtCore import Qt
+from common.styles import GENERIC_TABLE_STYLE
 from common.widgets import ContentFrame
 from data.product_repository import ProductRepository
 from eiq_calculator_page.widgets import ProductSelectionWidget, ApplicationParamsWidget, EiqResultDisplay
@@ -48,6 +49,7 @@ class SingleProductCalculatorTab(QWidget):
         
         # Create Active Ingredients table
         self.ai_table = QTableWidget()
+        self.ai_table.setStyleSheet(GENERIC_TABLE_STYLE)
         self.ai_table.setRowCount(0)  # Start empty
         self.ai_table.setColumnCount(4)  # 4 columns including UOM
         self.ai_table.setHorizontalHeaderLabels(["Active Ingredient", "EIQ", "Concentration", "UOM"])
@@ -71,6 +73,7 @@ class SingleProductCalculatorTab(QWidget):
         
         # Create label information table
         self.label_info_table = QTableWidget()
+        self.label_info_table.setStyleSheet(GENERIC_TABLE_STYLE)
         self.label_info_table.setRowCount(1)  # One row for the selected product
         self.label_info_table.setColumnCount(7)  # 7 columns for product info
         self.label_info_table.setHorizontalHeaderLabels([

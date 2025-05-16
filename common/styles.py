@@ -8,7 +8,7 @@ It serves as the single source of truth for all styling in the application.
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QColor, QBrush
-from PySide6.QtWidgets import QPushButton, QVBoxLayout, QLabel, QSpacerItem, QSizePolicy
+from PySide6.QtWidgets import QPushButton, QVBoxLayout, QLabel
 
 # ----------------------
 # COLOR DEFINITIONS
@@ -122,7 +122,7 @@ YELLOW_BAR_STYLE = f"""
 FEATURE_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {WHITE};
-        border: 2px solid {YELLOW};
+        border: 4px solid {YELLOW};
         border-radius: 8px;
         padding: 10px;
     }}
@@ -188,6 +188,7 @@ REMOVE_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: transparent;
         color: {RED};
+        font-color: {RED};
         border-radius: 12px;
         font-weight: bold;
         font-size: 16px;
@@ -197,14 +198,100 @@ REMOVE_BUTTON_STYLE = f"""
     }}
 """
 
-# Table header styles
-COMPARISON_HEADER_STYLE = f"""
+# Tables styles
+GENERIC_TABLE_STYLE = f"""
+    /* Main table styling */
+    QTableWidget {{
+        background-color: {WHITE};
+        gridline-color: {LIGHT_GRAY};
+        border: 1px solid {LIGHT_GRAY};
+        border-radius: 4px;
+        selection-background-color: {LIGHT_GRAY};
+        selection-color: {BLACK};
+        alternate-background-color: #F5F5F5;
+    }}
+    
+    /* Header styling */
     QHeaderView::section {{
         background-color: {YELLOW};
         color: {BLACK};
         padding: 5px;
         border: 1px solid {LIGHT_GRAY};
         font-weight: bold;
+        font-size: {BODY_FONT_SIZE}pt;
+        text-align: center;
+        height: 25px;
+    }}
+    
+    /* Row styling */
+    QTableWidget::item {{
+        padding: 5px;
+        border-bottom: 1px solid {LIGHT_GRAY};
+    }}
+    
+    QTableWidget::item:selected {{
+        background-color: #E0E8F0;
+        color: {BLACK};
+    }}
+    
+    QTableWidget::item:hover {{
+        background-color: {LIGHT_GRAY};
+    }}
+    
+    /* Scroll bars */
+    QScrollBar:horizontal {{
+        border: none;
+        background: {WHITE};
+        height: 12px;
+    }}
+    
+    QScrollBar:vertical {{
+        border: none;
+        background: {WHITE};
+        width: 12px;
+    }}
+    
+    QScrollBar::handle:horizontal, QScrollBar::handle:vertical {{
+        background: {BEIGE};
+        border-radius: 6px;
+        min-width: 20px;
+        min-height: 20px;
+    }}
+    
+    QScrollBar::handle:horizontal:hover, QScrollBar::handle:vertical:hover {{
+        background: {LIGHT_GRAY};
+    }}
+    
+    /* Scroll bar arrows */
+    QScrollBar::add-line, QScrollBar::sub-line {{
+        background: none;
+        border: none;
+    }}
+    
+    /* Corner between scrollbars */
+    QTableCornerButton::section {{
+        background-color: {LIGHT_GRAY};
+        border: 1px solid {LIGHT_GRAY};
+    }}
+    
+    /* Cell editing */
+    QTableWidget QLineEdit {{
+        border: 1px solid {BLUE};
+        border-radius: 2px;
+        padding: 2px;
+        selection-background-color: {BLUE};
+        selection-color: {WHITE};
+    }}
+    
+    /* Checkbox in table */
+    QTableWidget QCheckBox {{
+        margin-left: 7px;
+    }}
+    
+    /* Focus outline */
+    QTableWidget:focus {{
+        outline: none;
+        border: 1px solid {BLUE};
     }}
 """
 
