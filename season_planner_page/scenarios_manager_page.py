@@ -5,10 +5,8 @@ This module provides the main interface for managing multiple pesticide
 application scenarios through tabs.
 """
 
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
-    QTabWidget, QMessageBox, QInputDialog, QSpacerItem)
-from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, PRIMARY_BUTTON_STYLE, 
-    SECONDARY_BUTTON_STYLE, SPECIAL_BUTTON_STYLE, SUBTITLE_FONT_SIZE, get_title_font)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog)
+from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, create_button, get_title_font)
 from common.widgets import HeaderWithHomeButton, ContentFrame, ScoreBar
 from season_planner_page.scenario_tab import ScenarioTabPage
 from data.scenario_model import Scenario
@@ -47,21 +45,18 @@ class ScenariosManagerPage(QWidget):
         
         # Create buttons with fixed width
         buttons = {
-            "New Scenario": (PRIMARY_BUTTON_STYLE, self.add_new_scenario),
-            "Clone Current": (SECONDARY_BUTTON_STYLE, self.clone_current_scenario),
-            "Rename": (SECONDARY_BUTTON_STYLE, self.rename_current_scenario),
-            "Delete": (SECONDARY_BUTTON_STYLE, self.delete_current_scenario),
-            "Compare Scenarios": (PRIMARY_BUTTON_STYLE, self.compare_scenarios),
-            "Export": (SPECIAL_BUTTON_STYLE, self.export)
+            "New Scenario": ("primary", self.add_new_scenario),
+            "Clone Current": ("secondary", self.clone_current_scenario),
+            "Rename": ("secondary", self.rename_current_scenario),
+            "Delete": ("secondary", self.delete_current_scenario),
+            "Compare Scenarios": ("primary", self.compare_scenarios),
+            "Export": ("special", self.export)
         }
         
         self.action_buttons = {}
         
         for text, (style, callback) in buttons.items():
-            btn = QPushButton(text)
-            btn.setStyleSheet(style)
-            btn.clicked.connect(callback)
-            btn.setFixedWidth(150)
+            btn = create_button(text, style=style, callback=callback, parent=self)
             buttons_layout.addWidget(btn)
             self.action_buttons[text] = btn
         

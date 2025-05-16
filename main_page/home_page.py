@@ -108,7 +108,7 @@ class HomePage(QWidget):
         ]
         
         for info in feature_buttons:
-            button = create_button(text=info["title"], description=info["description"], style="feature", callback=lambda: self.parent.navigate_to_page(info["page_index"]),parent=self)
+            button = create_button(text=info["title"], description=info["description"], style="feature", callback=lambda checked=False, i=info["page_index"]: self.parent.navigate_to_page(i),parent=self)
             buttons_layout.addWidget(button)
         
         buttons_frame.layout.addLayout(buttons_layout)

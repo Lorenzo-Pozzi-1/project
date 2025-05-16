@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
 
     def navigate_to_page(self, page_index):
         """Navigate to the specified page index."""
-        
+                
         if self.updating_products:
             print("Please wait, I'm updating the products data...")
             return

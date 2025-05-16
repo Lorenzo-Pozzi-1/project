@@ -89,7 +89,7 @@ class ProductsListTab(QWidget):
         button_frame = ContentFrame()
         button_layout = QHBoxLayout()
         button_layout.setAlignment(Qt.AlignRight)  # Align to right
-        compare_button = create_button(text="Compare Selected Products", style="secondary", callback=self.compare_selected_products, parent=self)
+        compare_button = create_button(text="View facts sheet / Compare Selected Products", style="primary", callback=self.compare_selected_products, parent=self)
         button_layout.addWidget(compare_button)
         button_frame.layout.addLayout(button_layout)
         main_layout.addWidget(button_frame)
@@ -231,9 +231,15 @@ class ProductsListTab(QWidget):
         self.parent.selected_products = selected_products
 
     def compare_selected_products(self):
-        """Switch to comparison tab and update the comparison view."""
-        # Pass the selected products to the comparison tab
-        self.comparison_tab.update_comparison_view(self.selected_products)
+        """Handle the compare button click."""
+        selected_products = self.parent.selected_products
+        if not selected_products:
+            return
         
-        # Switch to comparison tab
-        self.tabs.setCurrentIndex(1)
+        # Load selected products into the comparison tab
+        self.parent.comparison_tab.update_comparison_view(selected_products)
+
+        # Navigate to the comparison tab
+        self.parent.tabs.setCurrentIndex(1)
+        
+        
