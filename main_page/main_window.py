@@ -8,7 +8,7 @@ for all pages in the application.
 import os, shutil
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget
 from PySide6.QtCore import Signal
-from data.product_repository import ProductRepository
+from data import ProductRepository
 from main_page.home_page import HomePage
 from products_page.products_page import ProductsPage
 from season_planner_page.scenarios_manager_page import ScenariosManagerPage

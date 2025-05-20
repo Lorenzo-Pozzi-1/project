@@ -8,7 +8,7 @@ and filtering functionality using a table-based view.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFrame, QScrollArea
 from PySide6.QtCore import Qt
 from common import SECONDARY_BUTTON_STYLE, get_subtitle_font, ContentFrame, create_button
-from data.product_repository import ProductRepository
+from data import ProductRepository
 from products_page.widgets.filter_row import FilterRow
 from products_page.widgets.products_table import ProductTable
 

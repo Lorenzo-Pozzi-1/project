@@ -8,7 +8,7 @@ values of multiple pesticide products with card-based UI and improved UX.
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QScrollArea, QVBoxLayout, QWidget
 from common import FRAME_STYLE, MARGIN_MEDIUM, PRODUCT_CARD_STYLE, REMOVE_BUTTON_STYLE, SPACING_LARGE, SPACING_MEDIUM, get_subtitle_font, create_button, ContentFrame
-from data.product_repository import ProductRepository
+from data import ProductRepository
 from eiq_calculator_page.widgets import ApplicationParamsWidget, EiqComparisonTable, ProductSelectionWidget
 from math_module.eiq_calculations import calculate_product_field_eiq
 

@@ -6,7 +6,7 @@ pesticide application scenario for a season.
 """
 
 from datetime import date
-
+from data.application_model import Application
 
 class Scenario:
     """
@@ -60,7 +60,6 @@ class Scenario:
             Scenario: New scenario instance with copied data
         """
         # Copy applications using the Application model's to_dict/from_dict methods for deep cloning
-        from data.application_model import Application
         new_applications = []
         for app in self.applications:
             app_dict = app.to_dict()
@@ -148,7 +147,6 @@ class Scenario:
         Returns:
             Scenario: New Scenario instance
         """
-        from data.application_model import Application
         
         # Extract field area with safe default
         field_area = data.get("field_area")

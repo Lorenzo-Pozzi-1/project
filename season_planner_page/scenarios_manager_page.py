@@ -11,7 +11,7 @@ from common import (
     HeaderWithHomeButton, create_button, get_title_font, ScoreBar
 )
 from season_planner_page.scenario_tab import ScenarioTabPage
-from data.scenario_model import Scenario
+from data import Scenario
 
 class ScenariosManagerPage(QWidget):
     """

@@ -10,8 +10,7 @@ import os, sys
 from PySide6.QtCore import QDir, QObject, QEvent
 from PySide6.QtWidgets import QApplication, QComboBox
 from common import load_config
-from data.product_repository import ProductRepository
-from data.ai_repository import AIRepository
+from data import ProductRepository, AIRepository
 from main_page.main_window import MainWindow
 
 # Clear the terminal screen

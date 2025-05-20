@@ -5,6 +5,8 @@ This module defines the Product class and related functionality.
 Updated to support multiple active ingredients without EIQ data in the product.
 """
 
+from data.ai_repository import AIRepository
+from math_module.eiq_conversions import convert_concentration_to_percent
 
 class Product:
     """
@@ -244,7 +246,6 @@ class Product:
         Returns:
             list: List of dictionaries with AI names and their MoA groups
         """
-        from data.ai_repository import AIRepository
         
         ai_repo = AIRepository.get_instance()
         return [ai_repo.get_moa_groups(ai_name) for ai_name in self.active_ingredients if ai_name]
@@ -259,7 +260,6 @@ class Product:
         Returns:
             float or None: EIQ value if found, None otherwise
         """
-        from data.ai_repository import AIRepository
         
         ai_repo = AIRepository.get_instance()
         return ai_repo.get_ai_eiq(ai_name)
@@ -271,8 +271,6 @@ class Product:
         Returns:
             list: List of dictionaries with name, eiq, percent for each AI
         """
-        from data.ai_repository import AIRepository
-        from math_module.eiq_conversions import convert_concentration_to_percent
         
         ai_repo = AIRepository.get_instance()
         ai_data = []

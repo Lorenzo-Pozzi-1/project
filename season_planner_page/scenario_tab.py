@@ -8,8 +8,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PySide6.QtCore import Signal
 from common import MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, create_button, get_title_font, ContentFrame
 from season_planner_page.widgets import SeasonPlanMetadataWidget, ApplicationsTableContainer
-from data.scenario_model import Scenario
-from data.application_model import Application
+from data import Scenario, Application
 
 class ScenarioTabPage(QWidget):
     """
