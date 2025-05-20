@@ -6,8 +6,7 @@ This module provides widgets for entering application rate, units, and other par
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QComboBox, QFormLayout
 from PySide6.QtCore import Signal
-from common.styles import get_body_font
-from common.widgets.widgets import ContentFrame
+from common import get_body_font, ContentFrame
 from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
 
 

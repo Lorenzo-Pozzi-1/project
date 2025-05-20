@@ -7,7 +7,7 @@ filter control for table filtering.
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton
 from PySide6.QtCore import Signal
-from common.styles import REMOVE_BUTTON_STYLE, FRAME_STYLE
+from common import REMOVE_BUTTON_STYLE, FRAME_STYLE
 
 class FilterRow(QWidget):
     """

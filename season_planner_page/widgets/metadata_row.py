@@ -3,8 +3,7 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QComboBox, QDoubleSpinBox
 from PySide6.QtCore import Signal
 from datetime import date
-from common.widgets.widgets import ContentFrame
-from common.styles import get_body_font
+from common import ContentFrame, get_body_font
 
 
 class SeasonPlanMetadataWidget(QWidget):

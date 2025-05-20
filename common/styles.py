@@ -6,9 +6,7 @@ colors, fonts, dimensions, and style sheets for various components.
 It serves as the single source of truth for all styling in the application.
 """
 
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QColor
-from PySide6.QtWidgets import QPushButton, QVBoxLayout, QLabel
 
 # ----------------------
 #region COLOR DEFINITIONS

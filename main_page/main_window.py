@@ -13,7 +13,7 @@ from main_page.home_page import HomePage
 from products_page.products_page import ProductsPage
 from season_planner_page.scenarios_manager_page import ScenariosManagerPage
 from eiq_calculator_page.eiq_calculator_page import EiqCalculatorPage
-from common.styles import YELLOW_BAR_STYLE
+from common import YELLOW_BAR_STYLE
 
 class MainWindow(QMainWindow):
     """

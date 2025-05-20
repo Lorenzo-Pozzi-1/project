@@ -3,9 +3,8 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel, QHBoxLayout, QGraphicsOpacityEffect
 from PySide6.QtCore import Qt, Signal, QEasingCurve, QParallelAnimationGroup, QPropertyAnimation
 from PySide6.QtGui import QPalette, QColor
-from common.widgets.widgets import ContentFrame
+from common import ContentFrame, BLUE_LINE_DROP_STYLE, GENERIC_TABLE_STYLE, WHITE, ALTERNATE_ROW_COLOR
 from season_planner_page.widgets.application_row import ApplicationRowWidget
-from common.styles import BLUE_LINE_DROP_STYLE, GENERIC_TABLE_STYLE, WHITE, ALTERNATE_ROW_COLOR
 
 
 class ApplicationsTableContainer(QWidget):

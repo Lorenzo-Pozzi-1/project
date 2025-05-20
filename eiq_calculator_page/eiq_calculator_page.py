@@ -8,8 +8,7 @@ two EIQ calculator components:
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
-from common.styles import MARGIN_LARGE, SPACING_MEDIUM
-from common.widgets.widgets import HeaderWithHomeButton
+from common import MARGIN_LARGE, SPACING_MEDIUM, HeaderWithHomeButton
 from eiq_calculator_page.single_calculator_tab import SingleProductCalculatorTab
 from eiq_calculator_page.multi_calculator_tab import ProductComparisonCalculatorTab
 

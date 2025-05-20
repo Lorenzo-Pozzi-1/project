@@ -7,7 +7,7 @@ classification data.
 
 import csv
 import os
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 from data.ai_model import ActiveIngredient
 
 class AIRepository:

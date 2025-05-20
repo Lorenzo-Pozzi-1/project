@@ -2,39 +2,68 @@
 Common components for the LORENZO POZZI Pesticide App.
 
 This package provides common UI components, styles, and utility functions
-shared across the application.
+shared across the application. All components are exported at the package level,
+allowing for clean imports like:
 
-Usage:
-    from common import PRIMARY_BUTTON_STYLE, ContentFrame, get_subtitle_font
+    from common import PRIMARY_BUTTON_STYLE, ContentFrame, get_subtitle_font, ScoreBar
+
+Usage examples:
+    # Import specific items
+    from common import ContentFrame, ScoreBar, YELLOW, save_config
+    
+    # Import everything
+    from common import *
 """
 
 # Re-export all config utilities
 from common.config_utils import (
-    get_config, 
-    load_config, 
+    get_config,
+    load_config,
     save_config
 )
 
-# Re-export all style components
+# Re-export all style components and functions
 from common.styles import (
     # Colors
-    YELLOW, YELLOW_HOVER, BLACK, WHITE, GREEN, BLUE, BLUE_HOVER, 
+    YELLOW, YELLOW_HOVER, BLACK, WHITE, GREEN, BLUE, BLUE_HOVER,
     LIGHT_GRAY, BEIGE, RED,
     
-    # Styles
-    PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE, GENERIC_TABLE_STYLE,
+    # EIQ Colors
+    EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR, EIQ_EXTREME_COLOR,
+    ALTERNATE_ROW_COLOR,
     
-    # Font functions
-    get_title_font, get_subtitle_font, get_body_font,
+    # EIQ Thresholds
+    EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD,
+    
+    # EIQ Utility Functions
+    get_eiq_color, get_eiq_rating,
+    
+    # Spacing and Sizes
+    MARGIN_SMALL, MARGIN_MEDIUM, MARGIN_LARGE,
+    SPACING_SMALL, SPACING_MEDIUM, SPACING_LARGE, SPACING_XLARGE,
+    BUTTON_MIN_WIDTH, BUTTON_MIN_HEIGHT, FEATURE_BUTTON_SIZE,
+    
+    # Font Sizes
+    TITLE_FONT_SIZE, SUBTITLE_FONT_SIZE, BODY_FONT_SIZE, SMALL_FONT_SIZE,
+    
+    # Font Functions
+    get_font, get_title_font, get_subtitle_font, get_body_font, get_small_font,
+    
+    # Style Sheets
+    FRAME_STYLE, YELLOW_BAR_STYLE, INFO_TEXT_STYLE,
+    FEATURE_BUTTON_STYLE, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE,
+    SPECIAL_BUTTON_STYLE, REMOVE_BUTTON_STYLE, GENERIC_TABLE_STYLE,
+    PRODUCT_CARD_STYLE, SUGGESTIONS_CONTAINER_STYLE, SUGGESTIONS_LIST_STYLE,
+    DRAGGING_ROW_STYLE, BLUE_LINE_DROP_STYLE
 )
 
 # Re-export common widgets and their functions
-from common.widgets.widgets import (
-    ContentFrame, 
+from common.widgets import (
+    ContentFrame,
     HeaderWithHomeButton,
+    ScoreBar,
     create_button
 )
-from common.widgets.scorebar import ScoreBar
 
 # Define what gets imported with "from common import *"
 __all__ = [
@@ -42,18 +71,37 @@ __all__ = [
     'get_config', 'load_config', 'save_config',
     
     # Colors
-    'YELLOW', 'YELLOW_HOVER', 'BLACK', 'WHITE', 'GREEN', 'BLUE', 
+    'YELLOW', 'YELLOW_HOVER', 'BLACK', 'WHITE', 'GREEN', 'BLUE',
     'BLUE_HOVER', 'LIGHT_GRAY', 'BEIGE', 'RED',
     
-    # Styles
-    'PRIMARY_BUTTON_STYLE', 'SECONDARY_BUTTON_STYLE', 'GENERIC_TABLE_STYLE',
+    # EIQ Colors
+    'EIQ_LOW_COLOR', 'EIQ_MEDIUM_COLOR', 'EIQ_HIGH_COLOR', 'EIQ_EXTREME_COLOR',
+    'ALTERNATE_ROW_COLOR',
     
-    # Font functions
-    'get_title_font', 'get_subtitle_font', 'get_body_font',
+    # EIQ Thresholds
+    'EIQ_LOW_THRESHOLD', 'EIQ_MEDIUM_THRESHOLD', 'EIQ_HIGH_THRESHOLD',
     
-    # Style utility functions
-    'create_button',
+    # EIQ Utility Functions
+    'get_eiq_color', 'get_eiq_rating',
     
-    # Widgets
-    'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar'
+    # Spacing and Sizes
+    'MARGIN_SMALL', 'MARGIN_MEDIUM', 'MARGIN_LARGE',
+    'SPACING_SMALL', 'SPACING_MEDIUM', 'SPACING_LARGE', 'SPACING_XLARGE',
+    'BUTTON_MIN_WIDTH', 'BUTTON_MIN_HEIGHT', 'FEATURE_BUTTON_SIZE',
+    
+    # Font Sizes
+    'TITLE_FONT_SIZE', 'SUBTITLE_FONT_SIZE', 'BODY_FONT_SIZE', 'SMALL_FONT_SIZE',
+    
+    # Font Functions
+    'get_font', 'get_title_font', 'get_subtitle_font', 'get_body_font', 'get_small_font',
+    
+    # Style Sheets
+    'FRAME_STYLE', 'YELLOW_BAR_STYLE', 'INFO_TEXT_STYLE',
+    'FEATURE_BUTTON_STYLE', 'PRIMARY_BUTTON_STYLE', 'SECONDARY_BUTTON_STYLE',
+    'SPECIAL_BUTTON_STYLE', 'REMOVE_BUTTON_STYLE', 'GENERIC_TABLE_STYLE',
+    'PRODUCT_CARD_STYLE', 'SUGGESTIONS_CONTAINER_STYLE', 'SUGGESTIONS_LIST_STYLE',
+    'DRAGGING_ROW_STYLE', 'BLUE_LINE_DROP_STYLE',
+    
+    # Widgets and Widget Functions
+    'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar', 'create_button'
 ]

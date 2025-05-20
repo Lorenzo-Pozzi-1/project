@@ -5,9 +5,6 @@ This module defines the Application class which represents a single
 pesticide application within a season plan.
 """
 
-from datetime import date
-
-
 class Application:
     """
     Represents a single pesticide application.

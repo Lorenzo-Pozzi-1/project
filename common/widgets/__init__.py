@@ -1,14 +1,31 @@
 """
-Common widgets for the McCain Pesticides App.
+Common widgets for the LORENZO POZZI Pesticide App.
 
 This package contains reusable UI components used throughout the application.
+All widgets are made available at the package level for easy importing.
+
+Usage:
+    # Import specific widgets
+    from common.widgets import ContentFrame, ScoreBar
+    
+    # Import all widgets
+    from common.widgets import *
 """
 
-from common.widgets.widgets import ContentFrame, HeaderWithHomeButton
+# Import and re-export the ContentFrame and HeaderWithHomeButton
+from common.widgets.widgets import (
+    ContentFrame, 
+    HeaderWithHomeButton,
+    create_button
+)
+
+# Import and re-export the ScoreBar
 from common.widgets.scorebar import ScoreBar
 
+# Define what gets imported with "from common.widgets import *"
 __all__ = [
     'ContentFrame',
     'HeaderWithHomeButton',
     'ScoreBar',
+    'create_button'
 ]

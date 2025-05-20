@@ -8,7 +8,7 @@ side-by-side comparison of product properties.
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
-from common.styles import GENERIC_TABLE_STYLE, get_eiq_color, get_body_font
+from common import GENERIC_TABLE_STYLE, get_eiq_color, get_body_font
 from math_module.eiq_calculations import calculate_product_field_eiq
 
 

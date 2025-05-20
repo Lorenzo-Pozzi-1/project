@@ -6,8 +6,7 @@ product listing and comparison tabs, coordinating between them.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTabWidget
-from common.styles import MARGIN_LARGE, SPACING_MEDIUM, SECONDARY_BUTTON_STYLE
-from common.widgets.widgets import HeaderWithHomeButton
+from common import MARGIN_LARGE, SPACING_MEDIUM, SECONDARY_BUTTON_STYLE, HeaderWithHomeButton
 from products_page.products_list_tab import ProductsListTab
 from products_page.products_comparison_tab import ProductsComparisonTab
 from data.product_repository import ProductRepository
