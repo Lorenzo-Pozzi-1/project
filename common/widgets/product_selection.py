@@ -5,8 +5,9 @@ This module provides reusable widgets for selecting pesticide products.
 """
 
 from PySide6.QtCore import Qt, Signal, QStringListModel, QEvent
-from PySide6.QtWidgets import QComboBox, QCompleter, QFormLayout, QLineEdit, QVBoxLayout, QWidget, QAbstractItemView
-from common import get_body_font, SUGGESTIONS_LIST_STYLE, ContentFrame
+from PySide6.QtWidgets import QComboBox, QCompleter, QFormLayout, QLineEdit, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QAbstractItemView
+from common.styles import get_body_font, SUGGESTIONS_LIST_STYLE, BODY_FONT_SIZE
+from common.widgets.widgets import ContentFrame
 from data import ProductRepository
 
 
@@ -189,34 +190,67 @@ class ProductSelectionWidget(QWidget):
     # Signal emitted when a product is selected
     product_selected = Signal(str)
     
-    def __init__(self, parent=None):
-        """Initialize the product selection widget."""
+    def __init__(self, parent=None, orientation='vertical', style_config=None):
+        """
+        Initialize the product selection widget with flexible layout.
+        
+        Args:
+            parent (QWidget): Parent widget
+            orientation (str): Layout orientation ('vertical' or 'horizontal')
+            style_config (dict): Font styling options (font_size, bold)
+        """
         super().__init__(parent)
+        self.orientation = orientation
+        self.style_config = style_config or {}
         self.setup_ui()
-    
+
     def setup_ui(self):
         """Set up the UI components."""
-        # Main layout
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(10)
+        # Main layout based on orientation
+        if self.orientation == 'horizontal':
+            layout = QHBoxLayout(self)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(10)  # Wider spacing for horizontal layout
+        else:  # vertical (default)
+            layout = QVBoxLayout(self)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(10)
+        
+        # Get font styling
+        font_size = self.style_config.get('font_size', BODY_FONT_SIZE)
+        bold = self.style_config.get('bold', False)
         
         # Wrap the content in ContentFrame
         content_frame = ContentFrame()
         
-        # Form layout for inputs
+        # Form layout for inputs - works for both orientations
         form_layout = QFormLayout()
         form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
         
         # Product type selector
         self.type_selector = ProductTypeSelector(self)
         self.type_selector.currentIndexChanged.connect(self.update_product_list)
-        form_layout.addRow("Product Type:", self.type_selector)
+        
+        # Apply font styling to type selector
+        type_font = get_body_font(size=font_size, bold=bold)
+        self.type_selector.setFont(type_font)
+        
+        # Type selector label
+        type_label = QLabel("Product Type:")
+        type_label.setFont(type_font)
+        form_layout.addRow(type_label, self.type_selector)
         
         # Product search field
         self.product_search = ProductSearchField(self)
         self.product_search.product_selected.connect(self.on_product_selected)
-        form_layout.addRow("Product:", self.product_search)
+        
+        # Apply font styling to product search
+        self.product_search.search_field.setFont(type_font)
+        
+        # Product label
+        product_label = QLabel("Product:")
+        product_label.setFont(type_font)
+        form_layout.addRow(product_label, self.product_search)
         
         content_frame.layout.addLayout(form_layout)
         layout.addWidget(content_frame)

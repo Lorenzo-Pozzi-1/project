@@ -19,6 +19,12 @@ from common.widgets.widgets import (
     create_button
 )
 
+# Import and re-export the ProductSelectionWidget
+from common.widgets.product_selection import ProductSelectionWidget
+
+# Import and re-export the ApplicationParamsWidget
+from common.widgets.application_params import ApplicationParamsWidget
+
 # Import and re-export the ScoreBar
 from common.widgets.scorebar import ScoreBar
 
@@ -27,5 +33,7 @@ __all__ = [
     'ContentFrame',
     'HeaderWithHomeButton',
     'ScoreBar',
-    'create_button'
+    'create_button',
+    'ProductSelectionWidget',
+    'ApplicationParamsWidget'
 ]

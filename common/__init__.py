@@ -62,7 +62,9 @@ from common.widgets import (
     ContentFrame,
     HeaderWithHomeButton,
     ScoreBar,
-    create_button
+    create_button,
+    ProductSelectionWidget,
+    ApplicationParamsWidget
 )
 
 # Define what gets imported with "from common import *"
@@ -103,5 +105,6 @@ __all__ = [
     'DRAGGING_ROW_STYLE', 'BLUE_LINE_DROP_STYLE',
     
     # Widgets and Widget Functions
-    'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar', 'create_button'
+    'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar', 'create_button', 'ProductSelectionWidget',
+    'ApplicationParamsWidget'
 ]

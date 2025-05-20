@@ -7,7 +7,7 @@ of a single pesticide product with improved UI and component architecture.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem
 from PySide6.QtCore import Qt
-from common import GENERIC_TABLE_STYLE, ContentFrame
+from common import GENERIC_TABLE_STYLE, ContentFrame, BODY_FONT_SIZE
 from data import ProductRepository
 from eiq_calculator_page.widgets import ProductSelectionWidget, ApplicationParamsWidget, EiqResultDisplay
 from math_module import calculate_product_field_eiq
@@ -42,7 +42,7 @@ class SingleProductCalculatorTab(QWidget):
         product_layout = QVBoxLayout()
         
         # Product selection widget
-        self.product_selection = ProductSelectionWidget()
+        self.product_selection = ProductSelectionWidget(orientation='vertical', style_config={'font_size': BODY_FONT_SIZE, 'bold': False})
         self.product_selection.product_selected.connect(self.update_product_info)
         product_layout.addWidget(self.product_selection)
         
@@ -92,7 +92,7 @@ class SingleProductCalculatorTab(QWidget):
         product_layout.addLayout(form_layout)
         
         # Application parameters widget
-        self.app_params = ApplicationParamsWidget()
+        self.app_params = ApplicationParamsWidget( orientation='vertical', style_config={'font_size': BODY_FONT_SIZE, 'bold': False})
         self.app_params.params_changed.connect(self.calculate_eiq)
         product_layout.addWidget(self.app_params)
         

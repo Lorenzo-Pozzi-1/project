@@ -7,9 +7,10 @@ values of multiple pesticide products with card-based UI and improved UX.
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QScrollArea, QVBoxLayout, QWidget
-from common import FRAME_STYLE, MARGIN_MEDIUM, PRODUCT_CARD_STYLE, REMOVE_BUTTON_STYLE, SPACING_LARGE, SPACING_MEDIUM, get_subtitle_font, create_button, ContentFrame
+from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, REMOVE_BUTTON_STYLE, MARGIN_MEDIUM, SPACING_LARGE, SPACING_MEDIUM, BODY_FONT_SIZE,
+                    get_subtitle_font, ContentFrame, create_button, ApplicationParamsWidget, ProductSelectionWidget)
 from data import ProductRepository
-from eiq_calculator_page.widgets import ApplicationParamsWidget, EiqComparisonTable, ProductSelectionWidget
+from eiq_calculator_page.widgets.result_display import EiqComparisonTable
 from math_module import calculate_product_field_eiq
 
 
@@ -82,9 +83,8 @@ class ProductCard(QFrame):
         layout.addLayout(header_layout)
         
         # Product selection widget
-        self.product_selection = ProductSelectionWidget()
+        self.product_selection = ProductSelectionWidget(orientation='vertical', style_config={'font_size': BODY_FONT_SIZE, 'bold': False})
         self.product_selection.product_selected.connect(self.update_product_info)
-        self.product_selection.setStyleSheet(FRAME_STYLE)
         layout.addWidget(self.product_selection)
         
         # Active ingredients section
@@ -102,10 +102,9 @@ class ProductCard(QFrame):
         ai_frame_layout.addLayout(ai_layout)
         layout.addWidget(ai_frame)
         
-        # Application parameters
-        self.app_params = ApplicationParamsWidget()
+        # Application parameters widget
+        self.app_params = ApplicationParamsWidget(orientation='vertical', style_config={'font_size': BODY_FONT_SIZE, 'bold': False})
         self.app_params.params_changed.connect(lambda: self.data_changed.emit(self.index))
-        self.app_params.setStyleSheet(FRAME_STYLE)
         layout.addWidget(self.app_params)
     
     def refresh_product_types(self):

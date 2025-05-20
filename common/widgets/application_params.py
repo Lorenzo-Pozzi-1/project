@@ -4,9 +4,10 @@ Application parameters widgets for the LORENZO POZZI Pesticide App.
 This module provides widgets for entering application rate, units, and other parameters.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QComboBox, QFormLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QComboBox, QFormLayout, QLabel
 from PySide6.QtCore import Signal
-from common import get_body_font, ContentFrame
+from common.styles import get_body_font, BODY_FONT_SIZE
+from common.widgets.widgets import ContentFrame
 from math_module import APPLICATION_RATE_CONVERSION
 
 
@@ -21,11 +22,12 @@ class ApplicationRateWidget(QWidget):
     # Signal emitted when rate or unit changes
     value_changed = Signal()
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, style_config=None):
         """Initialize the application rate widget."""
         super().__init__(parent)
+        self.style_config = style_config or {}
         self.setup_ui()
-    
+
     def setup_ui(self):
         """Set up the UI components."""
         # Horizontal layout for rate and unit
@@ -33,18 +35,24 @@ class ApplicationRateWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
         
+        # Get font styling
+        font_size = self.style_config.get('font_size', BODY_FONT_SIZE)
+        bold = self.style_config.get('bold', False)
+        font = get_body_font(size=font_size, bold=bold)
+        
         # Rate spinbox
         self.rate_spin = QDoubleSpinBox()
         self.rate_spin.setRange(0.0, 9999.99)
         self.rate_spin.setValue(0.0)
         self.rate_spin.setDecimals(2)
+        self.rate_spin.setFont(font)
         self.rate_spin.valueChanged.connect(self.on_value_changed)
         layout.addWidget(self.rate_spin)
         
         # Unit combo box
         self.unit_combo = QComboBox()
         self.unit_combo.addItems(sorted(APPLICATION_RATE_CONVERSION.keys()))
-        self.unit_combo.setFont(get_body_font())
+        self.unit_combo.setFont(font)
         self.unit_combo.currentIndexChanged.connect(self.on_value_changed)
         layout.addWidget(self.unit_combo)
     
@@ -101,37 +109,69 @@ class ApplicationParamsWidget(QWidget):
     # Signal emitted when any parameter changes
     params_changed = Signal()
     
-    def __init__(self, parent=None):
-        """Initialize the application parameters widget."""
+    def __init__(self, parent=None, orientation='vertical', style_config=None):
+        """
+        Initialize the application parameters widget with flexible layout.
+        
+        Args:
+            parent (QWidget): Parent widget
+            orientation (str): Layout orientation ('vertical' or 'horizontal')
+            style_config (dict): Font styling options (font_size, bold)
+        """
         super().__init__(parent)
+        self.orientation = orientation
+        self.style_config = style_config or {}
         self.setup_ui()
-    
+
     def setup_ui(self):
         """Set up the UI components."""
-        # Main layout
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(10)
+        # Main layout based on orientation
+        if self.orientation == 'horizontal':
+            layout = QHBoxLayout(self)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(10)
+        else:  # vertical (default)
+            layout = QVBoxLayout(self)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(10)
+        
+        # Get font styling
+        font_size = self.style_config.get('font_size', BODY_FONT_SIZE)
+        bold = self.style_config.get('bold', False)
+        font = get_body_font(size=font_size, bold=bold)
         
         # Wrap content in ContentFrame
         content_frame = ContentFrame()
         
-        # Form layout for inputs
+        # Form layout for inputs - works for both orientations
         form_layout = QFormLayout()
         form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
         
         # Application rate widget
         self.rate_widget = ApplicationRateWidget()
         self.rate_widget.value_changed.connect(self.on_params_changed)
-        form_layout.addRow("Application Rate:", self.rate_widget)
+        
+        # Apply font styling
+        self.rate_widget.rate_spin.setFont(font)
+        self.rate_widget.unit_combo.setFont(font)
+        
+        # Rate label
+        rate_label = QLabel("Application Rate:")
+        rate_label.setFont(font)
+        form_layout.addRow(rate_label, self.rate_widget)
         
         # Number of applications
         self.applications_spin = QDoubleSpinBox()
         self.applications_spin.setRange(1, 10)
         self.applications_spin.setValue(1)
         self.applications_spin.setDecimals(0)
+        self.applications_spin.setFont(font)
         self.applications_spin.valueChanged.connect(self.on_params_changed)
-        form_layout.addRow("Number of Applications:", self.applications_spin)
+        
+        # Applications label
+        apps_label = QLabel("Number of Applications:")
+        apps_label.setFont(font)
+        form_layout.addRow(apps_label, self.applications_spin)
         
         content_frame.layout.addLayout(form_layout)
         layout.addWidget(content_frame)
