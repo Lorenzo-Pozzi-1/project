@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 from data import ProductRepository, AIRepository
 from common import (
     DRAGGING_ROW_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE, 
-    BODY_FONT_SIZE, ProductSelectionWidget, ApplicationParamsWidget
+    MEDIUM_TEXT, ProductSelectionWidget, ApplicationParamsWidget
 )
 from math_module import calculate_product_field_eiq
 
@@ -114,7 +114,7 @@ class ApplicationRowWidget(QFrame):
     
     def _create_product_selection(self):
         """Create the product selection widget."""
-        style_config = {'font_size': BODY_FONT_SIZE, 'bold': False}
+        style_config = {'font_size': MEDIUM_TEXT, 'bold': False}
         self.product_selection = ProductSelectionWidget(
             orientation='horizontal', 
             style_config=style_config,
@@ -125,7 +125,7 @@ class ApplicationRowWidget(QFrame):
     
     def _create_app_params(self):
         """Create the application parameters widget."""
-        style_config = {'font_size': BODY_FONT_SIZE, 'bold': False}
+        style_config = {'font_size': MEDIUM_TEXT, 'bold': False}
         self.app_params = ApplicationParamsWidget(
             orientation='horizontal',
             style_config=style_config,

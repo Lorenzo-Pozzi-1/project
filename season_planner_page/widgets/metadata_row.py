@@ -3,7 +3,8 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QComboBox, QDoubleSpinBox
 from PySide6.QtCore import Signal
 from datetime import date
-from common import ContentFrame, get_body_font
+from common import ContentFrame, get_medium_font
+from common.styles import SPACING_SMALL
 
 
 class SeasonPlanMetadataWidget(QWidget):
@@ -25,11 +26,12 @@ class SeasonPlanMetadataWidget(QWidget):
         # Create content frame and layout
         metadata_frame = ContentFrame()
         metadata_layout = QHBoxLayout()
-        metadata_layout.setSpacing(15)
+        metadata_layout.setSpacing(SPACING_SMALL)
         
         # --- Crop Year ---
         current_year = date.today().year
         self.crop_year_combo = QComboBox()
+        self.crop_year_combo.setFont(get_medium_font())
         years = list(range(current_year - 5, current_year + 6))
         self.crop_year_combo.addItems([f"CY{str(year)[-2:]}" for year in years])
         self.crop_year_combo.setCurrentIndex(5)  # Current year
@@ -59,12 +61,13 @@ class SeasonPlanMetadataWidget(QWidget):
         area_layout.addWidget(self.field_area_spin)
         
         self.field_area_uom_combo = QComboBox()
+        self.field_area_uom_combo.setFont(get_medium_font())
         self.field_area_uom_combo.addItems(["acre", "ha"])
         self.field_area_uom_combo.currentIndexChanged.connect(self.on_metadata_changed)
         area_layout.addWidget(self.field_area_uom_combo)
         
         label = QLabel("Area:")
-        label.setFont(get_body_font(bold=True))
+        label.setFont(get_medium_font(bold=True))
         metadata_layout.addWidget(label)
         metadata_layout.addLayout(area_layout)
         metadata_layout.addSpacing(10)
@@ -83,7 +86,7 @@ class SeasonPlanMetadataWidget(QWidget):
     def _add_field(self, layout, label_text, widget, stretch=1):
         """Add a field with label to the layout."""
         label = QLabel(f"{label_text}:")
-        label.setFont(get_body_font(bold=True))
+        label.setFont(get_medium_font(bold=True))
         layout.addWidget(label)
         layout.addWidget(widget, stretch)
         layout.addSpacing(10)

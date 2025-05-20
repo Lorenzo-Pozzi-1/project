@@ -196,7 +196,7 @@ class ScoreBar(QWidget):
         bar_x = rect.x() + margin
         
         # Draw the title
-        title_font = get_body_font(size=14, bold=True)
+        title_font = get_medium_font(size=14, bold=True)
         painter.setFont(title_font)
         painter.setPen(QPen(QColor("#333333"), 1))
         
@@ -234,7 +234,7 @@ class ScoreBar(QWidget):
     def _draw_ticks_and_labels(self, painter, bar_x, bar_y, bar_width, bar_height):
         """Draw tick marks and labels for thresholds."""
         painter.setPen(QPen(QColor(160, 160, 160, 120), 1))
-        painter.setFont(get_body_font(size=8))
+        painter.setFont(get_medium_font(size=8))
         
         # Always draw tick and label at minimum value
         positions = [(0, str(self.min_value))]
@@ -279,7 +279,7 @@ class ScoreBar(QWidget):
         painter.drawPolygon(points)
         
         # Draw the score level text
-        painter.setFont(get_body_font(size=15, bold=True))
+        painter.setFont(get_medium_font(size=15, bold=True))
         painter.setPen(QPen(score_color, 1))
         
         text_y = bar_y + bar_height + triangle_height + 5

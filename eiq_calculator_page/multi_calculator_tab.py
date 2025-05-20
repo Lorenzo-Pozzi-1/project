@@ -7,7 +7,7 @@ values of multiple pesticide products with card-based UI and improved UX.
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QScrollArea, QVBoxLayout, QWidget
-from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, REMOVE_BUTTON_STYLE, MARGIN_MEDIUM, SPACING_LARGE, SPACING_MEDIUM, BODY_FONT_SIZE,
+from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, REMOVE_BUTTON_STYLE, MARGIN_MEDIUM, SPACING_LARGE, SPACING_MEDIUM, MEDIUM_TEXT,
                     get_subtitle_font, ContentFrame, create_button, ApplicationParamsWidget, ProductSelectionWidget)
 from data import ProductRepository
 from eiq_calculator_page.widgets.result_display import EiqComparisonTable
@@ -81,7 +81,7 @@ class ProductCard(QFrame):
         layout.addLayout(header_layout)
         
         # Product selection widget
-        self.product_selection = ProductSelectionWidget(orientation='vertical', style_config={'font_size': BODY_FONT_SIZE, 'bold': False})
+        self.product_selection = ProductSelectionWidget(orientation='vertical', style_config={'font_size': MEDIUM_TEXT, 'bold': False})
         self.product_selection.product_selected.connect(self.update_product_info)
         layout.addWidget(self.product_selection)
         
@@ -101,7 +101,7 @@ class ProductCard(QFrame):
         layout.addWidget(ai_frame)
         
         # Application parameters widget
-        self.app_params = ApplicationParamsWidget(orientation='vertical', style_config={'font_size': BODY_FONT_SIZE, 'bold': False})
+        self.app_params = ApplicationParamsWidget(orientation='vertical', style_config={'font_size': MEDIUM_TEXT, 'bold': False})
         self.app_params.params_changed.connect(lambda: self.data_changed.emit(self.index))
         layout.addWidget(self.app_params)
     

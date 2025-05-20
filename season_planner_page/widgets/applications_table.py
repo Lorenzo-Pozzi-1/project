@@ -103,6 +103,7 @@ class ApplicationsTableContainer(QWidget):
         self.drop_indicator.setObjectName("dropIndicator")
         self.drop_indicator.setFixedHeight(3)
         self.drop_indicator.setVisible(False)
+        self.drop_indicator.raise_()  # Ensure it's on top of other widgets
     
     def add_application_row(self):
         """Add a new application row and return the created widget."""
@@ -257,6 +258,9 @@ class ApplicationsTableContainer(QWidget):
         # Size and show
         self.drop_indicator.setFixedWidth(self.rows_container.width() - 10)
         self.drop_indicator.setVisible(True)
+        
+        # Ensure it's on top
+        self.drop_indicator.raise_()
     
     def dropEvent(self, event):
         """Handle drop events to reorder rows."""

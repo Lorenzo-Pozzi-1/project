@@ -106,7 +106,7 @@ SPACING_XLARGE = 20
 
 # Standard element dimensions
 BUTTON_MIN_WIDTH = 120
-BUTTON_MIN_HEIGHT = 40
+BUTTON_MIN_HEIGHT = 35
 FEATURE_BUTTON_SIZE = 180       # Size for large feature buttons on home page
 
 # ----------------------
@@ -116,10 +116,11 @@ FEATURE_BUTTON_SIZE = 180       # Size for large feature buttons on home page
 # Font sizes
 TITLE_FONT_SIZE = 24
 SUBTITLE_FONT_SIZE = 18
-BODY_FONT_SIZE = 14
-SMALL_FONT_SIZE = 12
+LARGE_TEXT = 14
+MEDIUM_TEXT = 12
+SMALL_TEXT = 10
 
-def get_font(size=BODY_FONT_SIZE, bold=False, family=None, weight=None):
+def get_font(size=MEDIUM_TEXT, bold=False, family=None, weight=None):
     """Returns a configured font based on parameters.
     
     Args:
@@ -141,8 +142,9 @@ def get_font(size=BODY_FONT_SIZE, bold=False, family=None, weight=None):
 # Quick font functions
 def get_title_font(size=TITLE_FONT_SIZE, bold=True): return get_font(size, bold, "Red Hat Display", QFont.Black)
 def get_subtitle_font(size=SUBTITLE_FONT_SIZE, bold=True): return get_font(size, bold, "Red Hat Display")
-def get_body_font(size=BODY_FONT_SIZE, bold=False): return get_font(size, bold)
-def get_small_font(size=SMALL_FONT_SIZE, bold=False): return get_font(size, bold)
+def get_large_font(size=LARGE_TEXT, bold=False): return get_font(size, bold)
+def get_medium_font(size=MEDIUM_TEXT, bold=False): return get_font(size, bold)
+def get_small_font(size=SMALL_TEXT, bold=False): return get_font(size, bold)
 
 # ----------------------
 #region STYLE SHEETS
@@ -279,7 +281,7 @@ GENERIC_TABLE_STYLE = f"""
         padding: 5px;
         border: 1px solid {LIGHT_GRAY};
         font-weight: bold;
-        font-size: {BODY_FONT_SIZE}pt;
+        font-size: {MEDIUM_TEXT}pt;
         text-align: center;
         height: 25px;
     }}
@@ -381,7 +383,7 @@ SUGGESTIONS_LIST_STYLE = f"""
         border: none;
         outline: none;
         color: {BLACK};
-        font-size: {SMALL_FONT_SIZE}pt;
+        font-size: {MEDIUM_TEXT}pt;
     }}
     QListWidget::item {{
         padding: 5px;

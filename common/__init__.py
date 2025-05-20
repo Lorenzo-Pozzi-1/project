@@ -44,10 +44,10 @@ from common.styles import (
     BUTTON_MIN_WIDTH, BUTTON_MIN_HEIGHT, FEATURE_BUTTON_SIZE,
     
     # Font Sizes
-    TITLE_FONT_SIZE, SUBTITLE_FONT_SIZE, BODY_FONT_SIZE, SMALL_FONT_SIZE,
+    TITLE_FONT_SIZE, SUBTITLE_FONT_SIZE, MEDIUM_TEXT, SMALL_TEXT,
     
     # Font Functions
-    get_font, get_title_font, get_subtitle_font, get_body_font, get_small_font,
+    get_font, get_title_font, get_subtitle_font, get_medium_font, get_small_font,
     
     # Style Sheets
     FRAME_STYLE, YELLOW_BAR_STYLE, INFO_TEXT_STYLE,
@@ -92,10 +92,10 @@ __all__ = [
     'BUTTON_MIN_WIDTH', 'BUTTON_MIN_HEIGHT', 'FEATURE_BUTTON_SIZE',
     
     # Font Sizes
-    'TITLE_FONT_SIZE', 'SUBTITLE_FONT_SIZE', 'BODY_FONT_SIZE', 'SMALL_FONT_SIZE',
+    'TITLE_FONT_SIZE', 'SUBTITLE_FONT_SIZE', 'MEDIUM_TEXT', 'SMALL_TEXT',
     
     # Font Functions
-    'get_font', 'get_title_font', 'get_subtitle_font', 'get_body_font', 'get_small_font',
+    'get_font', 'get_title_font', 'get_subtitle_font', 'get_medium_font', 'get_small_font',
     
     # Style Sheets
     'FRAME_STYLE', 'YELLOW_BAR_STYLE', 'INFO_TEXT_STYLE',

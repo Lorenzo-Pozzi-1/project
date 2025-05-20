@@ -8,7 +8,8 @@ screen for the application.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
-from common import ContentFrame, create_button, get_body_font, get_subtitle_font, get_title_font, INFO_TEXT_STYLE, MARGIN_LARGE, SPACING_LARGE, TITLE_FONT_SIZE
+from common import ContentFrame, create_button, get_medium_font, get_subtitle_font, get_title_font, INFO_TEXT_STYLE, MARGIN_LARGE, SPACING_LARGE
+from common.styles import get_large_font
 
 class HomePage(QWidget):
     """
@@ -77,10 +78,10 @@ class HomePage(QWidget):
         
         # Country selection
         country_label = QLabel("Select country:")
-        country_label.setFont(get_body_font())
+        country_label.setFont(get_large_font())
         
         self.country_combo = QComboBox()
-        self.country_combo.setFont(get_body_font())
+        self.country_combo.setFont(get_large_font())
         self.country_combo.addItems(["Canada", "United States"])
         self.country_combo.setMinimumWidth(200)
         self.country_combo.setCurrentIndex(0)
@@ -94,10 +95,10 @@ class HomePage(QWidget):
         
         # Region selection
         region_label = QLabel("Select region:")
-        region_label.setFont(get_body_font())
+        region_label.setFont(get_large_font())
         
         self.region_combo = QComboBox()
-        self.region_combo.setFont(get_body_font())
+        self.region_combo.setFont(get_large_font())
         self.region_combo.addItem("None of the above")
         self.region_combo.setMinimumWidth(200)
         self.region_combo.setCurrentIndex(0)
@@ -121,7 +122,7 @@ class HomePage(QWidget):
         # Create the feature buttons
         buttons_frame = ContentFrame()
         buttons_layout = QHBoxLayout()
-        buttons_layout.setSpacing(15)
+        buttons_layout.setSpacing(SPACING_LARGE)
         
         feature_buttons = [
             {
@@ -158,7 +159,7 @@ class HomePage(QWidget):
         
         # Warning title
         warning_title = QLabel("! ALWAYS CHECK LABELS !") 
-        warning_title.setFont(get_subtitle_font(TITLE_FONT_SIZE))
+        warning_title.setFont(get_title_font())
         warning_title.setStyleSheet("color: red; font-weight: bold;")
         warning_title.setAlignment(Qt.AlignCenter)
         info_layout.addWidget(warning_title)
@@ -182,7 +183,7 @@ class HomePage(QWidget):
         )
 
         info_text.setWordWrap(True)
-        info_text.setFont(get_body_font())
+        info_text.setFont(get_medium_font())
         info_layout.addWidget(info_text)
         
         info_frame.layout.addLayout(info_layout)

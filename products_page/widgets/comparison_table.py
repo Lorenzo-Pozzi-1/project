@@ -8,7 +8,7 @@ side-by-side comparison of product properties.
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
-from common import GENERIC_TABLE_STYLE, get_eiq_color, get_body_font
+from common import GENERIC_TABLE_STYLE, get_eiq_color, get_medium_font
 from math_module import calculate_product_field_eiq
 
 
@@ -41,7 +41,7 @@ class ComparisonTable(QTableWidget):
         
         # Style the horizontal header
         self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
-        self.horizontalHeader().setFont(get_body_font(bold=True))
+        self.horizontalHeader().setFont(get_medium_font(bold=True))
         self.horizontalHeader().setMinimumHeight(40)
         self.horizontalHeader().setStyleSheet(GENERIC_TABLE_STYLE)
         
@@ -182,7 +182,7 @@ class ComparisonTable(QTableWidget):
         item.setTextAlignment(Qt.AlignCenter | Qt.TextWordWrap)
         
         # Set font
-        font = get_body_font(bold=bold)
+        font = get_medium_font(bold=bold)
         item.setFont(font)
         
         # Set background color if provided
@@ -219,7 +219,7 @@ class ComparisonView(QWidget):
         # Message for when no products are selected
         self.no_selection_label = QLabel("Select products from the list tab and click 'Compare Selected Products'")
         self.no_selection_label.setAlignment(Qt.AlignCenter)
-        self.no_selection_label.setFont(get_body_font())
+        self.no_selection_label.setFont(get_medium_font())
         layout.addWidget(self.no_selection_label)
         
         # Comparison table (initially hidden)

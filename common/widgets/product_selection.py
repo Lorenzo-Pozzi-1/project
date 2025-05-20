@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QComboBox, QCompleter, QFormLayout, QLineEdit, QVBoxLayout, 
     QWidget, QHBoxLayout, QLabel, QAbstractItemView
 )
-from common.styles import get_body_font, SUGGESTIONS_LIST_STYLE, get_small_font
+from common.styles import get_medium_font, SUGGESTIONS_LIST_STYLE, get_small_font
 from common.widgets.widgets import ContentFrame
 from data import ProductRepository
 
@@ -38,7 +38,7 @@ class ProductSearchField(QWidget):
         # Search field
         self.search_field = QLineEdit()
         self.search_field.setPlaceholderText("Type to search products...")
-        self.search_field.setFont(get_body_font())
+        self.search_field.setFont(get_medium_font())
         layout.addWidget(self.search_field)
         
         # Create and configure completer for suggestions
@@ -121,7 +121,7 @@ class ProductTypeSelector(QComboBox):
         """
         super().__init__(parent)
         self.include_all_option = include_all_option
-        self.setFont(get_body_font())
+        self.setFont(get_medium_font())
         self.refresh_types()
     
     def refresh_types(self):

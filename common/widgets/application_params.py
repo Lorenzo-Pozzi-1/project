@@ -6,7 +6,7 @@ This module provides widgets for entering application rate, units, and other par
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QComboBox, QFormLayout, QLabel
 from PySide6.QtCore import Signal, Property
-from common.styles import get_body_font, get_small_font
+from common.styles import get_medium_font, get_small_font
 from common.widgets.widgets import ContentFrame
 from math_module import APPLICATION_RATE_CONVERSION
 
@@ -92,7 +92,7 @@ class ApplicationParamsWidget(QWidget):
         # Get font styling
         font_size = self._style_config.get('font_size', 14)  # Using direct value instead of constant
         bold = self._style_config.get('bold', False)
-        font = get_body_font(size=font_size, bold=bold)
+        font = get_medium_font(size=font_size, bold=bold)
         
         # Create content frame
         content_frame = ContentFrame()

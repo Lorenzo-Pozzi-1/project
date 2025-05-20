@@ -58,7 +58,7 @@ class ContentFrame(QFrame):
         self.layout.setSpacing(SPACING_MEDIUM)
 
 
-def create_button(text=None, description=None, style='primary', callback=None, parent=None):
+def create_button(text=None, description=None, style='primary', callback=None, parent=None) -> QPushButton:
     """
     Create a button with consistent styling.
     
@@ -74,48 +74,45 @@ def create_button(text=None, description=None, style='primary', callback=None, p
     """
     button = QPushButton(parent)
     button.setCursor(Qt.PointingHandCursor)
-
-    # Apply the appropriate style based on the style parameter
-    if style == 'primary':
-        button.setStyleSheet(PRIMARY_BUTTON_STYLE)
+    
+    # Apply style and content based on button type
+    if style in ('primary', 'secondary', 'special'):
+        # Standard buttons share the same structure
+        button.setStyleSheet(globals().get(f"{style.upper()}_BUTTON_STYLE"))
         button.setText(text)
-    elif style == 'secondary':
-        button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        button.setText(text)
-    elif style == 'special':
-        button.setStyleSheet(SPECIAL_BUTTON_STYLE)
-        button.setText(text)
+        button.setFont(get_small_font())
+        button.setMinimumSize(BUTTON_MIN_WIDTH, BUTTON_MIN_HEIGHT)
+    
     elif style == 'feature':
+        # Feature button with title and description
         button.setStyleSheet(FEATURE_BUTTON_STYLE)
+        button.setMinimumSize(FEATURE_BUTTON_SIZE, FEATURE_BUTTON_SIZE)
         
-        # Create a layout for the button content
+        # Create layout for the feature button content
         layout = QVBoxLayout(button)
-        layout.setContentsMargins(10, 10, 10, 10)
-        layout.setSpacing(5)
+        layout.setContentsMargins(MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM)
+        layout.setSpacing(SPACING_SMALL)
         
-        # Add title and description
-        title = QLabel(text)
-        title.setAlignment(Qt.AlignCenter)
-        title.setFont(get_subtitle_font())
-        layout.addWidget(title) 
-        description = QLabel(description)
-        description.setAlignment(Qt.AlignCenter)
-        description.setFont(get_body_font())
-        layout.addWidget(description)
-                    
+        # Add title label
+        title_label = QLabel(text)
+        title_label.setAlignment(Qt.AlignCenter)
+        title_label.setFont(get_subtitle_font())
+        layout.addWidget(title_label)
+        
+        # Add description label
+        desc_label = QLabel(description)
+        desc_label.setAlignment(Qt.AlignCenter)
+        desc_label.setFont(get_large_font())
+        layout.addWidget(desc_label)
+    
     elif style == 'remove':
+        # Remove button (small "X" button)
         button.setStyleSheet(REMOVE_BUTTON_STYLE)
         button.setText("×")
-        button.setFixedSize(30, 30)  # Set a fixed size for the button
-    
-    # Set minimum dimensions for regular buttons (not for remove buttons)
-    if style == 'feature':
-        button.setMinimumSize(FEATURE_BUTTON_SIZE, FEATURE_BUTTON_SIZE)
-    elif style != 'remove':
-        button.setMinimumSize(BUTTON_MIN_WIDTH, BUTTON_MIN_HEIGHT)
+        button.setFixedSize(30, 30)
     
     # Connect callback if provided
     if callback:
         button.clicked.connect(callback)
-        
+    
     return button

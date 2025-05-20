@@ -5,9 +5,10 @@ This module defines the FilterRow widget which provides a reusable
 filter control for table filtering.
 """
 
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QComboBox, QLabel, QLineEdit
 from PySide6.QtCore import Signal
-from common import REMOVE_BUTTON_STYLE, FRAME_STYLE
+from common import FRAME_STYLE
+from common.styles import get_medium_font
 from common.widgets.widgets import create_button
 
 class FilterRow(QWidget):
@@ -36,7 +37,7 @@ class FilterRow(QWidget):
         self.setup_ui()
     
     def setup_ui(self):
-        """Set up the UI components with simplified structure."""
+        """Set up the UI components."""
         # Single horizontal layout
         layout = QHBoxLayout(self)
         layout.setContentsMargins(5, 5, 5, 5)
@@ -46,6 +47,7 @@ class FilterRow(QWidget):
         # Field selection dropdown
         self.field_combo = QComboBox()
         self.field_combo.addItem("Select field...")
+        self.field_combo.setFont(get_medium_font())
         self.field_combo.addItems(self.fields)
         self.field_combo.setMinimumWidth(150)
         self.field_combo.currentIndexChanged.connect(self.on_filter_changed)
@@ -53,17 +55,18 @@ class FilterRow(QWidget):
         
         # Contains label
         contains_label = QLabel("contains:")
+        contains_label.setFont(get_medium_font())
         layout.addWidget(contains_label)
         
         # Filter value input
         self.value_input = QLineEdit()
         self.value_input.setPlaceholderText("Type to filter...")
+        self.value_input.setFont(get_medium_font())
         self.value_input.textChanged.connect(self.on_filter_changed)
         layout.addWidget(self.value_input)
         
         # Remove button
         self.remove_button = create_button(style='remove', callback=self.request_remove)
-        self.remove_button.setFixedSize(24, 24)
         self.remove_button.setToolTip("Remove this filter")
         layout.addWidget(self.remove_button)
     
