@@ -6,8 +6,7 @@ from PySide6.QtGui import QDrag
 from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QPushButton
 from data import ProductRepository, AIRepository
 from common import DRAGGING_ROW_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE
-from math_module.eiq_calculations import calculate_product_field_eiq
-from math_module.eiq_conversions import APPLICATION_RATE_CONVERSION
+from math_module import calculate_product_field_eiq, APPLICATION_RATE_CONVERSION
 
 
 class ApplicationRowWidget(QFrame):

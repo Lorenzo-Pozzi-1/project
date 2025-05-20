@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableW
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush
 from common import GENERIC_TABLE_STYLE, get_subtitle_font, ContentFrame, ScoreBar, get_eiq_color, get_eiq_rating, EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD
-from math_module.eiq_calculations import format_eiq_result
+from math_module import format_eiq_result
 
 
 class ColorCodedEiqItem(QTableWidgetItem):

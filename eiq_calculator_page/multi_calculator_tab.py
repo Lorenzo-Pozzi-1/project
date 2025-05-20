@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QScrollA
 from common import FRAME_STYLE, MARGIN_MEDIUM, PRODUCT_CARD_STYLE, REMOVE_BUTTON_STYLE, SPACING_LARGE, SPACING_MEDIUM, get_subtitle_font, create_button, ContentFrame
 from data import ProductRepository
 from eiq_calculator_page.widgets import ApplicationParamsWidget, EiqComparisonTable, ProductSelectionWidget
-from math_module.eiq_calculations import calculate_product_field_eiq
+from math_module import calculate_product_field_eiq
 
 
 class ProductCard(QFrame):

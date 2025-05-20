@@ -11,7 +11,7 @@ from PySide6.QtCore import QDir, QObject, QEvent
 from PySide6.QtWidgets import QApplication, QComboBox
 from common import load_config
 from data import ProductRepository, AIRepository
-from main_page.main_window import MainWindow
+from main_page import MainWindow
 
 # Clear the terminal screen
 print("\033c", end="")

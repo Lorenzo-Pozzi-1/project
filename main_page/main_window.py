@@ -10,9 +10,9 @@ from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, 
 from PySide6.QtCore import Signal
 from data import ProductRepository
 from main_page.home_page import HomePage
-from products_page.products_page import ProductsPage
-from season_planner_page.scenarios_manager_page import ScenariosManagerPage
-from eiq_calculator_page.eiq_calculator_page import EiqCalculatorPage
+from products_page import ProductsPage
+from season_planner_page import ScenariosManagerPage
+from eiq_calculator_page import EiqCalculatorPage
 from common import YELLOW_BAR_STYLE
 
 class MainWindow(QMainWindow):
