@@ -4,11 +4,11 @@ Widget exports for the EIQ Calculator page.
 This module exposes all the widget classes from the widgets subfolder.
 """
 
-from eiq_calculator_page.widgets.product_selection import (
+from common.widgets.product_selection import (
     ProductSearchField, ProductTypeSelector, ProductSelectionWidget
 )
 
-from eiq_calculator_page.widgets.application_params import (
+from common.widgets.application_params import (
     ApplicationRateWidget, ApplicationParamsWidget
 )
 

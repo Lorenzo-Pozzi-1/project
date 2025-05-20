@@ -10,8 +10,8 @@ from eiq_calculator_page.single_calculator_tab import SingleProductCalculatorTab
 from eiq_calculator_page.multi_calculator_tab import ProductComparisonCalculatorTab
 
 # Import widgets for direct access
-from eiq_calculator_page.widgets.product_selection import ProductSelectionWidget, ProductSearchField
-from eiq_calculator_page.widgets.application_params import ApplicationParamsWidget
+from common.widgets.product_selection import ProductSelectionWidget, ProductSearchField
+from common.widgets.application_params import ApplicationParamsWidget
 from eiq_calculator_page.widgets.result_display import EiqResultDisplay, ColorCodedEiqItem
 from common.styles import get_eiq_color, EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD
 

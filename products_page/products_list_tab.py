@@ -137,7 +137,7 @@ class ProductsListTab(QWidget):
         groups_col = ai1_col + 2 if ai1_col >= 0 else -1  # +1 for checkbox, +1 for position after AI1
         
         # Hide columns and manage visibility
-        hide_columns = ["country", "region", "[ai1]", "[ai1]uom", "ai1 eiq", 
+        hide_columns = ["country", "region", "min days between applications", "[ai1]", "[ai1]uom", "ai1 eiq", 
                       "[ai2]", "[ai2]uom", "ai2 eiq", "[ai3]", "[ai3]uom", "ai3 eiq",
                       "[ai4]", "[ai4]uom", "ai4 eiq", "ai2", "ai3", "ai4"]
         

@@ -182,7 +182,7 @@ class Product:
             "min rate": self.label_minimum_rate,
             "max rate": self.label_maximum_rate,
             "rate UOM": self.rate_uom,
-            "m.d.b.a.": self.min_days_between_applications,
+            "min days between applications": self.min_days_between_applications,
             "REI (h)": self.rei_hours,
             "PHI (d)": self.phi_days,
             "AI1": self.ai1,

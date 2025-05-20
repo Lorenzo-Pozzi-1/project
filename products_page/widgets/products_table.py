@@ -103,7 +103,7 @@ class ProductTable(QTableWidget):
         
         # Hide columns and manage visibility
         hide_columns = [
-            "country", "region",
+            "country", "region", "min days between applications",
             "[ai1]", "[ai1]uom", "ai1 eiq",
             "[ai2]", "[ai2]uom", "ai2 eiq", "ai2",
             "[ai3]", "[ai3]uom", "ai3 eiq", "ai3",
@@ -126,8 +126,7 @@ class ProductTable(QTableWidget):
                 self.setColumnHidden(table_col, True)
         
         # Set column sizing
-        self.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        for col in range(1, col_count):
+        for col in range(0, col_count):
             if not self.isColumnHidden(col):
                 self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
     
@@ -157,30 +156,44 @@ class ProductTable(QTableWidget):
             checkbox_layout.setContentsMargins(0, 0, 0, 0)
             self.setCellWidget(row, 0, checkbox_cell)
             
-            # Fill data cells
+            # Process groups data first if needed
+            if groups_col > 0:
+                ai_groups = product.get_ai_groups()
+                # Process groups to consolidate by organization code
+                org_groups = {}
+                for group_text in ai_groups:
+                    if not group_text:
+                        continue
+                    for part in group_text.split(', '):
+                        if ':' in part:
+                            org, code = part.split(':', 1)
+                            org = org.strip()
+                            code = code.strip()
+                            if org not in org_groups:
+                                org_groups[org] = []
+                            if code not in org_groups[org]:
+                                org_groups[org].append(code)
+                
+                # Format the consolidated groups
+                groups_formatted = []
+                for org, codes in org_groups.items():
+                    groups_formatted.append(f"{org}: {', '.join(codes)}")
+                
+                groups_text = "; ".join(groups_formatted)
+                self.setItem(row, groups_col, QTableWidgetItem(groups_text))
+            
+            # Fill all other data cells
             for col, key in enumerate(self.column_keys, start=1):
                 # Calculate the actual table column index
                 table_col = col
                 if groups_col > 0 and col >= groups_col:
                     table_col = col + 1  # Adjust for inserted Groups column
                 
-                # Handle active ingredients
-                if col == ai1_col + 1:  # +1 for checkbox
-                    ai_text = ", ".join(product.active_ingredients)
-                    self.setItem(row, table_col, QTableWidgetItem(ai_text))
-                    
-                    # Add MoA groups data
-                    if groups_col > 0:
-                        ai_groups = product.get_ai_groups()
-                        groups_text = ", ".join(filter(None, ai_groups))  # Filter out empty strings
-                        self.setItem(row, groups_col, QTableWidgetItem(groups_text))
+                value = product_dict.get(key, "")
+                if value is not None:
+                    self.setItem(row, table_col, QTableWidgetItem(str(value)))
                 else:
-                    # Normal column
-                    value = product_dict.get(key, "")
-                    if value is not None:
-                        self.setItem(row, table_col, QTableWidgetItem(str(value)))
-                    else:
-                        self.setItem(row, table_col, QTableWidgetItem(""))
+                    self.setItem(row, table_col, QTableWidgetItem(""))
     
     def product_selected(self, row, state):
         """

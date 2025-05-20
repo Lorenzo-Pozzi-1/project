@@ -6,8 +6,8 @@ for all pages in the application.
 """
 
 import os, shutil
-from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget
-from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget, QLabel
+from PySide6.QtCore import Signal, Qt
 from data import ProductRepository
 from main_page.home_page import HomePage
 from products_page import ProductsPage
@@ -72,9 +72,17 @@ class MainWindow(QMainWindow):
         self.eiq_calculator_page = EiqCalculatorPage(self)
         self.stacked_widget.addWidget(self.eiq_calculator_page)
         
-        # Add yellow bar at the bottom
+        # Add yellow bar at the bottom with author info
         self.yellow_bar = QFrame()
         self.yellow_bar.setStyleSheet(YELLOW_BAR_STYLE)
+        yellow_bar_layout = QVBoxLayout(self.yellow_bar)
+        yellow_bar_layout.setContentsMargins(10, 2, 10, 2)
+        
+        # Add author label aligned to the right
+        author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")
+        author_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        yellow_bar_layout.addWidget(author_label)
+        
         main_layout.addWidget(self.yellow_bar)
         
         # Connect signal to page refresh methods

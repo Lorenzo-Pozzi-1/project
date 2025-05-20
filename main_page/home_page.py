@@ -8,7 +8,7 @@ screen for the application.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
-from common import INFO_TEXT_STYLE, MARGIN_LARGE, SPACING_LARGE, TITLE_FONT_SIZE, get_body_font, get_subtitle_font, get_title_font, ContentFrame, create_button
+from common import ContentFrame, create_button, get_body_font, get_subtitle_font, get_title_font, INFO_TEXT_STYLE, MARGIN_LARGE, SPACING_LARGE, TITLE_FONT_SIZE
 
 class HomePage(QWidget):
     """
@@ -40,26 +40,33 @@ class HomePage(QWidget):
         header_frame = ContentFrame()
         header_main_layout = QVBoxLayout()
         
-        # Top row with logos and title
+        # Top row with logos and title, centered together
         top_layout = QHBoxLayout()
+        top_layout.setAlignment(Qt.AlignCenter)
         
         # Logo on the left
         left_logo_label = QLabel()
-        pixmap = QPixmap(".\main_page\McCain-Logo.png")
+        pixmap = QPixmap("./main_page/McCain-logo.png")
         left_logo_label.setPixmap(pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        top_layout.addWidget(left_logo_label, 0, Qt.AlignLeft | Qt.AlignVCenter)
+        top_layout.addWidget(left_logo_label)
+        
+        # Small spacing between logo and title
+        top_layout.addSpacing(10)
         
         # Title in the center
         title_label = QLabel("McCain Pesticides App")
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setFont(get_title_font())
-        top_layout.addWidget(title_label, 1)
+        top_layout.addWidget(title_label)
+        
+        # Small spacing between title and logo
+        top_layout.addSpacing(10)
         
         # Logo on the right
         right_logo_label = QLabel()
-        right_logo_pixmap = QPixmap(".\main_page\McCain-Logo.png")
+        right_logo_pixmap = QPixmap("./main_page/NAAg-logo.png")
         right_logo_label.setPixmap(right_logo_pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        top_layout.addWidget(right_logo_label, 0, Qt.AlignRight | Qt.AlignVCenter)
+        top_layout.addWidget(right_logo_label)
         
         # Add the top row to the main header layout
         header_main_layout.addLayout(top_layout)
