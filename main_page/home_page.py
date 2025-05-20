@@ -8,8 +8,8 @@ screen for the application.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
-from common.styles import INFO_TEXT_STYLE, TITLE_FONT_SIZE, get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE, create_button
-from common.widgets import ContentFrame
+from common.styles import INFO_TEXT_STYLE, MARGIN_LARGE, SPACING_LARGE, TITLE_FONT_SIZE, get_body_font, get_subtitle_font, get_title_font
+from common.widgets.widgets import ContentFrame, create_button
 
 class HomePage(QWidget):
     """

@@ -1,65 +1,14 @@
 """
-Common custom widgets for the LORENZO POZZI Pesticide App
+ScoreBar widget for the McCain Pesticides App
 
-This module provides reusable custom widgets used throughout the application.
+This module provides a customizable score bar widget that displays values
+on a gradient with configurable thresholds and labels.
 """
 
-from PySide6.QtCore import Qt, Signal, QRect, QPointF
+from PySide6.QtCore import Qt, QRect, QPointF
 from PySide6.QtGui import QColor, QBrush, QPainter, QPen, QLinearGradient
-from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QWidget, QSpacerItem
-from common.styles import FRAME_STYLE, SECONDARY_BUTTON_STYLE, get_title_font, get_body_font, SPACING_MEDIUM, MARGIN_SMALL
-
-class HeaderWithHomeButton(QWidget):
-    """
-    A header widget with a title and back button.
-    
-    This widget is used at the top of pages to provide a consistent navigation.
-    """
-    back_clicked = Signal()  # Signal emitted when back button is clicked
-    
-    def __init__(self, title, parent=None):
-        """Initialize with the given title."""
-        super().__init__(parent)
-        self.title = title
-        self.setup_ui()
-    
-    def setup_ui(self):
-        """Set up the UI components."""
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        
-        # Home button
-        self.home_button = QPushButton("Home")
-        self.home_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        self.home_button.setFixedWidth(75)
-        self.home_button.clicked.connect(self.back_clicked.emit)
-        layout.addWidget(self.home_button)
-        
-        # Title
-        self.title_label = QLabel(self.title)
-        self.title_label.setAlignment(Qt.AlignCenter)
-        self.title_label.setFont(get_title_font(size=20))
-        layout.addWidget(self.title_label)
-        
-        # Add a spacer to balance the layout
-        layout.addItem(QSpacerItem(150, 0))
-
-
-class ContentFrame(QFrame):
-    """
-    A styled frame for content sections.
-    
-    Provides consistent styling for content areas throughout the app.
-    """
-    def __init__(self, parent=None):
-        """Initialize the frame."""
-        super().__init__(parent)
-        self.setFrameShape(QFrame.NoFrame)
-        self.setStyleSheet(FRAME_STYLE)
-        self.layout = QVBoxLayout(self)
-        self.layout.setContentsMargins(MARGIN_SMALL, MARGIN_SMALL, MARGIN_SMALL, MARGIN_SMALL)
-        self.layout.setSpacing(SPACING_MEDIUM)
-
+from PySide6.QtWidgets import QWidget, QVBoxLayout
+from common.styles import *
 
 class ScoreBar(QWidget):
     """A color gradient bar for displaying scores with customizable thresholds and labels."""

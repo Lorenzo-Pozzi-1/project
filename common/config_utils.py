@@ -61,3 +61,17 @@ def save_config(config):
     except IOError as e:
         print(f"Error saving config: {e}")
         return False
+    
+def get_config(key, default=None):
+    """
+    Get a configuration value.
+    
+    Args:
+        key (str): The configuration key
+        default: The default value if the key doesn't exist
+    
+    Returns:
+        The configuration value or default
+    """
+    config = load_config()
+    return config.get(key, default)

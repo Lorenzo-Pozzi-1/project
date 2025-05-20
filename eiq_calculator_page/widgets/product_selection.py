@@ -7,7 +7,7 @@ This module provides reusable widgets for selecting pesticide products.
 from PySide6.QtCore import Qt, Signal, QStringListModel, QEvent
 from PySide6.QtWidgets import QComboBox, QCompleter, QFormLayout, QLineEdit, QVBoxLayout, QWidget, QAbstractItemView
 from common.styles import get_body_font, SUGGESTIONS_LIST_STYLE
-from common.widgets import ContentFrame
+from common.widgets.widgets import ContentFrame
 from data.product_repository import ProductRepository
 
 

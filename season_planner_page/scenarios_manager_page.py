@@ -6,8 +6,10 @@ application scenarios through tabs.
 """
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog)
-from common.styles import (MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, create_button, get_title_font)
-from common.widgets import HeaderWithHomeButton, ContentFrame, ScoreBar
+from common import (
+    MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, ContentFrame, 
+    HeaderWithHomeButton, create_button, get_title_font, ScoreBar
+)
 from season_planner_page.scenario_tab import ScenarioTabPage
 from data.scenario_model import Scenario
 
