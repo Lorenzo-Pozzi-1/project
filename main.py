@@ -9,9 +9,9 @@ It initializes the application, sets up the main window, and starts the event lo
 import os, sys
 from PySide6.QtCore import QDir, QObject, QEvent
 from PySide6.QtWidgets import QApplication, QComboBox
-from common import load_config
-from data import ProductRepository, AIRepository
-from main_page import MainWindow
+from E_common import load_config
+from G_data import ProductRepository, AIRepository
+from A_main_page import MainWindow
 
 # Clear the terminal screen
 print("\033c", end="")
