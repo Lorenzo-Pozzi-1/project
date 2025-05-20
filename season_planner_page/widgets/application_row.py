@@ -3,10 +3,10 @@
 from contextlib import contextmanager
 from PySide6.QtCore import Qt, Signal, QMimeData
 from PySide6.QtGui import QDrag
-from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QDoubleSpinBox, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QPushButton
+from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QPushButton, QDoubleSpinBox, QComboBox
 from data import ProductRepository, AIRepository
-from common import DRAGGING_ROW_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE
-from math_module import calculate_product_field_eiq, APPLICATION_RATE_CONVERSION
+from common import DRAGGING_ROW_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE, BODY_FONT_SIZE, ProductSelectionWidget, ApplicationParamsWidget
+from math_module import calculate_product_field_eiq
 
 
 class ApplicationRowWidget(QFrame):
@@ -18,9 +18,9 @@ class ApplicationRowWidget(QFrame):
     drag_ended = Signal(object)    
     delete_requested = Signal(object)  
     
-    ROW_HEIGHT = 40
+    ROW_HEIGHT = 100
     
-    def __init__(self, parent=None, field_area=10.0, field_area_uom="ha", index=0):
+    def __init__(self, parent=None, field_area=10.0, field_area_uom="acre", index=0):
         """Initialize the application row widget."""
         super().__init__(parent)
         self.field_area = field_area
@@ -43,7 +43,7 @@ class ApplicationRowWidget(QFrame):
         self.setAcceptDrops(True)
         
         self.setup_ui()
-        self.load_product_types()
+        self.refresh_products()
     
     @contextmanager
     def blocked_signals(self):
@@ -65,45 +65,61 @@ class ApplicationRowWidget(QFrame):
         self.drag_handle.setAlignment(Qt.AlignCenter)
         self.drag_handle.setFixedWidth(16)
         self.drag_handle.setCursor(Qt.OpenHandCursor)
+        layout.addWidget(self.drag_handle)
+        layout.setStretch(0, 0)
         
         # Application number
         self.app_number_label = QLabel(str(self.index + 1))
         self.app_number_label.setAlignment(Qt.AlignCenter)
         self.app_number_label.setStyleSheet("font-weight: bold;")
+        layout.addWidget(self.app_number_label)
+        layout.setStretch(1, 1)
         
         # Date field
         self.date_edit = QLineEdit()
         self.date_edit.setPlaceholderText("Enter date or description")
         self.date_edit.textChanged.connect(self.on_data_changed)
+        layout.addWidget(self.date_edit)
+        layout.setStretch(2, 1)
         
-        # Product Type selection
-        self.product_type_combo = QComboBox()
-        self.product_type_combo.addItem("Select type...")
-        self.product_type_combo.currentIndexChanged.connect(self.on_product_type_changed)
+        # Product selection widget
+        style_config = {'font_size': BODY_FONT_SIZE, 'bold': False}
+        self.product_selection = ProductSelectionWidget(
+            orientation='horizontal', 
+            style_config=style_config,
+            show_labels=False,
+        )
+        self.product_selection.product_selected.connect(self.on_product_selected)
+        layout.addWidget(self.product_selection)
+        layout.setStretch(3, 2)  # Give more space to product selection
         
-        # Product selection
-        self.product_combo = QComboBox()
-        self.product_combo.addItem("Select a product...")
-        self.product_combo.currentIndexChanged.connect(self.on_product_changed)
-        
-        # Application rate
-        self.rate_spin = QDoubleSpinBox()
-        self.rate_spin.setRange(0.0, 9999.99)
-        self.rate_spin.setDecimals(2)
-        self.rate_spin.setValue(0.0)
-        self.rate_spin.valueChanged.connect(self.on_data_changed)
-        
-        # Rate UOM
-        self.uom_combo = QComboBox()
-        self.uom_combo.addItems(sorted(APPLICATION_RATE_CONVERSION.keys()))
-        self.uom_combo.currentIndexChanged.connect(self.on_data_changed)
+        # Application parameters widget (replaces rate_spin and uom_combo)
+        self.app_params = ApplicationParamsWidget(
+            orientation='horizontal',
+            style_config=style_config,
+            show_labels=False,
+            show_applications=False
+        )
+        self.app_params.params_changed.connect(self.on_params_changed)
+        layout.addWidget(self.app_params)
+        layout.setStretch(4, 2)  # Give more space to application parameters
         
         # Area treated
+        area_layout = QHBoxLayout()
+        area_layout.setContentsMargins(0, 0, 0, 0)
+        area_layout.setSpacing(2)
+        
         self.area_spin = QDoubleSpinBox()
         self.area_spin.setRange(0.0, 9999.99)
         self.area_spin.setDecimals(1)
         self.area_spin.setValue(self.field_area)
         self.area_spin.valueChanged.connect(self.on_data_changed)
+        area_layout.addWidget(self.area_spin)
+        
+        area_frame = QFrame()
+        area_frame.setLayout(area_layout)
+        layout.addWidget(area_frame)
+        layout.setStretch(5, 1)
         
         # Application method
         self.method_combo = QComboBox()
@@ -112,15 +128,21 @@ class ApplicationRowWidget(QFrame):
             "Seed treatment", "Spot treatment", "Chemigation"
         ])
         self.method_combo.currentIndexChanged.connect(self.on_data_changed)
+        layout.addWidget(self.method_combo)
+        layout.setStretch(6, 1)
         
         # AI Groups (read-only)
         self.ai_groups_label = QLabel("")
         self.ai_groups_label.setAlignment(Qt.AlignCenter)
         self.ai_groups_label.setWordWrap(True)
+        layout.addWidget(self.ai_groups_label)
+        layout.setStretch(7, 1)
         
         # Field EIQ (read-only)
         self.field_eiq_label = QLabel("")
         self.field_eiq_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.field_eiq_label)
+        layout.setStretch(8, 1)
         
         # Delete button
         delete_button = QPushButton("✕")
@@ -129,62 +151,20 @@ class ApplicationRowWidget(QFrame):
         delete_button.setToolTip("Remove application")
         delete_button.setStyleSheet(REMOVE_BUTTON_STYLE)
         delete_button.clicked.connect(self.confirm_delete)
-        
-        # Add widgets to layout
-        widgets = [
-            self.drag_handle, self.app_number_label, self.date_edit, 
-            self.product_type_combo, self.product_combo, self.rate_spin, 
-            self.uom_combo, self.area_spin, self.method_combo, 
-            self.ai_groups_label, self.field_eiq_label, delete_button
-        ]
-        
-        for widget in widgets:
-            layout.addWidget(widget)
-        
-        # Set stretch factors
-        stretches = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
-        for i, stretch in enumerate(stretches):
-            layout.setStretch(i, stretch)
+        layout.addWidget(delete_button)
+        layout.setStretch(9, 0)
     
     def update_app_number(self, number):
         """Update the displayed application number."""
         self.app_number_label.setText(str(number))
 
-    def load_product_types(self):
-        """Load product types from repository and populate the combo box."""
-        products = self.products_repo.get_filtered_products()
-        product_types = sorted(list(set(p.product_type for p in products if p.product_type)))
-        
-        self.product_type_combo.clear()
-        self.product_type_combo.addItem("Select type...")
-        self.product_type_combo.addItems(product_types)
+    def refresh_products(self):
+        """Refresh product data in the product selection widget."""
+        self.product_selection.refresh_data()
     
-    def on_product_type_changed(self):
-        """Handle product type selection changes and update product list."""
-        self.product_combo.clear()
-        self.product_combo.addItem("Select a product...")
-        
-        if self.product_type_combo.currentIndex() == 0:
-            self.ai_groups_label.setText("")
-            self.field_eiq_label.setText("")
-            self.on_data_changed()
-            return
-        
-        selected_type = self.product_type_combo.currentText()
-        products = [p for p in self.products_repo.get_filtered_products() 
-                   if p.product_type == selected_type]
-        
-        for product in products:
-            self.product_combo.addItem(product.product_name)
-            
-        self.ai_groups_label.setText("")
-        self.field_eiq_label.setText("")
-        self.on_data_changed()
-    
-    def on_product_changed(self):
-        """Handle product selection changes and update related fields."""
-        product = None if self.product_combo.currentIndex() == 0 else \
-                 self.products_repo.get_product_by_name(self.product_combo.currentText())
+    def on_product_selected(self, product_name):
+        """Handle product selection from the product selection widget."""
+        product = None if not product_name else self.products_repo.get_product_by_name(product_name)
         
         if not product:
             self.ai_groups_label.setText("")
@@ -192,39 +172,46 @@ class ApplicationRowWidget(QFrame):
             self.on_data_changed()
             return
         
-        # Update UOM
-        if product.rate_uom:
-            index = self.uom_combo.findText(product.rate_uom)
-            if index >= 0:
-                self.uom_combo.setCurrentIndex(index)
+        # Update application parameters
+        rate = product.label_maximum_rate if product.label_maximum_rate is not None else \
+               product.label_minimum_rate if product.label_minimum_rate is not None else 0.0
+        unit = product.rate_uom or ""
+        
+        # Set parameters in the application params widget
+        self.app_params.set_params(rate=rate, unit=unit, applications=1)
         
         # Update AI Groups
         self.ai_groups_label.setText(", ".join(filter(None, product.get_ai_groups())))
         
-        # Update application rate
-        if product.label_maximum_rate is not None:
-            self.rate_spin.setValue(product.label_maximum_rate)
-        elif product.label_minimum_rate is not None:
-            self.rate_spin.setValue(product.label_minimum_rate)
-        
+        # Calculate and update Field EIQ
+        self.calculate_field_eiq()
+        self.on_data_changed()
+    
+    def on_params_changed(self):
+        """Handle changes to application parameters."""
         self.calculate_field_eiq()
         self.on_data_changed()
     
     def calculate_field_eiq(self):
         """Calculate and update the Field EIQ for this application."""
-        product = None if self.product_combo.currentIndex() == 0 else \
-                 self.products_repo.get_product_by_name(self.product_combo.currentText())
-        
+        product_name = self.product_selection.get_selected_product()
+        if not product_name:
+            self.field_eiq_label.setText("")
+            return
+            
+        product = self.products_repo.get_product_by_name(product_name)
         if not product:
             self.field_eiq_label.setText("")
             return
             
         try:
+            # Get application parameters
+            params = self.app_params.get_params()
             field_eiq = calculate_product_field_eiq(
                 product.get_ai_data(),
-                self.rate_spin.value(),
-                self.uom_combo.currentText(),
-                applications=1
+                params["rate"],
+                params["unit"],
+                applications=1  # Always use 1 for a single application row
             )
             self.field_eiq_label.setText(f"{field_eiq:.2f}")
         except Exception as e:
@@ -233,8 +220,6 @@ class ApplicationRowWidget(QFrame):
     
     def on_data_changed(self):
         """Handle changes to any data in the row and update calculations."""
-        if self.sender() in (self.rate_spin, self.uom_combo):
-            self.calculate_field_eiq()
         self.data_changed.emit(self)
     
     def get_field_eiq(self):
@@ -252,15 +237,23 @@ class ApplicationRowWidget(QFrame):
     
     def get_application_data(self):
         """Get the application data as a dictionary or None if no product selected."""
-        if self.product_combo.currentIndex() == 0:
+        product_name = self.product_selection.get_selected_product()
+        if not product_name:
             return None
+        
+        # Get product type
+        product = self.products_repo.get_product_by_name(product_name)
+        product_type = product.product_type if product else ""
+        
+        # Get application parameters
+        params = self.app_params.get_params()
         
         return {
             "application_date": self.date_edit.text(),
-            "product_type": self.product_type_combo.currentText(),
-            "product_name": self.product_combo.currentText(),
-            "rate": self.rate_spin.value(),
-            "rate_uom": self.uom_combo.currentText(),
+            "product_type": product_type,
+            "product_name": product_name,
+            "rate": params["rate"],
+            "rate_uom": params["unit"],
             "area": self.area_spin.value(),
             "application_method": self.method_combo.currentText(),
             "ai_groups": self.ai_groups_label.text().split(", ") if self.ai_groups_label.text() else [],
@@ -270,44 +263,24 @@ class ApplicationRowWidget(QFrame):
     def set_application_data(self, data):
         """Set the application data from a dictionary."""
         with self.blocked_signals():
-            # Set date first (unrelated to product selection)
+            # Set date
             if "application_date" in data:
                 self.date_edit.setText(data["application_date"])
             
-            # Handle product type first
-            product_type = data.get("product_type")
-            product_name = data.get("product_name")
+            # Set product (will also update product type internally)
+            if "product_name" in data:
+                self.product_selection.set_selected_product(data["product_name"])
             
-            # Step 1: Set the product type if available
-            if product_type:
-                index = self.product_type_combo.findText(product_type)
-                if index >= 0:
-                    self.product_type_combo.setCurrentIndex(index)
-                    # Manually call this to update product list without emitting signals
-                    self.on_product_type_changed()
-                else:
-                    print(f"Warning: Product type '{product_type}' not found in dropdown")
+            # Set application parameters
+            rate = data.get("rate")
+            unit = data.get("rate_uom")
+            self.app_params.set_params(rate=rate, unit=unit, applications=1)
             
-            # Step 2: Now set the product name after product list is populated
-            if product_name:
-                index = self.product_combo.findText(product_name)
-                if index >= 0:
-                    self.product_combo.setCurrentIndex(index)
-                else:
-                    print(f"Warning: Product name '{product_name}' not found in dropdown for type '{product_type}'")
-            
-            # Set the remaining fields
-            if "rate" in data:
-                self.rate_spin.setValue(data["rate"])
-                
-            if "rate_uom" in data:
-                index = self.uom_combo.findText(data["rate_uom"])
-                if index >= 0:
-                    self.uom_combo.setCurrentIndex(index)
-                
+            # Set area
             if "area" in data:
                 self.area_spin.setValue(data["area"])
-                
+            
+            # Set application method
             if "application_method" in data:
                 index = self.method_combo.findText(data["application_method"])
                 if index >= 0:
@@ -358,7 +331,7 @@ class ApplicationRowWidget(QFrame):
     
     def confirm_delete(self):
         """Show confirmation dialog for deleting the application."""
-        product_name = "" if self.product_combo.currentText() == "Select a product..." else self.product_combo.currentText()
+        product_name = self.product_selection.get_selected_product() or ""
         
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle("Confirm Removal")

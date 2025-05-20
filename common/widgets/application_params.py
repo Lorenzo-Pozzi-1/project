@@ -6,7 +6,7 @@ This module provides widgets for entering application rate, units, and other par
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QComboBox, QFormLayout, QLabel
 from PySide6.QtCore import Signal
-from common.styles import get_body_font, BODY_FONT_SIZE
+from common.styles import get_body_font, BODY_FONT_SIZE, SMALL_FONT_SIZE, get_small_font
 from common.widgets.widgets import ContentFrame
 from math_module import APPLICATION_RATE_CONVERSION
 
@@ -36,9 +36,7 @@ class ApplicationRateWidget(QWidget):
         layout.setSpacing(5)
         
         # Get font styling
-        font_size = self.style_config.get('font_size', BODY_FONT_SIZE)
-        bold = self.style_config.get('bold', False)
-        font = get_body_font(size=font_size, bold=bold)
+        font = get_small_font()
         
         # Rate spinbox
         self.rate_spin = QDoubleSpinBox()
@@ -109,7 +107,8 @@ class ApplicationParamsWidget(QWidget):
     # Signal emitted when any parameter changes
     params_changed = Signal()
     
-    def __init__(self, parent=None, orientation='vertical', style_config=None):
+    def __init__(self, parent=None, orientation='vertical', style_config=None, show_labels=True, 
+                 show_applications=True):
         """
         Initialize the application parameters widget with flexible layout.
         
@@ -117,10 +116,14 @@ class ApplicationParamsWidget(QWidget):
             parent (QWidget): Parent widget
             orientation (str): Layout orientation ('vertical' or 'horizontal')
             style_config (dict): Font styling options (font_size, bold)
+            show_labels (bool): Whether to show field labels
+            show_applications (bool): Whether to show number of applications spinner
         """
         super().__init__(parent)
         self.orientation = orientation
         self.style_config = style_config or {}
+        self.show_labels = show_labels
+        self.show_applications = show_applications
         self.setup_ui()
 
     def setup_ui(self):
@@ -143,10 +146,6 @@ class ApplicationParamsWidget(QWidget):
         # Wrap content in ContentFrame
         content_frame = ContentFrame()
         
-        # Form layout for inputs - works for both orientations
-        form_layout = QFormLayout()
-        form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        
         # Application rate widget
         self.rate_widget = ApplicationRateWidget()
         self.rate_widget.value_changed.connect(self.on_params_changed)
@@ -155,25 +154,49 @@ class ApplicationParamsWidget(QWidget):
         self.rate_widget.rate_spin.setFont(font)
         self.rate_widget.unit_combo.setFont(font)
         
-        # Rate label
-        rate_label = QLabel("Application Rate:")
-        rate_label.setFont(font)
-        form_layout.addRow(rate_label, self.rate_widget)
+        # Number of applications - only create if needed
+        if self.show_applications:
+            self.applications_spin = QDoubleSpinBox()
+            self.applications_spin.setRange(1, 10)
+            self.applications_spin.setValue(1)
+            self.applications_spin.setDecimals(0)
+            self.applications_spin.setFont(font)
+            self.applications_spin.valueChanged.connect(self.on_params_changed)
         
-        # Number of applications
-        self.applications_spin = QDoubleSpinBox()
-        self.applications_spin.setRange(1, 10)
-        self.applications_spin.setValue(1)
-        self.applications_spin.setDecimals(0)
-        self.applications_spin.setFont(font)
-        self.applications_spin.valueChanged.connect(self.on_params_changed)
+        if self.show_labels:
+            # Use form layout with labels
+            form_layout = QFormLayout()
+            form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
+            
+            # Rate label
+            rate_label = QLabel("Application Rate:")
+            rate_label.setFont(font)
+            form_layout.addRow(rate_label, self.rate_widget)
+            
+            # Applications label - only add if showing applications
+            if self.show_applications:
+                apps_label = QLabel("Number of Applications:")
+                apps_label.setFont(font)
+                form_layout.addRow(apps_label, self.applications_spin)
+            
+            content_frame.layout.addLayout(form_layout)
+        else:
+            # Simple layout without labels
+            if self.orientation == 'horizontal':
+                simple_layout = QHBoxLayout()
+                simple_layout.setSpacing(10)
+            else:
+                simple_layout = QVBoxLayout()
+                simple_layout.setSpacing(5)
+                
+            simple_layout.addWidget(self.rate_widget)
+            
+            # Only add applications spinner if showing applications
+            if self.show_applications:
+                simple_layout.addWidget(self.applications_spin)
+                
+            content_frame.layout.addLayout(simple_layout)
         
-        # Applications label
-        apps_label = QLabel("Number of Applications:")
-        apps_label.setFont(font)
-        form_layout.addRow(apps_label, self.applications_spin)
-        
-        content_frame.layout.addLayout(form_layout)
         layout.addWidget(content_frame)
     
     def on_params_changed(self):
@@ -190,7 +213,7 @@ class ApplicationParamsWidget(QWidget):
         return {
             "rate": self.rate_widget.get_rate(),
             "unit": self.rate_widget.get_unit(),
-            "applications": int(self.applications_spin.value())
+            "applications": int(self.applications_spin.value()) if self.show_applications else 1
         }
     
     def set_params(self, rate=None, unit=None, applications=None):
@@ -209,5 +232,5 @@ class ApplicationParamsWidget(QWidget):
         if unit is not None:
             self.rate_widget.set_unit(unit)
         
-        if applications is not None:
+        if applications is not None and self.show_applications:
             self.applications_spin.setValue(applications)
