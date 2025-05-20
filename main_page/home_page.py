@@ -7,7 +7,8 @@ screen for the application.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox
 from PySide6.QtCore import Qt, Signal
-from common.styles import TITLE_FONT_SIZE, get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE, create_button
+from PySide6.QtGui import QPixmap
+from common.styles import INFO_TEXT_STYLE, TITLE_FONT_SIZE, get_title_font, get_body_font, get_subtitle_font, MARGIN_LARGE, SPACING_LARGE, create_button
 from common.widgets import ContentFrame
 
 class HomePage(QWidget):
@@ -36,14 +37,35 @@ class HomePage(QWidget):
         main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
         main_layout.setSpacing(SPACING_LARGE)
         
-        # Title
+        # Header with logo, title, country/region selection in a ContentFrame
+        header_frame = ContentFrame()
+        header_main_layout = QVBoxLayout()
+        
+        # Top row with logos and title
+        top_layout = QHBoxLayout()
+        
+        # Logo on the left
+        left_logo_label = QLabel()
+        pixmap = QPixmap(".\main_page\McCain-Logo.png")
+        left_logo_label.setPixmap(pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        top_layout.addWidget(left_logo_label, 0, Qt.AlignLeft | Qt.AlignVCenter)
+        
+        # Title in the center
         title_label = QLabel("McCain Pesticides App")
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setFont(get_title_font())
-        main_layout.addWidget(title_label)
+        top_layout.addWidget(title_label, 1)
+        
+        # Logo on the right
+        right_logo_label = QLabel()
+        right_logo_pixmap = QPixmap(".\main_page\McCain-Logo.png")
+        right_logo_label.setPixmap(right_logo_pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        top_layout.addWidget(right_logo_label, 0, Qt.AlignRight | Qt.AlignVCenter)
+        
+        # Add the top row to the main header layout
+        header_main_layout.addLayout(top_layout)
         
         # Country and region selection area
-        filter_frame = ContentFrame()
         filter_layout = QHBoxLayout()
         filter_layout.setAlignment(Qt.AlignCenter)
         
@@ -80,9 +102,15 @@ class HomePage(QWidget):
         filter_layout.addWidget(region_label)
         filter_layout.addWidget(self.region_combo)
         
-        # Add layout to the frame
-        filter_frame.layout.addLayout(filter_layout)
-        main_layout.addWidget(filter_frame)
+        # Add the filter layout to header main layout
+        header_main_layout.addLayout(filter_layout)
+        header_main_layout.setAlignment(Qt.AlignCenter)
+        
+        # Add the header main layout to the ContentFrame
+        header_frame.layout.addLayout(header_main_layout)
+        
+        # Add the header frame to the main layout
+        main_layout.addWidget(header_frame)
         
         # Create the feature buttons
         buttons_frame = ContentFrame()
@@ -119,6 +147,7 @@ class HomePage(QWidget):
         
         # Info frame
         info_frame = ContentFrame()
+        info_frame.setStyleSheet(INFO_TEXT_STYLE)
         info_layout = QVBoxLayout()
         
         # Warning title
@@ -133,7 +162,7 @@ class HomePage(QWidget):
         info_title.setFont(get_subtitle_font())
         info_layout.addWidget(info_title)
         
-        # Improved EIQ description with better formatting and concise information
+        # EIQ description with concise information
         info_text = QLabel(
             "<b>Environmental Impact Quotient (EIQ)</b>, developed by the <b>NYSIPM Program at Cornell University</b>, "
             "provides a standardized assessment of pesticide environmental impact.<br><br>"
@@ -175,7 +204,7 @@ class HomePage(QWidget):
         
         # Try to restore previous selection if available
         index = self.region_combo.findText(current_region)
-        self.region_combo.setCurrentIndex(max(0, index))  # Default to "None of the above" if not found
+        self.region_combo.setCurrentIndex(max(0, index))  # Default to "None of these" if not found
     
     def on_country_changed(self, _):
         """Handle country selection change."""
@@ -208,5 +237,5 @@ class HomePage(QWidget):
         region = self.region_combo.currentText()
         print(f"Region changed to: {region}")
         
-        # Emit signal with selected region - MainWindow will handle filtering
+        # Emit signal with selected region - MainWindow handles filtering
         self.region_changed.emit(region)

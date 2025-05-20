@@ -164,6 +164,15 @@ YELLOW_BAR_STYLE = f"""
     }}
 """
 
+INFO_TEXT_STYLE = f"""
+    QFrame {{
+        background-color: {WHITE};
+        border: 1px solid transparent;
+        border-radius: 10px;
+        margin: {MARGIN_SMALL}px;
+    }}
+"""
+
 # Buttons styles
 FEATURE_BUTTON_STYLE = f"""
     QPushButton {{
