@@ -64,9 +64,7 @@ class ProductsListTab(QWidget):
         filter_layout.addWidget(filter_scroll)
         
         # Add filter button
-        add_filter_button = QPushButton("Add Another Filter")
-        add_filter_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        add_filter_button.clicked.connect(self.add_filter_row)
+        add_filter_button = create_button(text="Add Another Filter", style='secondary', callback=self.add_filter_row)
         filter_layout.addWidget(add_filter_button, alignment=Qt.AlignLeft)
         
         # Add layout to the frame

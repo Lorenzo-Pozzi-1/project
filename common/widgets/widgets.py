@@ -28,10 +28,8 @@ class HeaderWithHomeButton(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         
         # Home button
-        self.home_button = QPushButton("Home")
-        self.home_button.setStyleSheet(SECONDARY_BUTTON_STYLE)
+        self.home_button = create_button(text="Home", style='secondary', callback=self.back_clicked.emit)
         self.home_button.setFixedWidth(75)
-        self.home_button.clicked.connect(self.back_clicked.emit)
         layout.addWidget(self.home_button)
         
         # Title
@@ -60,7 +58,7 @@ class ContentFrame(QFrame):
         self.layout.setSpacing(SPACING_MEDIUM)
 
 
-def create_button(text, description=None, style='primary', callback=None, parent=None):
+def create_button(text=None, description=None, style='primary', callback=None, parent=None):
     """
     Create a button with consistent styling.
     
@@ -75,7 +73,8 @@ def create_button(text, description=None, style='primary', callback=None, parent
         QPushButton: Styled button
     """
     button = QPushButton(parent)
-    
+    button.setCursor(Qt.PointingHandCursor)
+
     # Apply the appropriate style based on the style parameter
     if style == 'primary':
         button.setStyleSheet(PRIMARY_BUTTON_STYLE)
@@ -106,7 +105,8 @@ def create_button(text, description=None, style='primary', callback=None, parent
                     
     elif style == 'remove':
         button.setStyleSheet(REMOVE_BUTTON_STYLE)
-        button.setText(text)
+        button.setText("×")
+        button.setFixedSize(30, 30)  # Set a fixed size for the button
     
     # Set minimum dimensions for regular buttons (not for remove buttons)
     if style == 'feature':

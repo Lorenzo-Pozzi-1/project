@@ -5,232 +5,181 @@ This module provides widgets for entering application rate, units, and other par
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QComboBox, QFormLayout, QLabel
-from PySide6.QtCore import Signal
-from common.styles import get_body_font, BODY_FONT_SIZE, SMALL_FONT_SIZE, get_small_font
+from PySide6.QtCore import Signal, Property
+from common.styles import get_body_font, get_small_font
 from common.widgets.widgets import ContentFrame
 from math_module import APPLICATION_RATE_CONVERSION
 
 
 class ApplicationRateWidget(QWidget):
-    """
-    Widget for entering application rate with unit selection.
+    """Widget for entering application rate with unit selection."""
     
-    This widget combines a numeric spin box for the rate and a combo box 
-    for the unit of measurement.
-    """
-    
-    # Signal emitted when rate or unit changes
     value_changed = Signal()
     
     def __init__(self, parent=None, style_config=None):
         """Initialize the application rate widget."""
         super().__init__(parent)
-        self.style_config = style_config or {}
-        self.setup_ui()
+        self._style_config = style_config or {}
+        self._setup_ui()
 
-    def setup_ui(self):
+    def _setup_ui(self):
         """Set up the UI components."""
-        # Horizontal layout for rate and unit
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
         
-        # Get font styling
         font = get_small_font()
         
         # Rate spinbox
-        self.rate_spin = QDoubleSpinBox()
-        self.rate_spin.setRange(0.0, 9999.99)
-        self.rate_spin.setValue(0.0)
-        self.rate_spin.setDecimals(2)
-        self.rate_spin.setFont(font)
-        self.rate_spin.valueChanged.connect(self.on_value_changed)
-        layout.addWidget(self.rate_spin)
+        self._rate_spin = QDoubleSpinBox()
+        self._rate_spin.setRange(0.0, 9999.99)
+        self._rate_spin.setValue(0.0)
+        self._rate_spin.setDecimals(2)
+        self._rate_spin.setFont(font)
+        self._rate_spin.valueChanged.connect(self.value_changed)
+        layout.addWidget(self._rate_spin)
         
         # Unit combo box
-        self.unit_combo = QComboBox()
-        self.unit_combo.addItems(sorted(APPLICATION_RATE_CONVERSION.keys()))
-        self.unit_combo.setFont(font)
-        self.unit_combo.currentIndexChanged.connect(self.on_value_changed)
-        layout.addWidget(self.unit_combo)
+        self._unit_combo = QComboBox()
+        self._unit_combo.addItems(sorted(APPLICATION_RATE_CONVERSION.keys()))
+        self._unit_combo.setFont(font)
+        self._unit_combo.currentIndexChanged.connect(self.value_changed)
+        layout.addWidget(self._unit_combo)
     
-    def on_value_changed(self):
-        """Handle rate or unit changes."""
-        self.value_changed.emit()
+    # Property-based API for rate
+    def _get_rate(self):
+        return self._rate_spin.value()
     
-    def get_rate(self):
-        """
-        Get the current application rate.
-        
-        Returns:
-            float: The application rate value
-        """
-        return self.rate_spin.value()
+    def _set_rate(self, rate):
+        self._rate_spin.setValue(rate)
     
-    def get_unit(self):
-        """
-        Get the current unit of measurement.
-        
-        Returns:
-            str: The unit of measurement
-        """
-        return self.unit_combo.currentText()
+    rate = Property(float, _get_rate, _set_rate)
     
-    def set_rate(self, rate):
-        """
-        Set the application rate.
-        
-        Args:
-            rate (float): The application rate value
-        """
-        self.rate_spin.setValue(rate)
+    # Property-based API for unit
+    def _get_unit(self):
+        return self._unit_combo.currentText()
     
-    def set_unit(self, unit):
-        """
-        Set the unit of measurement.
-        
-        Args:
-            unit (str): The unit of measurement
-        """
-        index = self.unit_combo.findText(unit)
+    def _set_unit(self, unit):
+        index = self._unit_combo.findText(unit)
         if index >= 0:
-            self.unit_combo.setCurrentIndex(index)
+            self._unit_combo.setCurrentIndex(index)
+    
+    unit = Property(str, _get_unit, _set_unit)
 
 
 class ApplicationParamsWidget(QWidget):
-    """
-    Widget for entering all application parameters.
+    """Widget for entering all application parameters."""
     
-    This widget provides inputs for application rate, units, and number of applications.
-    """
-    
-    # Signal emitted when any parameter changes
     params_changed = Signal()
     
-    def __init__(self, parent=None, orientation='vertical', style_config=None, show_labels=True, 
-                 show_applications=True):
-        """
-        Initialize the application parameters widget with flexible layout.
-        
-        Args:
-            parent (QWidget): Parent widget
-            orientation (str): Layout orientation ('vertical' or 'horizontal')
-            style_config (dict): Font styling options (font_size, bold)
-            show_labels (bool): Whether to show field labels
-            show_applications (bool): Whether to show number of applications spinner
-        """
+    def __init__(self, parent=None, orientation='vertical', style_config=None, 
+                 show_labels=True, show_applications=True):
+        """Initialize the application parameters widget with flexible layout."""
         super().__init__(parent)
-        self.orientation = orientation
-        self.style_config = style_config or {}
-        self.show_labels = show_labels
-        self.show_applications = show_applications
-        self.setup_ui()
+        self._orientation = orientation
+        self._style_config = style_config or {}
+        self._show_labels = show_labels
+        self._show_applications = show_applications
+        self._setup_ui()
 
-    def setup_ui(self):
+    def _setup_ui(self):
         """Set up the UI components."""
-        # Main layout based on orientation
-        if self.orientation == 'horizontal':
-            layout = QHBoxLayout(self)
-            layout.setContentsMargins(0, 0, 0, 0)
-            layout.setSpacing(10)
-        else:  # vertical (default)
-            layout = QVBoxLayout(self)
-            layout.setContentsMargins(0, 0, 0, 0)
-            layout.setSpacing(10)
+        # Create main layout based on orientation
+        layout = QHBoxLayout(self) if self._orientation == 'horizontal' else QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(10)
         
         # Get font styling
-        font_size = self.style_config.get('font_size', BODY_FONT_SIZE)
-        bold = self.style_config.get('bold', False)
+        font_size = self._style_config.get('font_size', 14)  # Using direct value instead of constant
+        bold = self._style_config.get('bold', False)
         font = get_body_font(size=font_size, bold=bold)
         
-        # Wrap content in ContentFrame
+        # Create content frame
         content_frame = ContentFrame()
         
         # Application rate widget
-        self.rate_widget = ApplicationRateWidget()
-        self.rate_widget.value_changed.connect(self.on_params_changed)
+        self._rate_widget = ApplicationRateWidget(style_config=self._style_config)
+        self._rate_widget.value_changed.connect(self.params_changed)
+        self._rate_widget._rate_spin.setFont(font)
+        self._rate_widget._unit_combo.setFont(font)
         
-        # Apply font styling
-        self.rate_widget.rate_spin.setFont(font)
-        self.rate_widget.unit_combo.setFont(font)
-        
-        # Number of applications - only create if needed
-        if self.show_applications:
-            self.applications_spin = QDoubleSpinBox()
-            self.applications_spin.setRange(1, 10)
-            self.applications_spin.setValue(1)
-            self.applications_spin.setDecimals(0)
-            self.applications_spin.setFont(font)
-            self.applications_spin.valueChanged.connect(self.on_params_changed)
-        
-        if self.show_labels:
-            # Use form layout with labels
+        # Create layout based on orientation and label settings
+        if self._show_labels:
             form_layout = QFormLayout()
             form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
             
             # Rate label
             rate_label = QLabel("Application Rate:")
             rate_label.setFont(font)
-            form_layout.addRow(rate_label, self.rate_widget)
+            form_layout.addRow(rate_label, self._rate_widget)
             
-            # Applications label - only add if showing applications
-            if self.show_applications:
+            # Number of applications (if needed)
+            if self._show_applications:
+                self._applications_spin = QDoubleSpinBox()
+                self._applications_spin.setRange(1, 10)
+                self._applications_spin.setValue(1)
+                self._applications_spin.setDecimals(0)
+                self._applications_spin.setFont(font)
+                self._applications_spin.valueChanged.connect(self.params_changed)
+                
                 apps_label = QLabel("Number of Applications:")
                 apps_label.setFont(font)
-                form_layout.addRow(apps_label, self.applications_spin)
+                form_layout.addRow(apps_label, self._applications_spin)
             
             content_frame.layout.addLayout(form_layout)
         else:
             # Simple layout without labels
-            if self.orientation == 'horizontal':
-                simple_layout = QHBoxLayout()
-                simple_layout.setSpacing(10)
-            else:
-                simple_layout = QVBoxLayout()
-                simple_layout.setSpacing(5)
-                
-            simple_layout.addWidget(self.rate_widget)
+            simple_layout = QHBoxLayout() if self._orientation == 'horizontal' else QVBoxLayout()
+            simple_layout.setSpacing(5 if self._orientation == 'vertical' else 10)
             
-            # Only add applications spinner if showing applications
-            if self.show_applications:
-                simple_layout.addWidget(self.applications_spin)
+            simple_layout.addWidget(self._rate_widget)
+            
+            if self._show_applications:
+                self._applications_spin = QDoubleSpinBox()
+                self._applications_spin.setRange(1, 10)
+                self._applications_spin.setValue(1)
+                self._applications_spin.setDecimals(0)
+                self._applications_spin.setFont(font)
+                self._applications_spin.valueChanged.connect(self.params_changed)
+                simple_layout.addWidget(self._applications_spin)
                 
             content_frame.layout.addLayout(simple_layout)
         
         layout.addWidget(content_frame)
     
-    def on_params_changed(self):
-        """Handle parameter changes."""
-        self.params_changed.emit()
-    
     def get_params(self):
-        """
-        Get all application parameters.
-        
-        Returns:
-            dict: Dictionary with rate, unit, and applications
-        """
-        return {
-            "rate": self.rate_widget.get_rate(),
-            "unit": self.rate_widget.get_unit(),
-            "applications": int(self.applications_spin.value()) if self.show_applications else 1
+        """Get all application parameters."""
+        params = {
+            "rate": self._rate_widget.rate,
+            "unit": self._rate_widget.unit,
+            "applications": int(self._applications_spin.value()) if self._show_applications else 1
         }
+        return params
     
     def set_params(self, rate=None, unit=None, applications=None):
-        """
-        Set application parameters.
+        """Set application parameters."""
+        with self._block_signals():
+            if rate is not None:
+                self._rate_widget.rate = rate
+            
+            if unit is not None:
+                self._rate_widget.unit = unit
+            
+            if applications is not None and self._show_applications:
+                self._applications_spin.setValue(applications)
+    
+    def _block_signals(self):
+        """Context manager to temporarily block widget signals."""
+        class SignalBlocker:
+            def __init__(self, widget):
+                self.widget = widget
+            
+            def __enter__(self):
+                self.widget.blockSignals(True)
+                return self
+            
+            def __exit__(self, *args):
+                self.widget.blockSignals(False)
+                self.widget.params_changed.emit()
         
-        Args:
-            rate (float, optional): Application rate
-            unit (str, optional): Unit of measurement
-            applications (int, optional): Number of applications
-        """
-        # Only update provided parameters
-        if rate is not None:
-            self.rate_widget.set_rate(rate)
-        
-        if unit is not None:
-            self.rate_widget.set_unit(unit)
-        
-        if applications is not None and self.show_applications:
-            self.applications_spin.setValue(applications)
+        return SignalBlocker(self)

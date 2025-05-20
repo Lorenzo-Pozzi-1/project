@@ -15,6 +15,7 @@ from PySide6.QtGui import QFont, QColor
 # Primary color palette 
 YELLOW          = "#fee000"
 YELLOW_HOVER    = "#ffea66"
+YELLOW_PRESSED  = "#eccd00"
 BLACK           = "#000000"
 WHITE           = "#FFFFFF"
 GREEN           = "#009863"
@@ -23,6 +24,8 @@ BLUE_HOVER      = "#789ded"
 LIGHT_GRAY      = "#D9DAE4"
 BEIGE           = "#C9BFB0"
 RED             = "#EC3400"
+RED_HOVER       = "#FF6B6B"
+RED_PRESSED     = "#CC2A22"
 
 # EIQ color coding using hex color codes
 EIQ_LOW_COLOR = QColor(200, 255, 200)      # Pastel green for low EIQ
@@ -239,15 +242,20 @@ SPECIAL_BUTTON_STYLE = f"""
 
 REMOVE_BUTTON_STYLE = f"""
     QPushButton {{
-        background-color: transparent;
-        color: {RED};
-        font-color: {RED};
-        border-radius: 12px;
+        background-color: {RED};
+        color: {WHITE};
+        border-radius: 10px;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 18px;
+        padding-bottom: 3.5px;
+        line-height: 1;
+        text-align: center;
     }}
     QPushButton:hover {{
-        background-color: {BEIGE};
+        background-color: {RED_HOVER};
+    }}
+    QPushButton:pressed {{
+        background-color: {RED_PRESSED};
     }}
 """
 

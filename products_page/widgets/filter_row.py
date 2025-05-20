@@ -8,6 +8,7 @@ filter control for table filtering.
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton
 from PySide6.QtCore import Signal
 from common import REMOVE_BUTTON_STYLE, FRAME_STYLE
+from common.widgets.widgets import create_button
 
 class FilterRow(QWidget):
     """
@@ -61,11 +62,9 @@ class FilterRow(QWidget):
         layout.addWidget(self.value_input)
         
         # Remove button
-        self.remove_button = QPushButton("×")  # Using × character for close icon
+        self.remove_button = create_button(style='remove', callback=self.request_remove)
         self.remove_button.setFixedSize(24, 24)
         self.remove_button.setToolTip("Remove this filter")
-        self.remove_button.setStyleSheet(REMOVE_BUTTON_STYLE)
-        self.remove_button.clicked.connect(self.request_remove)
         layout.addWidget(self.remove_button)
     
     def on_filter_changed(self):

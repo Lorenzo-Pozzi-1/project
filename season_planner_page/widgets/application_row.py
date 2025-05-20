@@ -3,9 +3,15 @@
 from contextlib import contextmanager
 from PySide6.QtCore import Qt, Signal, QMimeData
 from PySide6.QtGui import QDrag
-from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QPushButton, QDoubleSpinBox, QComboBox
+from PySide6.QtWidgets import (
+    QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QApplication,
+    QMessageBox, QPushButton, QDoubleSpinBox, QComboBox
+)
 from data import ProductRepository, AIRepository
-from common import DRAGGING_ROW_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE, BODY_FONT_SIZE, ProductSelectionWidget, ApplicationParamsWidget
+from common import (
+    DRAGGING_ROW_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE, 
+    BODY_FONT_SIZE, ProductSelectionWidget, ApplicationParamsWidget
+)
 from math_module import calculate_product_field_eiq
 
 
@@ -18,7 +24,7 @@ class ApplicationRowWidget(QFrame):
     drag_ended = Signal(object)    
     delete_requested = Signal(object)  
     
-    ROW_HEIGHT = 100
+    ROW_HEIGHT = 40
     
     def __init__(self, parent=None, field_area=10.0, field_area_uom="acre", index=0):
         """Initialize the application row widget."""
@@ -33,7 +39,13 @@ class ApplicationRowWidget(QFrame):
         self.products_repo = ProductRepository.get_instance()
         self.ai_repo = AIRepository.get_instance()
         
-        # Set frame properties
+        # Configure frame
+        self._configure_frame()
+        self._setup_ui()
+        self.refresh_products()
+    
+    def _configure_frame(self):
+        """Configure the frame properties."""
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setFrameShape(QFrame.StyledPanel)
         self.setFrameShadow(QFrame.Plain)
@@ -41,9 +53,6 @@ class ApplicationRowWidget(QFrame):
         self.setFixedHeight(self.ROW_HEIGHT)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         self.setAcceptDrops(True)
-        
-        self.setup_ui()
-        self.refresh_products()
     
     @contextmanager
     def blocked_signals(self):
@@ -54,35 +63,57 @@ class ApplicationRowWidget(QFrame):
         finally:
             self.blockSignals(False)
     
-    def setup_ui(self):
+    def _setup_ui(self):
         """Set up the UI components for the application row."""
         layout = QHBoxLayout(self)
         layout.setContentsMargins(2, 1, 2, 1)
         layout.setSpacing(5)
 
-        # Drag handle
+        # Define widget configurations
+        widgets = [
+            self._create_drag_handle(),
+            self._create_app_number_label(),
+            self._create_date_field(),
+            self._create_product_selection(),
+            self._create_app_params(),
+            self._create_area_field(),
+            self._create_method_combo(),
+            self._create_ai_groups_label(),
+            self._create_field_eiq_label(),
+            self._create_delete_button()
+        ]
+        
+        # Add widgets with stretch factors
+        stretch_factors = [0, 1, 1, 3, 1, 1, 1, 1, 1, 0]
+        
+        for widget, stretch in zip(widgets, stretch_factors):
+            layout.addWidget(widget)
+            layout.setStretch(layout.count() - 1, stretch)
+    
+    def _create_drag_handle(self):
+        """Create the drag handle for the row."""
         self.drag_handle = QLabel("≡")
         self.drag_handle.setAlignment(Qt.AlignCenter)
         self.drag_handle.setFixedWidth(16)
         self.drag_handle.setCursor(Qt.OpenHandCursor)
-        layout.addWidget(self.drag_handle)
-        layout.setStretch(0, 0)
-        
-        # Application number
+        return self.drag_handle
+    
+    def _create_app_number_label(self):
+        """Create the application number label."""
         self.app_number_label = QLabel(str(self.index + 1))
         self.app_number_label.setAlignment(Qt.AlignCenter)
         self.app_number_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.app_number_label)
-        layout.setStretch(1, 1)
-        
-        # Date field
+        return self.app_number_label
+    
+    def _create_date_field(self):
+        """Create the date field."""
         self.date_edit = QLineEdit()
         self.date_edit.setPlaceholderText("Enter date or description")
         self.date_edit.textChanged.connect(self.on_data_changed)
-        layout.addWidget(self.date_edit)
-        layout.setStretch(2, 1)
-        
-        # Product selection widget
+        return self.date_edit
+    
+    def _create_product_selection(self):
+        """Create the product selection widget."""
         style_config = {'font_size': BODY_FONT_SIZE, 'bold': False}
         self.product_selection = ProductSelectionWidget(
             orientation='horizontal', 
@@ -90,10 +121,11 @@ class ApplicationRowWidget(QFrame):
             show_labels=False,
         )
         self.product_selection.product_selected.connect(self.on_product_selected)
-        layout.addWidget(self.product_selection)
-        layout.setStretch(3, 2)  # Give more space to product selection
-        
-        # Application parameters widget (replaces rate_spin and uom_combo)
+        return self.product_selection
+    
+    def _create_app_params(self):
+        """Create the application parameters widget."""
+        style_config = {'font_size': BODY_FONT_SIZE, 'bold': False}
         self.app_params = ApplicationParamsWidget(
             orientation='horizontal',
             style_config=style_config,
@@ -101,58 +133,55 @@ class ApplicationRowWidget(QFrame):
             show_applications=False
         )
         self.app_params.params_changed.connect(self.on_params_changed)
-        layout.addWidget(self.app_params)
-        layout.setStretch(4, 2)  # Give more space to application parameters
-        
-        # Area treated
-        area_layout = QHBoxLayout()
-        area_layout.setContentsMargins(0, 0, 0, 0)
-        area_layout.setSpacing(2)
+        return self.app_params
+    
+    def _create_area_field(self):
+        """Create the area field."""
+        frame = QFrame()
+        layout = QHBoxLayout(frame)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(2)
         
         self.area_spin = QDoubleSpinBox()
         self.area_spin.setRange(0.0, 9999.99)
         self.area_spin.setDecimals(1)
         self.area_spin.setValue(self.field_area)
         self.area_spin.valueChanged.connect(self.on_data_changed)
-        area_layout.addWidget(self.area_spin)
+        layout.addWidget(self.area_spin)
         
-        area_frame = QFrame()
-        area_frame.setLayout(area_layout)
-        layout.addWidget(area_frame)
-        layout.setStretch(5, 1)
-        
-        # Application method
+        return frame
+    
+    def _create_method_combo(self):
+        """Create the application method combo box."""
         self.method_combo = QComboBox()
-        self.method_combo.addItems([
+        methods = [
             "Broadcast", "Band", "Foliar spray", "Soil incorporation",
             "Seed treatment", "Spot treatment", "Chemigation"
-        ])
+        ]
+        self.method_combo.addItems(methods)
         self.method_combo.currentIndexChanged.connect(self.on_data_changed)
-        layout.addWidget(self.method_combo)
-        layout.setStretch(6, 1)
-        
-        # AI Groups (read-only)
+        return self.method_combo
+    
+    def _create_ai_groups_label(self):
+        """Create the AI groups label."""
         self.ai_groups_label = QLabel("")
         self.ai_groups_label.setAlignment(Qt.AlignCenter)
         self.ai_groups_label.setWordWrap(True)
-        layout.addWidget(self.ai_groups_label)
-        layout.setStretch(7, 1)
-        
-        # Field EIQ (read-only)
+        return self.ai_groups_label
+    
+    def _create_field_eiq_label(self):
+        """Create the field EIQ label."""
         self.field_eiq_label = QLabel("")
         self.field_eiq_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.field_eiq_label)
-        layout.setStretch(8, 1)
-        
-        # Delete button
-        delete_button = QPushButton("✕")
+        return self.field_eiq_label
+    
+    def _create_delete_button(self):
+        """Create the delete button."""
+        from common import create_button
+        delete_button = create_button(text="✕", style='remove', callback=self.confirm_delete)
         delete_button.setFixedSize(24, 24)
-        delete_button.setCursor(Qt.PointingHandCursor)
         delete_button.setToolTip("Remove application")
-        delete_button.setStyleSheet(REMOVE_BUTTON_STYLE)
-        delete_button.clicked.connect(self.confirm_delete)
-        layout.addWidget(delete_button)
-        layout.setStretch(9, 0)
+        return delete_button
     
     def update_app_number(self, number):
         """Update the displayed application number."""
@@ -173,15 +202,17 @@ class ApplicationRowWidget(QFrame):
             return
         
         # Update application parameters
-        rate = product.label_maximum_rate if product.label_maximum_rate is not None else \
-               product.label_minimum_rate if product.label_minimum_rate is not None else 0.0
+        rate = (product.label_maximum_rate if product.label_maximum_rate is not None 
+                else product.label_minimum_rate if product.label_minimum_rate is not None 
+                else 0.0)
         unit = product.rate_uom or ""
         
         # Set parameters in the application params widget
-        self.app_params.set_params(rate=rate, unit=unit, applications=1)
+        self.app_params.set_params(rate=rate, unit=unit)
         
         # Update AI Groups
-        self.ai_groups_label.setText(", ".join(filter(None, product.get_ai_groups())))
+        ai_groups = product.get_ai_groups()
+        self.ai_groups_label.setText(", ".join(filter(None, ai_groups)))
         
         # Calculate and update Field EIQ
         self.calculate_field_eiq()
@@ -274,7 +305,7 @@ class ApplicationRowWidget(QFrame):
             # Set application parameters
             rate = data.get("rate")
             unit = data.get("rate_uom")
-            self.app_params.set_params(rate=rate, unit=unit, applications=1)
+            self.app_params.set_params(rate=rate, unit=unit)
             
             # Set area
             if "area" in data:
@@ -294,6 +325,7 @@ class ApplicationRowWidget(QFrame):
         """Update the row index."""
         self.index = index
     
+    # Drag and drop functionality
     def mousePressEvent(self, event):
         """Handle mouse press events to initiate drag."""
         if event.button() == Qt.LeftButton:
@@ -309,6 +341,10 @@ class ApplicationRowWidget(QFrame):
             return
         
         # Start drag operation
+        self._start_drag(event)
+    
+    def _start_drag(self, event):
+        """Initialize and execute the drag operation."""
         drag = QDrag(self)
         mimedata = QMimeData()
         mimedata.setData("application/x-applicationrow-index", str(self.index).encode())

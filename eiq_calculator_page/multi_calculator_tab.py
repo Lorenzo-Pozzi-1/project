@@ -74,10 +74,8 @@ class ProductCard(QFrame):
         header_layout.addStretch(1)
         
         # Remove button
-        remove_button = QPushButton("✕")  # Unicode ✕ character for X
+        remove_button = create_button(style='remove', callback=lambda: self.remove_requested.emit(self.index))
         remove_button.setFixedSize(24, 24)
-        remove_button.setStyleSheet(REMOVE_BUTTON_STYLE)
-        remove_button.clicked.connect(lambda: self.remove_requested.emit(self.index))
         header_layout.addWidget(remove_button)
         
         layout.addLayout(header_layout)
