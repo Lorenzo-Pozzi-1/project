@@ -47,7 +47,7 @@ from common.styles import (
     TITLE_FONT_SIZE, SUBTITLE_FONT_SIZE, MEDIUM_TEXT, SMALL_TEXT,
     
     # Font Functions
-    get_font, get_title_font, get_subtitle_font, get_medium_font, get_small_font,
+    get_font, get_title_font, get_subtitle_font, get_small_font, get_medium_font, get_large_font,
     
     # Style Sheets
     FRAME_STYLE, YELLOW_BAR_STYLE, INFO_TEXT_STYLE,
@@ -95,7 +95,7 @@ __all__ = [
     'TITLE_FONT_SIZE', 'SUBTITLE_FONT_SIZE', 'MEDIUM_TEXT', 'SMALL_TEXT',
     
     # Font Functions
-    'get_font', 'get_title_font', 'get_subtitle_font', 'get_medium_font', 'get_small_font',
+    'get_font', 'get_title_font', 'get_subtitle_font', 'get_medium_font', 'get_small_font', 'get_large_font',
     
     # Style Sheets
     'FRAME_STYLE', 'YELLOW_BAR_STYLE', 'INFO_TEXT_STYLE',
