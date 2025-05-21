@@ -133,11 +133,16 @@ class MainWindow(QMainWindow):
 
     def navigate_to_page(self, page_index):
         """Navigate to the specified page index."""
-                
         if self.updating_products:
             print("Please wait, I'm updating the products data...")
             return
             
+        # If we're on the home page and trying to navigate away, check for unsaved preferences
+        if self.stacked_widget.currentIndex() == 0 and page_index != 0:
+            if not self.home_page.check_unsaved_preferences():
+                return  # Stop navigation if the user cancelled
+        
+        # Proceed with navigation
         if 0 <= page_index < self.stacked_widget.count():
             self.stacked_widget.setCurrentIndex(page_index)
 
@@ -162,6 +167,12 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         """Handle the close event, clean up __pycache__ directories."""
+
+        # If we're on the home page, check for unsaved preferences
+        if self.stacked_widget.currentIndex() == 0 and self.home_page.preferences_row.has_unsaved_changes:
+            if not self.home_page.check_unsaved_preferences():
+                event.ignore()  # Cancel closing if the user cancelled
+                return
         try:
             # Find and remove all __pycache__ directories 
             app_dir = os.path.dirname(os.path.abspath(__file__))

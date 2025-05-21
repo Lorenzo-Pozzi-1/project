@@ -5,7 +5,7 @@ This module defines the HomePage class which serves as the main navigation
 screen for the application.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMessageBox
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
 from common import *
@@ -179,3 +179,30 @@ class HomePage(QWidget):
     def load_preferences(self):
         """Load preferences into the preferences row."""
         self.preferences_row.load_preferences()
+
+    def check_unsaved_preferences(self):
+        """Check if there are unsaved preferences and ask user what to do."""
+        if self.preferences_row.has_unsaved_changes:
+            msg_box = QMessageBox(self)
+            msg_box.setWindowTitle("Unsaved Changes")
+            msg_box.setText("Unsaved edits to the preferences,\nwhat to do with these edits?")
+            msg_box.setIcon(QMessageBox.Warning)
+            
+            save_button = msg_box.addButton("Save", QMessageBox.AcceptRole)
+            discard_button = msg_box.addButton("Discard", QMessageBox.RejectRole)
+            
+            msg_box.setFont(get_medium_font())
+            msg_box.exec()
+            
+            if msg_box.clickedButton() == save_button:
+                self.preferences_row.save_preferences()
+                return True
+            else:
+                # Reload the preferences to discard changes
+                self.preferences_row.initializing = True
+                self.preferences_row.load_preferences()
+                self.preferences_row.initializing = False
+                self.preferences_row.has_unsaved_changes = False
+                return True
+        
+        return True  # No unsaved changes, can proceed

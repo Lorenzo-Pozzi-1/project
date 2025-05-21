@@ -16,15 +16,17 @@ class PreferencesRow(QWidget):
     seeding rate, and options to save preferences.
     """
     
+    preferences_changed_unsaved = Signal()
     country_changed = Signal(str)
     region_changed = Signal(str)
     preferences_changed = Signal()
     
     def __init__(self, parent=None):
-        """Initialize the preferences row widget."""
+        # Your existing initialization code
         super().__init__(parent)
         self.parent = parent
         self.initializing = True  # Flag to avoid multiple filtering during setup
+        self.has_unsaved_changes = False  # Track if there are unsaved changes
         self.setup_ui()
         self.initializing = False  # Setup complete
         
@@ -117,6 +119,12 @@ class PreferencesRow(QWidget):
         self.save_preferences_button = create_button(text="Save preferences", style="yellow", callback=self.save_preferences)
         preferences_layout.addWidget(self.save_preferences_button)
 
+        # Monitor all controls for changes
+        self.row_spacing_spin.valueChanged.connect(self.mark_as_changed)
+        self.row_spacing_unit.currentIndexChanged.connect(self.mark_as_changed)
+        self.seeding_rate_spin.valueChanged.connect(self.mark_as_changed)
+        self.seeding_rate_unit.currentIndexChanged.connect(self.mark_as_changed)
+
     def get_regions_for_country(self, country):
         """Get region options for a specific country."""
         regions = {
@@ -157,6 +165,9 @@ class PreferencesRow(QWidget):
         # Get the new region value
         region = self.region_combo.currentText()
         
+        # Mark as changed
+        self.mark_as_changed()
+        
         # Emit signal for the country change
         self.country_changed.emit(country)
     
@@ -167,6 +178,9 @@ class PreferencesRow(QWidget):
                 
         region = self.region_combo.currentText()
         print(f"Region changed to: {region}")
+        
+        # Mark as changed
+        self.mark_as_changed()
         
         # Emit signal with selected region - MainWindow handles filtering
         self.region_changed.emit(region)
@@ -210,6 +224,9 @@ class PreferencesRow(QWidget):
         if index >= 0:
             self.seeding_rate_unit.setCurrentIndex(index)
         self.seeding_rate_spin.setValue(seeding_rate)
+
+        # After loading, reset the unsaved changes flag
+        self.has_unsaved_changes = False
         
     def save_preferences(self):
         """Save preferences to config."""
@@ -233,6 +250,8 @@ class PreferencesRow(QWidget):
         
         # Emit signal to notify that preferences have changed
         self.preferences_changed.emit()
+        # After saving, reset the unsaved changes flag
+        self.has_unsaved_changes = False
         
     def show_confirmation_dialog(self):
         """Show a confirmation dialog that preferences have been saved."""
@@ -247,3 +266,9 @@ class PreferencesRow(QWidget):
         
         # Show the dialog
         msg_box.exec()
+
+    def mark_as_changed(self):
+        """Mark preferences as changed but not saved."""
+        if not self.initializing:
+            self.has_unsaved_changes = True
+            self.preferences_changed_unsaved.emit()
