@@ -163,36 +163,33 @@ class HomePage(QWidget):
         info_frame = ContentFrame()
         info_frame.setStyleSheet(INFO_TEXT_STYLE)
         info_layout = QVBoxLayout()
-        
-        # Warning title
-        warning_title = QLabel("! ALWAYS CHECK LABELS !") 
-        warning_title.setFont(get_title_font())
-        warning_title.setStyleSheet("color: red; font-weight: bold;")
-        warning_title.setAlignment(Qt.AlignCenter)
-        info_layout.addWidget(warning_title)
                 
         # EIQ info title
-        info_title = QLabel("About Environmental Impact Quotient (EIQ)")
+        info_title = QLabel("About Environmental Impact Quotients (EIQ)")
         info_title.setFont(get_subtitle_font())
         info_layout.addWidget(info_title)
         
         # EIQ description with concise information
         info_text = QLabel(
-            "<b>Environmental Impact Quotient (EIQ)</b>, developed by the <b>NYSIPM Program at Cornell University</b>, "
-            "provides a standardized assessment of pesticide environmental impact.<br><br>"
-            "<b>EIQ evaluates three main components:</b><br>"
-            "- <b>Farm worker risk</b> (applicator + harvester exposure)<br>"
-            "- <b>Consumer risk</b> (food residue + groundwater effects)<br>"
-            "- <b>Ecological risk</b> (fish, birds, bees, and beneficial insects)<br><br>"
-            "Higher scores indicate greater environmental impact. The <b>Field Use EIQ</b> (= EIQ × %AI × Rate) "
-            "adjusts for real-world application conditions, supporting sustainable pest management decisions.<br>"
-            "ADD CONCISE EXPLANATION EIQ MOLECULE vs EIQ FIELD USE"
+            "<b>In a nutshell:</b> EIQ scores are a tool to asses and compare pesticides' use impacts. <b>Higher scores →  higher impacts</b>.<br><br>"
+            "Each Active ingredient has an EIQ value, but we compare products based on the <b>Field Use EIQ</b>, where:<br>"
+            "<b>Field Use EIQ = Active Ingredient EIQ × Active Ingredient concentration × Product Application Rate</b><br>"
+            "EIQs evaluate three main components:<br>"
+            "1. Farm worker risk (applicator, harvester exposure)<br>"
+            "2. Consumer risk    (food residue, groundwater pollution)<br>"
+            "3. Ecological risk  (fishes, birds, bees, and beneficial insects)"
         )
 
         info_text.setWordWrap(True)
         info_text.setFont(get_large_font())
         info_layout.addWidget(info_text)
         
+        # Warning title
+        warning_title = QLabel("Always double check product labels and SDS before using a product. This app is an aide, not a substitute for professional advice.") 
+        warning_title.setFont(get_subtitle_font())
+        warning_title.setAlignment(Qt.AlignCenter)
+        info_layout.addWidget(warning_title)
+
         info_frame.layout.addLayout(info_layout)
         main_layout.addWidget(info_frame)
 
