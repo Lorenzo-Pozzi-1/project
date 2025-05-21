@@ -5,11 +5,11 @@ This module defines the ProductsListTab class that provides product listing
 and filtering functionality using a table-based view.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFrame, QScrollArea
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
 from PySide6.QtCore import Qt
-from common import SECONDARY_BUTTON_STYLE, get_subtitle_font, ContentFrame, create_button
+from common import ContentFrame, create_button
 from data import ProductRepository
-from products_page.widgets.filter_row import FilterRow
+from products_page.widgets.filter_row import FilterRowContainer
 from products_page.widgets.products_table import ProductTable
 
 
@@ -25,10 +25,7 @@ class ProductsListTab(QWidget):
         """Initialize the products list tab."""
         super().__init__(parent)
         self.parent = parent
-        self.filter_rows = []
         self.all_products = []
-        self.visible_columns = []
-        self.field_to_column_map = {}
         self.setup_ui()
         self.load_product_data()
     
@@ -43,29 +40,10 @@ class ProductsListTab(QWidget):
         filter_frame = ContentFrame()
         filter_layout = QVBoxLayout()
         
-        # Filter title
-        selection_title = QLabel("Filter Products")
-        selection_title.setFont(get_subtitle_font())
-        filter_layout.addWidget(selection_title)
-        
-        # Filter rows area
-        self.filter_rows_container = QWidget()
-        self.filter_rows_layout = QHBoxLayout(self.filter_rows_container)
-        self.filter_rows_layout.setContentsMargins(0, 0, 0, 0)
-        self.filter_rows_layout.setAlignment(Qt.AlignLeft)
-        
-        filter_scroll = QScrollArea()
-        filter_scroll.setWidgetResizable(True)
-        filter_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        filter_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        filter_scroll.setFrameShape(QFrame.NoFrame)
-        filter_scroll.setWidget(self.filter_rows_container)
-        filter_scroll.setMaximumHeight(60)
-        filter_layout.addWidget(filter_scroll)
-        
-        # Add filter button
-        add_filter_button = create_button(text="Add Another Filter", style='secondary', callback=self.add_filter_row)
-        filter_layout.addWidget(add_filter_button, alignment=Qt.AlignLeft)
+        # Use the FilterRowContainer widget
+        self.filter_container = FilterRowContainer()
+        self.filter_container.filters_changed.connect(self.apply_filters)
+        filter_layout.addWidget(self.filter_container)
         
         # Add layout to the frame
         filter_frame.layout.addLayout(filter_layout)
@@ -86,7 +64,10 @@ class ProductsListTab(QWidget):
         button_frame = ContentFrame()
         button_layout = QHBoxLayout()
         button_layout.setAlignment(Qt.AlignRight)  # Align to right
-        compare_button = create_button(text="View facts sheet / Compare Selected Products", style="primary", callback=self.compare_selected_products, parent=self)
+        compare_button = create_button(
+            text="View facts sheet / Compare Selected Products", style="primary", 
+            callback=self.compare_selected_products, parent=self
+        )
         button_layout.addWidget(compare_button)
         button_frame.layout.addLayout(button_layout)
         main_layout.addWidget(button_frame)
@@ -109,67 +90,23 @@ class ProductsListTab(QWidget):
         self.products_table.set_products(products, column_keys)
         
         # Retrieve visible columns and mapping for filters
-        self.visible_columns, self.field_to_column_map = self.products_table.get_visible_columns()
+        visible_columns, field_to_column_map = self.products_table.get_visible_columns()
         
-        # Add initial filter row if not already added
-        if not self.filter_rows and self.visible_columns:
-            self.add_filter_row()
-    
-    def add_filter_row(self):
-        """Add a new filter row."""
-        if not self.visible_columns:
-            return
-            
-        filter_row = FilterRow(self.visible_columns, self.field_to_column_map, self)
-        filter_row.filter_changed.connect(self.apply_filters)
-        filter_row.remove_requested.connect(self.remove_filter_row)
-        
-        self.filter_rows_layout.addWidget(filter_row)
-        self.filter_rows.append(filter_row)
-        
-        # Show/hide remove buttons based on number of rows
-        for row in self.filter_rows:
-            row.remove_button.setVisible(len(self.filter_rows) > 1)
-    
-    def remove_filter_row(self, filter_row):
-        """Remove a filter row."""
-        if filter_row in self.filter_rows:
-            self.filter_rows_layout.removeWidget(filter_row)
-            self.filter_rows.remove(filter_row)
-            filter_row.deleteLater()
-            
-            # Update remove button visibility
-            for row in self.filter_rows:
-                row.remove_button.setVisible(len(self.filter_rows) > 1)
-            
-            self.apply_filters()
+        # Set filter data in the container
+        self.filter_container.set_filter_data(visible_columns, field_to_column_map)
     
     def apply_filters(self):
         """Apply all active filters."""
-        # Get valid filter criteria
-        filters = []
-        for filter_row in self.filter_rows:
-            criteria = filter_row.get_filter_criteria()
-            if criteria and criteria[1]:  # Only if column and non-empty text
-                filters.append(criteria)
+        # Get filter criteria from the container
+        filters = self.filter_container.get_filter_criteria()
         
         # Apply filters to the table
         self.products_table.apply_filters(filters)
-
+    
     def reset_filters(self):
-        """Reset all filter rows and show all products."""
-        # Clear existing filter rows
-        while self.filter_rows:
-            row = self.filter_rows.pop()
-            self.filter_rows_layout.removeWidget(row)
-            row.deleteLater()
-        
-        # Reload visible columns and mapping
-        self.visible_columns, self.field_to_column_map = self.products_table.get_visible_columns()
-        
-        # Add a single empty filter row
-        if self.visible_columns:
-            self.add_filter_row()
+        """Reset all filters and show all products."""
+        # Reset filters in container
+        self.filter_container.reset_filters()
         
         # Show all rows in the table
         for row in range(self.products_table.rowCount()):
