@@ -181,7 +181,7 @@ FEATURE_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {WHITE};
         border: 4px solid {YELLOW};
-        border-radius: 8px;
+        border-radius: 30px;
         padding: 10px;
     }}
     QPushButton:hover {{
@@ -348,7 +348,7 @@ GENERIC_TABLE_STYLE = f"""
     
     /* Checkbox in table */
     QTableWidget QCheckBox {{
-        margin-left: 7px;
+        margin-left: 0px;
     }}
     
     /* Focus outline */

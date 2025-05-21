@@ -183,7 +183,7 @@ class HomePage(QWidget):
         )
 
         info_text.setWordWrap(True)
-        info_text.setFont(get_medium_font())
+        info_text.setFont(get_large_font())
         info_layout.addWidget(info_text)
         
         info_frame.layout.addLayout(info_layout)
