@@ -10,7 +10,7 @@ from common import *
 
 class PreferencesRow(QWidget):
     """
-    Widget displaying a horizontal row of preferences settings.
+    Widget displaying a horizontal row of preferences preferences.
     
     This widget contains country/region selection, row spacing, 
     seeding rate, and options to save preferences.
@@ -18,7 +18,7 @@ class PreferencesRow(QWidget):
     
     country_changed = Signal(str)
     region_changed = Signal(str)
-    settings_changed = Signal()
+    preferences_changed = Signal()
     
     def __init__(self, parent=None):
         """Initialize the preferences row widget."""
@@ -30,92 +30,92 @@ class PreferencesRow(QWidget):
         
     def setup_ui(self):
         """Set up the UI components."""
-        # Main layout - horizontal row for all settings
-        settings_layout = QHBoxLayout(self)
-        settings_layout.setContentsMargins(0, 0, 0, 0)
-        settings_layout.setAlignment(Qt.AlignCenter)
+        # Main layout - horizontal row for all preferences
+        preferences_layout = QHBoxLayout(self)
+        preferences_layout.setContentsMargins(0, 0, 0, 0)
+        preferences_layout.setAlignment(Qt.AlignCenter)
         
         # Country selection
         country_label = QLabel("Country:")
         country_label.setFont(get_medium_font())
-        settings_layout.addWidget(country_label)
+        preferences_layout.addWidget(country_label)
         
-        settings_layout.addSpacing(1)  # 1px spacing between label and control
+        preferences_layout.addSpacing(1)  # 1px spacing between label and control
         
         self.country_combo = QComboBox()
         self.country_combo.setFont(get_medium_font())
         self.country_combo.addItems(["Canada", "United States"])
         self.country_combo.currentIndexChanged.connect(self.on_country_changed)
-        settings_layout.addWidget(self.country_combo)
+        preferences_layout.addWidget(self.country_combo)
         
-        settings_layout.addSpacing(40)  # 40px spacing between control groups
+        preferences_layout.addSpacing(40)  # 40px spacing between control groups
         
         # Region selection
         region_label = QLabel("Region:")
         region_label.setFont(get_medium_font())
-        settings_layout.addWidget(region_label)
+        preferences_layout.addWidget(region_label)
         
-        settings_layout.addSpacing(1)  # 1px spacing between label and control
+        preferences_layout.addSpacing(1)  # 1px spacing between label and control
         
         self.region_combo = QComboBox()
         self.region_combo.setFont(get_medium_font())
         self.region_combo.addItem("None of these")
         self.region_combo.currentIndexChanged.connect(self.on_region_changed)
-        settings_layout.addWidget(self.region_combo)
+        preferences_layout.addWidget(self.region_combo)
         
         self.update_regions_dropdown()
         
-        settings_layout.addSpacing(40)  # 40px spacing between control groups
+        preferences_layout.addSpacing(40)  # 40px spacing between control groups
         
         # Row Spacing with unit selection
         row_spacing_label = QLabel("Row Spacing:")
         row_spacing_label.setFont(get_medium_font())
-        settings_layout.addWidget(row_spacing_label)
+        preferences_layout.addWidget(row_spacing_label)
         
-        settings_layout.addSpacing(1)  # 1px spacing between label and control
+        preferences_layout.addSpacing(1)  # 1px spacing between label and control
 
         self.row_spacing_spin = QDoubleSpinBox()
         self.row_spacing_spin.setRange(0, 100)
         self.row_spacing_spin.setValue(34.0)
         self.row_spacing_spin.setDecimals(1)
         self.row_spacing_spin.setFont(get_medium_font())
-        settings_layout.addWidget(self.row_spacing_spin)
+        preferences_layout.addWidget(self.row_spacing_spin)
         
-        settings_layout.addSpacing(1)  # 1px spacing between value and UOM
+        preferences_layout.addSpacing(1)  # 1px spacing between value and UOM
 
         self.row_spacing_unit = QComboBox()
         self.row_spacing_unit.addItems(["inches", "cm"])
         self.row_spacing_unit.setFont(get_medium_font())
-        settings_layout.addWidget(self.row_spacing_unit)
+        preferences_layout.addWidget(self.row_spacing_unit)
         
-        settings_layout.addSpacing(40)  # 40px spacing between control groups
+        preferences_layout.addSpacing(40)  # 40px spacing between control groups
         
         # Seeding Rate with unit selection
         seeding_rate_label = QLabel("Seeding Rate:")
         seeding_rate_label.setFont(get_medium_font())
-        settings_layout.addWidget(seeding_rate_label)
+        preferences_layout.addWidget(seeding_rate_label)
         
-        settings_layout.addSpacing(1)  # 1px spacing between label and control
+        preferences_layout.addSpacing(1)  # 1px spacing between label and control
         
         self.seeding_rate_spin = QDoubleSpinBox()
         self.seeding_rate_spin.setRange(0, 10000)
         self.seeding_rate_spin.setValue(2000)
         self.seeding_rate_spin.setDecimals(0)
         self.seeding_rate_spin.setFont(get_medium_font())
-        settings_layout.addWidget(self.seeding_rate_spin)
+        preferences_layout.addWidget(self.seeding_rate_spin)
         
-        settings_layout.addSpacing(1)  # 1px spacing between value and UOM
+        preferences_layout.addSpacing(1)  # 1px spacing between value and UOM
         
         self.seeding_rate_unit = QComboBox()
         self.seeding_rate_unit.addItems(["kg/ha", "kg/acre", "pound/ha", "pounds/acre"])
         self.seeding_rate_unit.setFont(get_medium_font())
-        settings_layout.addWidget(self.seeding_rate_unit)
+        preferences_layout.addWidget(self.seeding_rate_unit)
         
-        settings_layout.addSpacing(40)  # 40px spacing between control groups
+        preferences_layout.addSpacing(40)  # 40px spacing between control groups
         
-        # Save settings button
-        self.save_settings_button = create_button(text="Save Settings", style="primary", callback=self.save_settings)
-        settings_layout.addWidget(self.save_settings_button)
+        # Save preferences button
+        self.save_preferences_button = create_button(text="Save preferences", style="yellow", callback=self.save_preferences)
+        preferences_layout.addWidget(self.save_preferences_button)
 
     def get_regions_for_country(self, country):
         """Get region options for a specific country."""
@@ -191,9 +191,9 @@ class PreferencesRow(QWidget):
         
         self.initializing = False
             
-    def load_settings(self):
-        """Load existing settings from config."""
-        config = get_config("user_settings", {})
+    def load_preferences(self):
+        """Load existing preferences from config."""
+        config = get_config("user_preferences", {})
         
         # Load field parameters
         row_spacing = config.get("default_row_spacing", 34.0)
@@ -211,9 +211,9 @@ class PreferencesRow(QWidget):
             self.seeding_rate_unit.setCurrentIndex(index)
         self.seeding_rate_spin.setValue(seeding_rate)
         
-    def save_settings(self):
-        """Save settings to config."""
-        config = get_config("user_settings", {})
+    def save_preferences(self):
+        """Save preferences to config."""
+        config = get_config("user_preferences", {})
         
         # Update configuration values
         config["default_country"] = self.country_combo.currentText()
@@ -225,17 +225,17 @@ class PreferencesRow(QWidget):
         
         # Save to global config
         updated_config = get_config(None, {})
-        updated_config["user_settings"] = config
+        updated_config["user_preferences"] = config
         save_config(updated_config)
         
         # Show confirmation dialog
         self.show_confirmation_dialog()
         
-        # Emit signal to notify that settings have changed
-        self.settings_changed.emit()
+        # Emit signal to notify that preferences have changed
+        self.preferences_changed.emit()
         
     def show_confirmation_dialog(self):
-        """Show a confirmation dialog that settings have been saved."""
+        """Show a confirmation dialog that preferences have been saved."""
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle("Preferences Saved")
         msg_box.setText("Preferences saved successfully.")

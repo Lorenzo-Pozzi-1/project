@@ -103,7 +103,7 @@ class ApplicationParamsWidget(QWidget):
         self._rate_widget._rate_spin.setFont(font)
         self._rate_widget._unit_combo.setFont(font)
         
-        # Create layout based on orientation and label settings
+        # Create layout based on orientation and label preferences
         if self._show_labels:
             form_layout = QFormLayout()
             form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)

@@ -65,7 +65,7 @@ class ProductsListTab(QWidget):
         button_layout = QHBoxLayout()
         button_layout.setAlignment(Qt.AlignRight)  # Align to right
         compare_button = create_button(
-            text="View facts sheet / Compare Selected Products", style="primary", 
+            text="View facts sheet / Compare Selected Products", style="yellow", 
             callback=self.compare_selected_products, parent=self
         )
         button_layout.addWidget(compare_button)

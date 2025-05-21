@@ -58,7 +58,7 @@ class ScenarioTabPage(QWidget):
         
         # Add application button
         buttons_layout = QHBoxLayout()
-        add_button = create_button(text="Add Application", style="secondary", callback=self.applications_container.add_application_row, parent=self)
+        add_button = create_button(text="Add Application", style="white", callback=self.applications_container.add_application_row, parent=self)
         buttons_layout.addWidget(add_button)
         buttons_layout.addStretch(1)
         applications_layout.addLayout(buttons_layout)

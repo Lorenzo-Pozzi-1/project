@@ -28,7 +28,7 @@ class HeaderWithHomeButton(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         
         # Home button
-        self.home_button = create_button(text="Home", style='secondary', callback=self.back_clicked.emit)
+        self.home_button = create_button(text="Home", style='white', callback=self.back_clicked.emit)
         self.home_button.setFixedWidth(75)
         layout.addWidget(self.home_button)
         
@@ -58,14 +58,14 @@ class ContentFrame(QFrame):
         self.layout.setSpacing(SPACING_MEDIUM)
 
 
-def create_button(text=None, description=None, style='primary', callback=None, parent=None) -> QPushButton:
+def create_button(text=None, description=None, style='yellow', callback=None, parent=None) -> QPushButton:
     """
     Create a button with consistent styling.
     
     Args:
         text (str): Button text
         description (str): Optional description for feature buttons
-        style (str): Button style ('primary', 'secondary', 'special', 'feature', 'remove')
+        style (str): Button style ('yellow', 'white', 'special', 'feature', 'remove')
         callback (callable): Function to call when button is clicked
         parent (QWidget): Parent widget
         
@@ -76,7 +76,7 @@ def create_button(text=None, description=None, style='primary', callback=None, p
     button.setCursor(Qt.PointingHandCursor)
     
     # Apply style and content based on button type
-    if style in ('primary', 'secondary', 'special'):
+    if style in ('yellow', 'white', 'special'):
         # Standard buttons share the same structure
         button.setStyleSheet(globals().get(f"{style.upper()}_BUTTON_STYLE"))
         button.setText(text)

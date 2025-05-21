@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         self.config = config or {}        
         self.setup_window()
         self.init_ui()
-        self.apply_config_settings()
+        self.apply_config_preferences()
         
     def setup_window(self):
         """Set up the window properties."""
@@ -91,7 +91,7 @@ class MainWindow(QMainWindow):
         # Connect the home page signals to handler methods
         self.home_page.country_changed.connect(self.on_country_changed)
         self.home_page.region_changed.connect(self.on_region_changed)
-        self.home_page.settings_changed.connect(self.apply_config_settings)
+        self.home_page.preferences_changed.connect(self.apply_config_preferences)
         
         # Start with the home page
         self.stacked_widget.setCurrentIndex(0)
@@ -141,21 +141,21 @@ class MainWindow(QMainWindow):
         if 0 <= page_index < self.stacked_widget.count():
             self.stacked_widget.setCurrentIndex(page_index)
 
-    def apply_config_settings(self):
-        """Apply user settings from config."""
-        # Get user settings from config
+    def apply_config_preferences(self):
+        """Apply user preferences from config."""
+        # Get user preferences from config
         config = load_config()
-        user_settings = config.get("user_settings", {})
+        user_preferences = config.get("user_preferences", {})
         
-        # Apply country and region settings
-        default_country = user_settings.get("default_country", "Canada")
-        default_region = user_settings.get("default_region", "None of these")
+        # Apply country and region preferences
+        default_country = user_preferences.get("default_country", "Canada")
+        default_region = user_preferences.get("default_region", "None of these")
         
         # Set in home page UI
         self.home_page.set_country_region(default_country, default_region)
         
-        # Load other settings into the home page
-        self.home_page.load_settings()
+        # Load other preferences into the home page
+        self.home_page.load_preferences()
         
         # Apply filters
         self.apply_filters(default_country, default_region)

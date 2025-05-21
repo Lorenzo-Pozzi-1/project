@@ -47,11 +47,11 @@ class ScenariosManagerPage(QWidget):
         
         # Create buttons with fixed width
         buttons = {
-            "New Scenario": ("primary", self.add_new_scenario),
-            "Clone Current": ("secondary", self.clone_current_scenario),
-            "Rename": ("secondary", self.rename_current_scenario),
-            "Delete": ("secondary", self.delete_current_scenario),
-            "Compare Scenarios": ("primary", self.compare_scenarios),
+            "New Scenario": ("yellow", self.add_new_scenario),
+            "Clone Current": ("white", self.clone_current_scenario),
+            "Rename": ("white", self.rename_current_scenario),
+            "Delete": ("white", self.delete_current_scenario),
+            "Compare Scenarios": ("yellow", self.compare_scenarios),
             "Export": ("special", self.export)
         }
         

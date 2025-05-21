@@ -5,7 +5,7 @@ This package provides common UI components, styles, and utility functions
 shared across the application. All components are exported at the package level,
 allowing for clean imports like:
 
-    from common import PRIMARY_BUTTON_STYLE, ContentFrame, get_subtitle_font, ScoreBar
+    from common import YELLOW_BUTTON_STYLE, ContentFrame, get_subtitle_font, ScoreBar
 
 Usage examples:
     # Import specific items
@@ -51,7 +51,7 @@ from common.styles import (
     
     # Style Sheets
     FRAME_STYLE, YELLOW_BAR_STYLE, INFO_TEXT_STYLE,
-    FEATURE_BUTTON_STYLE, PRIMARY_BUTTON_STYLE, SECONDARY_BUTTON_STYLE,
+    FEATURE_BUTTON_STYLE, YELLOW_BUTTON_STYLE, WHITE_BUTTON_STYLE,
     SPECIAL_BUTTON_STYLE, REMOVE_BUTTON_STYLE, GENERIC_TABLE_STYLE,
     PRODUCT_CARD_STYLE, SUGGESTIONS_CONTAINER_STYLE, SUGGESTIONS_LIST_STYLE,
     DRAGGING_ROW_STYLE, BLUE_LINE_DROP_STYLE
@@ -99,7 +99,7 @@ __all__ = [
     
     # Style Sheets
     'FRAME_STYLE', 'YELLOW_BAR_STYLE', 'INFO_TEXT_STYLE',
-    'FEATURE_BUTTON_STYLE', 'PRIMARY_BUTTON_STYLE', 'SECONDARY_BUTTON_STYLE',
+    'FEATURE_BUTTON_STYLE', 'YELLOW_BUTTON_STYLE', 'WHITE_BUTTON_STYLE',
     'SPECIAL_BUTTON_STYLE', 'REMOVE_BUTTON_STYLE', 'GENERIC_TABLE_STYLE',
     'PRODUCT_CARD_STYLE', 'SUGGESTIONS_CONTAINER_STYLE', 'SUGGESTIONS_LIST_STYLE',
     'DRAGGING_ROW_STYLE', 'BLUE_LINE_DROP_STYLE',

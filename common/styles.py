@@ -193,7 +193,7 @@ FEATURE_BUTTON_STYLE = f"""
     }}
 """
 
-PRIMARY_BUTTON_STYLE = f"""
+YELLOW_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {YELLOW};
         color: {BLACK};
@@ -210,7 +210,7 @@ PRIMARY_BUTTON_STYLE = f"""
     }}
 """
 
-SECONDARY_BUTTON_STYLE = f"""
+WHITE_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {WHITE};
         color: {BLACK};

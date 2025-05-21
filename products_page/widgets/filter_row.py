@@ -147,7 +147,7 @@ class FilterRowContainer(QWidget):
         main_layout.addWidget(filter_scroll)
         
         # Add filter button
-        add_filter_button = create_button(text="Add Another Filter", style='secondary', callback=self.add_filter_row)
+        add_filter_button = create_button(text="Add Another Filter", style='white', callback=self.add_filter_row)
         main_layout.addWidget(add_filter_button, alignment=Qt.AlignLeft)
     
     def set_filter_data(self, visible_columns, field_to_column_map):

@@ -9,7 +9,7 @@ from pathlib import Path
 
 # Default configuration
 DEFAULT_CONFIG = {
-    "user_settings": {
+    "user_preferences": {
         "default_country": "Canada",
         "default_region": "None of these",
         "default_row_spacing": 34.0,

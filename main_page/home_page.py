@@ -21,7 +21,7 @@ class HomePage(QWidget):
     
     country_changed = Signal(str)
     region_changed = Signal(str)
-    settings_changed = Signal()
+    preferences_changed = Signal()
     
     def __init__(self, parent=None):
         """Initialize the home page."""
@@ -82,7 +82,7 @@ class HomePage(QWidget):
         # Connect signals from preferences row
         self.preferences_row.country_changed.connect(self.on_country_changed)
         self.preferences_row.region_changed.connect(self.on_region_changed)
-        self.preferences_row.settings_changed.connect(self.on_settings_changed)
+        self.preferences_row.preferences_changed.connect(self.on_preferences_changed)
         
         # Add preferences row to preferences frame
         preferences_frame.layout.addWidget(self.preferences_row)
@@ -129,30 +129,33 @@ class HomePage(QWidget):
         info_layout = QVBoxLayout()
                 
         # EIQ info title
-        info_title = QLabel("About Environmental Impact Quotients (EIQ)")
+        info_title = QLabel("Environmental Impact Quotients (EIQ) in a nutshell")
         info_title.setFont(get_subtitle_font())
+        info_title.setAlignment(Qt.AlignCenter)
         info_layout.addWidget(info_title)
         
         # EIQ description with concise information
         info_text = QLabel(
-            "<b>In a nutshell:</b> EIQ scores are a tool to asses and compare pesticides' use impacts. <b>Higher scores →  higher impacts</b>.<br><br>"
-            "Each Active ingredient has an EIQ value, but we compare products based on the <b>Field Use EIQ</b>, where:<br>"
+            "EIQ scores are a tool to asses and compare pesticides' use impacts.<br>"
+            "<b>Higher scores →  higher impacts</b>.<br><br>"
+            "Each Active Ingredient has an EIQ value, but we compare products based on the <b>Field Use EIQ</b>, where:<br>"
             "<b>Field Use EIQ = Active Ingredient EIQ × Active Ingredient concentration × Product Application Rate</b><br>"
             "EIQs evaluate three main components:<br>"
             "1. Farm worker risk (applicator, harvester exposure)<br>"
-            "2. Consumer risk    (food residue, groundwater pollution)<br>"
-            "3. Ecological risk  (fishes, birds, bees, and beneficial insects)"
+            "2. Consumer risk (food residue, groundwater pollution)<br>"
+            "3. Ecological risk (fishes, birds, bees, and beneficial insects)"
         )
 
         info_text.setWordWrap(True)
         info_text.setFont(get_large_font())
+        info_text.setAlignment(Qt.AlignCenter)
         info_layout.addWidget(info_text)
         
-        # Warning title
-        warning_title = QLabel("Always double check product labels and SDS before using a product. This app is an aide, not a substitute for professional advice.") 
-        warning_title.setFont(get_subtitle_font())
-        warning_title.setAlignment(Qt.AlignCenter)
-        info_layout.addWidget(warning_title)
+        # Warning text
+        warning_text = QLabel("Always double check product labels and SDS before using a product. This app is an aide, not a substitute for professional advice.") 
+        warning_text.setFont(get_large_font())
+        warning_text.setAlignment(Qt.AlignCenter)
+        info_layout.addWidget(warning_text)
 
         info_frame.layout.addLayout(info_layout)
         main_layout.addWidget(info_frame)
@@ -165,14 +168,14 @@ class HomePage(QWidget):
         """Forward region change signal."""
         self.region_changed.emit(region)
     
-    def on_settings_changed(self):
-        """Forward settings changed signal."""
-        self.settings_changed.emit()
+    def on_preferences_changed(self):
+        """Forward preferences changed signal."""
+        self.preferences_changed.emit()
 
     def set_country_region(self, country, region):
         """Set the country and region in the preferences row."""
         self.preferences_row.set_country_region(country, region)
             
-    def load_settings(self):
-        """Load settings into the preferences row."""
-        self.preferences_row.load_settings()
+    def load_preferences(self):
+        """Load preferences into the preferences row."""
+        self.preferences_row.load_preferences()

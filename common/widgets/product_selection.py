@@ -198,7 +198,7 @@ class ProductSelectionWidget(QWidget):
             labels["product"] = QLabel("Product:")
             labels["product"].setFont(type_font)
         
-        # Choose layout based on orientation and label settings
+        # Choose layout based on orientation and label preferences
         if self._orientation == 'horizontal':
             self._setup_horizontal_layout(content_frame.layout, labels)
         else:

@@ -251,7 +251,7 @@ class ProductComparisonCalculatorTab(QWidget):
         
         # Add another product button
         add_button_layout = QHBoxLayout()
-        add_product_button = create_button(text="Add Product", style="primary", callback=self.add_product_card, parent=self)
+        add_product_button = create_button(text="Add Product", style="yellow", callback=self.add_product_card, parent=self)
         add_button_layout.addWidget(add_product_button)
         add_button_layout.addStretch(1)  # Push button to left
         selection_layout.addLayout(add_button_layout)
