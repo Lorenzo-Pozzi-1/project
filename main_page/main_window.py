@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         self.config = config or {}        
         self.setup_window()
         self.init_ui()
-        self.apply_filters("Canada", "None of these")
+        self.apply_config_settings()
         
     def setup_window(self):
         """Set up the window properties."""

@@ -1,4 +1,6 @@
-# config_dialog.py with updated seeding rate setting
+"""Settings dialog for configuring default application values."""
+
+
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QLabel, QHBoxLayout,
                              QComboBox, QDoubleSpinBox, QCheckBox, QFormLayout, QDialogButtonBox, QGroupBox)
 from PySide6.QtCore import Qt
@@ -82,7 +84,7 @@ class ConfigDialog(QDialog):
         main_layout.addWidget(field_group)
         
         # "Don't ask again" checkbox
-        self.dont_ask_check = QCheckBox("Don't show this dialog on startup")
+        self.dont_ask_check = QCheckBox("Don't show this again on startup")
         self.dont_ask_check.setFont(get_medium_font())
         main_layout.addWidget(self.dont_ask_check)
         
