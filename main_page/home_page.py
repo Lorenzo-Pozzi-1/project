@@ -276,7 +276,6 @@ class HomePage(QWidget):
         
         self.initializing = False
 
-    # Add this method to HomePage class
     def show_settings_dialog(self):
         """Show the settings dialog."""
         dialog = ConfigDialog(self)

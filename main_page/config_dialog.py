@@ -1,4 +1,4 @@
-# config_dialog.py (new file)
+# config_dialog.py with updated seeding rate setting
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QLabel, QHBoxLayout,
                              QComboBox, QDoubleSpinBox, QCheckBox, QFormLayout, QDialogButtonBox, QGroupBox)
 from PySide6.QtCore import Qt
@@ -64,13 +64,20 @@ class ConfigDialog(QDialog):
 
         field_layout.addRow("Default Row Spacing:", row_spacing_layout)
         
-        # Seeding Rate
+        # Seeding Rate with unit selection (updated)
+        seeding_rate_layout = QHBoxLayout()
+        
         self.seeding_rate_spin = QDoubleSpinBox()
-        self.seeding_rate_spin.setRange(1000, 30000)
+        self.seeding_rate_spin.setRange(0, 10000)
         self.seeding_rate_spin.setValue(2000)
-        self.seeding_rate_spin.setSuffix(" seeds/acre")
         self.seeding_rate_spin.setDecimals(0)
-        field_layout.addRow("Default Seeding Rate:", self.seeding_rate_spin)
+        seeding_rate_layout.addWidget(self.seeding_rate_spin)
+        
+        self.seeding_rate_unit = QComboBox()
+        self.seeding_rate_unit.addItems(["kg/ha", "kg/acre", "pound/ha", "pounds/acre"])
+        seeding_rate_layout.addWidget(self.seeding_rate_unit)
+        
+        field_layout.addRow("Default Seeding Rate:", seeding_rate_layout)
         
         main_layout.addWidget(field_group)
         
@@ -128,8 +135,15 @@ class ConfigDialog(QDialog):
         self.row_spacing_unit.setCurrentIndex(index)
         self.row_spacing_spin.setValue(row_spacing)
         
+        # Load seeding rate with unit (updated)
+        seeding_rate = config.get("default_seeding_rate", 2000)
+        seeding_rate_unit = config.get("default_seeding_rate_unit", "kg/ha")
+        index = self.seeding_rate_unit.findText(seeding_rate_unit)
+        if index >= 0:
+            self.seeding_rate_unit.setCurrentIndex(index)
+        self.seeding_rate_spin.setValue(seeding_rate)
+        
         # Load other settings
-        self.seeding_rate_spin.setValue(config.get("default_seeding_rate", 2000))
         self.dont_ask_check.setChecked(config.get("dont_show_config_dialog", False))
     
     def save_settings(self):
@@ -142,6 +156,7 @@ class ConfigDialog(QDialog):
         config["default_row_spacing"] = self.row_spacing_spin.value()
         config["default_row_spacing_unit"] = self.row_spacing_unit.currentText()
         config["default_seeding_rate"] = self.seeding_rate_spin.value()
+        config["default_seeding_rate_unit"] = self.seeding_rate_unit.currentText()
         config["dont_show_config_dialog"] = self.dont_ask_check.isChecked()
         
         # Save to global config

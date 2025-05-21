@@ -1,9 +1,11 @@
 {
     "user_settings": {
         "default_country": "Canada",
-        "default_region": "Saskatchewan",
-        "default_row_spacing": 76.0,
-        "default_seeding_rate": 1999.0,
-        "dont_show_config_dialog": true
+        "default_region": "New Brunswick",
+        "default_row_spacing": 34.0,
+        "default_seeding_rate": 2000.0,
+        "dont_show_config_dialog": false,
+        "default_row_spacing_unit": "inches",
+        "default_seeding_rate_unit": "kg/ha"
     }
 }
