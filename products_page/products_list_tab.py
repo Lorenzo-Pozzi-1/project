@@ -105,66 +105,15 @@ class ProductsListTab(QWidget):
         first_product = products[0].to_dict()
         column_keys = list(first_product.keys())
         
-        # Set products in the table
+        # Set products in the table with default configuration
         self.products_table.set_products(products, column_keys)
         
-        # Configure table columns
-        self.setup_field_mapping()
+        # Retrieve visible columns and mapping for filters
+        self.visible_columns, self.field_to_column_map = self.products_table.get_visible_columns()
         
         # Add initial filter row if not already added
         if not self.filter_rows and self.visible_columns:
             self.add_filter_row()
-    
-    def setup_field_mapping(self):
-        """Setup field to column mapping for filters."""
-        self.visible_columns = []
-        self.field_to_column_map = {}
-        
-        # Skip if table not setup yet
-        if self.products_table.columnCount() == 0:
-            return
-        
-        # Find AI column first
-        ai1_col = -1
-        for i, key in enumerate(self.products_table.column_keys):
-            if key.lower() == "ai1":
-                ai1_col = i
-                break
-        
-        # Calculate groups column position
-        groups_col = ai1_col + 2 if ai1_col >= 0 else -1  # +1 for checkbox, +1 for position after AI1
-        
-        # Hide columns and manage visibility
-        hide_columns = ["country", "region", "min days between applications", "[ai1]", "[ai1]uom", "ai1 eiq", 
-                      "[ai2]", "[ai2]uom", "ai2 eiq", "[ai3]", "[ai3]uom", "ai3 eiq",
-                      "[ai4]", "[ai4]uom", "ai4 eiq", "ai2", "ai3", "ai4"]
-        
-        # Setup column properties
-        for col, key in enumerate(self.products_table.column_keys, start=1):
-            # Calculate the actual table column index
-            table_col = col
-            if groups_col > 0 and col >= groups_col:
-                table_col = col + 1  # Adjust for inserted Groups column
-            
-            # Rename AI column
-            if key.lower() == "ai1":
-                # Add to visible columns for filtering
-                self.visible_columns.append("AIs")
-                self.field_to_column_map["AIs"] = table_col
-            
-            # Hide specified columns
-            elif any(key.lower() == hide_key.lower() for hide_key in hide_columns):
-                pass  # Skip hidden columns
-            
-            # Add visible columns to filter options
-            else:
-                self.visible_columns.append(key)
-                self.field_to_column_map[key] = table_col
-        
-        # Add Groups column to visible columns
-        if groups_col > 0:
-            self.visible_columns.append("Groups")
-            self.field_to_column_map["Groups"] = groups_col
     
     def add_filter_row(self):
         """Add a new filter row."""
@@ -215,6 +164,9 @@ class ProductsListTab(QWidget):
             self.filter_rows_layout.removeWidget(row)
             row.deleteLater()
         
+        # Reload visible columns and mapping
+        self.visible_columns, self.field_to_column_map = self.products_table.get_visible_columns()
+        
         # Add a single empty filter row
         if self.visible_columns:
             self.add_filter_row()
@@ -238,5 +190,3 @@ class ProductsListTab(QWidget):
 
         # Navigate to the comparison tab
         self.parent.tabs.setCurrentIndex(1)
-        
-        
