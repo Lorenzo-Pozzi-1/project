@@ -8,10 +8,10 @@ It initializes the application, sets up the main window, and starts the event lo
 
 import os, sys
 from PySide6.QtCore import QDir, QObject, QEvent
-from PySide6.QtWidgets import QApplication, QComboBox, QDialog
+from PySide6.QtWidgets import QApplication, QComboBox
 from common import load_config
 from data import ProductRepository, AIRepository
-from main_page import MainWindow, ConfigDialog
+from main_page import MainWindow
 
 # Clear the terminal screen
 print("\033c", end="")
@@ -81,18 +81,6 @@ def main():
     # Create and show the main window
     window = MainWindow(config)
     window.show()
-    
-    # Show configuration dialog if needed
-    user_settings = config.get("user_settings", {})
-    dont_show = user_settings.get("dont_show_config_dialog", False)
-    
-    if not dont_show:
-        dialog = ConfigDialog(window)
-        if dialog.exec() == QDialog.Accepted:
-            # If dialog was accepted, reload config
-            config = load_config()
-            # Apply settings to the main window
-            window.apply_config_settings()
     
     # Start the application event loop
     sys.exit(app.exec())

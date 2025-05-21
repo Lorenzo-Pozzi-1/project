@@ -16,7 +16,6 @@ DEFAULT_CONFIG = {
         "default_row_spacing_unit": "inches",
         "default_seeding_rate": 2000,
         "default_seeding_rate_unit": "kg/ha",
-        "dont_show_config_dialog": False
     }
 }
 

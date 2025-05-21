@@ -88,9 +88,10 @@ class MainWindow(QMainWindow):
         # Connect signal to page refresh methods
         self.filters_changed.connect(self.refresh_pages)
         
-        # Connect the country_changed and region_changed signals to handler methods
+        # Connect the home page signals to handler methods
         self.home_page.country_changed.connect(self.on_country_changed)
         self.home_page.region_changed.connect(self.on_region_changed)
+        self.home_page.settings_changed.connect(self.apply_config_settings)
         
         # Start with the home page
         self.stacked_widget.setCurrentIndex(0)
@@ -152,6 +153,9 @@ class MainWindow(QMainWindow):
         
         # Set in home page UI
         self.home_page.set_country_region(default_country, default_region)
+        
+        # Load other settings into the home page
+        self.home_page.load_settings()
         
         # Apply filters
         self.apply_filters(default_country, default_region)
