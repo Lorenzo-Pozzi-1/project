@@ -9,11 +9,14 @@ from pathlib import Path
 
 # Default configuration
 DEFAULT_CONFIG = {
-    "data_directory": "data",
-    "theme": "light",
-    "auto_save": True,
-    "backup_count": 5,
-    "last_view": "products"
+    "user_settings": {
+        "default_country": "Canada",
+        "default_region": "None of these",
+        "default_row_spacing": 34.0,
+        "default_row_spacing_unit": "inches",
+        "default_seeding_rate": 2000,
+        "dont_show_config_dialog": False
+    }
 }
 
 # Configuration file path

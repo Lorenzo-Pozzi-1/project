@@ -8,12 +8,12 @@ for all pages in the application.
 import os, shutil
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget, QLabel
 from PySide6.QtCore import Signal, Qt
+from common import load_config, YELLOW_BAR_STYLE
 from data import ProductRepository
 from main_page.home_page import HomePage
 from products_page import ProductsPage
 from season_planner_page import ScenariosManagerPage
 from eiq_calculator_page import EiqCalculatorPage
-from common import YELLOW_BAR_STYLE
 
 class MainWindow(QMainWindow):
     """
@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
     
     def on_country_changed(self, country):
         """Handle country change event."""
-        self.apply_filters(country, "None of the above")
+        self.apply_filters(country, "None of these")
 
     def on_region_changed(self, region):
         """Handle region change event."""
@@ -139,7 +139,23 @@ class MainWindow(QMainWindow):
             
         if 0 <= page_index < self.stacked_widget.count():
             self.stacked_widget.setCurrentIndex(page_index)
+
+    def apply_config_settings(self):
+        """Apply user settings from config."""
+        # Get user settings from config
+        config = load_config()
+        user_settings = config.get("user_settings", {})
         
+        # Apply country and region settings
+        default_country = user_settings.get("default_country", "Canada")
+        default_region = user_settings.get("default_region", "None of these")
+        
+        # Set in home page UI
+        self.home_page.set_country_region(default_country, default_region)
+        
+        # Apply filters
+        self.apply_filters(default_country, default_region)
+
     def closeEvent(self, event):
         """Handle the close event, clean up __pycache__ directories."""
         try:

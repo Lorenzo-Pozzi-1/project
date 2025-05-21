@@ -5,11 +5,13 @@ This module defines the HomePage class which serves as the main navigation
 screen for the application.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QDialog
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
 from common import ContentFrame, create_button, get_medium_font, get_subtitle_font, get_title_font, INFO_TEXT_STYLE, MARGIN_LARGE, SPACING_LARGE
+from common.config_utils import load_config
 from common.styles import get_large_font
+from .config_dialog import ConfigDialog
 
 class HomePage(QWidget):
     """
@@ -99,7 +101,7 @@ class HomePage(QWidget):
         
         self.region_combo = QComboBox()
         self.region_combo.setFont(get_large_font())
-        self.region_combo.addItem("None of the above")
+        self.region_combo.addItem("None of these")
         self.region_combo.setMinimumWidth(200)
         self.region_combo.setCurrentIndex(0)
         self.region_combo.currentIndexChanged.connect(self.on_region_changed)
@@ -108,6 +110,13 @@ class HomePage(QWidget):
         
         filter_layout.addWidget(region_label)
         filter_layout.addWidget(self.region_combo)
+
+        # Add spacing before settings button
+        filter_layout.addSpacing(20)
+        
+        # Settings button
+        settings_button = create_button(text="Settings", style="secondary", callback=self.show_settings_dialog)
+        filter_layout.addWidget(settings_button)
         
         # Add the filter layout to header main layout
         header_main_layout.addLayout(filter_layout)
@@ -246,3 +255,41 @@ class HomePage(QWidget):
         
         # Emit signal with selected region - MainWindow handles filtering
         self.region_changed.emit(region)
+
+    def set_country_region(self, country, region):
+        """Set the country and region dropdowns."""
+        # Block signals to prevent triggering filter changes during setup
+        self.initializing = True
+        
+        # Set country
+        index = self.country_combo.findText(country)
+        if index >= 0:
+            self.country_combo.setCurrentIndex(index)
+        
+        # Update regions for selected country
+        self.update_regions_dropdown()
+        
+        # Set region
+        index = self.region_combo.findText(region)
+        if index >= 0:
+            self.region_combo.setCurrentIndex(index)
+        
+        self.initializing = False
+
+    # Add this method to HomePage class
+    def show_settings_dialog(self):
+        """Show the settings dialog."""
+        dialog = ConfigDialog(self)
+        if dialog.exec_() == QDialog.Accepted:
+            # Apply new settings
+            config = load_config()
+            user_settings = config.get("user_settings", {})
+            
+            # Update UI with new default values
+            country = user_settings.get("default_country", "Canada")
+            region = user_settings.get("default_region", "None of these")
+            self.set_country_region(country, region)
+            
+            # Emit signals to update filters
+            self.country_changed.emit(country)
+            self.region_changed.emit(region)

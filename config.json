@@ -1,7 +1,9 @@
 {
-    "data_directory": "data",
-    "theme": "light",
-    "auto_save": true,
-    "backup_count": 5,
-    "last_view": "products"
+    "user_settings": {
+        "default_country": "Canada",
+        "default_region": "Saskatchewan",
+        "default_row_spacing": 76.0,
+        "default_seeding_rate": 1999.0,
+        "dont_show_config_dialog": true
+    }
 }
