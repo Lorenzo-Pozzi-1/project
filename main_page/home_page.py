@@ -131,20 +131,17 @@ class HomePage(QWidget):
                 border-radius: 10px;
             }
         """)
-
-        # Create the user message
         user_message = QLabel(
-            "🚧🔧 Lorenzo Pozzi's Internship project development Preview 🔧🚧\n"
-            "For demonstration purposes only, not to be intended as a finished product.\n"
-            "This application is currently in development, bugs and errors are to be expected at this stage.\n"
-            "Please report any issues or suggestions to:\nlorenzo.pozzi@mccain.ca"
+            "🚧 <b><span style='color: #2c5282;'>Lorenzo Pozzi's internship project - Development Preview</span></b> 🚧<br>"
+            "🐜🐞🦗🦟 Demo  version: bugs included free of charge! 🐝🦂🕷️🐛<br>"
+            "Got suggestions? Let me know! <b>lorenzo.pozzi@mccain.ca</b>"
         )
         user_message.setWordWrap(True)
         user_message.setFont(get_large_font())
         user_message.setAlignment(Qt.AlignCenter)
         user_message.setStyleSheet("padding: 10px;")
-        user_message_frame.layout.addWidget(user_message)  # Add user message to the frame
-        main_layout.addWidget(user_message_frame)  # Add the user message frame to the main layout
+        user_message_frame.layout.addWidget(user_message)
+        main_layout.addWidget(user_message_frame)
         
         # Info frame
         info_frame = ContentFrame()
