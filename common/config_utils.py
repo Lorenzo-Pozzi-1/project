@@ -5,7 +5,9 @@ This module handles loading, saving, and accessing application configuration.
 """
 
 import json
+import os
 from pathlib import Path
+import sys
 
 # Default configuration
 DEFAULT_CONFIG = {
@@ -78,3 +80,11 @@ def get_config(key, default=None):
     """
     config = load_config()
     return config.get(key, default)
+
+def resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)

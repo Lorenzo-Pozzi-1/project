@@ -8,7 +8,7 @@ It initializes the application, sets up the main window, and starts the event lo
 
 import os, sys
 from PySide6.QtCore import QDir, QObject, QEvent
-from PySide6.QtWidgets import QApplication, QComboBox
+from PySide6.QtWidgets import QApplication, QComboBox, QDoubleSpinBox
 from common import load_config
 from data import ProductRepository, AIRepository
 from main_page import MainWindow
@@ -63,11 +63,11 @@ def main():
         original_combo_init(self, *args, **kwargs)
         self.installEventFilter(wheel_filter)
     QComboBox.__init__ = filtered_combo_init
-    # original_spinbox_init = QDoubleSpinBox.__init__
-    # def filtered_spinbox_init(self, *args, **kwargs):
-    #     original_spinbox_init(self, *args, **kwargs)
-    #     self.installEventFilter(wheel_filter)
-    # QDoubleSpinBox.__init__ = filtered_spinbox_init
+    original_spinbox_init = QDoubleSpinBox.__init__
+    def filtered_spinbox_init(self, *args, **kwargs):
+        original_spinbox_init(self, *args, **kwargs)
+        self.installEventFilter(wheel_filter)
+    QDoubleSpinBox.__init__ = filtered_spinbox_init
 
     # Load application configuration
     config = load_config()

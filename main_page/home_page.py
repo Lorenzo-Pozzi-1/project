@@ -45,7 +45,7 @@ class HomePage(QWidget):
         
         # Logo on the left
         left_logo_label = QLabel()
-        pixmap = QPixmap("./main_page/McCain-logo.png")
+        pixmap = QPixmap(resource_path("main_page/McCain-logo.png"))
         left_logo_label.setPixmap(pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         top_layout.addWidget(left_logo_label)
         
@@ -63,7 +63,7 @@ class HomePage(QWidget):
         
         # Logo on the right
         right_logo_label = QLabel()
-        right_logo_pixmap = QPixmap("./main_page/NAAg-logo.png")
+        right_logo_pixmap = QPixmap(resource_path("main_page/NAAg-logo.png"))
         right_logo_label.setPixmap(right_logo_pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         top_layout.addWidget(right_logo_label)
         

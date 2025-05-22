@@ -6,9 +6,11 @@ product data, with CSV loading and caching for performance optimization.
 """
 
 import csv
-import os
 from typing import List, Optional
 from data.product_model import Product
+from common import resource_path
+
+products_csv = resource_path("data/active_ingredients.csv")
 
 class ProductRepository:
     """
@@ -29,7 +31,7 @@ class ProductRepository:
     
     def __init__(self):
         """Initialize the repository."""
-        self.csv_file = os.path.join("data", "products.csv")
+        self.csv_file = products_csv
         
         # Cache storage
         self._all_products = None  # List of all Product objects

@@ -5,10 +5,12 @@ This module provides a centralized repository for accessing active ingredients
 classification data.
 """
 
-import csv
-import os
+import csv, os
 from typing import Dict, Optional, Tuple
 from data.ai_model import ActiveIngredient
+from common import resource_path
+
+ai_csv = resource_path("data/active_ingredients.csv")
 
 class AIRepository:
     """Repository for active ingredient information including mode of action groups."""
@@ -24,7 +26,7 @@ class AIRepository:
     
     def __init__(self):
         """Initialize the repository."""
-        self.csv_file = os.path.join("data", "active_ingredients.csv")
+        self.csv_file = ai_csv
         
         # Cache storage
         self._all_ingredients = {}  # Dictionary of all ActiveIngredient objects by name

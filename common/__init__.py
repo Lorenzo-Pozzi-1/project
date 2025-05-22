@@ -19,7 +19,8 @@ Usage examples:
 from common.config_utils import (
     get_config,
     load_config,
-    save_config
+    save_config,
+    resource_path
 )
 
 # Re-export all style components and functions
@@ -70,7 +71,7 @@ from common.widgets import (
 # Define what gets imported with "from common import *"
 __all__ = [
     # Config utilities
-    'get_config', 'load_config', 'save_config',
+    'get_config', 'load_config', 'save_config', 'resource_path',
     
     # Colors
     'YELLOW', 'YELLOW_HOVER', 'BLACK', 'WHITE', 'GREEN', 'BLUE',
