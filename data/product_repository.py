@@ -10,7 +10,7 @@ from typing import List, Optional
 from data.product_model import Product
 from common import resource_path
 
-products_csv = resource_path("data/active_ingredients.csv")
+products_csv = resource_path("data/products.csv")
 
 class ProductRepository:
     """
