@@ -91,7 +91,7 @@ class PreferencesRow(QWidget):
         # Clear default items and add only relevant length units
         self.row_spacing_unit.combobox.clear()
         self.row_spacing_unit.combobox.addItem("-- Select unit --")
-        self.row_spacing_unit.combobox.addItems(["inches", "cm", "m", "ft"])
+        self.row_spacing_unit.combobox.addItems(["inch", "cm", "m", "ft"])
         preferences_layout.addWidget(self.row_spacing_unit)
         
         preferences_layout.addSpacing(40)  # 40px spacing between control groups
@@ -218,7 +218,7 @@ class PreferencesRow(QWidget):
         
         # Load field parameters
         row_spacing = config.get("default_row_spacing", 34.0)
-        row_spacing_unit = config.get("default_row_spacing_unit", "inches")
+        row_spacing_unit = config.get("default_row_spacing_unit", "inch")
         
         # Updated to use setCurrentText instead of index-based approach
         self.row_spacing_unit.setCurrentText(row_spacing_unit)

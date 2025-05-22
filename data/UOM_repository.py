@@ -248,7 +248,7 @@ class UOMRepository:
         
         # Step 2: Get row spacing and convert to meters
         row_spacing = user_preferences.get('default_row_spacing', 34.0)
-        row_spacing_unit = user_preferences.get('default_row_spacing_unit', 'inches')
+        row_spacing_unit = user_preferences.get('default_row_spacing_unit', 'inch')
         row_spacing_m = self.convert_base_unit(row_spacing, row_spacing_unit, 'm')
         
         # Step 3: Calculate rows per meter and meters of rows per hectare

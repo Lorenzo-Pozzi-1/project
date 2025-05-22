@@ -6,7 +6,7 @@ This module provides a custom QComboBox with integrated custom UOM composition c
 
 from PySide6.QtWidgets import (
     QComboBox, QHBoxLayout, QWidget, QPushButton, QDialog, QVBoxLayout, 
-    QFormLayout, QDialogButtonBox, QLabel
+    QFormLayout, QDialogButtonBox, QLabel, QToolTip, QApplication
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
@@ -194,6 +194,7 @@ class SmartUOMComboBox(QWidget):
         self.custom_button.setFixedSize(24, 24)
         self.custom_button.setToolTip("Create custom unit of measure")
         self.custom_button.clicked.connect(self.open_custom_dialog)
+        QApplication.setStartDragTime(0)  # Reduce tooltip delay to minimum
         layout.addWidget(self.custom_button)
     
     def populate_common_uoms(self):
@@ -284,7 +285,7 @@ class SmartUOMComboBox(QWidget):
         
         if self.uom_type == "length":
             # Simple length units for row spacing
-            common_uoms = ["inches", "cm", "m", "ft"]
+            common_uoms = ["inch", "cm", "m", "ft"]
             
         elif self.uom_type == "seeding_rate":
             # Seeding rate units (weight/area)

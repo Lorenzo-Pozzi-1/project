@@ -15,7 +15,7 @@ DEFAULT_CONFIG = {
         "default_country": "Canada",
         "default_region": "None of these",
         "default_row_spacing": 34.0,
-        "default_row_spacing_unit": "inches",
+        "default_row_spacing_unit": "inch",
         "default_seeding_rate": 2000,
         "default_seeding_rate_unit": "kg/ha",
     }
