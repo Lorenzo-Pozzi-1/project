@@ -28,6 +28,9 @@ from common.widgets.application_params import ApplicationParamsWidget
 # Import and re-export the ScoreBar
 from common.widgets.scorebar import ScoreBar
 
+# Import and re-export the SmartUOMComboBox
+from common.widgets.SmartUOMComboBox import SmartUOMComboBox
+
 # Define what gets imported with "from common.widgets import *"
 __all__ = [
     'ContentFrame',
@@ -35,5 +38,6 @@ __all__ = [
     'ScoreBar',
     'create_button',
     'ProductSelectionWidget',
-    'ApplicationParamsWidget'
+    'ApplicationParamsWidget',
+    'SmartUOMComboBox'
 ]

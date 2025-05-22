@@ -27,6 +27,7 @@ from data.scenario_model import Scenario
 # Re-export repository classes
 from data.ai_repository import AIRepository
 from data.product_repository import ProductRepository
+from data.UOM_repository import UOMRepository
 
 # Define what gets imported with "from data import *"
 __all__ = [
@@ -39,4 +40,5 @@ __all__ = [
     # Repositories
     'AIRepository',
     'ProductRepository'
+    'UOMRepository'
 ]

@@ -65,7 +65,8 @@ from common.widgets import (
     ScoreBar,
     create_button,
     ProductSelectionWidget,
-    ApplicationParamsWidget
+    ApplicationParamsWidget,
+    SmartUOMComboBox
 )
 
 # Define what gets imported with "from common import *"
@@ -107,5 +108,5 @@ __all__ = [
     
     # Widgets and Widget Functions
     'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar', 'create_button', 'ProductSelectionWidget',
-    'ApplicationParamsWidget'
+    'ApplicationParamsWidget', 'SmartUOMComboBox'
 ]

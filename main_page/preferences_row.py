@@ -7,6 +7,7 @@ This module provides a preferences row widget for the application's home page.
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QComboBox, QDoubleSpinBox, QMessageBox
 from PySide6.QtCore import Qt, Signal
 from common import *
+from common.widgets.SmartUOMComboBox import SmartUOMComboBox
 
 class PreferencesRow(QWidget):
     """
@@ -85,9 +86,12 @@ class PreferencesRow(QWidget):
         
         preferences_layout.addSpacing(1)  # 1px spacing between value and UOM
 
-        self.row_spacing_unit = QComboBox()
-        self.row_spacing_unit.addItems(["inches", "cm"])
-        self.row_spacing_unit.setFont(get_medium_font())
+        # Replace QComboBox with SmartUOMComboBox for row spacing unit
+        self.row_spacing_unit = SmartUOMComboBox(uom_type="length")
+        # Clear default items and add only relevant length units
+        self.row_spacing_unit.combobox.clear()
+        self.row_spacing_unit.combobox.addItem("-- Select unit --")
+        self.row_spacing_unit.combobox.addItems(["inches", "cm", "m", "ft"])
         preferences_layout.addWidget(self.row_spacing_unit)
         
         preferences_layout.addSpacing(40)  # 40px spacing between control groups
@@ -108,9 +112,12 @@ class PreferencesRow(QWidget):
         
         preferences_layout.addSpacing(1)  # 1px spacing between value and UOM
         
-        self.seeding_rate_unit = QComboBox()
-        self.seeding_rate_unit.addItems(["kg/ha", "kg/acre", "pound/ha", "pounds/acre"])
-        self.seeding_rate_unit.setFont(get_medium_font())
+        # Replace QComboBox with SmartUOMComboBox for seeding rate unit
+        self.seeding_rate_unit = SmartUOMComboBox(uom_type="seeding_rate")
+        # Clear default items and add seeding rate specific units
+        self.seeding_rate_unit.combobox.clear()
+        self.seeding_rate_unit.combobox.addItem("-- Select unit --")
+        self.seeding_rate_unit.combobox.addItems(["kg/ha", "kg/acre", "lbs/ha", "lbs/acre"])
         preferences_layout.addWidget(self.seeding_rate_unit)
         
         preferences_layout.addSpacing(40)  # 40px spacing between control groups
@@ -119,11 +126,11 @@ class PreferencesRow(QWidget):
         self.save_preferences_button = create_button(text="Save preferences", style="yellow", callback=self.save_preferences)
         preferences_layout.addWidget(self.save_preferences_button)
 
-        # Monitor all controls for changes
+        # Monitor all controls for changes - Updated signal connections
         self.row_spacing_spin.valueChanged.connect(self.mark_as_changed)
-        self.row_spacing_unit.currentIndexChanged.connect(self.mark_as_changed)
+        self.row_spacing_unit.currentTextChanged.connect(self.mark_as_changed)  # Changed from currentIndexChanged
         self.seeding_rate_spin.valueChanged.connect(self.mark_as_changed)
-        self.seeding_rate_unit.currentIndexChanged.connect(self.mark_as_changed)
+        self.seeding_rate_unit.currentTextChanged.connect(self.mark_as_changed)  # Changed from currentIndexChanged
 
     def get_regions_for_country(self, country):
         """Get region options for a specific country."""
@@ -212,17 +219,17 @@ class PreferencesRow(QWidget):
         # Load field parameters
         row_spacing = config.get("default_row_spacing", 34.0)
         row_spacing_unit = config.get("default_row_spacing_unit", "inches")
-        index = self.row_spacing_unit.findText(row_spacing_unit)
-        if index >= 0:
-            self.row_spacing_unit.setCurrentIndex(index)
+        
+        # Updated to use setCurrentText instead of index-based approach
+        self.row_spacing_unit.setCurrentText(row_spacing_unit)
         self.row_spacing_spin.setValue(row_spacing)
         
         # Load seeding rate with unit
         seeding_rate = config.get("default_seeding_rate", 2000)
         seeding_rate_unit = config.get("default_seeding_rate_unit", "kg/ha")
-        index = self.seeding_rate_unit.findText(seeding_rate_unit)
-        if index >= 0:
-            self.seeding_rate_unit.setCurrentIndex(index)
+        
+        # Updated to use setCurrentText instead of index-based approach
+        self.seeding_rate_unit.setCurrentText(seeding_rate_unit)
         self.seeding_rate_spin.setValue(seeding_rate)
 
         # After loading, reset the unsaved changes flag
@@ -232,7 +239,7 @@ class PreferencesRow(QWidget):
         """Save preferences to config."""
         config = get_config("user_preferences", {})
         
-        # Update configuration values
+        # Update configuration values - currentText() method works the same
         config["default_country"] = self.country_combo.currentText()
         config["default_region"] = self.region_combo.currentText()
         config["default_row_spacing"] = self.row_spacing_spin.value()

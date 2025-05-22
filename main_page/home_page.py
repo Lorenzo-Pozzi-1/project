@@ -171,6 +171,14 @@ class HomePage(QWidget):
         info_text.setAlignment(Qt.AlignCenter)
         info_layout.addWidget(info_text)
         
+        # Cornell NYSIPM link
+        cornell_link_text = QLabel('Learn more on the <a href="https://cals.cornell.edu/integrated-pest-management/risk-assessment/eiq">Cornell IPM website</a>')
+        cornell_link_text.setFont(get_large_font())
+        cornell_link_text.setAlignment(Qt.AlignCenter)
+        cornell_link_text.setOpenExternalLinks(True)
+        cornell_link_text.setTextFormat(Qt.RichText)
+        info_layout.addWidget(cornell_link_text)
+
         # Warning text
         warning_text = QLabel("Always double check product labels and SDS before using a product. This app is an aide, not a substitute for professional advice.") 
         warning_text.setFont(get_large_font())
