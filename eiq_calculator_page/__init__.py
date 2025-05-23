@@ -32,6 +32,7 @@ from eiq_calculator_page.tab_multi_calculator import ProductComparisonCalculator
 # Import widgets for direct access - these are exposed for convenience
 from common.widgets.product_selection import ProductSelectionWidget, ProductSearchField
 from common.widgets.application_params import ApplicationParamsWidget
+from eiq_calculator_page.widget_product_card import ProductCard
 from eiq_calculator_page.widgets_results_display import EiqResultDisplay, ColorCodedEiqItem
 
 __all__ = [
@@ -46,6 +47,7 @@ __all__ = [
     'ApplicationParamsWidget',
     'EiqResultDisplay',
     'ColorCodedEiqItem',
+    'ProductCard',
     
     # Utilities and constants
     'get_eiq_color',

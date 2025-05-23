@@ -1,8 +1,8 @@
 """
 Single Product Calculator Tab for the LORENZO POZZI Pesticide App.
 
-This module provides the SingleProductCalculatorTab widget for calculating EIQ
-of a single pesticide product with improved UI and component architecture.
+This module provides the SingleProductCalculatorTab widget 
+for calculating EIQ of a single pesticide product.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem
@@ -254,13 +254,14 @@ class SingleProductCalculatorTab(QWidget):
         unit = self.current_product.rate_uom
         
         # Default to 1 application
-        applications = 1                                                     # CHECKED UNTIL HERE, CONTINUE
-        
+        applications = 1
+
         # Update application parameters widget
         self.app_params.set_params(rate, unit, applications)
     
     def clear_product_selection(self):
         """Clear the current product selection and related data."""
+        # Clear product selection
         self.current_product = None
         self.active_ingredients = []
         
@@ -275,7 +276,7 @@ class SingleProductCalculatorTab(QWidget):
     
     def calculate_eiq(self):
         """Calculate the Field EIQ for the current product."""
-        if not self.current_product or not self.active_ingredients:
+        if not self.current_product or not self.active_ingredients:  # if no product selected
             self.eiq_results.update_result(0.0)
             return
         
