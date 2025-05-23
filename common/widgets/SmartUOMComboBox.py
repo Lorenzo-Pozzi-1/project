@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
-from data.UOM_repository import UOMRepository
+from data.repository_UOM import UOMRepository
 from common.styles import get_medium_font
 
 class CustomUOMDialog(QDialog):

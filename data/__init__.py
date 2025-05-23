@@ -19,15 +19,15 @@ Usage examples:
 """
 
 # Re-export all model classes
-from data.ai_model import ActiveIngredient
-from data.product_model import Product
-from data.application_model import Application
-from data.scenario_model import Scenario
+from data.model_AI import ActiveIngredient
+from data.model_product import Product
+from data.model_application import Application
+from data.model_scenario import Scenario
 
 # Re-export repository classes
-from data.ai_repository import AIRepository
-from data.product_repository import ProductRepository
-from data.UOM_repository import UOMRepository
+from data.repository_AI import AIRepository
+from data.repository_product import ProductRepository
+from data.repository_UOM import UOMRepository
 
 # Define what gets imported with "from data import *"
 __all__ = [

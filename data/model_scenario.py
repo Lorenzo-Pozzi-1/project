@@ -6,7 +6,7 @@ pesticide application scenario for a season.
 """
 
 from datetime import date
-from data.application_model import Application
+from data.model_application import Application
 
 class Scenario:
     """

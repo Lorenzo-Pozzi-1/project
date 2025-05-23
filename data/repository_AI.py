@@ -7,10 +7,10 @@ classification data.
 
 import csv, os
 from typing import Dict, Optional, Tuple
-from data.ai_model import ActiveIngredient
+from data.model_AI import ActiveIngredient
 from common import resource_path
 
-ai_csv = resource_path("data/active_ingredients.csv")
+ai_csv = resource_path("data/csv_AI.csv")
 
 class AIRepository:
     """Repository for active ingredient information including mode of action groups."""

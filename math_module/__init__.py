@@ -12,7 +12,7 @@ from math_module.eiq_calculations import (
 )
 
 # UOM system components
-from data.UOM_repository import (
+from data.repository_UOM import (
     UOMRepository, CompositeUOM
 )
 

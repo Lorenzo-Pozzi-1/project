@@ -22,7 +22,7 @@ from math_module.eiq_calculations import (
 )
 
 # Re-export UOM system components
-from data.UOM_repository import UOMRepository, CompositeUOM
+from data.repository_UOM import UOMRepository, CompositeUOM
 
 __all__ = [
     'EiqCalculatorPage',

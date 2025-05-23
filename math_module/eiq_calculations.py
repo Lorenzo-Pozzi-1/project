@@ -5,7 +5,7 @@ This module provides functions for calculating Environmental Impact Quotients
 (EIQ) for pesticide products and applications with proper unit of measure handling.
 """
 
-from data.UOM_repository import UOMRepository, CompositeUOM
+from data.repository_UOM import UOMRepository, CompositeUOM
 
 def calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications=1, user_preferences=None):
     """

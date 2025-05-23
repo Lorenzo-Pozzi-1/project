@@ -9,7 +9,7 @@ from typing import Optional, Dict
 from dataclasses import dataclass
 from common import resource_path
 
-UOM_CSV = resource_path("data/base_units.csv")
+UOM_CSV = resource_path("data/csv_UOM.csv")
 
 @dataclass
 class BaseUnit:
