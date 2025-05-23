@@ -5,8 +5,8 @@ Handles UOM standardization internally, exposes simple interfaces.
 """
 
 from typing import List, Dict, Optional
-from .uom_standardization import EIQUOMStandardizer
-from .pure_eiq_calculations import (
+from .layer_1_uom_std import EIQUOMStandardizer
+from .layer_2_eiq_math import (
     calculate_field_eiq_single_ai, 
     calculate_field_eiq_product,
     calculate_field_eiq_scenario,
