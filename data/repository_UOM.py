@@ -14,7 +14,7 @@ UOM_CSV = resource_path("data/csv_UOM.csv")
 @dataclass
 class BaseUnit:
     """Represents a fundamental unit of measure."""
-    uom: str
+    uom: str       # e.g., kg, l, ha
     category: str  # weight, volume, area, length
     state: str     # dry, wet, no
     factor: float  # conversion factor to standard unit
@@ -43,14 +43,21 @@ class CompositeUOM:
     
     @property
     def is_rate(self) -> bool:
-        """Check if this is a rate (has denominator)."""
-        return self.denominator is not None
+        """Check if this is a rate (has a denominator and is not a concentration)."""
+        # Basic check if it has a denominator
+        has_denom = self.denominator is not None
+        
+        # For proper rate identification, ensure it's not a concentration
+        if has_denom and not self.is_concentration:
+            return True
+            
+        return has_denom
     
     @property
     def is_concentration(self) -> bool:
         """Check if this is a concentration (mass/volume or similar)."""
         if not self.is_rate:
-            return self.numerator in ['%', 'g/l', 'lb/gal', 'g/kg']
+            return self.numerator in ['%', 'g/l', 'lb/gal']
         
         repo = UOMRepository.get_instance()
         num_unit = repo.get_base_unit(self.numerator)
@@ -125,7 +132,7 @@ class UOMRepository:
             raise ValueError(f"Unknown unit: {from_uom} or {to_uom}")
         
         if from_unit.category != to_unit.category:
-            raise ValueError(f"Cannot convert {from_unit.category} to {to_unit.category}")
+            raise ValueError(f"Cannot convert {from_uom} ({from_unit.category}) to {to_uom} ({to_unit.category})")
         
         # Convert to standard, then to target
         standard_value = value * from_unit.factor
@@ -293,16 +300,6 @@ class UOMRepository:
             amount_per_ha = self.convert_base_unit(amount_per_ha, 'ha', to_uom.denominator)
         
         return amount_per_ha
-
-# Updated conversion functions for backward compatibility
-def convert_application_rate(rate: float, from_uom: str, to_uom: str, 
-                           user_preferences: dict = None) -> float:
-    """Convert application rates using the new system."""
-    repo = UOMRepository.get_instance()
-    from_composite = CompositeUOM(from_uom)
-    to_composite = CompositeUOM(to_uom)
-    
-    return repo.convert_composite_uom(rate, from_composite, to_composite, user_preferences)
 
 def convert_concentration_to_percent(concentration: float, uom: str) -> float:
     """Convert concentration to percentage."""
