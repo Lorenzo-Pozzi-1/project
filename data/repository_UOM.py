@@ -49,17 +49,27 @@ class CompositeUOM:
         has_denom = self.denominator is not None
         
         # For proper rate identification, ensure it's not a concentration
-        if has_denom and not self.is_concentration:
-            return True
-            
-        return has_denom
+        if has_denom:
+            is_conc = self._check_if_concentration()
+            return not is_conc
+        
+        return False
     
     @property
     def is_concentration(self) -> bool:
         """Check if this is a concentration (mass/volume or similar)."""
-        if not self.is_rate:
+        if self.denominator is None:
             return self.numerator in ['%', 'g/l', 'lb/gal']
         
+        return self._check_if_concentration()
+    
+    def _check_if_concentration(self) -> bool:
+        """Internal method to check if this represents a concentration."""
+        # Handle special cases first
+        if self.denominator is None:
+            return self.numerator in ['%', 'g/l', 'lb/gal']
+        
+        # For compound units, check categories
         repo = UOMRepository.get_instance()
         num_unit = repo.get_base_unit(self.numerator)
         den_unit = repo.get_base_unit(self.denominator)
@@ -73,7 +83,7 @@ class CompositeUOM:
         """Get the standard form of this UOM."""
         repo = UOMRepository.get_instance()
         
-        if not self.is_rate:
+        if self.denominator is None:
             if self.numerator == '%':
                 return 'decimal'
             return self.numerator

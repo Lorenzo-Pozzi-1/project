@@ -289,7 +289,7 @@ class SmartUOMComboBox(QWidget):
             
         elif self.uom_type == "seeding_rate":
             # Seeding rate units (weight/area)
-            common_uoms = ["kg/ha", "kg/acre", "lbs/ha", "lbs/acre"]
+            common_uoms = ["kg/ha", "kg/acre", "lb/ha", "lb/acre"]
             
         elif self.uom_type == "application_rate":
             # Application rate UOMs ordered by frequency

@@ -168,10 +168,7 @@ class EIQUOMStandardizer:
         
         return standardized_rate, unit_type
     
-    def _standardize_ai_concentration(self, 
-                                    concentration: float, 
-                                    concentration_uom: str, 
-                                    target_rate_type: str) -> float:
+    def _standardize_ai_concentration(self, concentration: float, concentration_uom: str, target_rate_type: str) -> float:
         """
         Convert AI concentration to match the application rate units.
         
@@ -186,7 +183,7 @@ class EIQUOMStandardizer:
         if not concentration or not concentration_uom:
             raise ValueError("AI concentration and UOM are required")
         
-        # Handle percentage
+        # Handle percentage - works with both weight and volume
         if concentration_uom == '%':
             return concentration / 100.0  # Convert to decimal [kg/kg]
         
@@ -200,12 +197,34 @@ class EIQUOMStandardizer:
         else:
             raise ValueError(f"Invalid rate type: {target_rate_type}")
         
-        # Convert concentration
-        standardized_concentration = self.uom_repo.convert_composite_uom(
-            concentration, from_uom, target_uom
-        )
+        # Check if the conversion is physically possible (wet vs dry, can't mix them)
+        if from_uom.is_concentration:
+            # Check if source and target are compatible
+            from_is_weight_per_volume = self._is_weight_per_volume(from_uom)
+            from_is_weight_per_weight = self._is_weight_per_weight(from_uom)
+            
+            if from_is_weight_per_volume and target_rate_type == "weight":
+                # Cannot convert lb/gal to kg/kg - this is physically impossible
+                raise ValueError(
+                    f"Cannot convert {concentration_uom} (weight/volume) to weight/weight concentration. "
+                    f"Product with {concentration_uom} concentration must use volume-based application rates."
+                )
+            
+            if from_is_weight_per_weight and target_rate_type == "volume":
+                # Can convert kg/kg to kg/L, but would need product density - not implemented yet
+                # For now, assume similar density to water (1 kg/L)
+                print(f"Warning: Converting {concentration_uom} to kg/L assuming density ~1 kg/L")
         
-        return standardized_concentration
+        # Convert concentration
+        try:
+            standardized_concentration = self.uom_repo.convert_composite_uom(
+                concentration, from_uom, target_uom
+            )
+            return standardized_concentration
+        except Exception as e:
+            raise ValueError(
+                f"Cannot convert concentration from {concentration_uom} to {target_uom.original_string}: {e}"
+            )
     
     def _standardize_ai_eiq(self, ai_eiq: float) -> float:
         """
@@ -221,7 +240,7 @@ class EIQUOMStandardizer:
             raise ValueError("AI EIQ value is required")
         
         # Cornell EIQ is per pound, convert to per kg
-        return self.uom_repo.convert_base_unit(ai_eiq, 'lbs', 'kg')
+        return self.uom_repo.convert_base_unit(ai_eiq, 'lb', 'kg')
     
     def _validate_dimensional_analysis(self, rate_unit_type: str, ai_concentration: float):
         """
@@ -241,3 +260,28 @@ class EIQUOMStandardizer:
         # For example, checking reasonable ranges for concentrations
         if rate_unit_type == "weight" and ai_concentration > 1.0:
             raise ValueError("Weight-based concentration cannot exceed 1.0 (100%)")
+        
+    def _is_weight_per_volume(self, uom: CompositeUOM) -> bool:
+        """Check if UOM is weight per volume (like lb/gal, g/L)."""
+        if not uom.is_concentration:
+            return False
+        
+        num_unit = self.uom_repo.get_base_unit(uom.numerator)
+        den_unit = self.uom_repo.get_base_unit(uom.denominator)
+        
+        return (num_unit and den_unit and 
+                num_unit.category == 'weight' and den_unit.category == 'volume')
+    
+    def _is_weight_per_weight(self, uom: CompositeUOM) -> bool:
+        """Check if UOM is weight per weight (like kg/kg, %)."""
+        if uom.numerator == '%':
+            return True
+            
+        if not uom.is_concentration:
+            return False
+        
+        num_unit = self.uom_repo.get_base_unit(uom.numerator)
+        den_unit = self.uom_repo.get_base_unit(uom.denominator)
+        
+        return (num_unit and den_unit and 
+                num_unit.category == 'weight' and den_unit.category == 'weight')

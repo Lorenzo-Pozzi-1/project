@@ -116,7 +116,7 @@ class PreferencesRow(QWidget):
         # Clear default items and add seeding rate specific units
         self.seeding_rate_unit.combobox.clear()
         self.seeding_rate_unit.combobox.addItem("-- Select unit --")
-        self.seeding_rate_unit.combobox.addItems(["kg/ha", "kg/acre", "lbs/ha", "lbs/acre"])
+        self.seeding_rate_unit.combobox.addItems(["kg/ha", "kg/acre", "lb/ha", "lb/acre"])
         preferences_layout.addWidget(self.seeding_rate_unit)
         
         preferences_layout.addSpacing(40)  # 40px spacing between control groups

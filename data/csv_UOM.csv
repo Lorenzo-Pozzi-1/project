@@ -1,7 +1,7 @@
 UOM,category,state,factor,standard
 kg,weight,dry,1,kg
 g,weight,dry,0.001,kg
-lbs,weight,dry,0.453592,kg
+lb,weight,dry,0.453592,kg
 oz,weight,dry,0.0283495,kg
 cwt,weight,dry,45.3592,kg
 100 kg,weight,dry,100,kg
