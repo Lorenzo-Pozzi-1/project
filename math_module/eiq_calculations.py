@@ -5,13 +5,11 @@ This module provides functions for calculating Environmental Impact Quotients
 (EIQ) for pesticide products and applications with proper unit of measure handling.
 """
 
-from math_module.eiq_conversions import standardize_eiq_calculation, get_uom_category
+from data.UOM_repository import UOMRepository, CompositeUOM
 
-def calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications=1):
+def calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications=1, user_preferences=None):
     """
     Calculate Field EIQ based on product data and application parameters.
-    
-    This function uses standardized conversion to ensure proper UOM handling.
     
     Args:
         ai_eiq (float): Active ingredient EIQ value (Cornell EIQ/lb)
@@ -19,20 +17,38 @@ def calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications=1):
         rate (float): Application rate
         unit (str): Unit of measure for rate
         applications (int): Number of applications
+        user_preferences (dict): User preferences for conversions
         
     Returns:
         float: Field EIQ value
     """
     try:
-        # Use standardization function to get consistent units
-        std_eiq, std_rate, _ = standardize_eiq_calculation(
-            ai_eiq, rate, unit, ai_percent, "%")
+        repo = UOMRepository.get_instance()
+        from_uom = CompositeUOM(unit)
         
-        # Convert percentage to decimal (0-1)
+        # Determine target standard unit based on the type of application
+        if from_uom.numerator and repo.get_base_unit(from_uom.numerator):
+            num_unit = repo.get_base_unit(from_uom.numerator)
+            if num_unit.category == 'weight':
+                target_uom = CompositeUOM("kg/ha")
+            elif num_unit.category == 'volume':
+                target_uom = CompositeUOM("l/ha")
+            else:
+                # Fallback
+                target_uom = CompositeUOM("kg/ha")
+        else:
+            target_uom = CompositeUOM("kg/ha")
+        
+        # Convert rate to standard units
+        std_rate = repo.convert_composite_uom(rate, from_uom, target_uom, user_preferences)
+        
+        # Convert EIQ to metric (EIQ/kg)
+        std_eiq = repo.convert_base_unit(ai_eiq, 'lbs', 'kg')  # Cornell EIQ is per pound
+        
+        # Convert percentage to decimal
         ai_decimal = ai_percent / 100.0
         
-        # Calculate Field EIQ with standardized units
-        # This gives us: (kg/ha or l/ha) × (decimal) × (EIQ/kg) × applications
+        # Calculate Field EIQ: (EIQ/kg) × (decimal) × (kg/ha or l/ha) × applications
         field_eiq = std_eiq * ai_decimal * std_rate * applications
         return field_eiq
     
@@ -40,7 +56,7 @@ def calculate_field_eiq(ai_eiq, ai_percent, rate, unit, applications=1):
         print(f"Error calculating Field EIQ: {e}")
         return 0.0
 
-def calculate_product_field_eiq(active_ingredients, rate, unit, applications=1):
+def calculate_product_field_eiq(active_ingredients, rate, unit, applications=1, user_preferences=None):
     """
     Calculate total Field EIQ for a product with multiple active ingredients.
     
@@ -49,17 +65,13 @@ def calculate_product_field_eiq(active_ingredients, rate, unit, applications=1):
         rate (float): Application rate
         unit (str): Unit of measure for rate
         applications (int): Number of applications
+        user_preferences (dict): User preferences for row spacing, seeding rate, etc.
         
     Returns:
         float: Total Field EIQ value for the product
     """
     if not active_ingredients:
         return 0.0
-    
-    # Verify we have a valid rate unit
-    category = get_uom_category(unit)
-    if category not in ["weight", "volume", "seed", "linear"]:
-        print(f"Warning: Unknown application rate unit type: {unit}")
     
     # Sum contributions from all active ingredients
     total_field_eiq = 0.0
@@ -81,8 +93,11 @@ def calculate_product_field_eiq(active_ingredients, rate, unit, applications=1):
             percent_str = str(ai['percent'])
             percent_value = float(percent_str.replace('%', '')) if '%' in percent_str else float(ai['percent'])
             
-            # Calculate individual AI's field EIQ using our standardized function
-            ai_field_eiq = calculate_field_eiq(ai_eiq, percent_value, rate, unit)
+            # Calculate individual AI's field EIQ using the new system
+            # Note: applications=1 here since we apply it at the end for the total
+            ai_field_eiq = calculate_field_eiq(
+                ai_eiq, percent_value, rate, unit, applications=1, user_preferences=user_preferences
+            )
             total_field_eiq += ai_field_eiq
             
         except (ValueError, TypeError) as e:
@@ -90,10 +105,10 @@ def calculate_product_field_eiq(active_ingredients, rate, unit, applications=1):
             # Skip this ingredient but continue with others
             continue
     
-    # Apply number of applications
+    # Apply number of applications to the total
     return total_field_eiq * applications
 
-def format_eiq_result(field_eiq) :
+def format_eiq_result(field_eiq):
     """
     Format EIQ results for display.
     

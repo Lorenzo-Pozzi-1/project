@@ -7,7 +7,7 @@ of a single pesticide product with improved UI and component architecture.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem
 from PySide6.QtCore import Qt
-from common import GENERIC_TABLE_STYLE, ContentFrame, MEDIUM_TEXT
+from common import GENERIC_TABLE_STYLE, ContentFrame, MEDIUM_TEXT, get_config
 from data import ProductRepository
 from eiq_calculator_page.widgets import ProductSelectionWidget, ApplicationParamsWidget, EiqResultDisplay
 from math_module import calculate_product_field_eiq
@@ -282,12 +282,16 @@ class SingleProductCalculatorTab(QWidget):
             # Get application parameters
             params = self.app_params.get_params()
             
-            # Calculate Field EIQ
+            # Get user preferences for UOM conversions
+            user_preferences = get_config("user_preferences", {})
+            
+            # Calculate Field EIQ with user preferences
             field_eiq = calculate_product_field_eiq(
                 self.active_ingredients,
                 params["rate"],
                 params["unit"],
-                params["applications"]
+                params["applications"],
+                user_preferences=user_preferences  # Pass user preferences
             )
             
             # Update result display

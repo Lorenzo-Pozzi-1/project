@@ -6,9 +6,9 @@ values of multiple pesticide products with card-based UI and improved UX.
 """
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QScrollArea, QVBoxLayout, QWidget
-from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, REMOVE_BUTTON_STYLE, MARGIN_MEDIUM, SPACING_LARGE, SPACING_MEDIUM, MEDIUM_TEXT,
-                    get_subtitle_font, ContentFrame, create_button, ApplicationParamsWidget, ProductSelectionWidget)
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
+from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, MARGIN_MEDIUM, SPACING_LARGE, SPACING_MEDIUM, MEDIUM_TEXT,
+                    get_subtitle_font, ContentFrame, create_button, ApplicationParamsWidget, ProductSelectionWidget, get_config)
 from data import ProductRepository
 from eiq_calculator_page.widgets.result_display import EiqComparisonTable
 from math_module import calculate_product_field_eiq
@@ -362,12 +362,16 @@ class ProductComparisonCalculatorTab(QWidget):
             return
         
         try:
-            # Calculate Field EIQ
+            # Get user preferences for UOM conversions
+            user_preferences = get_config("user_preferences", {})
+            
+            # Calculate Field EIQ with user preferences
             field_eiq = calculate_product_field_eiq(
                 product_data["active_ingredients"],
                 product_data["rate"],
                 product_data["unit"],
-                product_data["applications"]
+                product_data["applications"],
+                user_preferences=user_preferences  # Pass user preferences
             )
             
             # Update or remove from comparison table based on result
