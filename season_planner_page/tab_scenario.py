@@ -7,7 +7,8 @@ This module provides a tab for viewing and editing the individual scenarios.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PySide6.QtCore import Signal
 from common import MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, create_button, get_title_font, ContentFrame
-from season_planner_page.widgets import SeasonPlanMetadataWidget, ApplicationsTableContainer
+from season_planner_page.widget_metadata_row import SeasonPlanMetadataWidget
+from season_planner_page.widget_applications_table import ApplicationsTableContainer
 from data import Scenario, Application
 
 class ScenarioTabPage(QWidget):
