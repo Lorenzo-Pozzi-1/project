@@ -9,8 +9,9 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, Q
 from PySide6.QtCore import Qt
 from common import GENERIC_TABLE_STYLE, ContentFrame, MEDIUM_TEXT, get_config, calculate_product_field_eiq
 from data import ProductRepository
-from eiq_calculator_page.widgets import ProductSelectionWidget, ApplicationParamsWidget, EiqResultDisplay
-
+from common.widgets.product_selection import ProductSelectionWidget
+from common.widgets.application_params import ApplicationParamsWidget
+from eiq_calculator_page.widgets_results_display import EiqResultDisplay
 
 class SingleProductCalculatorTab(QWidget):
     """Widget for calculating EIQ for a single pesticide product."""
