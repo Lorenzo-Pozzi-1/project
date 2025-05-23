@@ -5,11 +5,8 @@ This module provides the main interface for managing multiple pesticide
 application scenarios through tabs.
 """
 
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog)
-from common import (
-    MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, ContentFrame, 
-    HeaderWithHomeButton, create_button, get_title_font, ScoreBar
-)
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog
+from common import MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, ContentFrame, HeaderWithHomeButton, create_button, get_title_font, ScoreBar
 from season_planner_page.scenario_tab import ScenarioTabPage
 from data import Scenario
 

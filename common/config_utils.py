@@ -4,10 +4,8 @@ Configuration management for the Lorenzo Pozzi Pesticide App.
 This module handles loading, saving, and accessing application configuration.
 """
 
-import json
-import os
+import json, os, sys
 from pathlib import Path
-import sys
 
 # Default configuration
 DEFAULT_CONFIG = {

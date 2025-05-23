@@ -7,8 +7,8 @@ This module provides widgets for displaying EIQ calculation results.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableWidgetItem, QTableWidget, QHeaderView
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush
-from common import GENERIC_TABLE_STYLE, get_subtitle_font, ContentFrame, ScoreBar, get_eiq_color, get_eiq_rating, EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD
-from common import format_eiq_result
+from common import (GENERIC_TABLE_STYLE, get_subtitle_font, ContentFrame, ScoreBar, get_eiq_color, get_eiq_rating, format_eiq_result,
+                    EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD)
 
 
 class ColorCodedEiqItem(QTableWidgetItem):

@@ -6,8 +6,7 @@ This module provides a preferences row widget for the application's home page.
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QComboBox, QDoubleSpinBox, QMessageBox
 from PySide6.QtCore import Qt, Signal
-from common import *
-from common.widgets.SmartUOMComboBox import SmartUOMComboBox
+from common import get_medium_font, create_button, get_config, save_config, SmartUOMComboBox
 
 class PreferencesRow(QWidget):
     """

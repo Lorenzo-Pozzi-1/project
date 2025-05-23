@@ -8,7 +8,7 @@ manages multiple filter rows.
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QComboBox, QLabel, QLineEdit, QScrollArea, QFrame
 from PySide6.QtCore import Signal, Qt
-from common import FRAME_STYLE, get_medium_font, get_subtitle_font, create_button
+from common import get_medium_font, get_subtitle_font, create_button
 
 
 class FilterRow(QWidget):

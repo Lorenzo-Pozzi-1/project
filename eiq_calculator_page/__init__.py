@@ -5,6 +5,7 @@ This package provides the components for Environmental Impact Quotient (EIQ)
 calculations of pesticide applications.
 """
 
+# Core page and tab components
 from eiq_calculator_page.eiq_calculator_page import EiqCalculatorPage
 from eiq_calculator_page.single_calculator_tab import SingleProductCalculatorTab
 from eiq_calculator_page.multi_calculator_tab import ProductComparisonCalculatorTab
@@ -13,15 +14,6 @@ from eiq_calculator_page.multi_calculator_tab import ProductComparisonCalculator
 from common.widgets.product_selection import ProductSelectionWidget, ProductSearchField
 from common.widgets.application_params import ApplicationParamsWidget
 from eiq_calculator_page.widgets.result_display import EiqResultDisplay, ColorCodedEiqItem
-from common.styles import get_eiq_color, EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD
-
-# Re-export EIQ calculation functions
-from common.calculations import (
-    calculate_field_eiq, calculate_product_field_eiq, 
-    format_eiq_result, get_impact_category
-)
-
-# Re-export UOM system components
 from data.repository_UOM import UOMRepository, CompositeUOM
 
 __all__ = [

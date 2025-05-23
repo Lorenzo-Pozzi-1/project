@@ -6,7 +6,7 @@ This module provides a custom QComboBox with integrated custom UOM composition c
 
 from PySide6.QtWidgets import (
     QComboBox, QHBoxLayout, QWidget, QPushButton, QDialog, QVBoxLayout, 
-    QFormLayout, QDialogButtonBox, QLabel, QToolTip, QApplication
+    QFormLayout, QDialogButtonBox, QLabel, QApplication
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
