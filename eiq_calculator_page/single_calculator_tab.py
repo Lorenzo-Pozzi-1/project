@@ -10,7 +10,7 @@ from PySide6.QtCore import Qt
 from common import GENERIC_TABLE_STYLE, ContentFrame, MEDIUM_TEXT, get_config
 from data import ProductRepository
 from eiq_calculator_page.widgets import ProductSelectionWidget, ApplicationParamsWidget, EiqResultDisplay
-from math_module import calculate_product_field_eiq
+from common import calculate_product_field_eiq
 
 
 class SingleProductCalculatorTab(QWidget):

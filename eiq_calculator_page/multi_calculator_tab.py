@@ -11,7 +11,7 @@ from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, MARGIN_MEDIUM, SPACING_LARG
                     get_subtitle_font, ContentFrame, create_button, ApplicationParamsWidget, ProductSelectionWidget, get_config)
 from data import ProductRepository
 from eiq_calculator_page.widgets.result_display import EiqComparisonTable
-from math_module import calculate_product_field_eiq
+from common import calculate_product_field_eiq
 
 
 class ProductCard(QFrame):

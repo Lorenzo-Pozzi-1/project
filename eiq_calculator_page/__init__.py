@@ -16,7 +16,7 @@ from eiq_calculator_page.widgets.result_display import EiqResultDisplay, ColorCo
 from common.styles import get_eiq_color, EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD
 
 # Re-export EIQ calculation functions
-from math_module.eiq_calculations import (
+from common.calculations import (
     calculate_field_eiq, calculate_product_field_eiq, 
     format_eiq_result, get_impact_category
 )

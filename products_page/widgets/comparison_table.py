@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabe
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
 from common import GENERIC_TABLE_STYLE, get_eiq_color, get_medium_font
-from math_module import calculate_product_field_eiq
+from common import calculate_product_field_eiq
 
 
 class ComparisonTable(QTableWidget):

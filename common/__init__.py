@@ -68,6 +68,17 @@ from common.widgets import (
     ApplicationParamsWidget,
     SmartUOMComboBox
 )
+ 
+# EIQ calculation functions
+from common.calculations import (
+    calculate_field_eiq, calculate_product_field_eiq,
+    format_eiq_result, get_impact_category
+)
+
+# UOM system components
+from data.repository_UOM import (
+    UOMRepository, CompositeUOM
+)
 
 # Define what gets imported with "from common import *"
 __all__ = [
@@ -108,5 +119,15 @@ __all__ = [
     
     # Widgets and Widget Functions
     'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar', 'create_button', 'ProductSelectionWidget',
-    'ApplicationParamsWidget', 'SmartUOMComboBox'
+    'ApplicationParamsWidget', 'SmartUOMComboBox',
+
+    # EIQ calculations
+    'calculate_field_eiq',
+    'calculate_product_field_eiq',
+    'format_eiq_result',
+    'get_impact_category',
+    
+    # UOM system
+    'UOMRepository',
+    'CompositeUOM'
 ]

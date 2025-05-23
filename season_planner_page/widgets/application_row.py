@@ -5,14 +5,10 @@ from PySide6.QtCore import Qt, Signal, QMimeData
 from PySide6.QtGui import QDrag
 from PySide6.QtWidgets import (
     QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QApplication,
-    QMessageBox, QPushButton, QDoubleSpinBox, QComboBox
+    QMessageBox, QDoubleSpinBox, QComboBox
 )
 from data import ProductRepository, AIRepository
-from common import (
-    DRAGGING_ROW_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE, 
-    MEDIUM_TEXT, ProductSelectionWidget, ApplicationParamsWidget
-)
-from math_module import calculate_product_field_eiq
+from common import DRAGGING_ROW_STYLE, FRAME_STYLE, MEDIUM_TEXT, ProductSelectionWidget, ApplicationParamsWidget, calculate_product_field_eiq
 
 
 class ApplicationRowWidget(QFrame):
