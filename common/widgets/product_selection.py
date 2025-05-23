@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
     QWidget, QHBoxLayout, QLabel, QAbstractItemView
 )
 from common.styles import get_medium_font, SUGGESTIONS_LIST_STYLE, get_small_font
-from common.widgets.widgets import ContentFrame
+from common.widgets.header_and_frame import ContentFrame
 from data import ProductRepository
 
 
