@@ -7,7 +7,8 @@ values of multiple pesticide products with card-based UI.
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
-from common import MARGIN_MEDIUM, SPACING_LARGE, calculate_product_field_eiq, get_subtitle_font, ContentFrame, create_button, get_config
+from common import MARGIN_MEDIUM, SPACING_LARGE, get_subtitle_font, ContentFrame, create_button, get_config
+from common.calculations import eiq_calculator
 from eiq_calculator_page.widgets_results_display import EiqComparisonTable
 from eiq_calculator_page.widget_product_card import ProductCard
 
@@ -158,24 +159,13 @@ class ProductComparisonCalculatorTab(QWidget):
         self.add_product_card()
     
     def calculate_eiq_for_card(self, card_index):
-        """
-        Calculate EIQ for a specific product card.
-        
-        Args:
-            card_index (int): Index of the card to calculate EIQ for
-            
-        Returns:
-            tuple: (product_data, field_eiq) or (None, 0.0) if calculation fails
-        """
-        # Validate index
+        """Calculate EIQ for a specific product card."""
         if not (0 <= card_index < len(self.product_cards)):
             return None, 0.0
         
-        # Get the card and product data
         card = self.product_cards[card_index]
         product_data = card.get_product_data()
         
-        # Return early if no valid data
         if not product_data:
             return None, 0.0
         
@@ -183,12 +173,12 @@ class ProductComparisonCalculatorTab(QWidget):
             # Get user preferences for UOM conversions
             user_preferences = get_config("user_preferences", {})
             
-            # Calculate Field EIQ with user preferences
-            field_eiq = calculate_product_field_eiq(
-                product_data["active_ingredients"],
-                product_data["rate"],
-                product_data["unit"],
-                product_data["applications"],
+            # Calculate field use EIQ for the product
+            field_eiq = eiq_calculator.calculate_product_field_eiq(
+                active_ingredients=product_data["active_ingredients"],
+                application_rate=product_data["rate"],
+                application_rate_uom=product_data["unit"],
+                applications=product_data["applications"],
                 user_preferences=user_preferences
             )
             

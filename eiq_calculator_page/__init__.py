@@ -15,8 +15,7 @@ from common.styles import (
 
 # Import calculation functions
 from common.calculations import (
-    calculate_field_eiq,
-    calculate_product_field_eiq,
+    eiq_calculator,
     format_eiq_result,
     get_impact_category
 )
@@ -54,8 +53,7 @@ __all__ = [
     'LOW_THRESHOLD',
     'MEDIUM_THRESHOLD',
     'HIGH_THRESHOLD',
-    'calculate_field_eiq',
-    'calculate_product_field_eiq',
+    'eiq_calculator',
     'format_eiq_result',
     'get_impact_category',
     'UOMRepository',

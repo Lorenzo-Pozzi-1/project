@@ -4,8 +4,10 @@ from contextlib import contextmanager
 from PySide6.QtCore import Qt, Signal, QMimeData
 from PySide6.QtGui import QDrag
 from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QDoubleSpinBox, QComboBox
+from common.utils import get_config
 from data import ProductRepository, AIRepository
-from common import DRAGGING_ROW_STYLE, FRAME_STYLE, MEDIUM_TEXT, ProductSelectionWidget, ApplicationParamsWidget, calculate_product_field_eiq
+from common import DRAGGING_ROW_STYLE, FRAME_STYLE, MEDIUM_TEXT, ProductSelectionWidget, ApplicationParamsWidget
+from common.calculations import eiq_calculator
 
 
 class ApplicationRowWidget(QFrame):
@@ -231,13 +233,21 @@ class ApplicationRowWidget(QFrame):
         try:
             # Get application parameters
             params = self.app_params.get_params()
-            field_eiq = calculate_product_field_eiq(
-                product.get_ai_data(),
-                params["rate"],
-                params["unit"],
-                applications=1  # Always use 1 for a single application row
+            
+            # Get user preferences for UOM conversions
+            user_preferences = get_config("user_preferences", {})
+            
+            # Calculate Field use EIQ
+            field_eiq = eiq_calculator.calculate_product_field_eiq(
+                active_ingredients=product.get_ai_data(),
+                application_rate=params["rate"],
+                application_rate_uom=params["unit"],
+                applications=1,  # Always use 1 for a single application row
+                user_preferences=user_preferences
             )
+            
             self.field_eiq_label.setText(f"{field_eiq:.2f}")
+            
         except Exception as e:
             print(f"Error calculating Field EIQ: {e}")
             self.field_eiq_label.setText("Error")

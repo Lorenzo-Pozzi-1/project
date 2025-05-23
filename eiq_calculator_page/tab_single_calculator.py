@@ -7,10 +7,11 @@ for calculating EIQ of a single pesticide product.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem
 from PySide6.QtCore import Qt
-from common import GENERIC_TABLE_STYLE, ContentFrame, MEDIUM_TEXT, get_config, calculate_product_field_eiq
+from common import GENERIC_TABLE_STYLE, ContentFrame, MEDIUM_TEXT, get_config
 from data import ProductRepository
 from common.widgets.product_selection import ProductSelectionWidget
 from common.widgets.application_params import ApplicationParamsWidget
+from common.calculations import eiq_calculator
 from eiq_calculator_page.widgets_results_display import EiqResultDisplay
 
 class SingleProductCalculatorTab(QWidget):
@@ -276,7 +277,7 @@ class SingleProductCalculatorTab(QWidget):
     
     def calculate_eiq(self):
         """Calculate the Field EIQ for the current product."""
-        if not self.current_product or not self.active_ingredients:  # if no product selected
+        if not self.current_product or not self.active_ingredients:
             self.eiq_results.update_result(0.0)
             return
         
@@ -288,12 +289,12 @@ class SingleProductCalculatorTab(QWidget):
             user_preferences = get_config("user_preferences", {})
             
             # Calculate Field EIQ with user preferences
-            field_eiq = calculate_product_field_eiq(
-                self.active_ingredients,
-                params["rate"],
-                params["unit"],
-                params["applications"],
-                user_preferences=user_preferences  # Pass user preferences
+            field_eiq = eiq_calculator.calculate_product_field_eiq(
+                active_ingredients=self.active_ingredients,
+                application_rate=params["rate"],
+                application_rate_uom=params["unit"],
+                applications=params["applications"],
+                user_preferences=user_preferences
             )
             
             # Update result display

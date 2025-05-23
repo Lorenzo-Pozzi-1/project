@@ -8,7 +8,8 @@ side-by-side comparison of product properties.
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
-from common import GENERIC_TABLE_STYLE, get_eiq_color, get_medium_font, calculate_product_field_eiq
+from common import GENERIC_TABLE_STYLE, get_eiq_color, get_medium_font, get_config
+from common.calculations import eiq_calculator
 
 
 class ComparisonTable(QTableWidget):
@@ -126,15 +127,7 @@ class ComparisonTable(QTableWidget):
             self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
     
     def calculate_product_field_eiq(self, product):
-        """
-        Calculate the Field EIQ for a product using its maximum application rate.
-        
-        Args:
-            product: The product object
-            
-        Returns:
-            float: Calculated Field EIQ or 0 if calculation fails
-        """
+        """Calculate the Field EIQ for a product using its maximum application rate."""
         try:
             # Check if product has active ingredients with EIQ data
             ai_data = product.get_ai_data()
@@ -150,15 +143,20 @@ class ComparisonTable(QTableWidget):
             if rate is None or product.rate_uom is None:
                 return 0
             
-            # Calculate Field EIQ using 1 application
-            field_eiq = calculate_product_field_eiq(
-                ai_data,
-                rate,
-                product.rate_uom,
-                applications=1
+            # Get user preferences for UOM conversions
+            user_preferences = get_config("user_preferences", {})
+            
+            # Calculate Field EIQ
+            field_eiq = eiq_calculator.calculate_product_field_eiq(
+                active_ingredients=ai_data,
+                application_rate=rate,
+                application_rate_uom=product.rate_uom,
+                applications=1,
+                user_preferences=user_preferences
             )
             
             return field_eiq
+            
         except Exception as e:
             print(f"Error calculating Field EIQ: {e}")
             return 0

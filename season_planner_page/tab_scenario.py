@@ -6,10 +6,11 @@ This module provides a tab for viewing and editing the individual scenarios.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PySide6.QtCore import Signal
-from common import MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, create_button, get_title_font, ContentFrame
+from common import MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, create_button, get_title_font, ContentFrame, get_config
+from common.calculations import eiq_calculator
 from season_planner_page.widget_metadata_row import SeasonPlanMetadataWidget
 from season_planner_page.widget_applications_table import ApplicationsTableContainer
-from data import Scenario, Application
+from data import Scenario, Application, ProductRepository
 
 class ScenarioTabPage(QWidget):
     """
@@ -31,7 +32,8 @@ class ScenarioTabPage(QWidget):
         """
         super().__init__(parent)
         self.parent = parent
-        self.scenario = scenario or Scenario()        
+        self.scenario = scenario or Scenario()    
+        self.products_repo = ProductRepository.get_instance()    
         self.setup_ui()
         self.load_scenario_data()
     
@@ -107,7 +109,28 @@ class ScenarioTabPage(QWidget):
     
     def get_total_field_eiq(self):
         """Calculate the total Field EIQ for all applications."""
-        return self.applications_container.get_total_field_eiq()
+        try:
+            # Get user preferences for UOM conversions
+            user_preferences = get_config("user_preferences", {})
+            
+            # Get all applications data
+            applications_data = self.applications_container.get_applications()
+            
+            # Use the scenario-level calculation
+            total_eiq = eiq_calculator.calculate_scenario_field_eiq(
+                applications=[{
+                    'product': self.products_repo.get_product_by_name(app.get('product_name')),
+                    'rate': app.get('rate', 0),
+                    'rate_uom': app.get('rate_uom', ''),
+                } for app in applications_data if app.get('product_name')],
+                user_preferences=user_preferences
+            )
+            
+            return total_eiq
+            
+        except Exception as e:
+            print(f"Error calculating total scenario EIQ: {e}")
+            return 0.0
     
     def refresh_product_data(self):
         """Refresh product data when filtered products change in the main window."""

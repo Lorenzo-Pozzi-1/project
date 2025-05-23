@@ -71,8 +71,9 @@ from common.widgets import (
  
 # EIQ calculation functions
 from common.calculations import (
-    calculate_field_eiq, calculate_product_field_eiq,
-    format_eiq_result, get_impact_category
+    eiq_calculator,
+    format_eiq_result,
+    get_impact_category
 )
 
 # UOM system components
@@ -121,9 +122,8 @@ __all__ = [
     'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar', 'create_button', 'ProductSelectionWidget',
     'ApplicationParamsWidget', 'SmartUOMComboBox',
 
-    # EIQ calculations
-    'calculate_field_eiq',
-    'calculate_product_field_eiq',
+    # NEW EIQ calculations
+    'eiq_calculator',
     'format_eiq_result',
     'get_impact_category',
     

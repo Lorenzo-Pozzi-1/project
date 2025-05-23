@@ -1,11 +1,12 @@
 """
 UOM Repository and Composite UOM System for the LORENZO POZZI Pesticide App.
 
-This module provides a compositional approach to unit of measure handling.
+This module provides a compositional approach to unit of measure handling
+with enhanced concentration conversion capabilities for EIQ calculations.
 """
 
 import csv
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple
 from dataclasses import dataclass
 from common import resource_path
 
@@ -86,7 +87,7 @@ class CompositeUOM:
         return self.original_string
 
 class UOMRepository:
-    """Repository for base units and composite UOM operations."""
+    """Repository for base units and composite UOM operations with enhanced EIQ capabilities."""
     
     _instance = None
     
@@ -100,6 +101,17 @@ class UOMRepository:
         self.csv_file = UOM_CSV
         self._base_units: Dict[str, BaseUnit] = {}
         self._load_base_units()
+        
+        # Enhanced concentration conversion mappings for EIQ calculations
+        self._concentration_conversion_map = {
+            # Standard concentration conversions
+            ('g/l', 'kg/l'): 0.001,
+            ('lb/gal', 'kg/l'): 0.119826,  # 1 lb/gal = 0.119826 kg/L
+            ('g/kg', 'kg/kg'): 0.001,
+            ('mg/kg', 'kg/kg'): 0.000001,
+            ('ppm', 'kg/kg'): 0.000001,  # ppm by weight
+            ('oz/gal', 'kg/l'): 0.007489,  # 1 oz/gal = 0.007489 kg/L
+        }
     
     def _load_base_units(self):
         """Load base units from CSV."""
@@ -159,6 +171,248 @@ class UOMRepository:
         
         raise ValueError(f"Cannot convert {from_uom.original_string} to {to_uom.original_string}")
     
+    # ========================
+    # ENHANCED EIQ METHODS
+    # ========================
+    
+    def convert_concentration(self, 
+                            value: float, 
+                            from_uom: str, 
+                            to_uom: str) -> float:
+        """
+        Convert concentration units with special handling for EIQ calculations.
+        
+        Args:
+            value: Concentration value to convert
+            from_uom: Source UOM (%, g/L, lb/gal, etc.)
+            to_uom: Target UOM (kg/kg, kg/L)
+            
+        Returns:
+            Converted concentration value
+        """
+        # Handle percentage conversion
+        if from_uom == '%':
+            if to_uom in ['kg/kg', 'decimal']:
+                return value / 100.0
+            else:
+                raise ValueError(f"Cannot convert % to {to_uom}")
+        
+        # Handle direct conversions
+        conversion_key = (from_uom.lower(), to_uom.lower())
+        if conversion_key in self._concentration_conversion_map:
+            return value * self._concentration_conversion_map[conversion_key]
+        
+        # Try using the base composite UOM conversion
+        try:
+            from_composite = CompositeUOM(from_uom)
+            to_composite = CompositeUOM(to_uom)
+            return self.convert_composite_uom(value, from_composite, to_composite)
+        except Exception as e:
+            raise ValueError(f"Cannot convert concentration from {from_uom} to {to_uom}: {e}")
+    
+    def validate_concentration_units(self, concentration_uom: str, rate_unit_type: str) -> bool:
+        """
+        Validate that concentration units are compatible with rate units.
+        
+        Args:
+            concentration_uom: Concentration UOM (%, g/L, etc.)
+            rate_unit_type: "weight" or "volume"
+            
+        Returns:
+            bool: True if compatible, False otherwise
+        """
+        if concentration_uom == '%':
+            return True  # Percentage works with both weight and volume
+        
+        concentration_composite = CompositeUOM(concentration_uom)
+        
+        # For weight-based rates, concentration should be weight/weight
+        if rate_unit_type == "weight":
+            if not concentration_composite.is_concentration:
+                return False
+            # Check if it's weight/weight
+            num_unit = self.get_base_unit(concentration_composite.numerator)
+            den_unit = self.get_base_unit(concentration_composite.denominator)
+            return (num_unit and den_unit and 
+                   num_unit.category == 'weight' and den_unit.category == 'weight')
+        
+        # For volume-based rates, concentration should be weight/volume
+        elif rate_unit_type == "volume":
+            if not concentration_composite.is_concentration:
+                return False
+            # Check if it's weight/volume
+            num_unit = self.get_base_unit(concentration_composite.numerator)
+            den_unit = self.get_base_unit(concentration_composite.denominator)
+            return (num_unit and den_unit and 
+                   num_unit.category == 'weight' and den_unit.category == 'volume')
+        
+        return False
+    
+    def get_rate_compatibility_info(self, rate_uom: str) -> Dict:
+        """
+        Get information about rate UOM compatibility and requirements.
+        
+        Args:
+            rate_uom: Application rate UOM
+            
+        Returns:
+            Dict with compatibility information
+        """
+        rate_composite = CompositeUOM(rate_uom)
+        numerator_unit = self.get_base_unit(rate_composite.numerator)
+        
+        if not numerator_unit:
+            return {"valid": False, "error": f"Unknown unit: {rate_composite.numerator}"}
+        
+        if numerator_unit.category == 'weight':
+            return {
+                "valid": True,
+                "rate_type": "weight",
+                "compatible_concentration_types": ["weight/weight", "percentage"],
+                "standard_rate_uom": "kg/ha",
+                "standard_concentration_uom": "kg/kg"
+            }
+        elif numerator_unit.category == 'volume':
+            return {
+                "valid": True,
+                "rate_type": "volume",
+                "compatible_concentration_types": ["weight/volume", "percentage"],
+                "standard_rate_uom": "l/ha",
+                "standard_concentration_uom": "kg/l"
+            }
+        else:
+            return {
+                "valid": False,
+                "error": f"Rate must be weight/area or volume/area, got: {numerator_unit.category}/area"
+            }
+    
+    def validate_eiq_calculation_inputs(self, 
+                                      rate: float,
+                                      rate_uom: str,
+                                      ai_concentration: float,
+                                      ai_concentration_uom: str,
+                                      ai_eiq: float) -> Dict:
+        """
+        Comprehensive validation of EIQ calculation inputs.
+        
+        Args:
+            rate: Application rate value
+            rate_uom: Application rate UOM
+            ai_concentration: AI concentration value
+            ai_concentration_uom: AI concentration UOM
+            ai_eiq: AI EIQ value
+            
+        Returns:
+            Dict with validation results and any errors
+        """
+        validation_result = {
+            "valid": True,
+            "errors": [],
+            "warnings": []
+        }
+        
+        # Validate rate
+        if rate <= 0:
+            validation_result["errors"].append("Application rate must be positive")
+            validation_result["valid"] = False
+        
+        # Validate rate UOM
+        rate_info = self.get_rate_compatibility_info(rate_uom)
+        if not rate_info["valid"]:
+            validation_result["errors"].append(rate_info["error"])
+            validation_result["valid"] = False
+        else:
+            # Validate concentration compatibility with rate
+            if not self.validate_concentration_units(ai_concentration_uom, rate_info["rate_type"]):
+                validation_result["errors"].append(
+                    f"Concentration UOM '{ai_concentration_uom}' not compatible with "
+                    f"{rate_info['rate_type']}-based rate '{rate_uom}'"
+                )
+                validation_result["valid"] = False
+        
+        # Validate AI concentration
+        if ai_concentration <= 0:
+            validation_result["errors"].append("AI concentration must be positive")
+            validation_result["valid"] = False
+        
+        # Validate concentration ranges
+        if ai_concentration_uom == '%' and ai_concentration > 100:
+            validation_result["errors"].append("Percentage concentration cannot exceed 100%")
+            validation_result["valid"] = False
+        elif ai_concentration_uom == '%' and ai_concentration > 50:
+            validation_result["warnings"].append("High concentration (>50%) - please verify")
+        
+        # Validate AI EIQ
+        if ai_eiq <= 0:
+            validation_result["errors"].append("AI EIQ must be positive")
+            validation_result["valid"] = False
+        elif ai_eiq > 200:
+            validation_result["warnings"].append("Very high EIQ value (>200) - please verify")
+        
+        return validation_result
+    
+    def get_conversion_path_info(self, 
+                               from_rate_uom: str,
+                               from_concentration_uom: str,
+                               user_preferences: dict = None) -> Dict:
+        """
+        Get information about the conversion path for EIQ calculations.
+        Useful for debugging and user feedback.
+        
+        Args:
+            from_rate_uom: Source rate UOM
+            from_concentration_uom: Source concentration UOM
+            user_preferences: User preferences for conversions
+            
+        Returns:
+            Dict with conversion path information
+        """
+        try:
+            rate_info = self.get_rate_compatibility_info(from_rate_uom)
+            if not rate_info["valid"]:
+                return {"valid": False, "error": rate_info["error"]}
+            
+            conversion_info = {
+                "valid": True,
+                "rate_conversion": {
+                    "from": from_rate_uom,
+                    "to": rate_info["standard_rate_uom"],
+                    "requires_user_preferences": self._needs_user_preferences_for_rate(from_rate_uom)
+                },
+                "concentration_conversion": {
+                    "from": from_concentration_uom,
+                    "to": rate_info["standard_concentration_uom"]
+                },
+                "eiq_conversion": {
+                    "from": "eiq/lb (Cornell)",
+                    "to": "eiq/kg"
+                },
+                "final_units": "eiq/ha"
+            }
+            
+            return conversion_info
+            
+        except Exception as e:
+            return {"valid": False, "error": str(e)}
+    
+    def _needs_user_preferences_for_rate(self, rate_uom: str) -> bool:
+        """Check if rate conversion requires user preferences."""
+        rate_composite = CompositeUOM(rate_uom)
+        
+        # Linear rates need row spacing
+        if rate_composite.denominator and rate_composite.denominator in ['100 m', '1000 ft', 'm', 'ft']:
+            return True
+        
+        # Seed treatments need seeding rate
+        if rate_composite.denominator == 'cwt':
+            return True
+        
+        return False
+    
+    # ========================
+    # ORIGINAL METHODS (PRESERVED)
+    # ========================
+    
     def _validate_physical_state_compatibility(self, from_uom: CompositeUOM, to_uom: CompositeUOM):
         """Validate that we're not converting between incompatible physical states."""
         # Get the numerator units (the "amount" part)
@@ -183,9 +437,8 @@ class UOMRepository:
         if from_uom.numerator == '%':
             return value / 100.0  # Convert percentage to decimal
         
-        # Handle other concentration conversions
-        # Implementation details...
-        return value
+        # Handle other concentration conversions using enhanced method
+        return self.convert_concentration(value, from_uom.original_string, to_uom.original_string)
     
     def _convert_rate(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM, 
                      user_preferences: dict = None) -> float:

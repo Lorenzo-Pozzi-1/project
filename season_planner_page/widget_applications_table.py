@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel,
 from PySide6.QtCore import Qt, Signal, QEasingCurve, QParallelAnimationGroup, QPropertyAnimation
 from PySide6.QtGui import QPalette, QColor
 from common import ContentFrame, BLUE_LINE_DROP_STYLE, GENERIC_TABLE_STYLE, WHITE, ALTERNATE_ROW_COLOR
+from common.utils import get_config
 from season_planner_page.widget_application_row import ApplicationRowWidget
 
 
@@ -148,7 +149,24 @@ class ApplicationsTableContainer(QWidget):
     
     def get_total_field_eiq(self):
         """Calculate the total Field EIQ for all applications."""
-        return sum(row.get_field_eiq() for row in self.application_rows)
+        try:
+            # Get user preferences for UOM conversions
+            user_preferences = get_config("user_preferences", {})
+            
+            # Collect all application EIQ values
+            total_eiq = 0.0
+            for row in self.application_rows:
+                app_data = row.get_application_data()
+                if app_data and app_data.get('product_name'):
+                    # Use the individual row's calculated EIQ
+                    row_eiq = row.get_field_eiq()
+                    total_eiq += row_eiq
+            
+            return total_eiq
+            
+        except Exception as e:
+            print(f"Error calculating total Field EIQ: {e}")
+            return 0.0
     
     def get_applications(self):
         """Get all applications as a list of dictionaries, excluding empty ones."""
