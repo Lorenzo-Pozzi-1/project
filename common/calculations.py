@@ -89,9 +89,8 @@ def calculate_product_field_eiq(active_ingredients, rate, unit, applications=1, 
             # Convert values to float if stored as string
             ai_eiq = float(ai['eiq']) if isinstance(ai['eiq'], str) else ai['eiq']
             
-            # Handle percent that might be stored with "%" suffix
-            percent_str = str(ai['percent'])
-            percent_value = float(percent_str.replace('%', '')) if '%' in percent_str else float(ai['percent'])
+            # Use the already converted percent value from get_ai_data()
+            percent_value = float(ai['percent']) if ai['percent'] is not None else 0.0
             
             # Calculate individual AI's field EIQ using the new system
             # Note: applications=1 here since we apply it at the end for the total

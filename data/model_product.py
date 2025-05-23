@@ -266,10 +266,10 @@ class Product:
         
     def get_ai_data(self):
         """
-        Get all active ingredients data with their EIQ values from the repository.
+        Get all active ingredients data with their EIQ values and original concentration info.
         
         Returns:
-            list: List of dictionaries with name, eiq, percent for each AI
+            list: List of dictionaries with name, eiq, concentration, uom, percent for each AI
         """
         
         ai_repo = AIRepository.get_instance()
@@ -284,11 +284,13 @@ class Product:
             eiq = ai_repo.get_ai_eiq(name)
             percent = convert_concentration_to_percent(concentration, uom)
             
-            if eiq is not None and percent is not None:
+            if eiq is not None and concentration is not None:
                 ai_data.append({
                     'name': name,
                     'eiq': eiq,
-                    'percent': percent
+                    'concentration': concentration,  # Original concentration amount
+                    'uom': uom,                     # Original UOM
+                    'percent': percent              # Converted percentage for calculations
                 })
         
         return ai_data

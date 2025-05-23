@@ -115,7 +115,7 @@ class SingleProductCalculatorTab(QWidget):
         self.product_selection.refresh_data()
         
         # Clear tables
-        self.clear_ai_table()
+        self.clear_tables()
         
         # Reset application parameters
         self.app_params.set_params(0.0, None, 1)
@@ -123,7 +123,7 @@ class SingleProductCalculatorTab(QWidget):
         # Clear EIQ result
         self.eiq_results.update_result(0.0)
     
-    def clear_ai_table(self):
+    def clear_tables(self):
         """Clear the active ingredients and label information tables."""
         self.ai_table.setRowCount(0)
         self.label_info_table.clearContents()
@@ -152,7 +152,7 @@ class SingleProductCalculatorTab(QWidget):
             
             # Update active ingredients table
             self.ai_table.setRowCount(len(self.active_ingredients))
-            
+
             for i, ai in enumerate(self.active_ingredients):
                 # Name
                 name_item = QTableWidgetItem(ai["name"])
@@ -165,21 +165,22 @@ class SingleProductCalculatorTab(QWidget):
                 eiq_item.setTextAlignment(Qt.AlignCenter)
                 self.ai_table.setItem(i, 1, eiq_item)
                 
-                # Concentration
-                percent_value = ai["percent"] if ai["percent"] is not None else "--"
-                concentration_item = QTableWidgetItem(str(percent_value))
+                # Concentration amount
+                concentration_value = ai["concentration"] if ai["concentration"] is not None else "--"
+                concentration_item = QTableWidgetItem(str(concentration_value))
                 concentration_item.setTextAlignment(Qt.AlignCenter)
                 self.ai_table.setItem(i, 2, concentration_item)
                 
-                # UOM (always percentage)
-                uom_item = QTableWidgetItem("%")
+                # Concentration UOM
+                uom_value = ai["uom"] if ai["uom"] is not None else "--"
+                uom_item = QTableWidgetItem(str(uom_value))
                 uom_item.setTextAlignment(Qt.AlignCenter)
                 self.ai_table.setItem(i, 3, uom_item)
             
             # Update label information table
             self.update_label_info()
             
-            # Update application parameters based on product data
+            # Pre-compile application parameters based on product data
             self.update_application_params()
             
             # Calculate EIQ with new values
@@ -238,7 +239,7 @@ class SingleProductCalculatorTab(QWidget):
     
     def update_application_params(self):
         """Update application parameters based on current product data."""
-        if not self.current_product:
+        if not self.current_product:  # If no product selected
             self.app_params.set_params(0.0, None, 1)
             return
         
@@ -249,11 +250,11 @@ class SingleProductCalculatorTab(QWidget):
         elif self.current_product.label_minimum_rate is not None:
             rate = self.current_product.label_minimum_rate
         
-        # Set unit to product's UOM if available
+        # Set unit to product's UOM
         unit = self.current_product.rate_uom
         
         # Default to 1 application
-        applications = 1
+        applications = 1                                                     # CHECKED UNTIL HERE, CONTINUE
         
         # Update application parameters widget
         self.app_params.set_params(rate, unit, applications)
@@ -264,7 +265,7 @@ class SingleProductCalculatorTab(QWidget):
         self.active_ingredients = []
         
         # Clear tables
-        self.clear_ai_table()
+        self.clear_tables()
         
         # Reset application parameters
         self.app_params.set_params(0.0, None, 1)
