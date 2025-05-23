@@ -39,6 +39,6 @@ __all__ = [
     
     # Repositories
     'AIRepository',
-    'ProductRepository'
+    'ProductRepository',
     'UOMRepository'
 ]

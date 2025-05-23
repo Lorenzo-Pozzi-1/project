@@ -6,7 +6,7 @@ Updated to support multiple active ingredients without EIQ data in the product.
 """
 
 from data.ai_repository import AIRepository
-from math_module import convert_concentration_to_percent
+from data.UOM_repository import convert_concentration_to_percent
 
 class Product:
     """

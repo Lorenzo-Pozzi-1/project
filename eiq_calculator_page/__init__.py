@@ -15,17 +15,14 @@ from common.widgets.application_params import ApplicationParamsWidget
 from eiq_calculator_page.widgets.result_display import EiqResultDisplay, ColorCodedEiqItem
 from common.styles import get_eiq_color, EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD
 
-# Re-export math module functions that are used by EIQ calculator
+# Re-export EIQ calculation functions
 from math_module.eiq_calculations import (
     calculate_field_eiq, calculate_product_field_eiq, 
     format_eiq_result, get_impact_category
 )
-from math_module.eiq_conversions import (
-    convert_concentration_to_percent, convert_application_rate,
-    convert_concentration_to_decimal, convert_eiq_units,
-    standardize_eiq_calculation, convert_eiq_to_metric,
-    APPLICATION_RATE_CONVERSION, CONCENTRATION_CONVERSION
-)
+
+# Re-export UOM system components
+from data.UOM_repository import UOMRepository, CompositeUOM
 
 __all__ = [
     'EiqCalculatorPage',
@@ -44,12 +41,6 @@ __all__ = [
     'calculate_product_field_eiq',
     'format_eiq_result',
     'get_impact_category',
-    'convert_concentration_to_percent',
-    'convert_application_rate',
-    'convert_concentration_to_decimal',
-    'convert_eiq_units',
-    'standardize_eiq_calculation',
-    'convert_eiq_to_metric',
-    'APPLICATION_RATE_CONVERSION',
-    'CONCENTRATION_CONVERSION'
+    'UOMRepository',
+    'CompositeUOM'
 ]
