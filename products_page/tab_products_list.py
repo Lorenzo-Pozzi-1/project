@@ -9,8 +9,8 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
 from PySide6.QtCore import Qt
 from common import ContentFrame, create_button
 from data import ProductRepository
-from products_page.widgets.filter_row import FilterRowContainer
-from products_page.widgets.products_table import ProductTable
+from products_page.widget_filter_row import FilterRowContainer
+from products_page.widget_products_table import ProductTable
 
 
 class ProductsListTab(QWidget):

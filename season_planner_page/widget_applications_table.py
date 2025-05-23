@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel,
 from PySide6.QtCore import Qt, Signal, QEasingCurve, QParallelAnimationGroup, QPropertyAnimation
 from PySide6.QtGui import QPalette, QColor
 from common import ContentFrame, BLUE_LINE_DROP_STYLE, GENERIC_TABLE_STYLE, WHITE, ALTERNATE_ROW_COLOR
-from season_planner_page.widgets.application_row import ApplicationRowWidget
+from season_planner_page.widget_application_row import ApplicationRowWidget
 
 
 class ApplicationsTableContainer(QWidget):
