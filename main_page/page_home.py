@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMessag
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
 from common import MARGIN_LARGE, SPACING_LARGE, INFO_TEXT_STYLE, resource_path, get_title_font, get_large_font, get_subtitle_font, get_medium_font, create_button, ContentFrame
-from main_page.preferences_row import PreferencesRow
+from main_page.widget_preferences_row import PreferencesRow
 
 class HomePage(QWidget):
     """

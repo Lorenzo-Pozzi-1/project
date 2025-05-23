@@ -16,7 +16,7 @@ Usage examples:
 """
 
 # Re-export all config utilities
-from common.config_utils import (
+from common.utils import (
     get_config,
     load_config,
     save_config,

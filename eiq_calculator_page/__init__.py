@@ -25,9 +25,9 @@ from common.calculations import (
 from data.repository_UOM import UOMRepository, CompositeUOM
 
 # Now import the UI components
-from eiq_calculator_page.eiq_calculator_page import EiqCalculatorPage
-from eiq_calculator_page.single_calculator_tab import SingleProductCalculatorTab
-from eiq_calculator_page.multi_calculator_tab import ProductComparisonCalculatorTab
+from eiq_calculator_page.page_eiq_calculator import EiqCalculatorPage
+from eiq_calculator_page.tab_single_calculator import SingleProductCalculatorTab
+from eiq_calculator_page.tab_multi_calculator import ProductComparisonCalculatorTab
 
 # Import widgets for direct access - these are exposed for convenience
 from common.widgets.product_selection import ProductSelectionWidget, ProductSearchField

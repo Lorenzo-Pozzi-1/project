@@ -1,7 +1,7 @@
 """
-Configuration management for the Lorenzo Pozzi Pesticide App.
+Utility functions for the Lorenzo Pozzi Pesticide App.
 
-This module handles loading, saving, and accessing application configuration.
+This module handles mostly application configuration, plus resources paths generation.
 """
 
 import json, os, sys
