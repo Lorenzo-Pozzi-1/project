@@ -70,11 +70,7 @@ from common.widgets import (
 )
  
 # EIQ calculation functions
-from common.calculations import (
-    eiq_calculator,
-    format_eiq_result,
-    get_impact_category
-)
+from common.calculations import eiq_calculator
 
 # UOM system components
 from data.repository_UOM import (
@@ -124,8 +120,6 @@ __all__ = [
 
     # NEW EIQ calculations
     'eiq_calculator',
-    'format_eiq_result',
-    'get_impact_category',
     
     # UOM system
     'UOMRepository',

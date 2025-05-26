@@ -7,7 +7,7 @@ This module provides widgets for displaying EIQ calculation results.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableWidgetItem, QTableWidget, QHeaderView
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush
-from common import (GENERIC_TABLE_STYLE, get_subtitle_font, ContentFrame, ScoreBar, get_eiq_color, get_eiq_rating, format_eiq_result,
+from common import (GENERIC_TABLE_STYLE, get_subtitle_font, ContentFrame, ScoreBar, get_eiq_color, get_eiq_rating,
                     EIQ_LOW_THRESHOLD as LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD)
 
 
@@ -129,7 +129,8 @@ class EiqResultDisplay(QWidget):
             self.score_bar.set_value(0, "No calculation")
             return
         
-        ha_text = format_eiq_result(field_eiq)
+        # Format the EIQ result with two decimal places
+        ha_text = f"{field_eiq:.2f}"
         self.field_eiq_result_ha.setText(ha_text)
 
 

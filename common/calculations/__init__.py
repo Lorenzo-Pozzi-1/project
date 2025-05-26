@@ -41,11 +41,8 @@ from .layer_1_uom_std import (
 from .layer_2_eiq_math import (
     calculate_field_eiq_single_ai,
     calculate_field_eiq_product,
-    calculate_field_eiq_application,
     calculate_field_eiq_scenario,
-    EIQResult,
-    format_eiq_result,
-    get_impact_category
+    EIQResult
 )
 
 # Define what gets imported with "from common.calculations import *"
@@ -53,10 +50,6 @@ __all__ = [
     # Main calculator interface
     'eiq_calculator',
     'EIQCalculator',
-    
-    # Keep these utility functions:
-    'format_eiq_result',
-    'get_impact_category',
     
     # Layer 1 - UOM Standardization
     'EIQUOMStandardizer',
@@ -66,7 +59,6 @@ __all__ = [
     # Layer 2 - Pure Calculations
     'calculate_field_eiq_single_ai',
     'calculate_field_eiq_product',
-    'calculate_field_eiq_application', 
     'calculate_field_eiq_scenario',
     'EIQResult'
 ]

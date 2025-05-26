@@ -180,7 +180,7 @@ class ProductTable(QTableWidget):
             if col == 0:
                 self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Fixed)
                 self.setColumnWidth(col, 25)
-            # Set name column to fit contents
+            # Set name column to stretch
             elif self.horizontalHeaderItem(col) and self.horizontalHeaderItem(col).text().lower() == "name":
                 self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
             # Set AIs column to fixed width
@@ -191,10 +191,14 @@ class ProductTable(QTableWidget):
             elif self.horizontalHeaderItem(col) and self.horizontalHeaderItem(col).text().lower() == "groups":
                 self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Fixed)
                 self.setColumnWidth(col, 200)
+            # Set registrant column to stretch
+            elif self.horizontalHeaderItem(col) and self.horizontalHeaderItem(col).text().lower() == "registrant":
+                self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
             # Set type column to fixed width
             elif self.horizontalHeaderItem(col) and self.horizontalHeaderItem(col).text().lower() == "type":
                 self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Fixed)
                 self.setColumnWidth(col, 150)
+            # Set all other columns to fixed width
             elif not self.isColumnHidden(col):
                 self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Fixed)
                 self.setColumnWidth(col, 100)

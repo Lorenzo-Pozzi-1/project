@@ -3,26 +3,26 @@ UOM Standardization (1st Layer) for EIQ Calculations
 Handles all unit conversions and dimensional analysis validation
 """
 
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, List, Tuple
 from dataclasses import dataclass
 from data.repository_UOM import UOMRepository, CompositeUOM
 
 @dataclass
 class StandardizedEIQInputs:
     """Container for standardized EIQ calculation inputs"""
-    rate_per_ha: float                    # [kg/ha] or [L/ha] 
+    rate_per_ha: float                    # [kg/ha]  or [l/ha] 
     rate_unit_type: str                   # "weight" or "volume"
-    ai_concentration_per_unit: float      # [kg/kg] or [kg/L]
+    ai_concentration_per_unit: float      # [kg/kg]  or [kg/l]
     ai_eiq_per_kg: float                  # [eiq/kg]
     applications: int                     # dimensionless
 
 @dataclass
 class ProductStandardizedInputs:
     """Container for standardized product-level inputs"""
-    rate_per_ha: float                    # [kg/ha] or [L/ha]
-    rate_unit_type: str                   # "weight" or "volume" 
-    active_ingredients: List[Dict]        # List of standardized AI data
-    applications: int                     # dimensionless
+    rate_per_ha: float              # [kg/ha]  or [l/ha]
+    rate_unit_type: str             # "weight" or "volume" 
+    active_ingredients: List[Dict]  # List of standardized AI data
+    applications: int               # dimensionless
 
 class EIQUOMStandardizer:
     """
@@ -31,6 +31,7 @@ class EIQUOMStandardizer:
     """
     
     def __init__(self):
+        # Initialize UOM repository
         self.uom_repo = UOMRepository.get_instance()
     
     def standardize_single_ai_inputs(self, 
@@ -45,11 +46,10 @@ class EIQUOMStandardizer:
         Standardize all inputs for single AI EIQ calculation.
         
         Returns standardized inputs where dimensional analysis checks out:
-        [kg/ha] × [kg/kg] × [eiq/kg] = [eiq/ha] OR
-        [L/ha] × [kg/L] × [eiq/kg] = [eiq/ha]
+        [kg/ha] × [kg/kg] × [eiq/kg] = [eiq/ha] OR [l/ha] × [kg/l] × [eiq/kg] = [eiq/ha]
         """
         
-        # Step 1: Standardize application rate to [kg/ha] or [L/ha]
+        # Step 1: Standardize application rate to [kg/ha] or [l/ha]
         rate_per_ha, rate_unit_type = self._standardize_application_rate(
             application_rate, application_rate_uom, user_preferences
         )
@@ -137,7 +137,7 @@ class EIQUOMStandardizer:
                                     rate_uom: str, 
                                     user_preferences: dict = None) -> Tuple[float, str]:
         """
-        Convert application rate to standard [kg/ha] or [L/ha].
+        Convert application rate to standard [kg/ha] or [l/ha].
         
         Returns:
             Tuple of (standardized_rate, unit_type) where unit_type is "weight" or "volume"
@@ -145,9 +145,9 @@ class EIQUOMStandardizer:
         if not rate or not rate_uom:
             raise ValueError("Application rate and UOM are required")
         
-        from_uom = CompositeUOM(rate_uom)
+        from_uom = CompositeUOM(rate_uom) # Parse the UOM into numerator / denominator
         
-        # Determine target unit based on numerator type
+        # Determine target unit (kg or l) based on numerator type
         numerator_unit = self.uom_repo.get_base_unit(from_uom.numerator)
         if not numerator_unit:
             raise ValueError(f"Unknown unit in rate: {from_uom.numerator}")
@@ -174,26 +174,26 @@ class EIQUOMStandardizer:
         
         Args:
             concentration: AI concentration value
-            concentration_uom: UOM for concentration (%, g/L, lb/gal, etc.)
+            concentration_uom: UOM for concentration (%, g/l, lb/gal, etc.)
             target_rate_type: "weight" or "volume" to match application rate
             
         Returns:
-            Standardized concentration as [kg/kg] or [kg/L]
+            Standardized concentration as [kg/kg] or [kg/l]
         """
         if not concentration or not concentration_uom:
             raise ValueError("AI concentration and UOM are required")
         
-        # Handle percentage - works with both weight and volume
+        # Handle percentage - works with both weight and volume (THIS MAY CREATE CALCULATION ERRORS WHEN LABEL % IS VOLUME/VOLUME)
         if concentration_uom == '%':
             return concentration / 100.0  # Convert to decimal [kg/kg]
         
-        from_uom = CompositeUOM(concentration_uom)
+        from_uom = CompositeUOM(concentration_uom) # Parse the UOM into numerator / denominator
         
         # Determine target concentration UOM based on rate type
         if target_rate_type == "weight":
             target_uom = CompositeUOM("kg/kg")  # [kg AI / kg product]
         elif target_rate_type == "volume":
-            target_uom = CompositeUOM("kg/l")   # [kg AI / L product]
+            target_uom = CompositeUOM("kg/l")   # [kg AI / l product]
         else:
             raise ValueError(f"Invalid rate type: {target_rate_type}")
         
@@ -204,16 +204,16 @@ class EIQUOMStandardizer:
             from_is_weight_per_weight = self._is_weight_per_weight(from_uom)
             
             if from_is_weight_per_volume and target_rate_type == "weight":
-                # Cannot convert lb/gal to kg/kg - this is physically impossible
+                # e.g. cannot convert lb/gal to kg/kg - this is physically impossible
                 raise ValueError(
                     f"Cannot convert {concentration_uom} (weight/volume) to weight/weight concentration. "
                     f"Product with {concentration_uom} concentration must use volume-based application rates."
                 )
             
             if from_is_weight_per_weight and target_rate_type == "volume":
-                # Can convert kg/kg to kg/L, but would need product density - not implemented yet
-                # For now, assume similar density to water (1 kg/L)
-                print(f"Warning: Converting {concentration_uom} to kg/L assuming density ~1 kg/L")
+                # Could convert kg/kg to kg/l, but would need product density - not implemented yet
+                # For now, assume similar density to water (1 kg/l)
+                print(f"WARNING! Converting concentration of one AI from {concentration_uom} to kg/l assuming density ~1 kg/l")
         
         # Convert concentration
         try:
@@ -228,16 +228,20 @@ class EIQUOMStandardizer:
     
     def _standardize_ai_eiq(self, ai_eiq: float) -> float:
         """
-        Convert AI EIQ from Cornell units (eiq/lb) to standard (eiq/kg).
+        Convert AI EIQ from Cornell units (eiq/lb) to standard (eiq/kg). 0s and None values are handled gracefully.
         
         Args:
-            ai_eiq: EIQ value from Cornell database (eiq/lb)
+            ai_eiq: EIQ value from Cornell (eiq/lb)
             
         Returns:
             EIQ in standard units (eiq/kg)
         """
-        if not ai_eiq:
-            raise ValueError("AI EIQ value is required")
+        if ai_eiq is None:
+            print("WARNING! Missing AI eiq value, calculating assuming it is 0.")
+            return 0.0
+        
+        if ai_eiq == 0:
+            return 0.0
         
         # Cornell EIQ is per pound, convert to per kg
         return self.uom_repo.convert_base_unit(ai_eiq, 'lb', 'kg')
@@ -247,8 +251,8 @@ class EIQUOMStandardizer:
         Validate that dimensional analysis will work correctly.
         
         Expected outcomes:
-        - Weight rate: [kg/ha] × [kg/kg] × [eiq/kg] = [eiq/ha]
-        - Volume rate: [L/ha] × [kg/L] × [eiq/kg] = [eiq/ha]
+        - Weight rate: [kg/ha] x [kg/kg] x [eiq/kg] = [eiq/ha]
+        - Volume rate: [l/ha]  x [kg/l]  x [eiq/kg] = [eiq/ha]
         """
         if rate_unit_type not in ["weight", "volume"]:
             raise ValueError(f"Invalid rate unit type: {rate_unit_type}")
@@ -262,18 +266,17 @@ class EIQUOMStandardizer:
             raise ValueError("Weight-based concentration cannot exceed 1.0 (100%)")
         
     def _is_weight_per_volume(self, uom: CompositeUOM) -> bool:
-        """Check if UOM is weight per volume (like lb/gal, g/L)."""
+        """Check if UOM is weight per volume (like lb/gal, g/l)."""
         if not uom.is_concentration:
             return False
         
         num_unit = self.uom_repo.get_base_unit(uom.numerator)
         den_unit = self.uom_repo.get_base_unit(uom.denominator)
         
-        return (num_unit and den_unit and 
-                num_unit.category == 'weight' and den_unit.category == 'volume')
+        return (num_unit and den_unit and num_unit.category == 'weight' and den_unit.category == 'volume')
     
     def _is_weight_per_weight(self, uom: CompositeUOM) -> bool:
-        """Check if UOM is weight per weight (like kg/kg, %)."""
+        """Check if UOM is weight per weight (like g/kg, %)."""
         if uom.numerator == '%':
             return True
             
@@ -283,5 +286,4 @@ class EIQUOMStandardizer:
         num_unit = self.uom_repo.get_base_unit(uom.numerator)
         den_unit = self.uom_repo.get_base_unit(uom.denominator)
         
-        return (num_unit and den_unit and 
-                num_unit.category == 'weight' and den_unit.category == 'weight')
+        return (num_unit and den_unit and num_unit.category == 'weight' and den_unit.category == 'weight')

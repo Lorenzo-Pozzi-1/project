@@ -15,9 +15,7 @@ from common.styles import (
 
 # Import calculation functions
 from common.calculations import (
-    eiq_calculator,
-    format_eiq_result,
-    get_impact_category
+    eiq_calculator
 )
 
 # Import UOM
@@ -54,8 +52,6 @@ __all__ = [
     'MEDIUM_THRESHOLD',
     'HIGH_THRESHOLD',
     'eiq_calculator',
-    'format_eiq_result',
-    'get_impact_category',
     'UOMRepository',
     'CompositeUOM'
 ]

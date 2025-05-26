@@ -20,7 +20,7 @@ class Product:
                  region=None,
                  product_type=None,
                  product_name=None,
-                 producer_name=None,
+                 registrant_name=None,
                  regulator_number=None,
                  application_method=None,
                  label_minimum_rate=None,
@@ -50,7 +50,7 @@ class Product:
             region (str): region where the product standard applies
             product_type (str): Product type (e.g., Herbicide)
             product_name (str): Product name
-            producer_name (str): Manufacturer/producer name
+            registrant_name (str): Manufacturer/registrant name
             regulator_number (str): Registration/regulation number
             application_method (str): Recommended application method
             formulation (str): Product formulation (liquid/dry)
@@ -77,7 +77,7 @@ class Product:
         self.region = region
         self.product_type = product_type
         self.product_name = product_name
-        self.producer_name = producer_name
+        self.registrant_name = registrant_name
         self.regulator_number = regulator_number
         self.application_method = application_method
         self.formulation = formulation
@@ -175,7 +175,7 @@ class Product:
             "type": self.product_type,
             "reg. #": self.regulator_number,
             "name": self.product_name,
-            "producer": self.producer_name,
+            "registrant": self.registrant_name,
             "use": self.application_method,
             "formulation": self.formulation,
             "min rate": self.label_minimum_rate,
@@ -214,7 +214,7 @@ class Product:
             region=data.get("region"),
             product_type=data.get("type"),
             product_name=data.get("name"),
-            producer_name=data.get("producer"),
+            registrant_name=data.get("registrant"),
             regulator_number=data.get("regulator number"),
             application_method=data.get("application method"),
             formulation=data.get("formulation"),

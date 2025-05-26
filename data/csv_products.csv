@@ -1,4 +1,4 @@
-country,region,type,regulator number,name,producer,application method,formulation,min rate,max rate,rate UOM,min days between applications,REI (h),PHI (d),AI1,[AI1],[AI1]UOM,AI2,[AI2],[AI2]UOM,AI3,[AI3],[AI3]UOM,AI4,[AI4],[AI4]UOM
+country,region,type,regulator number,name,registrant,application method,formulation,min rate,max rate,rate UOM,min days between applications,REI (h),PHI (d),AI1,[AI1],[AI1]UOM,AI2,[AI2],[AI2]UOM,AI3,[AI3],[AI3]UOM,AI4,[AI4],[AI4]UOM
 United States,,Fumigant,62719-348,INLINE SOIL FUMIGANT,SALT LAKE HOLDING LLC,Fumigation,Liquid,13,35,gal/acre,,120,,"1,3-dichloropropene",6.57,lb/gal,Chloropicrin,3.73,lb/gal,,,,,,
 United States,,Fumigant,62719-302,TELONE C-35,SALT LAKE HOLDING LLC,Fumigation,Liquid,21.4,36,gal/acre,,120,,"1,3-dichloropropene",6.84,lb/gal,Chloropicrin,3.89,lb/gal,,,,,,
 United States,Washington,Fumigant,11220-36-53766,STRIKE 80CP FUMIGANT,"TriEst Ag Group, Inc.",Fumigation,Liquid,17,34,gal/acre,,120,,"1,3-dichloropropene",2.5,lb/gal,Chloropicrin,10.3,lb/gal,,,,,,
