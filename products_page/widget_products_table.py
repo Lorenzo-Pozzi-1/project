@@ -33,6 +33,7 @@ class ProductTable(QTableWidget):
         self.setAlternatingRowColors(True)
         self.verticalHeader().setVisible(False)
         self.setSelectionBehavior(QTableWidget.SelectRows)
+        self.setEditTriggers(QTableWidget.NoEditTriggers)
         
         # Configure header
         header = self.horizontalHeader()

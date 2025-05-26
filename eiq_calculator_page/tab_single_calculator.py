@@ -49,6 +49,7 @@ class SingleProductCalculatorTab(QWidget):
         
         # Create Active Ingredients table
         self.ai_table = QTableWidget()
+        self.ai_table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.ai_table.setStyleSheet(GENERIC_TABLE_STYLE)
         self.ai_table.setRowCount(0)  # Start empty
         self.ai_table.setColumnCount(4)  # 4 columns including UOM
@@ -70,6 +71,7 @@ class SingleProductCalculatorTab(QWidget):
         
         # Create label information table
         self.label_info_table = QTableWidget()
+        self.label_info_table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.label_info_table.setStyleSheet(GENERIC_TABLE_STYLE)
         self.label_info_table.setRowCount(1)  # One row for the selected product
         self.label_info_table.setColumnCount(7)  # 7 columns for product info

@@ -161,6 +161,7 @@ class EiqComparisonTable(QTableWidget):
         self.setAlternatingRowColors(True)
         self.setSelectionBehavior(QTableWidget.SelectRows)
         self.setSelectionMode(QTableWidget.SingleSelection)
+        self.setEditTriggers(QTableWidget.NoEditTriggers)
         self.verticalHeader().setVisible(False)
     
     def add_product_result(self, product_name, field_eiq, product_id=None,

@@ -38,6 +38,8 @@ class ComparisonTable(QTableWidget):
         self.setSelectionBehavior(QTableWidget.SelectRows)
         self.setSelectionMode(QTableWidget.SingleSelection)
         self.verticalHeader().setVisible(False)
+        self.setEditTriggers(QTableWidget.NoEditTriggers)
+
         
         # Style the horizontal header
         self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)

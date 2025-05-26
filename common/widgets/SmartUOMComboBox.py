@@ -47,7 +47,7 @@ class CustomUOMDialog(QDialog):
         # Separate by category for better organization
         weight_units = [u for u, unit in repo._base_units.items() if unit.category == 'weight']
         volume_units = [u for u, unit in repo._base_units.items() if unit.category == 'volume'] 
-        area_units = [u for u, unit in repo._base_units.items() if unit.category == 'area']
+        area_units   = [u for u, unit in repo._base_units.items() if unit.category == 'area']
         length_units = [u for u, unit in repo._base_units.items() if unit.category == 'length']
         
         # Numerator dropdown
