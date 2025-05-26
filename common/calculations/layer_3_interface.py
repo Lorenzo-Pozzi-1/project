@@ -4,7 +4,7 @@ Combines both layers into clean, easy-to-use functions for the UI.
 Handles UOM standardization internally, exposes simple interfaces.
 """
 
-from typing import List, Dict, Optional
+from typing import List, Dict
 from .layer_1_uom_std import EIQUOMStandardizer
 from .layer_2_eiq_math import (
     calculate_field_eiq_single_ai, 
@@ -68,7 +68,7 @@ class EIQCalculator:
             return field_eiq
             
         except Exception as e:
-            print(f"Error calculating AI Field EIQ: {e}")
+            print(f"Layer 3.calculate_ai_field_eiq: Error calculating AI Field EIQ: {e}")
             return 0.0
     
     def calculate_product_field_eiq(self,
@@ -110,43 +110,45 @@ class EIQCalculator:
             return result.field_eiq_per_ha
             
         except Exception as e:
-            print(f"Error calculating product Field EIQ: {e}")
+            print(f"Layer 3.calculate_product_field_eiq: Error calculating product Field EIQ: {e}")
             return 0.0
     
-    def calculate_product_field_eiq_detailed(self,
-                                           active_ingredients: List[Dict],
-                                           application_rate: float,
-                                           application_rate_uom: str,
-                                           applications: int = 1,
-                                           user_preferences: dict = None) -> EIQResult:
-        """
-        Calculate detailed Field EIQ for a product (includes breakdown by AI).
+
+    # THIS FUNCTION IS CURRENTLY NOT USED BUT IT COULD BE IF WE WANT TO MAKE REPORTS ON AI CONTRIBUTIONS FOR GLOBAL
+    # def calculate_product_field_eiq_detailed(self,
+    #                                        active_ingredients: List[Dict],
+    #                                        application_rate: float,
+    #                                        application_rate_uom: str,
+    #                                        applications: int = 1,
+    #                                        user_preferences: dict = None) -> EIQResult:
+    #     """
+    #     Calculate detailed Field EIQ for a product (includes breakdown by AI).
         
-        Returns:
-            EIQResult with total and breakdown by active ingredient
-        """
-        try:
-            # Layer 1: Standardize inputs
-            standardized = self.standardizer.standardize_product_inputs(
-                active_ingredients=active_ingredients,
-                application_rate=application_rate,
-                application_rate_uom=application_rate_uom,
-                applications=applications,
-                user_preferences=user_preferences
-            )
+    #     Returns:
+    #         EIQResult with total and breakdown by active ingredient
+    #     """
+    #     try:
+    #         # Layer 1: Standardize inputs
+    #         standardized = self.standardizer.standardize_product_inputs(
+    #             active_ingredients=active_ingredients,
+    #             application_rate=application_rate,
+    #             application_rate_uom=application_rate_uom,
+    #             applications=applications,
+    #             user_preferences=user_preferences
+    #         )
             
-            # Layer 2: Pure calculation with breakdown
-            result = calculate_field_eiq_product(
-                standardized_ais=standardized.active_ingredients,
-                rate_per_ha=standardized.rate_per_ha,
-                applications=standardized.applications
-            )
+    #         # Layer 2: Pure calculation with breakdown
+    #         result = calculate_field_eiq_product(
+    #             standardized_ais=standardized.active_ingredients,
+    #             rate_per_ha=standardized.rate_per_ha,
+    #             applications=standardized.applications
+    #         )
             
-            return result
+    #         return result
             
-        except Exception as e:
-            print(f"Error calculating detailed product Field EIQ: {e}")
-            return EIQResult(field_eiq_per_ha=0.0)
+    #     except Exception as e:
+    #         print(f"Error calculating detailed product Field EIQ: {e}")
+    #         return EIQResult(field_eiq_per_ha=0.0)
     
     def calculate_scenario_field_eiq(self,
                                    applications: List[Dict],
@@ -191,7 +193,7 @@ class EIQCalculator:
             return scenario_result.field_eiq_per_ha
             
         except Exception as e:
-            print(f"Error calculating scenario Field EIQ: {e}")
+            print(f"Layer 3.calculate_scenario_field_eiq: Error calculating scenario Field EIQ: {e}")
             return 0.0
 
 # Create singleton instance for global use

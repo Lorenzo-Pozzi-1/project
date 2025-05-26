@@ -122,7 +122,7 @@ class EIQUOMStandardizer:
                 })
                 
             except Exception as e:
-                print(f"Error standardizing AI {ai.get('name', 'unknown')}: {e}")
+                print(f"Layer 1.standardize_product_inputs: Error standardizing AI {ai.get('name', 'unknown')}: {e}")
                 continue
         
         return ProductStandardizedInputs(
@@ -223,7 +223,7 @@ class EIQUOMStandardizer:
             return standardized_concentration
         except Exception as e:
             raise ValueError(
-                f"Cannot convert concentration from {concentration_uom} to {target_uom.original_string}: {e}"
+                f"Layer 1._standardize_ai_concentration: Cannot convert concentration from {concentration_uom} to {target_uom.original_string}: {e}"
             )
     
     def _standardize_ai_eiq(self, ai_eiq: float) -> float:
@@ -263,7 +263,7 @@ class EIQUOMStandardizer:
         # Additional validations could go here
         # For example, checking reasonable ranges for concentrations
         if rate_unit_type == "weight" and ai_concentration > 1.0:
-            raise ValueError("Weight-based concentration cannot exceed 1.0 (100%)")
+            raise ValueError("Layer1._validate_dimensional_analysis: Weight-based concentration cannot exceed 1.0 (100%)")
         
     def _is_weight_per_volume(self, uom: CompositeUOM) -> bool:
         """Check if UOM is weight per volume (like lb/gal, g/l)."""
