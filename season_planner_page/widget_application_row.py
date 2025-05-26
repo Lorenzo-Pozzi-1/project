@@ -1,9 +1,8 @@
 """Application Row Widget for the LORENZO POZZI Pesticide App with drag support."""
 
 from contextlib import contextmanager
-from PySide6.QtCore import Qt, Signal, QMimeData
-from PySide6.QtGui import QDrag
-from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QDoubleSpinBox, QComboBox
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QMessageBox, QDoubleSpinBox, QComboBox
 from common import get_medium_text_size, get_config, FRAME_STYLE, ProductSelectionWidget, ApplicationParamsWidget, eiq_calculator
 from data import ProductRepository, AIRepository
 
@@ -13,8 +12,6 @@ class ApplicationRowWidget(QFrame):
     
     # Signals
     data_changed = Signal(object)  
-    drag_started = Signal(object)  
-    drag_ended = Signal(object)    
     delete_requested = Signal(object)  
     
     ROW_HEIGHT = 40
@@ -25,8 +22,6 @@ class ApplicationRowWidget(QFrame):
         self.field_area = field_area
         self.field_area_uom = field_area_uom
         self.index = index
-        self.drag_start_position = None
-        self.is_dragging = False
         
         # Store repository instances
         self.products_repo = ProductRepository.get_instance()
@@ -45,7 +40,6 @@ class ApplicationRowWidget(QFrame):
         self.setStyleSheet(FRAME_STYLE)
         self.setFixedHeight(self.ROW_HEIGHT)
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-        self.setAcceptDrops(True)
     
     @contextmanager
     def blocked_signals(self):
@@ -64,7 +58,6 @@ class ApplicationRowWidget(QFrame):
 
         # Define widget configurations
         widgets = [
-            self._create_drag_handle(),
             self._create_app_number_label(),
             self._create_date_field(),
             self._create_product_selection(),
@@ -77,20 +70,12 @@ class ApplicationRowWidget(QFrame):
         ]
         
         # Add widgets with stretch factors
-        stretch_factors = [0, 1, 1, 3, 1, 1, 1, 1, 1, 0]
+        stretch_factors = [1, 1, 3, 1, 1, 1, 1, 1, 0]
         
         for widget, stretch in zip(widgets, stretch_factors):
             layout.addWidget(widget)
             layout.setStretch(layout.count() - 1, stretch)
-    
-    def _create_drag_handle(self):
-        """Create the drag handle for the row."""
-        self.drag_handle = QLabel("≡")
-        self.drag_handle.setAlignment(Qt.AlignCenter)
-        self.drag_handle.setFixedWidth(16)
-        self.drag_handle.setCursor(Qt.OpenHandCursor)
-        return self.drag_handle
-    
+        
     def _create_app_number_label(self):
         """Create the application number label."""
         self.app_number_label = QLabel(str(self.index + 1))
@@ -325,43 +310,6 @@ class ApplicationRowWidget(QFrame):
     def set_index(self, index):
         """Update the row index."""
         self.index = index
-    
-    # Drag and drop functionality
-    def mousePressEvent(self, event):
-        """Handle mouse press events to initiate drag."""
-        if event.button() == Qt.LeftButton:
-            self.drag_start_position = event.pos()
-    
-    def mouseMoveEvent(self, event):
-        """Handle mouse move events for drag operations."""
-        if not (event.buttons() & Qt.LeftButton):
-            return
-            
-        if ((event.pos() - self.drag_start_position).manhattanLength() 
-                < QApplication.startDragDistance()):
-            return
-        
-        # Start drag operation
-        self._start_drag(event)
-    
-    def _start_drag(self, event):
-        """Initialize and execute the drag operation."""
-        drag = QDrag(self)
-        mimedata = QMimeData()
-        mimedata.setData("application/x-applicationrow-index", str(self.index).encode())
-        drag.setMimeData(mimedata)
-                
-        # Signal drag started
-        self.is_dragging = True
-        self.drag_started.emit(self)
-        
-        # Execute drag operation
-        drag.exec_(Qt.MoveAction)
-        
-        # Reset appearance and signal drag ended
-        self.setStyleSheet(FRAME_STYLE)
-        self.is_dragging = False
-        self.drag_ended.emit(self)
     
     def confirm_delete(self):
         """Show confirmation dialog for deleting the application."""

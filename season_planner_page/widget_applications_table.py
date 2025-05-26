@@ -1,14 +1,14 @@
-"""Applications Table Container for the LORENZO POZZI Pesticide App with drag and drop support."""
+"""Applications Table Container for the LORENZO POZZI Pesticide App."""
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel, QHBoxLayout, QGraphicsOpacityEffect
-from PySide6.QtCore import Qt, Signal, QEasingCurve, QParallelAnimationGroup, QPropertyAnimation
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel, QHBoxLayout
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPalette, QColor
 from common import ContentFrame, GENERIC_TABLE_STYLE, WHITE, ALTERNATE_ROW_COLOR, get_config
 from season_planner_page.widget_application_row import ApplicationRowWidget
 
 
 class ApplicationsTableContainer(QWidget):
-    """Container widget for managing multiple application rows with drag and drop support."""
+    """Container widget for managing multiple application rows."""
     
     applications_changed = Signal()  # Signal emitted when any application data changes
     
@@ -19,13 +19,7 @@ class ApplicationsTableContainer(QWidget):
         self.field_area = 10.0  # Default field area
         self.field_area_uom = "ha"  # Default unit of measure
         self.application_rows = []  # List to track application row widgets
-        self.dragged_row = None     # Currently dragged row
-        self.dragged_row_index = -1  # Index of dragged row
-        self.drop_indicator_index = -1  # Index where drop indicator should be shown
         self.setup_ui()
-        
-        # Enable drag & drop
-        self.setAcceptDrops(True)
     
     def setup_ui(self):
         """Set up the UI components for the table container."""
@@ -44,17 +38,14 @@ class ApplicationsTableContainer(QWidget):
         header_row_layout.setSpacing(5)
         
         # Define headers and their stretch factors
-        headers = ["", "App. No", "Date", "Type", "Product", "Rate", "UOM", "Area", "Method", "AI Groups", "Field EIQ"]
-        stretches = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+        headers = ["App. No", "Date", "Type", "Product", "Rate", "UOM", "Area", "Method", "AI Groups", "Field EIQ"]
+        stretches = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
         
         # Create and add header labels
         for i, header_text in enumerate(headers):
             label = QLabel(header_text)
             label.setAlignment(Qt.AlignCenter)
-            if i > 0:  # Skip styling for the drag handle column
-                label.setStyleSheet("font-weight: bold;")
-            if i == 0:  # Drag handle column
-                label.setFixedWidth(20)
+            label.setStyleSheet("font-weight: bold;")
             header_row_layout.addWidget(label)
             header_row_layout.setStretch(i, stretches[i])
         
@@ -96,13 +87,6 @@ class ApplicationsTableContainer(QWidget):
         
         content_frame.layout.addLayout(content_layout)
         main_layout.addWidget(content_frame)
-        
-        # Create drop indicator
-        self.drop_indicator = QFrame(self.rows_container)
-        self.drop_indicator.setObjectName("dropIndicator")
-        self.drop_indicator.setFixedHeight(3)
-        self.drop_indicator.setVisible(False)
-        self.drop_indicator.raise_()  # Ensure it's on top of other widgets
     
     def add_application_row(self):
         """Add a new application row and return the created widget."""
@@ -116,8 +100,6 @@ class ApplicationsTableContainer(QWidget):
 
         # Connect signals
         row_widget.data_changed.connect(self.on_application_data_changed)
-        row_widget.drag_started.connect(self.on_row_drag_started)
-        row_widget.drag_ended.connect(self.on_row_drag_ended)
         row_widget.delete_requested.connect(self.remove_application_row)
         
         # Add to layout and tracking list
@@ -195,18 +177,6 @@ class ApplicationsTableContainer(QWidget):
     def on_application_data_changed(self, row_widget):
         """Handle changes to application data in any row."""
         self.applications_changed.emit()
-
-    def on_row_drag_started(self, row_widget):
-        """Handle start of row dragging."""
-        self.dragged_row = row_widget
-        self.dragged_row_index = row_widget.index
-    
-    def on_row_drag_ended(self, row_widget):
-        """Handle end of row dragging."""
-        self.dragged_row = None
-        self.drop_indicator.setVisible(False)
-        self.drop_indicator_index = -1
-        self.update_row_indices()
     
     def update_row_indices(self):
         """Update the indices of all rows after reordering."""
@@ -216,145 +186,7 @@ class ApplicationsTableContainer(QWidget):
         
         # Update row colors whenever indices are updated
         self.update_row_colors()
-
-    def dragEnterEvent(self, event):
-        """Handle drag enter events."""
-        if event.mimeData().hasFormat("application/x-applicationrow-index"):
-            event.acceptProposedAction()
     
-    def dragMoveEvent(self, event):
-        """Handle drag move events to show drop indicator."""
-        if not event.mimeData().hasFormat("application/x-applicationrow-index"):
-            return
-            
-        event.acceptProposedAction()
-        
-        # Find drop position
-        drop_y = event.pos().y()
-        target_index = len(self.application_rows)
-        
-        for i, row in enumerate(self.application_rows):
-            if row is not self.dragged_row:
-                row_pos = row.pos()
-                row_center = row_pos.y() + row.height() / 2
-                
-                if drop_y < row_center:
-                    target_index = i
-                    break
-        
-        # Don't allow dropping at original position
-        if target_index == self.dragged_row_index:
-            return
-            
-        # Update drop indicator if position changed
-        if target_index != self.drop_indicator_index:
-            self.drop_indicator_index = target_index
-            self.update_drop_indicator()
-    
-    def update_drop_indicator(self):
-        """Update the position of the drop indicator."""
-        if self.drop_indicator_index < 0:
-            self.drop_indicator.setVisible(False)
-            return
-            
-        # Position the indicator
-        if self.drop_indicator_index < len(self.application_rows):
-            # Position at top of the target row
-            row = self.application_rows[self.drop_indicator_index]
-            self.drop_indicator.move(5, row.pos().y() - 1)
-        else:
-            # Position after the last row
-            if self.application_rows:
-                last_row = self.application_rows[-1]
-                self.drop_indicator.move(5, last_row.pos().y() + last_row.height() + 1)
-            else:
-                # No rows, position at top
-                self.drop_indicator.move(5, 5)
-        
-        # Size and show
-        self.drop_indicator.setFixedWidth(self.rows_container.width() - 10)
-        self.drop_indicator.setVisible(True)
-        
-        # Ensure it's on top
-        self.drop_indicator.raise_()
-    
-    def dropEvent(self, event):
-        """Handle drop events to reorder rows."""
-        if not event.mimeData().hasFormat("application/x-applicationrow-index"):
-            return
-            
-        # Get source and target indices
-        source_index = int(event.mimeData().data("application/x-applicationrow-index").data().decode())
-        target_index = self.drop_indicator_index
-        
-        # Validate indices
-        if target_index < 0 or source_index < 0 or source_index >= len(self.application_rows):
-            event.ignore()
-            return
-            
-        # Adjust target index if moving down
-        if target_index > source_index:
-            target_index -= 1
-            
-        # Skip if same position
-        if target_index == source_index:
-            event.ignore()
-            return
-            
-        # Move the row
-        self.move_row(source_index, target_index)
-        event.acceptProposedAction()
-        
-        # Hide drop indicator
-        self.drop_indicator.setVisible(False)
-        self.drop_indicator_index = -1
-    
-    def move_row(self, source_index, target_index):
-        """Move a row from source index to target index with animation."""
-        if source_index == target_index:
-            return
-            
-        # Get the source row
-        source_row = self.application_rows[source_index]
-        
-        # Remove from list and layout
-        self.rows_layout.removeWidget(source_row)
-        self.application_rows.pop(source_index)
-        
-        # Insert at new position
-        self.application_rows.insert(target_index, source_row)
-        
-        # Create animation group
-        anim_group = QParallelAnimationGroup(self)
-        
-        # Determine affected range
-        min_idx = min(source_index, target_index)
-        max_idx = max(source_index, target_index)
-        
-        # Reinsert all rows with animation for affected range
-        for i, row in enumerate(self.application_rows):
-            self.rows_layout.removeWidget(row)
-            self.rows_layout.insertWidget(i, row)
-            
-            # Animate affected rows
-            if min_idx <= i <= max_idx:
-                fade_effect = QGraphicsOpacityEffect(row)
-                row.setGraphicsEffect(fade_effect)
-                fade_effect.setOpacity(0.8)
-                
-                fade_anim = QPropertyAnimation(fade_effect, b"opacity")
-                fade_anim.setDuration(200)
-                fade_anim.setStartValue(0.8)
-                fade_anim.setEndValue(1.0)
-                fade_anim.setEasingCurve(QEasingCurve.OutCubic)
-                
-                anim_group.addAnimation(fade_anim)
-        
-        # Update indices and start animation
-        self.update_row_indices()
-        anim_group.start()
-        self.applications_changed.emit()
-
     def remove_application_row(self, row):
         """Remove an application row from the container."""
         if row not in self.application_rows:
