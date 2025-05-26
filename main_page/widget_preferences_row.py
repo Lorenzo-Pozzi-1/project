@@ -117,7 +117,7 @@ class PreferencesRow(QWidget):
         # Clear default items and add seeding rate specific units
         self.seeding_rate_unit.combobox.clear()
         self.seeding_rate_unit.combobox.addItem("-- Select unit --")
-        self.seeding_rate_unit.combobox.addItems(["kg/ha", "kg/acre", "lb/ha", "lb/acre"])
+        self.seeding_rate_unit.combobox.addItems(["cwt/acre", "kg/acre", "lb/acre", "kg/ha",  "lb/ha"])
         preferences_layout.addWidget(self.seeding_rate_unit)
         
         preferences_layout.addSpacing(get_spacing_xlarge())
@@ -225,8 +225,8 @@ class PreferencesRow(QWidget):
         self.row_spacing_spin.setValue(row_spacing)
         
         # Load seeding rate with unit
-        seeding_rate = config.get("default_seeding_rate", 2000)
-        seeding_rate_unit = config.get("default_seeding_rate_unit", "kg/ha")
+        seeding_rate = config.get("default_seeding_rate", 25)
+        seeding_rate_unit = config.get("default_seeding_rate_unit", "cwt/acre")
         
         # Updated to use setCurrentText instead of index-based approach
         self.seeding_rate_unit.setCurrentText(seeding_rate_unit)

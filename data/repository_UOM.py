@@ -544,8 +544,8 @@ class UOMRepository:
         Formula: [amount/cwt seed] x [cwt seed/ha] = [amount/ha]
         """
         # Get seeding rate
-        seeding_rate = user_preferences.get('default_seeding_rate', 2000)
-        seeding_rate_unit = user_preferences.get('default_seeding_rate_unit', 'kg/ha')
+        seeding_rate = user_preferences.get('default_seeding_rate', 25)
+        seeding_rate_unit = user_preferences.get('default_seeding_rate_unit', 'cwt/acre')
         
         # Parse seeding rate unit (e.g., "kg/ha" → numerator="kg", denominator="ha")
         seeding_uom = CompositeUOM(seeding_rate_unit)
