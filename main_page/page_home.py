@@ -8,7 +8,8 @@ screen for the application.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMessageBox
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
-from common import MARGIN_LARGE, SPACING_LARGE, INFO_TEXT_STYLE, resource_path, get_title_font, get_large_font, get_subtitle_font, get_medium_font, create_button, ContentFrame
+from common import INFO_TEXT_STYLE, resource_path, get_title_font, get_large_font, get_subtitle_font, get_medium_font, create_button, ContentFrame
+from common.constants import get_margin_large, get_picture_size, get_spacing_large, get_spacing_medium
 from main_page.widget_preferences_row import PreferencesRow
 
 class HomePage(QWidget):
@@ -33,8 +34,8 @@ class HomePage(QWidget):
         """Set up the UI components."""
         # Main layout
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
-        main_layout.setSpacing(SPACING_LARGE)
+        main_layout.setContentsMargins(get_margin_large(), get_margin_large(), get_margin_large(), get_margin_large())
+        main_layout.setSpacing(get_spacing_large())
         
         # Header with logos and title in its own ContentFrame
         header_frame = ContentFrame()
@@ -46,25 +47,25 @@ class HomePage(QWidget):
         # Logo on the left
         left_logo_label = QLabel()
         pixmap = QPixmap(resource_path("main_page/logo_McCain.png"))
-        left_logo_label.setPixmap(pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        left_logo_label.setPixmap(pixmap.scaled(get_picture_size(), get_picture_size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
         top_layout.addWidget(left_logo_label)
         
         # Small spacing between logo and title
-        top_layout.addSpacing(10)
+        top_layout.addSpacing(get_spacing_medium())
         
         # Title in the center
         title_label = QLabel("McCain Pesticides App")
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setFont(get_title_font(size=40))
+        title_label.setFont(get_title_font())
         top_layout.addWidget(title_label)
         
         # Small spacing between title and logo
-        top_layout.addSpacing(10)
+        top_layout.addSpacing(get_spacing_medium())
         
         # Logo on the right
         right_logo_label = QLabel()
         right_logo_pixmap = QPixmap(resource_path("main_page/logo_NAAg.png"))
-        right_logo_label.setPixmap(right_logo_pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        right_logo_label.setPixmap(right_logo_pixmap.scaled(get_picture_size(), get_picture_size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
         top_layout.addWidget(right_logo_label)
         
         # Add top layout to header frame
@@ -93,7 +94,7 @@ class HomePage(QWidget):
         # Create the feature buttons
         buttons_frame = ContentFrame()
         buttons_layout = QHBoxLayout()
-        buttons_layout.setSpacing(SPACING_LARGE)
+        buttons_layout.setSpacing(get_spacing_large())
         
         feature_buttons = [
             {

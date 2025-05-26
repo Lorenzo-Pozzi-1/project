@@ -4,7 +4,7 @@ g,weight,dry,0.001,kg
 lb,weight,dry,0.453592,kg
 oz,weight,dry,0.0283495,kg
 cwt,weight,dry,45.3592,kg
-100 kg,weight,dry,100,kg
+100kg,weight,dry,100,kg
 ha,area,no,1,ha
 acre,area,no,0.404686,ha
 fl oz,volume,wet,0.0295735,l
@@ -13,10 +13,10 @@ qt,volume,wet,0.946353,l
 gal,volume,wet,3.78541,l
 l,volume,wet,1,l
 ml,volume,wet,0.001,l
-100 gal,volume,wet,378.541,l
+100gal,volume,wet,378.541,l
 m,length,no,1,m
-100 m,length,no,100,m
+100m,length,no,100,m
 ft,length,no,0.3048,m
-1000 ft,length,no,304.8,m
+1000ft,length,no,304.8,m
 cm,length,no,0.01,m
 inch,length,no,0.0254,m

@@ -7,8 +7,9 @@ values of multiple pesticide products with card-based UI.
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
-from common import MARGIN_MEDIUM, SPACING_LARGE, get_subtitle_font, ContentFrame, create_button, get_config
+from common import get_subtitle_font, ContentFrame, create_button, get_config
 from common.calculations import eiq_calculator
+from common.constants import get_margin_medium, get_spacing_large
 from eiq_calculator_page.widgets_results_display import EiqComparisonTable
 from eiq_calculator_page.widget_product_card import ProductCard
 
@@ -27,8 +28,8 @@ class ProductComparisonCalculatorTab(QWidget):
         """Set up the UI components."""
         # Main layout
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM)
-        main_layout.setSpacing(SPACING_LARGE)
+        main_layout.setContentsMargins(get_margin_medium(), get_margin_medium(), get_margin_medium(), get_margin_medium())
+        main_layout.setSpacing(get_spacing_large())
         
         # Products selection section
         selection_frame = ContentFrame()

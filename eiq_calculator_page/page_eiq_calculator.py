@@ -8,7 +8,8 @@ two EIQ calculator components:
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
-from common import MARGIN_LARGE, SPACING_MEDIUM, HeaderWithHomeButton
+from common import HeaderWithHomeButton
+from common.constants import get_margin_large, get_spacing_medium
 from eiq_calculator_page.tab_single_calculator import SingleProductCalculatorTab
 from eiq_calculator_page.tab_multi_calculator import ProductComparisonCalculatorTab
 
@@ -29,8 +30,8 @@ class EiqCalculatorPage(QWidget):
         """Set up the UI components."""
         # Main layout
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
-        main_layout.setSpacing(SPACING_MEDIUM)
+        main_layout.setContentsMargins(get_margin_large(), get_margin_large(), get_margin_large(), get_margin_large())
+        main_layout.setSpacing(get_spacing_medium())
         
         # Header with back button
         header = HeaderWithHomeButton("EIQ Calculator")

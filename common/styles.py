@@ -1,49 +1,11 @@
-"""
-Common styles for the LORENZO POZZI Pesticide App
+"""Style functions and stylesheets for the LORENZO POZZI Pesticide App"""
 
-This module provides consistent styling across the application including
-colors, fonts, dimensions, and style sheets for various components.
-It serves as the single source of truth for all styling in the application.
-"""
-
-from PySide6.QtGui import QFont, QColor
+from PySide6.QtGui import QFont
+from .constants import *
 
 # ----------------------
-#region COLOR DEFINITIONS
+# EIQ UTILITY FUNCTIONS
 # ----------------------
-
-# Primary color palette 
-YELLOW          = "#fee000"
-YELLOW_HOVER    = "#ffea66"
-YELLOW_PRESSED  = "#eccd00"
-BLACK           = "#000000"
-WHITE           = "#FFFFFF"
-GREEN           = "#009863"
-BLUE            = "#5D89E9"
-BLUE_HOVER      = "#789ded"
-LIGHT_GRAY      = "#D9DAE4"
-BEIGE           = "#C9BFB0"
-RED             = "#EC3400"
-RED_HOVER       = "#FF6B6B"
-RED_PRESSED     = "#CC2A22"
-
-# EIQ color coding using hex color codes
-EIQ_LOW_COLOR = QColor(200, 255, 200)      # Pastel green for low EIQ
-EIQ_MEDIUM_COLOR = QColor(255, 255, 200)   # Pastel yellow for medium EIQ  
-EIQ_HIGH_COLOR = QColor(255, 200, 200)     # Pastel red for high EIQ
-EIQ_EXTREME_COLOR = QColor("#D19B9B")    # Pastel dark red for extreme EIQ
-
-# Table and list styling colors
-ALTERNATE_ROW_COLOR = QColor(BEIGE)  # Beige for alternating rows
-
-# ----------------------
-#region EIQ THRESHOLDS, COLORS AND RATINGS
-# ----------------------
-
-# EIQ threshold constants
-EIQ_LOW_THRESHOLD = 33.3
-EIQ_MEDIUM_THRESHOLD = 66.6
-EIQ_HIGH_THRESHOLD = 100.0
 
 def get_eiq_color(eiq_value, low_threshold=EIQ_LOW_THRESHOLD, 
                   medium_threshold=EIQ_MEDIUM_THRESHOLD, high_threshold=EIQ_HIGH_THRESHOLD):
@@ -92,33 +54,8 @@ def get_eiq_rating(eiq_value, low_threshold=EIQ_LOW_THRESHOLD,
         return "Extreme"
 
 # ----------------------
-#region SPACING AND SIZES
+# FONT FUNCTIONS
 # ----------------------
-
-# Margins and spacing
-MARGIN_SMALL = 5
-MARGIN_MEDIUM = 10
-MARGIN_LARGE = 20
-SPACING_SMALL = 5
-SPACING_MEDIUM = 10
-SPACING_LARGE = 15
-SPACING_XLARGE = 20
-
-# Standard element dimensions
-BUTTON_MIN_WIDTH = 120
-BUTTON_MIN_HEIGHT = 35
-FEATURE_BUTTON_SIZE = 180       # Size for large feature buttons on home page
-
-# ----------------------
-#region FONT CONFIGURATIONS
-# ----------------------
-
-# Font sizes
-TITLE_FONT_SIZE = 24
-SUBTITLE_FONT_SIZE = 18
-LARGE_TEXT = 14
-MEDIUM_TEXT = 12
-SMALL_TEXT = 10
 
 def get_font(size=MEDIUM_TEXT, bold=False, family=None, weight=None):
     """Returns a configured font based on parameters.
@@ -140,14 +77,23 @@ def get_font(size=MEDIUM_TEXT, bold=False, family=None, weight=None):
     return font
 
 # Quick font functions
-def get_title_font(size=TITLE_FONT_SIZE, bold=True): return get_font(size, bold, "Red Hat Display", QFont.Black)
-def get_subtitle_font(size=SUBTITLE_FONT_SIZE, bold=True): return get_font(size, bold, "Red Hat Display")
-def get_large_font(size=LARGE_TEXT, bold=False): return get_font(size, bold)
-def get_medium_font(size=MEDIUM_TEXT, bold=False): return get_font(size, bold)
-def get_small_font(size=SMALL_TEXT, bold=False): return get_font(size, bold)
+def get_title_font(size=TITLE_FONT_SIZE, bold=True): 
+    return get_font(size, bold, "Red Hat Display", QFont.Black)
+
+def get_subtitle_font(size=SUBTITLE_FONT_SIZE, bold=True): 
+    return get_font(size, bold, "Red Hat Display")
+
+def get_large_font(size=LARGE_TEXT, bold=False): 
+    return get_font(size, bold)
+
+def get_medium_font(size=MEDIUM_TEXT, bold=False): 
+    return get_font(size, bold)
+
+def get_small_font(size=SMALL_TEXT, bold=False): 
+    return get_font(size, bold)
 
 # ----------------------
-#region STYLE SHEETS
+# STYLESHEETS
 # ----------------------
 
 # Pages setup styles
@@ -172,7 +118,7 @@ INFO_TEXT_STYLE = f"""
         background-color: {WHITE};
         border: 1px solid transparent;
         border-radius: 10px;
-        margin: {MARGIN_SMALL}px;
+        margin: {get_margin_small()}px;
     }}
 """
 
@@ -397,23 +343,22 @@ SUGGESTIONS_LIST_STYLE = f"""
 """
 
 # Row dragging styles
-DRAGGING_ROW_STYLE = """
-    QFrame {
+DRAGGING_ROW_STYLE = f"""
+    QFrame {{
         background-color: #f0f9ff;
         border: 1px solid #ccc;
         border-left: 3px solid {BLUE};
         border-right: 3px solid {BLUE};
         border-radius: 4px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+    }}
 """
 
-BLUE_LINE_DROP_STYLE = """
-    QFrame#dropIndicator {
+BLUE_LINE_DROP_STYLE = f"""
+    QFrame#dropIndicator {{
         background-color: {BLUE};
         height: 3px;
         border: 1px solid {BLUE};
         border-radius: 1px;
-    }
+    }}
 """
-

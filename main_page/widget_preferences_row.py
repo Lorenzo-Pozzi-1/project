@@ -7,6 +7,7 @@ This module provides a preferences row widget for the application's home page.
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QComboBox, QDoubleSpinBox, QMessageBox
 from PySide6.QtCore import Qt, Signal
 from common import get_medium_font, create_button, get_config, save_config, SmartUOMComboBox
+from common.constants import get_spacing_xlarge
 
 class PreferencesRow(QWidget):
     """
@@ -50,7 +51,7 @@ class PreferencesRow(QWidget):
         self.country_combo.currentIndexChanged.connect(self.on_country_changed)
         preferences_layout.addWidget(self.country_combo)
         
-        preferences_layout.addSpacing(40)  # 40px spacing between control groups
+        preferences_layout.addSpacing(get_spacing_xlarge())
         
         # Region selection
         region_label = QLabel("Region:")
@@ -67,7 +68,7 @@ class PreferencesRow(QWidget):
         
         self.update_regions_dropdown()
         
-        preferences_layout.addSpacing(40)  # 40px spacing between control groups
+        preferences_layout.addSpacing(get_spacing_xlarge())
         
         # Row Spacing with unit selection
         row_spacing_label = QLabel("Row Spacing:")
@@ -93,7 +94,7 @@ class PreferencesRow(QWidget):
         self.row_spacing_unit.combobox.addItems(["inch", "cm", "m", "ft"])
         preferences_layout.addWidget(self.row_spacing_unit)
         
-        preferences_layout.addSpacing(40)  # 40px spacing between control groups
+        preferences_layout.addSpacing(get_spacing_xlarge())
         
         # Seeding Rate with unit selection
         seeding_rate_label = QLabel("Seeding Rate:")
@@ -119,7 +120,7 @@ class PreferencesRow(QWidget):
         self.seeding_rate_unit.combobox.addItems(["kg/ha", "kg/acre", "lb/ha", "lb/acre"])
         preferences_layout.addWidget(self.seeding_rate_unit)
         
-        preferences_layout.addSpacing(40)  # 40px spacing between control groups
+        preferences_layout.addSpacing(get_spacing_xlarge())
         
         # Save preferences button
         self.save_preferences_button = create_button(text="Save preferences", style="yellow", callback=self.save_preferences)

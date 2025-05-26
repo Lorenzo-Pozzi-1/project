@@ -6,7 +6,8 @@ application scenarios through tabs.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog
-from common import MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, ContentFrame, HeaderWithHomeButton, create_button, get_title_font, ScoreBar
+from common import SUBTITLE_FONT_SIZE, ContentFrame, HeaderWithHomeButton, create_button, get_title_font, ScoreBar
+from common.constants import get_margin_large, get_spacing_medium
 from season_planner_page.tab_scenario import ScenarioTabPage
 from data import Scenario
 
@@ -31,8 +32,8 @@ class ScenariosManagerPage(QWidget):
         """Set up the UI components."""
         # Main layout
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
-        main_layout.setSpacing(SPACING_MEDIUM)
+        main_layout.setContentsMargins(get_margin_large(), get_margin_large(), get_margin_large(), get_margin_large())
+        main_layout.setSpacing(get_spacing_medium())
         
         # Header with back button and operation buttons
         header = HeaderWithHomeButton("Season Planner - Scenarios")

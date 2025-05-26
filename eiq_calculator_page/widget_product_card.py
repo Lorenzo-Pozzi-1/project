@@ -2,7 +2,8 @@
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout
-from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, MARGIN_MEDIUM, SPACING_MEDIUM, MEDIUM_TEXT, get_subtitle_font, create_button, ApplicationParamsWidget, ProductSelectionWidget)
+from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, MEDIUM_TEXT, get_subtitle_font, create_button, ApplicationParamsWidget, ProductSelectionWidget)
+from common.constants import get_margin_medium, get_spacing_medium
 from data import ProductRepository
 
 
@@ -46,8 +47,8 @@ class ProductCard(QFrame):
         """Set up the UI components."""
         # Main layout
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM)
-        layout.setSpacing(SPACING_MEDIUM)
+        layout.setContentsMargins(get_margin_medium(), get_margin_medium(), get_margin_medium(), get_margin_medium())
+        layout.setSpacing(get_spacing_medium())
         
         # Set minimum sizes, allowing for resizing
         self.setMinimumWidth(400)

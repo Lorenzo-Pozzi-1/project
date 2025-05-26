@@ -39,11 +39,6 @@ from common.styles import (
     # EIQ Utility Functions
     get_eiq_color, get_eiq_rating,
     
-    # Spacing and Sizes
-    MARGIN_SMALL, MARGIN_MEDIUM, MARGIN_LARGE,
-    SPACING_SMALL, SPACING_MEDIUM, SPACING_LARGE, SPACING_XLARGE,
-    BUTTON_MIN_WIDTH, BUTTON_MIN_HEIGHT, FEATURE_BUTTON_SIZE,
-    
     # Font Sizes
     TITLE_FONT_SIZE, SUBTITLE_FONT_SIZE, MEDIUM_TEXT, SMALL_TEXT,
     
@@ -95,12 +90,7 @@ __all__ = [
     
     # EIQ Utility Functions
     'get_eiq_color', 'get_eiq_rating',
-    
-    # Spacing and Sizes
-    'MARGIN_SMALL', 'MARGIN_MEDIUM', 'MARGIN_LARGE',
-    'SPACING_SMALL', 'SPACING_MEDIUM', 'SPACING_LARGE', 'SPACING_XLARGE',
-    'BUTTON_MIN_WIDTH', 'BUTTON_MIN_HEIGHT', 'FEATURE_BUTTON_SIZE',
-    
+        
     # Font Sizes
     'TITLE_FONT_SIZE', 'SUBTITLE_FONT_SIZE', 'MEDIUM_TEXT', 'SMALL_TEXT',
     

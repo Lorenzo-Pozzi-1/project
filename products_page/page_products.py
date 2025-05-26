@@ -6,7 +6,8 @@ product listing and comparison tabs, coordinating between them.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget
-from common import MARGIN_LARGE, SPACING_MEDIUM, HeaderWithHomeButton, create_button, get_medium_font
+from common import HeaderWithHomeButton, create_button, get_medium_font
+from common.constants import get_margin_large, get_spacing_medium
 from products_page.tab_products_list import ProductsListTab
 from products_page.tab_products_comparison import ProductsComparisonTab
 from data import ProductRepository
@@ -29,8 +30,8 @@ class ProductsPage(QWidget):
         """Set up the UI components."""
         # Main layout
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
-        main_layout.setSpacing(SPACING_MEDIUM)
+        main_layout.setContentsMargins(get_margin_large(), get_margin_large(), get_margin_large(), get_margin_large())
+        main_layout.setSpacing(get_spacing_medium())
         
         # Create a horizontal layout for the header section
         header_layout = QHBoxLayout()

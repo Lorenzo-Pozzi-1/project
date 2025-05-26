@@ -54,8 +54,8 @@ class ContentFrame(QFrame):
         self.setFrameShape(QFrame.NoFrame)
         self.setStyleSheet(FRAME_STYLE)
         self.layout = QVBoxLayout(self)
-        self.layout.setContentsMargins(MARGIN_SMALL, MARGIN_SMALL, MARGIN_SMALL, MARGIN_SMALL)
-        self.layout.setSpacing(SPACING_MEDIUM)
+        self.layout.setContentsMargins(get_margin_small(), get_margin_small(), get_margin_small(), get_margin_small())
+        self.layout.setSpacing(get_spacing_medium())
 
 
 def create_button(text=None, description=None, style='yellow', callback=None, parent=None) -> QPushButton:
@@ -81,17 +81,17 @@ def create_button(text=None, description=None, style='yellow', callback=None, pa
         button.setStyleSheet(globals().get(f"{style.upper()}_BUTTON_STYLE"))
         button.setText(text)
         button.setFont(get_small_font())
-        button.setMinimumSize(BUTTON_MIN_WIDTH, BUTTON_MIN_HEIGHT)
+        button.setMinimumSize(get_button_min_width(), get_button_min_height())
     
     elif style == 'feature':
         # Feature button with title and description
         button.setStyleSheet(FEATURE_BUTTON_STYLE)
-        button.setMinimumSize(FEATURE_BUTTON_SIZE, FEATURE_BUTTON_SIZE)
+        button.setMinimumSize(get_feature_button_size(), get_feature_button_size())
         
         # Create layout for the feature button content
         layout = QVBoxLayout(button)
-        layout.setContentsMargins(MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM, MARGIN_MEDIUM)
-        layout.setSpacing(SPACING_SMALL)
+        layout.setContentsMargins(get_margin_medium(), get_margin_medium(), get_margin_medium(), get_margin_medium())
+        layout.setSpacing(get_spacing_small())
         
         # Add title label
         title_label = QLabel(text)

@@ -6,8 +6,9 @@ This module provides a tab for viewing and editing the individual scenarios.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PySide6.QtCore import Signal
-from common import MARGIN_LARGE, SPACING_MEDIUM, SUBTITLE_FONT_SIZE, create_button, get_title_font, ContentFrame, get_config
+from common import SUBTITLE_FONT_SIZE, create_button, get_title_font, ContentFrame, get_config
 from common.calculations import eiq_calculator
+from common.constants import get_margin_large, get_spacing_medium
 from season_planner_page.widget_metadata_row import SeasonPlanMetadataWidget
 from season_planner_page.widget_applications_table import ApplicationsTableContainer
 from data import Scenario, Application, ProductRepository
@@ -41,8 +42,8 @@ class ScenarioTabPage(QWidget):
         """Set up the UI components."""
         # Main layout
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE, MARGIN_LARGE)
-        main_layout.setSpacing(SPACING_MEDIUM)
+        main_layout.setContentsMargins(get_margin_large(), get_margin_large(), get_margin_large(), get_margin_large())
+        main_layout.setSpacing(get_spacing_medium())
         
         # Scenario Metadata Widget
         self.metadata_widget = SeasonPlanMetadataWidget()
