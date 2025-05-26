@@ -2,17 +2,7 @@
 Common components for the LORENZO POZZI Pesticide App.
 
 This package provides common UI components, styles, and utility functions
-shared across the application. All components are exported at the package level,
-allowing for clean imports like:
-
-    from common import YELLOW_BUTTON_STYLE, ContentFrame, get_subtitle_font, ScoreBar
-
-Usage examples:
-    # Import specific items
-    from common import ContentFrame, ScoreBar, YELLOW, save_config
-    
-    # Import everything
-    from common import *
+shared across the application.
 """
 
 # Re-export all config utilities
@@ -50,12 +40,14 @@ from common.styles import (
     # Font Functions
     get_font, get_title_font, get_subtitle_font, 
     get_medium_font, get_small_font, get_large_font,
+    get_small_text_size, get_medium_text_size, get_large_text_size,
+    get_title_text_size, get_subtitle_text_size,
     
     # Style Sheets
     FRAME_STYLE, YELLOW_BAR_STYLE, INFO_TEXT_STYLE,
     FEATURE_BUTTON_STYLE, YELLOW_BUTTON_STYLE, WHITE_BUTTON_STYLE,
     SPECIAL_BUTTON_STYLE, REMOVE_BUTTON_STYLE, GENERIC_TABLE_STYLE,
-    PRODUCT_CARD_STYLE, SUGGESTIONS_CONTAINER_STYLE, SUGGESTIONS_LIST_STYLE,
+    PRODUCT_CARD_STYLE, SUGGESTIONS_LIST_STYLE,
     DRAGGING_ROW_STYLE, BLUE_LINE_DROP_STYLE
 )
 
@@ -100,7 +92,9 @@ __all__ = [
             
     # Font Functions
     'get_font', 'get_title_font', 'get_subtitle_font', 'get_medium_font', 'get_small_font', 'get_large_font',
-    
+    'get_small_text_size', 'get_medium_text_size', 'get_large_text_size',
+    'get_title_text_size', 'get_subtitle_text_size',
+
     # Spacing and margins
     'get_spacing_small', 'get_spacing_medium', 'get_spacing_large', 'get_spacing_xlarge',
     'get_margin_small', 'get_margin_medium', 'get_margin_large',
@@ -109,7 +103,7 @@ __all__ = [
     'FRAME_STYLE', 'YELLOW_BAR_STYLE', 'INFO_TEXT_STYLE',
     'FEATURE_BUTTON_STYLE', 'YELLOW_BUTTON_STYLE', 'WHITE_BUTTON_STYLE',
     'SPECIAL_BUTTON_STYLE', 'REMOVE_BUTTON_STYLE', 'GENERIC_TABLE_STYLE',
-    'PRODUCT_CARD_STYLE', 'SUGGESTIONS_CONTAINER_STYLE', 'SUGGESTIONS_LIST_STYLE',
+    'PRODUCT_CARD_STYLE', 'SUGGESTIONS_LIST_STYLE',
     'DRAGGING_ROW_STYLE', 'BLUE_LINE_DROP_STYLE',
     
     # Widgets and Widget Functions

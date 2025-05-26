@@ -182,7 +182,7 @@ def get_feature_button_size():
 # RESPONSIVE FONT SIZES
 # ----------------------
 
-def get_title_font_size():
+def get_title_text_size():
     """Get title font size scaled to screen size."""
     base_size = 24
     scale = get_screen_scale_factor()
@@ -191,7 +191,7 @@ def get_title_font_size():
     font_scale = 1.0 + (scale - 1.0) * 0.7
     return int(base_size * font_scale)
 
-def get_subtitle_font_size():
+def get_subtitle_text_size():
     """Get subtitle font size scaled to screen size."""
     base_size = 18
     scale = get_screen_scale_factor()

@@ -77,10 +77,10 @@ def get_font(size=get_medium_text_size(), bold=False, family=None, weight=None):
     return font
 
 # Quick font functions
-def get_title_font(size=get_title_font_size(), bold=True): 
+def get_title_font(size=get_title_text_size(), bold=True): 
     return get_font(size, bold, "Red Hat Display", QFont.Black)
 
-def get_subtitle_font(size=get_subtitle_font_size(), bold=True): 
+def get_subtitle_font(size=get_subtitle_text_size(), bold=True): 
     return get_font(size, bold, "Red Hat Display")
 
 def get_large_font(size=get_large_text_size(), bold=False): 
@@ -310,16 +310,6 @@ PRODUCT_CARD_STYLE = f"""
         background-color: {WHITE};
         border: 1px solid {LIGHT_GRAY};
         border-radius: 4px;
-    }}
-"""
-
-# Suggestions container style
-SUGGESTIONS_CONTAINER_STYLE = f"""
-    QFrame {{
-        border: 1px solid {LIGHT_GRAY};
-        background-color: {WHITE};
-        border-radius: 3px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }}
 """
 

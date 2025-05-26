@@ -4,11 +4,8 @@ from contextlib import contextmanager
 from PySide6.QtCore import Qt, Signal, QMimeData
 from PySide6.QtGui import QDrag
 from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QDoubleSpinBox, QComboBox
-from common.constants import get_medium_text_size
-from common.utils import get_config
+from common import get_medium_text_size, get_config, DRAGGING_ROW_STYLE, FRAME_STYLE, ProductSelectionWidget, ApplicationParamsWidget, eiq_calculator
 from data import ProductRepository, AIRepository
-from common import DRAGGING_ROW_STYLE, FRAME_STYLE, ProductSelectionWidget, ApplicationParamsWidget
-from common.calculations import eiq_calculator
 
 
 class ApplicationRowWidget(QFrame):
