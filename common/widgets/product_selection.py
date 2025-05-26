@@ -5,12 +5,11 @@ This module provides reusable widgets for selecting pesticide products.
 """
 
 from PySide6.QtCore import Qt, Signal, QStringListModel, QEvent
-from PySide6.QtGui import QDrag
 from PySide6.QtWidgets import (
     QComboBox, QCompleter, QFormLayout, QLineEdit, QVBoxLayout, 
     QWidget, QHBoxLayout, QLabel, QAbstractItemView
 )
-from common.styles import get_medium_font, SUGGESTIONS_LIST_STYLE, get_small_font
+from common.styles import get_medium_font, get_small_font
 from common.widgets.header_and_frame import ContentFrame
 from data import ProductRepository
 
@@ -49,7 +48,6 @@ class ProductSearchField(QWidget):
         
         # Style and configure the popup
         popup = self.completer.popup()
-        popup.setStyleSheet(SUGGESTIONS_LIST_STYLE)
         popup.setMaximumHeight(300)
         popup.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         popup.setSizeAdjustPolicy(QAbstractItemView.AdjustToContents)

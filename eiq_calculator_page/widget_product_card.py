@@ -2,7 +2,7 @@
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout
-from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, get_subtitle_font, create_button, ApplicationParamsWidget, ProductSelectionWidget)
+from common import FRAME_STYLE, PRODUCT_CARD_STYLE, get_subtitle_font, create_button, ApplicationParamsWidget, ProductSelectionWidget
 from common.constants import get_margin_medium, get_medium_text_size, get_spacing_medium
 from data import ProductRepository
 

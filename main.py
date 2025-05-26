@@ -14,7 +14,7 @@ from data import ProductRepository, AIRepository
 from main_page import MainWindow
 
 # Clear the terminal screen
-# print("\033c", end="")
+print("\033c", end="")
 
 # Silence messages when resizing the window
 os.environ['QT_LOGGING_RULES'] = '*=false' 

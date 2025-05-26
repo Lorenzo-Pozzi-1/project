@@ -44,7 +44,7 @@ EIQ_HIGH_THRESHOLD = 100.0
 # SCREEN SIZE DETECTION
 # ----------------------
 
-def get_screen_size():
+def get_screen_size(test_width = None, test_height = None):
     """Get the primary screen size with testing override capability.
     
     Set environment variables to simulate different screen sizes:
@@ -55,11 +55,7 @@ def get_screen_size():
         QSize: Screen size (actual or simulated)
     """
     import os
-    
-    # Check for test overrides first
-    test_width = None
-    test_height = None
-    
+        
     if test_width and test_height:
         try:
             width = int(test_width)
@@ -107,16 +103,6 @@ def get_screen_scale_factor():
     
     # Clamp between reasonable bounds
     return max(0.7, min(scale_factor, 2.5))
-
-def is_small_screen():
-    """Check if screen is considered small (< 1366x768)."""
-    screen_size = get_screen_size()
-    return screen_size.width() < 1366 or screen_size.height() < 768
-
-def is_large_screen():
-    """Check if screen is considered large (> 2560x1440)."""
-    screen_size = get_screen_size()
-    return screen_size.width() > 2560 or screen_size.height() > 1440
 
 # ----------------------
 # RESPONSIVE SPACING AND SIZES

@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from PySide6.QtCore import Qt, Signal, QMimeData
 from PySide6.QtGui import QDrag
 from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QDoubleSpinBox, QComboBox
-from common import get_medium_text_size, get_config, DRAGGING_ROW_STYLE, FRAME_STYLE, ProductSelectionWidget, ApplicationParamsWidget, eiq_calculator
+from common import get_medium_text_size, get_config, FRAME_STYLE, ProductSelectionWidget, ApplicationParamsWidget, eiq_calculator
 from data import ProductRepository, AIRepository
 
 
@@ -350,10 +350,7 @@ class ApplicationRowWidget(QFrame):
         mimedata = QMimeData()
         mimedata.setData("application/x-applicationrow-index", str(self.index).encode())
         drag.setMimeData(mimedata)
-        
-        # Set drag appearance
-        self.setStyleSheet(DRAGGING_ROW_STYLE)
-        
+                
         # Signal drag started
         self.is_dragging = True
         self.drag_started.emit(self)
