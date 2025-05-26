@@ -85,10 +85,10 @@ class ScenariosManagerPage(QWidget):
         
         # Create score bar with custom thresholds and labels
         self.eiq_score_bar = ScoreBar(
-            thresholds=[200, 500, 800],
-            labels=["Leading", "Advanced", "Engaged", "Onboarding"],
+            thresholds=[200, 500, 800, 2500],
+            labels=["Leading", "Advanced", "Engaged", "Onboarding", "Out of range"],
             min_value=0,
-            max_value=800,
+            max_value=2500,
             title_text="RegenAg framework class:"
         )
         self.eiq_score_bar.set_value(0, "No applications")

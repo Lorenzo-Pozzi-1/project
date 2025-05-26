@@ -66,6 +66,7 @@ class ScoreBar(QWidget):
         """Generate gradient colors for regions and text based on number of thresholds."""
         # Create gradient colors for the regions
         self.region_colors = []
+        self.BLACKs = []  # Initialize this list first so it always exists
         
         # Default colors for up to 3 regions (4 with extreme)
         default_colors = [
@@ -168,20 +169,51 @@ class ScoreBar(QWidget):
         
         # If we're past all thresholds but not beyond max_value
         return self.labels[-1]  # Last label
-    
+
     def get_score_color(self):
-        """Get the color for the current score level."""
-        # Handle extreme case
-        if self.current_value > self.max_value:
-            return self.BLACKs[-1]  # Use the last text color for values beyond max
+        """Get the color that matches the gradient at the current value position."""
+        # Cap the value within our range for color calculation
+        clamped_value = min(max(self.current_value, self.min_value), self.max_value)
         
-        # Find which region the value falls into - using the same logic as get_score_level()
-        for i, threshold in enumerate(self.thresholds):
-            if self.current_value < threshold:
-                return self.BLACKs[i]
+        # Calculate relative position (0.0 to 1.0)
+        relative_pos = (clamped_value - self.min_value) / (self.max_value - self.min_value)
         
-        # If we're past all thresholds but not beyond max_value
-        return self.BLACKs[-1]  # Last text color
+        # Define the same gradient colors used in paintEvent
+        low_color = QColor("#77DD77")    # Pastel green
+        medium_color = QColor("#FFF275") # Pastel yellow  
+        high_color = QColor("#FF6961")   # Pastel red
+        
+        # Interpolate color based on position
+        if relative_pos <= 0.5:
+            # Interpolate between low and medium (0.0 to 0.5)
+            t = relative_pos * 2  # Scale to 0.0-1.0
+            r = int(low_color.red() + t * (medium_color.red() - low_color.red()))
+            g = int(low_color.green() + t * (medium_color.green() - low_color.green()))
+            b = int(low_color.blue() + t * (medium_color.blue() - low_color.blue()))
+        else:
+            # Interpolate between medium and high (0.5 to 1.0)
+            t = (relative_pos - 0.5) * 2  # Scale to 0.0-1.0
+            r = int(medium_color.red() + t * (high_color.red() - medium_color.red()))
+            g = int(medium_color.green() + t * (high_color.green() - medium_color.green()))
+            b = int(medium_color.blue() + t * (high_color.blue() - medium_color.blue()))
+        
+        # Return a more saturated but darker version for good readability
+        # First increase saturation by boosting the dominant color component
+        max_component = max(r, g, b)
+        if max_component > 0:
+            # Scale up for saturation
+            scale_factor = 255 / max_component
+            r = min(255, int(r * scale_factor))
+            g = min(255, int(g * scale_factor))  
+            b = min(255, int(b * scale_factor))
+        
+        # Then darken for readability while maintaining saturation
+        darkness_factor = 0.7  # Adjust this value (0.5-0.8) to control darkness
+        r = int(r * darkness_factor)
+        g = int(g * darkness_factor)
+        b = int(b * darkness_factor)
+        
+        return QColor(r, g, b)
     
     def paintEvent(self, event):
         """Paint the gradient bar and all other elements."""
