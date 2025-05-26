@@ -36,7 +36,7 @@ class EIQCalculator:
         Args:
             ai_eiq: Active ingredient EIQ (Cornell units - eiq/lb)
             ai_concentration: AI concentration in product
-            ai_concentration_uom: UOM for concentration (%, g/L, lb/gal, etc.)
+            ai_concentration_uom: UOM for concentration (%, g/l, lb/gal, etc.)
             application_rate: Product application rate
             application_rate_uom: UOM for application rate
             applications: Number of applications

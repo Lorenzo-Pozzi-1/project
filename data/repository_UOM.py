@@ -116,11 +116,11 @@ class UOMRepository:
         self._concentration_conversion_map = {
             # Standard concentration conversions
             ('g/l', 'kg/l'): 0.001,
-            ('lb/gal', 'kg/l'): 0.119826,  # 1 lb/gal = 0.119826 kg/L
+            ('lb/gal', 'kg/l'): 0.119826,  # 1 lb/gal = 0.119826 kg/l
             ('g/kg', 'kg/kg'): 0.001,
             ('mg/kg', 'kg/kg'): 0.000001,
             ('ppm', 'kg/kg'): 0.000001,  # ppm by weight
-            ('oz/gal', 'kg/l'): 0.007489,  # 1 oz/gal = 0.007489 kg/L
+            ('oz/gal', 'kg/l'): 0.007489,  # 1 oz/gal = 0.007489 kg/l
         }
     
     def _load_base_units(self):
@@ -194,8 +194,8 @@ class UOMRepository:
         
         Args:
             value: Concentration value to convert
-            from_uom: Source UOM (%, g/L, lb/gal, etc.)
-            to_uom: Target UOM (kg/kg, kg/L)
+            from_uom: Source UOM (%, g/l, lb/gal, etc.)
+            to_uom: Target UOM (kg/kg, kg/l)
             
         Returns:
             Converted concentration value
@@ -225,7 +225,7 @@ class UOMRepository:
         Validate that concentration units are compatible with rate units.
         
         Args:
-            concentration_uom: Concentration UOM (%, g/L, etc.)
+            concentration_uom: Concentration UOM (%, g/l, etc.)
             rate_unit_type: "weight" or "volume"
             
         Returns:
@@ -511,7 +511,7 @@ class UOMRepository:
         1. Convert to [amount/m]
         2. Convert row spacing to [rows/m] 
         3. Convert to [m of rows/ha] (assuming 100m rows and 10,000 m²/ha)
-        4. Apply: [amount/m] × [m of rows/ha] = [amount/ha]
+        4. Apply: [amount/m] x [m of rows/ha] = [amount/ha]
         """
         # Step 1: Convert to standard linear rate (amount/m)
         amount_per_m = self.convert_base_unit(value, from_uom.denominator, 'm')
@@ -541,7 +541,7 @@ class UOMRepository:
                                        user_preferences: dict) -> float:
         """
         Convert seed treatment rates to area rates using seeding rate.
-        Formula: [amount/cwt seed] × [cwt seed/ha] = [amount/ha]
+        Formula: [amount/cwt seed] x [cwt seed/ha] = [amount/ha]
         """
         # Get seeding rate
         seeding_rate = user_preferences.get('default_seeding_rate', 2000)
@@ -555,7 +555,7 @@ class UOMRepository:
         if seeding_uom.denominator != 'ha':
             seeding_rate_cwt_per_ha = self.convert_base_unit(seeding_rate_cwt_per_ha, seeding_uom.denominator, 'ha')
         
-        # Apply conversion: [amount/cwt] × [cwt/ha] = [amount/ha]
+        # Apply conversion: [amount/cwt] x [cwt/ha] = [amount/ha]
         amount_per_ha = value * seeding_rate_cwt_per_ha
         
         # Convert to target area unit if needed

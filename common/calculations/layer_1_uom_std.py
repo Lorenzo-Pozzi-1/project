@@ -46,7 +46,7 @@ class EIQUOMStandardizer:
         Standardize all inputs for single AI EIQ calculation.
         
         Returns standardized inputs where dimensional analysis checks out:
-        [kg/ha] × [kg/kg] × [eiq/kg] = [eiq/ha] OR [l/ha] × [kg/l] × [eiq/kg] = [eiq/ha]
+        [kg/ha] x [kg/kg] x [eiq/kg] = [eiq/ha] OR [l/ha] x [kg/l] x [eiq/kg] = [eiq/ha]
         """
         
         # Step 1: Standardize application rate to [kg/ha] or [l/ha]

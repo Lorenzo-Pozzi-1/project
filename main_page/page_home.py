@@ -159,7 +159,7 @@ class HomePage(QWidget):
             "EIQ scores are a tool to asses and compare pesticides' use impacts.<br>"
             "<b>Higher scores →  higher impacts</b>.<br><br>"
             "Each Active Ingredient has an EIQ value, but we compare products based on the <b>Field Use EIQ</b>, where:<br>"
-            "<b>Field Use EIQ = Active Ingredient EIQ × Active Ingredient concentration × Product Application Rate</b><br>"
+            "<b>Field Use EIQ = Active Ingredient EIQ x Active Ingredient concentration x Product Application Rate</b><br>"
             "EIQs evaluate three main components:<br>"
             "1. Farm worker risk (applicator, harvester exposure)<br>"
             "2. Consumer risk (food residue, groundwater pollution)<br>"
