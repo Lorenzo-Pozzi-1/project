@@ -57,8 +57,8 @@ def get_screen_size():
     import os
     
     # Check for test overrides first
-    test_width = 1366
-    test_height = 768
+    test_width = None
+    test_height = None
     
     if test_width and test_height:
         try:
@@ -218,10 +218,3 @@ def get_small_text_size():
     scale = get_screen_scale_factor()
     font_scale = 1.0 + (scale - 1.0) * 0.7
     return max(8, int(base_size * font_scale))  # Minimum readable size
-
-# Legacy constants for backward compatibility (use functions above for new code)
-TITLE_FONT_SIZE = get_title_font_size()
-SUBTITLE_FONT_SIZE = get_subtitle_font_size()
-LARGE_TEXT = get_large_text_size()
-MEDIUM_TEXT = get_medium_text_size()
-SMALL_TEXT = get_small_text_size()

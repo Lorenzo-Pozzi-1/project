@@ -7,7 +7,8 @@ for calculating EIQ of a single pesticide product.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem
 from PySide6.QtCore import Qt
-from common import GENERIC_TABLE_STYLE, ContentFrame, MEDIUM_TEXT, get_config
+from common import GENERIC_TABLE_STYLE, ContentFrame, get_config
+from common.constants import get_medium_text_size
 from data import ProductRepository
 from common.widgets.product_selection import ProductSelectionWidget
 from common.widgets.application_params import ApplicationParamsWidget
@@ -43,7 +44,7 @@ class SingleProductCalculatorTab(QWidget):
         product_layout = QVBoxLayout()
         
         # Product selection widget
-        self.product_selection = ProductSelectionWidget(orientation='vertical', style_config={'font_size': MEDIUM_TEXT, 'bold': False})
+        self.product_selection = ProductSelectionWidget(orientation='vertical', style_config={'font_size': get_medium_text_size(), 'bold': False})
         self.product_selection.product_selected.connect(self.update_product_info)
         product_layout.addWidget(self.product_selection)
         
@@ -95,7 +96,7 @@ class SingleProductCalculatorTab(QWidget):
         product_layout.addLayout(form_layout)
         
         # Application parameters widget
-        self.app_params = ApplicationParamsWidget( orientation='vertical', style_config={'font_size': MEDIUM_TEXT, 'bold': False})
+        self.app_params = ApplicationParamsWidget( orientation='vertical', style_config={'font_size': get_medium_text_size(), 'bold': False})
         self.app_params.params_changed.connect(self.calculate_eiq)
         product_layout.addWidget(self.app_params)
         

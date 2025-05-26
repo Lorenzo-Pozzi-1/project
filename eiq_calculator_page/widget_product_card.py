@@ -2,8 +2,8 @@
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout
-from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, MEDIUM_TEXT, get_subtitle_font, create_button, ApplicationParamsWidget, ProductSelectionWidget)
-from common.constants import get_margin_medium, get_spacing_medium
+from common import (FRAME_STYLE, PRODUCT_CARD_STYLE, get_subtitle_font, create_button, ApplicationParamsWidget, ProductSelectionWidget)
+from common.constants import get_margin_medium, get_medium_text_size, get_spacing_medium
 from data import ProductRepository
 
 
@@ -74,7 +74,7 @@ class ProductCard(QFrame):
         layout.addLayout(header_layout)
         
         # Product selection widget
-        self.product_selection = ProductSelectionWidget(orientation='vertical', style_config={'font_size': MEDIUM_TEXT, 'bold': False})
+        self.product_selection = ProductSelectionWidget(orientation='vertical', style_config={'font_size': get_medium_text_size(), 'bold': False})
         self.product_selection.product_selected.connect(self.update_product_info)
         layout.addWidget(self.product_selection)
         
@@ -94,7 +94,7 @@ class ProductCard(QFrame):
         layout.addWidget(ai_frame)
         
         # Application parameters widget
-        self.app_params = ApplicationParamsWidget(orientation='vertical', style_config={'font_size': MEDIUM_TEXT, 'bold': False})
+        self.app_params = ApplicationParamsWidget(orientation='vertical', style_config={'font_size': get_medium_text_size(), 'bold': False})
         self.app_params.params_changed.connect(lambda: self.data_changed.emit(self.index))
         layout.addWidget(self.app_params)
     

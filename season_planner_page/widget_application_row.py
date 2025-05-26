@@ -4,9 +4,10 @@ from contextlib import contextmanager
 from PySide6.QtCore import Qt, Signal, QMimeData
 from PySide6.QtGui import QDrag
 from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QApplication, QMessageBox, QDoubleSpinBox, QComboBox
+from common.constants import get_medium_text_size
 from common.utils import get_config
 from data import ProductRepository, AIRepository
-from common import DRAGGING_ROW_STYLE, FRAME_STYLE, MEDIUM_TEXT, ProductSelectionWidget, ApplicationParamsWidget
+from common import DRAGGING_ROW_STYLE, FRAME_STYLE, ProductSelectionWidget, ApplicationParamsWidget
 from common.calculations import eiq_calculator
 
 
@@ -109,7 +110,7 @@ class ApplicationRowWidget(QFrame):
     
     def _create_product_selection(self):
         """Create the product selection widget."""
-        style_config = {'font_size': MEDIUM_TEXT, 'bold': False}
+        style_config = {'font_size': get_medium_text_size(), 'bold': False}
         self.product_selection = ProductSelectionWidget(
             orientation='horizontal', 
             style_config=style_config,
@@ -120,7 +121,7 @@ class ApplicationRowWidget(QFrame):
     
     def _create_app_params(self):
         """Create the application parameters widget."""
-        style_config = {'font_size': MEDIUM_TEXT, 'bold': False}
+        style_config = {'font_size': get_medium_text_size(), 'bold': False}
         self.app_params = ApplicationParamsWidget(
             orientation='horizontal',
             style_config=style_config,

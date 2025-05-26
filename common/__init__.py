@@ -23,27 +23,33 @@ from common.utils import (
     resource_path
 )
 
-# Re-export all style components and functions
-from common.styles import (
+# Re-export all constants
+from common.constants import (
     # Colors
-    YELLOW, YELLOW_HOVER, BLACK, WHITE, GREEN, BLUE, BLUE_HOVER,
-    LIGHT_GRAY, BEIGE, RED,
+    YELLOW, YELLOW_HOVER, YELLOW_PRESSED,
+    BLACK, WHITE, GREEN, BLUE, BLUE_HOVER,
+    LIGHT_GRAY, BEIGE, RED, RED_HOVER, RED_PRESSED,
     
-    # EIQ Colors
+    # EIQ colors
     EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, EIQ_HIGH_COLOR, EIQ_EXTREME_COLOR,
     ALTERNATE_ROW_COLOR,
     
-    # EIQ Thresholds
+    # EIQ thresholds
     EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD,
-    
+        
+    # Spacing and margins
+    get_spacing_small, get_spacing_medium, get_spacing_large, get_spacing_xlarge,
+    get_margin_small, get_margin_medium, get_margin_large
+)
+
+# Re-export all style components and functions
+from common.styles import (
     # EIQ Utility Functions
     get_eiq_color, get_eiq_rating,
     
-    # Font Sizes
-    TITLE_FONT_SIZE, SUBTITLE_FONT_SIZE, MEDIUM_TEXT, SMALL_TEXT,
-    
     # Font Functions
-    get_font, get_title_font, get_subtitle_font, get_small_font, get_medium_font, get_large_font,
+    get_font, get_title_font, get_subtitle_font, 
+    get_medium_font, get_small_font, get_large_font,
     
     # Style Sheets
     FRAME_STYLE, YELLOW_BAR_STYLE, INFO_TEXT_STYLE,
@@ -78,8 +84,9 @@ __all__ = [
     'get_config', 'load_config', 'save_config', 'resource_path',
     
     # Colors
-    'YELLOW', 'YELLOW_HOVER', 'BLACK', 'WHITE', 'GREEN', 'BLUE',
-    'BLUE_HOVER', 'LIGHT_GRAY', 'BEIGE', 'RED',
+    'YELLOW', 'YELLOW_HOVER', 'YELLOW_PRESSED', 
+    'BLACK', 'WHITE', 'GREEN', 'BLUE', 'BLUE_HOVER',
+    'LIGHT_GRAY', 'BEIGE', 'RED', 'RED_HOVER', 'RED_PRESSED',
     
     # EIQ Colors
     'EIQ_LOW_COLOR', 'EIQ_MEDIUM_COLOR', 'EIQ_HIGH_COLOR', 'EIQ_EXTREME_COLOR',
@@ -90,12 +97,13 @@ __all__ = [
     
     # EIQ Utility Functions
     'get_eiq_color', 'get_eiq_rating',
-        
-    # Font Sizes
-    'TITLE_FONT_SIZE', 'SUBTITLE_FONT_SIZE', 'MEDIUM_TEXT', 'SMALL_TEXT',
-    
+            
     # Font Functions
     'get_font', 'get_title_font', 'get_subtitle_font', 'get_medium_font', 'get_small_font', 'get_large_font',
+    
+    # Spacing and margins
+    'get_spacing_small', 'get_spacing_medium', 'get_spacing_large', 'get_spacing_xlarge',
+    'get_margin_small', 'get_margin_medium', 'get_margin_large',
     
     # Style Sheets
     'FRAME_STYLE', 'YELLOW_BAR_STYLE', 'INFO_TEXT_STYLE',
@@ -105,9 +113,9 @@ __all__ = [
     'DRAGGING_ROW_STYLE', 'BLUE_LINE_DROP_STYLE',
     
     # Widgets and Widget Functions
-    'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar', 'create_button', 'ProductSelectionWidget',
-    'ApplicationParamsWidget', 'SmartUOMComboBox',
-
+    'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar', 'create_button', 
+    'ProductSelectionWidget', 'ApplicationParamsWidget', 'SmartUOMComboBox',
+    
     # NEW EIQ calculations
     'eiq_calculator',
     

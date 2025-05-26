@@ -57,7 +57,7 @@ def get_eiq_rating(eiq_value, low_threshold=EIQ_LOW_THRESHOLD,
 # FONT FUNCTIONS
 # ----------------------
 
-def get_font(size=MEDIUM_TEXT, bold=False, family=None, weight=None):
+def get_font(size=get_medium_text_size(), bold=False, family=None, weight=None):
     """Returns a configured font based on parameters.
     
     Args:
@@ -77,19 +77,19 @@ def get_font(size=MEDIUM_TEXT, bold=False, family=None, weight=None):
     return font
 
 # Quick font functions
-def get_title_font(size=TITLE_FONT_SIZE, bold=True): 
+def get_title_font(size=get_title_font_size(), bold=True): 
     return get_font(size, bold, "Red Hat Display", QFont.Black)
 
-def get_subtitle_font(size=SUBTITLE_FONT_SIZE, bold=True): 
+def get_subtitle_font(size=get_subtitle_font_size(), bold=True): 
     return get_font(size, bold, "Red Hat Display")
 
-def get_large_font(size=LARGE_TEXT, bold=False): 
+def get_large_font(size=get_large_text_size(), bold=False): 
     return get_font(size, bold)
 
-def get_medium_font(size=MEDIUM_TEXT, bold=False): 
+def get_medium_font(size=get_medium_text_size(), bold=False): 
     return get_font(size, bold)
 
-def get_small_font(size=SMALL_TEXT, bold=False): 
+def get_small_font(size=get_small_text_size(), bold=False): 
     return get_font(size, bold)
 
 # ----------------------
@@ -227,7 +227,7 @@ GENERIC_TABLE_STYLE = f"""
         padding: 5px;
         border: 1px solid {LIGHT_GRAY};
         font-weight: bold;
-        font-size: {MEDIUM_TEXT}pt;
+        font-size: {get_medium_text_size()}pt;
         text-align: center;
         height: 25px;
     }}
@@ -329,7 +329,7 @@ SUGGESTIONS_LIST_STYLE = f"""
         border: none;
         outline: none;
         color: {BLACK};
-        font-size: {MEDIUM_TEXT}pt;
+        font-size: {get_medium_text_size()}pt;
     }}
     QListWidget::item {{
         padding: 5px;
