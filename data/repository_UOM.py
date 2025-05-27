@@ -489,29 +489,99 @@ class UOMRepository:
         
         return amount_per_ha
     
-    def _convert_seed_treatment_to_area(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM,
-                                       user_preferences: dict) -> float:
+    def _convert_seed_treatment_to_area(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM, user_preferences: dict) -> float:
         """
         Convert seed treatment rates to area rates using seeding rate.
-        Formula: [amount/cwt seed] x [cwt seed/ha] = [amount/ha]
+        
+        Args:
+            value: Application rate value (e.g., 5.0 for "5 ml/cwt")
+            from_uom: Source UOM (e.g., "ml/cwt", "fl oz/100kg") 
+            to_uom: Target UOM (e.g., "l/ha", "kg/ha")
+            user_preferences: User preferences containing seeding rate info
+            
+        Returns:
+            Converted rate in target area units
+            
+        Formula:
+            [amount/seed_weight] x [seed_weight/area] = [amount/area]
+            e.g., [ml/cwt] x [cwt/ha] = [ml/ha] → [l/ha]
         """
-        # Get seeding rate
+        print(f"DEBUG: _convert_seed_treatment_to_area - Converting {value} {from_uom.original_string} to {to_uom.original_string}")
+        
+        # Step 1: Parse and standardize seeding rate to kg/ha
         seeding_rate = user_preferences.get('default_seeding_rate', 25)
         seeding_rate_unit = user_preferences.get('default_seeding_rate_unit', 'cwt/acre')
         
-        # Parse seeding rate unit (e.g., "kg/ha" → numerator="kg", denominator="ha")
+        print(f"DEBUG: Raw seeding rate: {seeding_rate} {seeding_rate_unit}")
+        
+        # Parse seeding rate UOM
         seeding_uom = CompositeUOM(seeding_rate_unit)
+        print(f"DEBUG: Parsed seeding UOM - numerator: {seeding_uom.numerator}, denominator: {seeding_uom.denominator}")
         
-        # Convert seeding rate to cwt/ha
-        seeding_rate_cwt_per_ha = self.convert_base_unit(seeding_rate, seeding_uom.numerator, 'cwt')
+        # Convert seeding rate to kg/ha
+        seeding_rate_kg_per_ha = seeding_rate
+        
+        # Convert numerator to kg
+        if seeding_uom.numerator != 'kg':
+            kg_factor = self.convert_base_unit(1.0, seeding_uom.numerator, 'kg')
+            seeding_rate_kg_per_ha *= kg_factor
+            print(f"DEBUG: Converted seeding rate numerator from {seeding_uom.numerator} to kg: factor={kg_factor}")
+        
+        # Convert denominator to ha  
         if seeding_uom.denominator != 'ha':
-            seeding_rate_cwt_per_ha = self.convert_base_unit(seeding_rate_cwt_per_ha, seeding_uom.denominator, 'ha')
+            ha_factor = self.convert_base_unit(1.0, seeding_uom.denominator, 'ha')
+            seeding_rate_kg_per_ha /= ha_factor
+            print(f"DEBUG: Converted seeding rate denominator from {seeding_uom.denominator} to ha: factor={ha_factor}")
         
-        # Apply conversion: [amount/cwt] x [cwt/ha] = [amount/ha]
-        amount_per_ha = value * seeding_rate_cwt_per_ha
+        print(f"DEBUG: Standardized seeding rate: {seeding_rate_kg_per_ha} kg/ha")
         
-        # Convert to target area unit if needed
+        # Step 2: Standardize application rate to standard units per kg of seed
+        # Determine if application rate numerator is wet or dry
+        app_num_unit = self.get_base_unit(from_uom.numerator)
+        if not app_num_unit:
+            raise ValueError(f"Unknown application rate unit: {from_uom.numerator}")
+        
+        print(f"DEBUG: Application rate numerator unit: {from_uom.numerator}, category: {app_num_unit.category}, state: {app_num_unit.state}")
+        
+        # Convert application rate numerator to standard units
+        if app_num_unit.state == 'wet' or app_num_unit.category == 'volume':
+            # Convert to liters per kg of seed (l/kg)
+            target_app_numerator = 'l'
+            standard_app_rate = self.convert_base_unit(value, from_uom.numerator, 'l')
+            print(f"DEBUG: Converting wet/volume application rate to l/kg: {value} {from_uom.numerator} = {standard_app_rate} l")
+        else:
+            # Convert to kg per kg of seed (kg/kg) 
+            target_app_numerator = 'kg'
+            standard_app_rate = self.convert_base_unit(value, from_uom.numerator, 'kg')
+            print(f"DEBUG: Converting dry/weight application rate to kg/kg: {value} {from_uom.numerator} = {standard_app_rate} kg")
+        
+        # Convert application rate denominator to kg (seed weight)
+        if from_uom.denominator != 'kg':
+            seed_kg_factor = self.convert_base_unit(1.0, from_uom.denominator, 'kg')
+            standard_app_rate /= seed_kg_factor
+            print(f"DEBUG: Converted application rate denominator from {from_uom.denominator} to kg: factor={seed_kg_factor}")
+        
+        print(f"DEBUG: Standardized application rate: {standard_app_rate} {target_app_numerator}/kg")
+        
+        # Step 3: Apply conversion formula
+        # [amount/kg_seed] x [kg_seed/ha] = [amount/ha]
+        amount_per_ha = standard_app_rate * seeding_rate_kg_per_ha
+        print(f"DEBUG: Applied formula: {standard_app_rate} {target_app_numerator}/kg × {seeding_rate_kg_per_ha} kg/ha = {amount_per_ha} {target_app_numerator}/ha")
+        
+        # Step 4: Convert to target UOM if needed
+        final_result = amount_per_ha
+        
+        # Convert numerator if needed (e.g., l to ml, kg to g)
+        if to_uom.numerator != target_app_numerator:
+            num_factor = self.convert_base_unit(1.0, target_app_numerator, to_uom.numerator)
+            final_result *= num_factor
+            print(f"DEBUG: Converted result numerator from {target_app_numerator} to {to_uom.numerator}: factor={num_factor}")
+        
+        # Convert denominator if needed (e.g., ha to acre)
         if to_uom.denominator != 'ha':
-            amount_per_ha = self.convert_base_unit(amount_per_ha, 'ha', to_uom.denominator)
+            den_factor = self.convert_base_unit(1.0, 'ha', to_uom.denominator)
+            final_result *= den_factor
+            print(f"DEBUG: Converted result denominator from ha to {to_uom.denominator}: factor={den_factor}")
         
-        return amount_per_ha
+        print(f"DEBUG: Final result: {final_result} {to_uom.original_string}")
+        return final_result
