@@ -130,7 +130,7 @@ class UOMRepository:
         return standard_value / to_unit.factor
     
     def convert_composite_uom(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM, 
-                             user_preferences: dict = None) -> float:
+                            user_preferences: dict = None) -> float:
         """Convert between composite UOMs, handling special cases with validation."""
         
         print(f"DEBUG: Converting {value} from '{from_uom.original_string}' to '{to_uom.original_string}'")
@@ -143,7 +143,6 @@ class UOMRepository:
         print(f"DEBUG: Physical state compatibility validation passed")
         print(f"DEBUG: From UOM category: {from_uom.numerator}, To UOM category: {to_uom.numerator}")
 
-
         # Handle concentration units
         if from_uom.is_concentration and to_uom.is_concentration:
             print(f"DEBUG: Detected concentration conversion")
@@ -151,19 +150,19 @@ class UOMRepository:
             print(f"DEBUG: Concentration conversion result: {result}")
             return result
         
-        # Handle rate conversions
-        if from_uom.is_rate and to_uom.is_rate:
-            print(f"DEBUG: Detected rate conversion")
-            result = self._convert_rate(value, from_uom, to_uom, user_preferences)
-            print(f"DEBUG: Rate conversion result: {result}")
-            return result
-        
-        # Handle special conversions (e.g., linear to area rates)
+        # IMPORTANT: Check for special conversions (user preferences) FIRST
         if self._needs_user_preferences(from_uom, to_uom):
             print(f"DEBUG: Detected conversion requiring user preferences")
             print(f"DEBUG: User preferences: {user_preferences}")
             result = self._convert_with_preferences(value, from_uom, to_uom, user_preferences)
             print(f"DEBUG: User preference-based conversion result: {result}")
+            return result
+        
+        # Handle standard rate conversions (only if not needing user preferences)
+        if from_uom.is_rate and to_uom.is_rate:
+            print(f"DEBUG: Detected standard rate conversion")
+            result = self._convert_rate(value, from_uom, to_uom, user_preferences)
+            print(f"DEBUG: Rate conversion result: {result}")
             return result
         
         print(f"DEBUG: No suitable conversion method found")
