@@ -25,20 +25,20 @@ Usage:
     )
 """
 
-from .layer_3_interface import (
+from .layer_1_interface import (
     EIQCalculator,
     eiq_calculator
 )
 
 # Import Layer 1 components for advanced use
-from .layer_1_uom_std import (
+from .layer_2_uom_std import (
     EIQUOMStandardizer,
     StandardizedEIQInputs,
     ProductStandardizedInputs
 )
 
 # Import Layer 2 components for advanced use
-from .layer_2_eiq_math import (
+from .layer_3_eiq_math import (
     calculate_field_eiq_single_ai,
     calculate_field_eiq_product,
     calculate_field_eiq_scenario,

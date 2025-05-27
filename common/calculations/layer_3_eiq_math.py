@@ -32,6 +32,7 @@ def calculate_field_eiq_single_ai(ai_concentration_per_unit: float,
     Returns:
         Field EIQ per hectare [eiq/ha]
     """
+    print(f"\nL3 - calculate_field_eiq_single_ai")
     if any(val <= 0 for val in [ai_concentration_per_unit, ai_eiq_per_kg, rate_per_ha]):
         return 0.0
     
@@ -60,6 +61,7 @@ def calculate_field_eiq_product(standardized_ais: List[Dict],
     Returns:
         EIQResult with total field EIQ and breakdown
     """
+    print(f"\nL3 - calculate_field_eiq_product")
     if not standardized_ais or rate_per_ha <= 0:
         return EIQResult(field_eiq_per_ha=0.0)
     
@@ -92,6 +94,7 @@ def calculate_field_eiq_scenario(application_eiq_values: List[float]) -> EIQResu
     Returns:
         EIQResult with total scenario EIQ and breakdown by application
     """
+    print(f"\nL3 - calculate_field_eiq_scenario")
     if not application_eiq_values:
         return EIQResult(field_eiq_per_ha=0.0)
     
