@@ -71,23 +71,6 @@ class CompositeUOM:
             return (num_unit.category == 'weight' and den_unit.category == 'volume') or \
                    (num_unit.category == 'weight' and den_unit.category == 'weight')
         return False
-    
-    def get_standard_form(self) -> str:
-        """Get the standard form of this UOM."""
-        repo = UOMRepository.get_instance()
-        
-        if self.denominator is None:
-            if self.numerator == '%':
-                return 'decimal'
-            return self.numerator
-        
-        num_unit = repo.get_base_unit(self.numerator)
-        den_unit = repo.get_base_unit(self.denominator)
-        
-        if num_unit and den_unit:
-            return f"{num_unit.standard}/{den_unit.standard}"
-        
-        return self.original_string
 
 class UOMRepository:
     """Repository for base units and composite UOM operations with enhanced EIQ capabilities."""
@@ -104,17 +87,6 @@ class UOMRepository:
         self.csv_file = UOM_CSV
         self._base_units: Dict[str, BaseUnit] = {}
         self._load_base_units()
-        
-        # Enhanced concentration conversion mappings for EIQ calculations
-        self._concentration_conversion_map = {
-            # Standard concentration conversions
-            ('g/l', 'kg/l'): 0.001,
-            ('lb/gal', 'kg/l'): 0.119826,  # 1 lb/gal = 0.119826 kg/l
-            ('g/kg', 'kg/kg'): 0.001,
-            ('mg/kg', 'kg/kg'): 0.000001,
-            ('ppm', 'kg/kg'): 0.000001,  # ppm by weight
-            ('oz/gal', 'kg/l'): 0.007489,  # 1 oz/gal = 0.007489 kg/l
-        }
     
     def _load_base_units(self):
         """Load base units from CSV."""
@@ -157,26 +129,41 @@ class UOMRepository:
                              user_preferences: dict = None) -> float:
         """Convert between composite UOMs, handling special cases with validation."""
         
-        # Validate physical state compatibility
-        self._validate_physical_state_compatibility(from_uom, to_uom)
+        print(f"DEBUG: Converting {value} from '{from_uom.original_string}' to '{to_uom.original_string}'")
+        print(f"DEBUG: From UOM - numerator: {from_uom.numerator}, denominator: {from_uom.denominator}")
+        print(f"DEBUG: To UOM - numerator: {to_uom.numerator}, denominator: {to_uom.denominator}")
         
+        # Validate physical state compatibility
+        print(f"DEBUG: Validating physical state compatibility...")
+        self._validate_physical_state_compatibility(from_uom, to_uom)
+        print(f"DEBUG: Physical state compatibility validation passed")
+        print(f"DEBUG: From UOM category: {from_uom.numerator}, To UOM category: {to_uom.numerator}")
+
+
         # Handle concentration units
         if from_uom.is_concentration and to_uom.is_concentration:
-            return self._convert_concentration(value, from_uom, to_uom)
+            print(f"DEBUG: Detected concentration conversion")
+            result = self._convert_concentration(value, from_uom, to_uom)
+            print(f"DEBUG: Concentration conversion result: {result}")
+            return result
         
         # Handle rate conversions
         if from_uom.is_rate and to_uom.is_rate:
-            return self._convert_rate(value, from_uom, to_uom, user_preferences)
+            print(f"DEBUG: Detected rate conversion")
+            result = self._convert_rate(value, from_uom, to_uom, user_preferences)
+            print(f"DEBUG: Rate conversion result: {result}")
+            return result
         
         # Handle special conversions (e.g., linear to area rates)
         if self._needs_user_preferences(from_uom, to_uom):
-            return self._convert_with_preferences(value, from_uom, to_uom, user_preferences)
+            print(f"DEBUG: Detected conversion requiring user preferences")
+            print(f"DEBUG: User preferences: {user_preferences}")
+            result = self._convert_with_preferences(value, from_uom, to_uom, user_preferences)
+            print(f"DEBUG: User preference-based conversion result: {result}")
+            return result
         
+        print(f"DEBUG: No suitable conversion method found")
         raise ValueError(f"Cannot convert {from_uom.original_string} to {to_uom.original_string}")
-    
-    # ========================
-    # ENHANCED EIQ METHODS
-    # ========================
     
     def convert_concentration(self, 
                             value: float, 
@@ -199,11 +186,6 @@ class UOMRepository:
                 return value / 100.0
             else:
                 raise ValueError(f"Cannot convert % to {to_uom}")
-        
-        # Handle direct conversions
-        conversion_key = (from_uom.lower(), to_uom.lower())
-        if conversion_key in self._concentration_conversion_map:
-            return value * self._concentration_conversion_map[conversion_key]
         
         # Try using the base composite UOM conversion
         try:
@@ -354,50 +336,6 @@ class UOMRepository:
         
         return validation_result
     
-    def get_conversion_path_info(self, 
-                               from_rate_uom: str,
-                               from_concentration_uom: str,
-                               user_preferences: dict = None) -> Dict:
-        """
-        Get information about the conversion path for EIQ calculations.
-        Useful for debugging and user feedback.
-        
-        Args:
-            from_rate_uom: Source rate UOM
-            from_concentration_uom: Source concentration UOM
-            user_preferences: User preferences for conversions
-            
-        Returns:
-            Dict with conversion path information
-        """
-        try:
-            rate_info = self.get_rate_compatibility_info(from_rate_uom)
-            if not rate_info["valid"]:
-                return {"valid": False, "error": rate_info["error"]}
-            
-            conversion_info = {
-                "valid": True,
-                "rate_conversion": {
-                    "from": from_rate_uom,
-                    "to": rate_info["standard_rate_uom"],
-                    "requires_user_preferences": self._needs_user_preferences_for_rate(from_rate_uom)
-                },
-                "concentration_conversion": {
-                    "from": from_concentration_uom,
-                    "to": rate_info["standard_concentration_uom"]
-                },
-                "eiq_conversion": {
-                    "from": "eiq/lb (Cornell)",
-                    "to": "eiq/kg"
-                },
-                "final_units": "eiq/ha"
-            }
-            
-            return conversion_info
-            
-        except Exception as e:
-            return {"valid": False, "error": str(e)}
-    
     def _needs_user_preferences_for_rate(self, rate_uom: str) -> bool:
         """Check if rate conversion requires user preferences."""
         rate_composite = CompositeUOM(rate_uom)
@@ -411,10 +349,6 @@ class UOMRepository:
             return True
         
         return False
-    
-    # ========================
-    # ORIGINAL METHODS (PRESERVED)
-    # ========================
     
     def _validate_physical_state_compatibility(self, from_uom: CompositeUOM, to_uom: CompositeUOM):
         """Validate that we're not converting between incompatible physical states."""
@@ -436,7 +370,7 @@ class UOMRepository:
         return
     
     def _convert_concentration(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM) -> float:
-        """Convert concentration units."""
+        """Convert concentration units to decimal."""
         if from_uom.numerator == '%':
             return value / 100.0  # Convert percentage to decimal
         
@@ -468,12 +402,12 @@ class UOMRepository:
     def _needs_user_preferences(self, from_uom: CompositeUOM, to_uom: CompositeUOM) -> bool:
         """Check if conversion needs user preferences (row spacing, seeding rate)."""
         # Linear rates like ml/100m need row spacing to convert to area rates
-        if from_uom.denominator in ['100 m', '1000 ft', 'm', 'ft'] and \
+        if from_uom.denominator in ['100m', '1000ft', 'm', 'ft'] and \
            to_uom.denominator in ['ha', 'acre']:
             return True
         
         # Seed treatments like kg/cwt need seeding rate
-        if from_uom.denominator == 'cwt' and to_uom.denominator in ['ha', 'acre']:
+        if from_uom.denominator in ['cwt', '100kg'] and to_uom.denominator in ['ha', 'acre']:
             return True
         
         return False
@@ -485,11 +419,11 @@ class UOMRepository:
             raise ValueError("User preferences required for this conversion")
         
         # Linear to area conversion (amount/length → amount/ha)
-        if from_uom.denominator in ['100 m', '1000 ft', 'm', 'ft']:
+        if from_uom.denominator in ['100m', '1000ft', 'm', 'ft']:
             return self._convert_linear_to_area(value, from_uom, to_uom, user_preferences)
         
         # Seed treatment conversion (amount/cwt → amount/ha)
-        elif from_uom.denominator == 'cwt':
+        elif from_uom.denominator in ['cwt', '100kg']:
             return self._convert_seed_treatment_to_area(value, from_uom, to_uom, user_preferences)
         
         raise ValueError(f"No preference-based conversion available for {from_uom.original_string} to {to_uom.original_string}")
@@ -515,11 +449,7 @@ class UOMRepository:
         row_spacing_m = self.convert_base_unit(row_spacing, row_spacing_unit, 'm')
         
         # Step 3: Calculate rows per meter and meters of rows per hectare
-        rows_per_m = 1.0 / row_spacing_m  # [rows/m]
-        m_per_ha = 10000  # [m²/ha]
-        row_length_m = 100  # assume 100m rows
-        rows_per_ha = m_per_ha / (row_spacing_m * row_length_m)  # [rows/ha]
-        m_of_rows_per_ha = rows_per_ha * row_length_m  # [m of rows/ha]
+        m_of_rows_per_ha = 10000.0 / row_spacing_m  # m²/m = m
         
         # Step 4: Convert amount/m to amount/ha
         amount_per_ha = amount_per_m * m_of_rows_per_ha
@@ -556,11 +486,3 @@ class UOMRepository:
             amount_per_ha = self.convert_base_unit(amount_per_ha, 'ha', to_uom.denominator)
         
         return amount_per_ha
-
-def convert_concentration_to_percent(concentration: float, uom: str) -> float:
-    """Convert concentration to percentage."""
-    composite_uom = CompositeUOM(uom)
-    percent_uom = CompositeUOM('%')
-    
-    repo = UOMRepository.get_instance()
-    return repo.convert_composite_uom(concentration, composite_uom, percent_uom) * 100
