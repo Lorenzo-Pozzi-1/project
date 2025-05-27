@@ -5,11 +5,12 @@ This module defines the ComparisonTable widget which provides a
 side-by-side comparison of product properties.
 """
 
-from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout
+from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout, QSizePolicy
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
 from common import GENERIC_TABLE_STYLE, get_eiq_color, get_medium_font, get_config
 from common.calculations import eiq_calculator
+from common.constants import get_spacing_xlarge
 
 
 class ComparisonTable(QTableWidget):
@@ -24,12 +25,24 @@ class ComparisonTable(QTableWidget):
         """Initialize the comparison table."""
         super().__init__(0, 0, parent)
         self.setup_ui()
-        self.columns_to_hide = []
-        self.set_columns_to_hide([
-            "country","region","number of ai","name",
-            "[AI1]","[AI2]","[AI3]","[AI4]",
-            "[AI1]UOM","[AI2]UOM","[AI3]UOM","[AI4]UOM"
-        ])
+        # Define the exact properties to display and their order
+        self.display_properties = [
+            ("Field EIQ\n1 application, max. rate", "field_eiq"),  # Special calculated field
+            ("AI 1", "AI1"),
+            ("AI 2", "AI2"),
+            ("AI 3", "AI3"),
+            ("AI 4", "AI4"),
+            ("Formulation", "formulation"),
+            ("Application Method", "use"),
+            ("Min Rate", "min rate"),
+            ("Max Rate", "max rate"),
+            ("Rate UOM", "rate UOM"),
+            ("REI (hours)", "REI (H)"),
+            ("PHI (days)", "PHI (d)"),
+            ("Type", "type"),
+            ("Reg. #", "reg. #"),
+            ("Registrant", "registrant")
+        ]
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -39,25 +52,23 @@ class ComparisonTable(QTableWidget):
         self.setSelectionMode(QTableWidget.SingleSelection)
         self.verticalHeader().setVisible(False)
         self.setEditTriggers(QTableWidget.NoEditTriggers)
-
         
         # Style the horizontal header
         self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
         self.horizontalHeader().setFont(get_medium_font(bold=True))
         self.horizontalHeader().setMinimumHeight(40)
         self.horizontalHeader().setStyleSheet(GENERIC_TABLE_STYLE)
-        
-        # Configure row heights
-        self.verticalHeader().setDefaultSectionSize(40)
-    
-    def set_columns_to_hide(self, columns):
+
+    def set_display_properties(self, properties):
         """
-        Set the list of columns to hide in the comparison.
+        Set the list of properties to display in the comparison.
         
         Args:
-            columns: List of column names to hide
+            properties: List of tuples (display_name, property_key)
+                       where display_name is shown in the table and 
+                       property_key is the key in the product dictionary
         """
-        self.columns_to_hide = columns
+        self.display_properties = properties
     
     def update_comparison(self, products):
         """
@@ -71,59 +82,45 @@ class ComparisonTable(QTableWidget):
             self.setColumnCount(0)
             return
         
-        # Get the first product to determine available columns
-        first_product = products[0].to_dict()
-        all_columns = list(first_product.keys())
-        
-        # Filter out columns we don't want to compare
-        visible_columns = []
-        for key in all_columns:
-            if not any(hide_key.lower() == key.lower() for hide_key in self.columns_to_hide):
-                visible_columns.append(key)
-        
-        # Set up comparison table
-        self.setRowCount(len(visible_columns) + 1)  # +1 for Field EIQ row
+        # Set up comparison table dimensions
+        self.setRowCount(len(self.display_properties))
         self.setColumnCount(len(products) + 1)
         
-        # Set headers
+        # Set column headers
         headers = ["Product"]
         for product in products:
             product_dict = product.to_dict()
-            product_name_key = "name"  # Default key for product name
-            headers.append(product_dict.get(product_name_key, "Unknown Product"))
+            headers.append(str(product_dict.get("name")))
         
         self.setHorizontalHeaderLabels(headers)
         
-        # Set row labels (first column)
-        for row, property_name in enumerate(visible_columns):
-            self.setItem(row, 0, self.create_table_item(property_name, bold=True))
-        
-        # Add Field EIQ row label
-        field_eiq_row = len(visible_columns)
-        self.setItem(field_eiq_row, 0, self.create_table_item("Field EIQ\n1 application, max. rate", bold=True))
-        self.resizeRowToContents(field_eiq_row)
-        
-        # Populate product data
-        for col, product in enumerate(products, 1):
-            # Convert product object to dictionary
-            product_dict = product.to_dict()
+        # Set row labels and populate data
+        for row, (display_name, property_key) in enumerate(self.display_properties):
+            # Set the property name in the first column
+            self.setItem(row, 0, self.create_table_item(display_name, bold=True))
             
-            # Fill in properties
-            for row, property_name in enumerate(visible_columns):
-                value = product_dict.get(property_name, "")
-                self.setItem(row, col, self.create_table_item(str(value) if value is not None else ""))
-            
-            # Calculate Field EIQ using max rate
-            field_eiq = self.calculate_product_field_eiq(product)
-            
-            # Add Field EIQ value with color coding
-            eiq_item = self.create_table_item(f"{field_eiq:.2f}" if field_eiq > 0 else "--")
-            if field_eiq > 0:
-                bg_color = get_eiq_color(field_eiq)
-                eiq_item.setBackground(QBrush(bg_color))
-            self.setItem(field_eiq_row, col, eiq_item)
+            # Populate data for each product
+            for col, product in enumerate(products, 1):
+                if property_key == "field_eiq":
+                    # Special handling for calculated Field EIQ
+                    field_eiq = self.calculate_product_field_eiq(product)
+                    eiq_item = self.create_table_item(f"{field_eiq:.2f}" if field_eiq > 0 else "--")
+                    if field_eiq > 0:
+                        bg_color = get_eiq_color(field_eiq)
+                        eiq_item.setBackground(QBrush(bg_color))
+                    self.setItem(row, col, eiq_item)
+                else:
+                    # Regular property from product dictionary
+                    product_dict = product.to_dict()
+                    value = product_dict.get(property_key, "")
+                    # Check for missing or empty values
+                    if value is None or value == "" or (isinstance(value, str) and value.strip() == ""):
+                        display_value = "--"
+                    else:
+                        display_value = str(value)
+                    self.setItem(row, col, self.create_table_item(display_value))
         
-        # Resize columns to fit content
+        # Resize columns
         self.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
         for col in range(1, self.columnCount()):
             self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
