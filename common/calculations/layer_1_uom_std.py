@@ -297,8 +297,11 @@ class EIQUOMStandardizer:
             return 0.0
         
         # Cornell EIQ is per pound, convert to per kg
+        # Since 1 lb = 0.453592 kg, we divide the EIQ/lb value by this factor to get EIQ/kg
         print("Layer 1 - _standardize_ai_eiq: Converting from lb to kg using UOM repository")
-        result = self.uom_repo.convert_base_unit(ai_eiq, 'lb', 'kg')
+        # Convert 1 kg to lb to get the conversion factor
+        conversion_factor = self.uom_repo.convert_base_unit(1,'lb','kg')
+        result = ai_eiq / conversion_factor
         print(f"Layer 1 - _standardize_ai_eiq: Conversion complete - {ai_eiq} eiq/lb = {result} eiq/kg")
         return result
     

@@ -1,4 +1,4 @@
-"""Application Row Widget for the LORENZO POZZI Pesticide App with drag support."""
+"""Application Row Widget for the LORENZO POZZI Pesticide App."""
 
 from contextlib import contextmanager
 from PySide6.QtCore import Qt, Signal
@@ -8,7 +8,7 @@ from data import ProductRepository, AIRepository
 
 
 class ApplicationRowWidget(QFrame):
-    """Widget representing a single pesticide application row with drag & drop."""
+    """Widget representing a single pesticide application row."""
     
     # Signals
     data_changed = Signal(object)  

@@ -50,7 +50,7 @@ class CompositeUOM:
         
         # For proper rate identification, ensure it's not a concentration
         if has_denom:
-            is_conc = self.is_concentration()
+            is_conc = self._check_if_concentration()
             return not is_conc
         
         return False
@@ -58,6 +58,10 @@ class CompositeUOM:
     @property
     def is_concentration(self) -> bool:
         """Check if this is a concentration (mass/volume or similar)."""
+        return self._check_if_concentration()
+    
+    def _check_if_concentration(self) -> bool:
+        """Internal method to check if this represents a concentration."""
         # Handle special cases first
         if self.denominator is None:
             return self.numerator in ['%', 'g/l', 'lb/gal']
@@ -68,8 +72,8 @@ class CompositeUOM:
         den_unit = repo.get_base_unit(self.denominator)
         
         if num_unit and den_unit:
-            return (num_unit.category == 'weight' and den_unit.category == 'volume') or \
-                   (num_unit.category == 'weight' and den_unit.category == 'weight')
+            return ((num_unit.category == 'weight' and den_unit.category == 'volume') or 
+                    (num_unit.category == 'weight' and den_unit.category == 'weight'))
         return False
 
 class UOMRepository:
@@ -193,7 +197,7 @@ class UOMRepository:
             to_composite = CompositeUOM(to_uom)
             return self.convert_composite_uom(value, from_composite, to_composite)
         except Exception as e:
-            raise ValueError(f"Cannot convert concentration from {from_uom} to {to_uom}: {e}")
+            raise ValueError(f"repo. Cannot convert concentration from {from_uom} to {to_uom}: {e}")
     
     def validate_concentration_units(self, concentration_uom: str, rate_unit_type: str) -> bool:
         """
@@ -370,12 +374,37 @@ class UOMRepository:
         return
     
     def _convert_concentration(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM) -> float:
-        """Convert concentration units to decimal."""
+        """Convert concentration units to standard units."""
+        print(f"DEBUG: _convert_concentration - Converting {value} from {from_uom.original_string} to {to_uom.original_string}")
+        
+        # Handle percentage conversion
         if from_uom.numerator == '%':
+            print("DEBUG: _convert_concentration - Converting from percentage")
             return value / 100.0  # Convert percentage to decimal
         
-        # Handle other concentration conversions using enhanced method
-        return self.convert_concentration(value, from_uom.original_string, to_uom.original_string)
+        # Handle other concentration conversions directly using base unit conversion
+        try:
+            print(f"DEBUG: _convert_concentration - Converting numerator: {from_uom.numerator} to {to_uom.numerator}")
+            # Convert numerator (amount units: g to kg, lb to kg, etc.)
+            num_factor = self.convert_base_unit(1.0, from_uom.numerator, to_uom.numerator)
+            print(f"DEBUG: _convert_concentration - Numerator conversion factor: {num_factor}")
+            
+            # Convert denominator if different (volume units: l to l, gal to l, etc.)
+            if from_uom.denominator and to_uom.denominator:
+                print(f"DEBUG: _convert_concentration - Converting denominator: {from_uom.denominator} to {to_uom.denominator}")
+                den_factor = self.convert_base_unit(1.0, from_uom.denominator, to_uom.denominator)
+                print(f"DEBUG: _convert_concentration - Denominator conversion factor: {den_factor}")
+            else:
+                den_factor = 1.0
+            
+            # For concentrations: multiply by numerator factor, divide by denominator factor
+            result = value * num_factor / den_factor
+            print(f"DEBUG: _convert_concentration - Final result: {result}")
+            return result
+            
+        except Exception as e:
+            print(f"DEBUG: _convert_concentration - Error in direct conversion: {e}")
+            raise ValueError(f"Cannot convert concentration from {from_uom.original_string} to {to_uom.original_string}: {e}")
     
     def _convert_rate(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM, 
                      user_preferences: dict = None) -> float:

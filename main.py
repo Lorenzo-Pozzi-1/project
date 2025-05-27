@@ -13,9 +13,6 @@ from common import load_config
 from data import ProductRepository, AIRepository
 from main_page import MainWindow
 
-# Clear the terminal screen
-print("\033c", end="")
-
 # Silence messages when resizing the window
 os.environ['QT_LOGGING_RULES'] = '*=false' 
 
@@ -46,6 +43,9 @@ class WheelProtectionFilter(QObject):
 def main():
     """Main application entry point."""
     
+    # Clear the terminal screen
+    print("\033c", end="")
+
     # Set the current directory as working directory 
     app_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(app_dir)
