@@ -6,12 +6,7 @@ Handles UOM standardization internally, exposes simple interfaces.
 
 from typing import List, Dict
 from .layer_1_uom_std import EIQUOMStandardizer
-from .layer_2_eiq_math import (
-    calculate_field_eiq_single_ai, 
-    calculate_field_eiq_product,
-    calculate_field_eiq_scenario,
-    EIQResult
-)
+from .layer_2_eiq_math import calculate_field_eiq_single_ai, calculate_field_eiq_product, calculate_field_eiq_scenario
 
 class EIQCalculator:
     """
@@ -46,6 +41,7 @@ class EIQCalculator:
             Field EIQ [eiq/ha]
         """
         try:
+            print(f"\ncalculate_ai_field_eiq\n")
             # Layer 1: Standardize inputs
             standardized = self.standardizer.standardize_single_ai_inputs(
                 ai_eiq=ai_eiq,
@@ -91,6 +87,7 @@ class EIQCalculator:
             Total Field EIQ [eiq/ha]
         """
         try:
+            print(f"\ncalculate_product_field_eiq\n")
             # Layer 1: Standardize inputs
             standardized = self.standardizer.standardize_product_inputs(
                 active_ingredients=active_ingredients,

@@ -133,39 +133,39 @@ class UOMRepository:
                             user_preferences: dict = None) -> float:
         """Convert between composite UOMs, handling special cases with validation."""
         
-        print(f"DEBUG: Converting {value} from '{from_uom.original_string}' to '{to_uom.original_string}'")
-        print(f"DEBUG: From UOM - numerator: {from_uom.numerator}, denominator: {from_uom.denominator}")
-        print(f"DEBUG: To UOM - numerator: {to_uom.numerator}, denominator: {to_uom.denominator}")
+        print(f"\t\tUOM_repo: Converting {value} from '{from_uom.original_string}' to '{to_uom.original_string}'")
+        print(f"\t\tUOM_repo: From UOM - numerator: {from_uom.numerator}, denominator: {from_uom.denominator}")
+        print(f"\t\tUOM_repo: To UOM - numerator: {to_uom.numerator}, denominator: {to_uom.denominator}")
         
         # Validate physical state compatibility
-        print(f"DEBUG: Validating physical state compatibility...")
+        print(f"\t\tUOM_repo: Validating physical state compatibility...")
         self._validate_physical_state_compatibility(from_uom, to_uom)
-        print(f"DEBUG: Physical state compatibility validation passed")
-        print(f"DEBUG: From UOM category: {from_uom.numerator}, To UOM category: {to_uom.numerator}")
+        print(f"\t\tUOM_repo: Physical state compatibility validation passed")
+        print(f"\t\tUOM_repo: From UOM category: {from_uom.numerator}, To UOM category: {to_uom.numerator}")
 
         # Handle concentration units
         if from_uom.is_concentration and to_uom.is_concentration:
-            print(f"DEBUG: Detected concentration conversion")
+            print(f"\t\tUOM_repo: Detected concentration conversion")
             result = self._convert_concentration(value, from_uom, to_uom)
-            print(f"DEBUG: Concentration conversion result: {result}")
+            print(f"\t\tUOM_repo: Concentration conversion result: {result}")
             return result
         
         # IMPORTANT: Check for special conversions (user preferences) FIRST
         if self._needs_user_preferences(from_uom, to_uom):
-            print(f"DEBUG: Detected conversion requiring user preferences")
-            print(f"DEBUG: User preferences: {user_preferences}")
+            print(f"\t\tUOM_repo: Detected conversion requiring user preferences")
+            print(f"\t\tUOM_repo: User preferences: {user_preferences}")
             result = self._convert_with_preferences(value, from_uom, to_uom, user_preferences)
-            print(f"DEBUG: User preference-based conversion result: {result}")
+            print(f"\t\tUOM_repo: User preference-based conversion result: {result}")
             return result
         
         # Handle standard rate conversions (only if not needing user preferences)
         if from_uom.is_rate and to_uom.is_rate:
-            print(f"DEBUG: Detected standard rate conversion")
+            print(f"\t\tUOM_repo: Detected standard rate conversion")
             result = self._convert_rate(value, from_uom, to_uom, user_preferences)
-            print(f"DEBUG: Rate conversion result: {result}")
+            print(f"\t\tUOM_repo: Rate conversion result: {result}")
             return result
         
-        print(f"DEBUG: No suitable conversion method found")
+        print(f"\t\tUOM_repo: No suitable conversion method found")
         raise ValueError(f"Cannot convert {from_uom.original_string} to {to_uom.original_string}")
     
     def convert_concentration(self, 
@@ -374,35 +374,35 @@ class UOMRepository:
     
     def _convert_concentration(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM) -> float:
         """Convert concentration units to standard units."""
-        print(f"DEBUG: _convert_concentration - Converting {value} from {from_uom.original_string} to {to_uom.original_string}")
+        print(f"\t\tUOM_repo: _convert_concentration - Converting {value} from {from_uom.original_string} to {to_uom.original_string}")
         
         # Handle percentage conversion
         if from_uom.numerator == '%':
-            print("DEBUG: _convert_concentration - Converting from percentage")
+            print("\t\tUOM_repo: _convert_concentration - Converting from percentage")
             return value / 100.0  # Convert percentage to decimal
         
         # Handle other concentration conversions directly using base unit conversion
         try:
-            print(f"DEBUG: _convert_concentration - Converting numerator: {from_uom.numerator} to {to_uom.numerator}")
+            print(f"\t\tUOM_repo: _convert_concentration - Converting numerator: {from_uom.numerator} to {to_uom.numerator}")
             # Convert numerator (amount units: g to kg, lb to kg, etc.)
             num_factor = self.convert_base_unit(1.0, from_uom.numerator, to_uom.numerator)
-            print(f"DEBUG: _convert_concentration - Numerator conversion factor: {num_factor}")
+            print(f"\t\tUOM_repo: _convert_concentration - Numerator conversion factor: {num_factor}")
             
             # Convert denominator if different (volume units: l to l, gal to l, etc.)
             if from_uom.denominator and to_uom.denominator:
-                print(f"DEBUG: _convert_concentration - Converting denominator: {from_uom.denominator} to {to_uom.denominator}")
+                print(f"\t\tUOM_repo: _convert_concentration - Converting denominator: {from_uom.denominator} to {to_uom.denominator}")
                 den_factor = self.convert_base_unit(1.0, from_uom.denominator, to_uom.denominator)
-                print(f"DEBUG: _convert_concentration - Denominator conversion factor: {den_factor}")
+                print(f"\t\tUOM_repo: _convert_concentration - Denominator conversion factor: {den_factor}")
             else:
                 den_factor = 1.0
             
             # For concentrations: multiply by numerator factor, divide by denominator factor
             result = value * num_factor / den_factor
-            print(f"DEBUG: _convert_concentration - Final result: {result}")
+            print(f"\t\tUOM_repo: _convert_concentration - Final result: {result}")
             return result
             
         except Exception as e:
-            print(f"DEBUG: _convert_concentration - Error in direct conversion: {e}")
+            print(f"\t\tUOM_repo: _convert_concentration - Error in direct conversion: {e}")
             raise ValueError(f"Cannot convert concentration from {from_uom.original_string} to {to_uom.original_string}: {e}")
     
     def _convert_rate(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM, 
@@ -505,17 +505,17 @@ class UOMRepository:
             [amount/seed_weight] x [seed_weight/area] = [amount/area]
             e.g., [ml/cwt] x [cwt/ha] = [ml/ha] → [l/ha]
         """
-        print(f"DEBUG: _convert_seed_treatment_to_area - Converting {value} {from_uom.original_string} to {to_uom.original_string}")
+        print(f"\t\tUOM_repo: _convert_seed_treatment_to_area - Converting {value} {from_uom.original_string} to {to_uom.original_string}")
         
         # Step 1: Parse and standardize seeding rate to kg/ha
         seeding_rate = user_preferences.get('default_seeding_rate', 25)
         seeding_rate_unit = user_preferences.get('default_seeding_rate_unit', 'cwt/acre')
         
-        print(f"DEBUG: Raw seeding rate: {seeding_rate} {seeding_rate_unit}")
+        print(f"\t\tUOM_repo: Raw seeding rate: {seeding_rate} {seeding_rate_unit}")
         
         # Parse seeding rate UOM
         seeding_uom = CompositeUOM(seeding_rate_unit)
-        print(f"DEBUG: Parsed seeding UOM - numerator: {seeding_uom.numerator}, denominator: {seeding_uom.denominator}")
+        print(f"\t\tUOM_repo: Parsed seeding UOM - numerator: {seeding_uom.numerator}, denominator: {seeding_uom.denominator}")
         
         # Convert seeding rate to kg/ha
         seeding_rate_kg_per_ha = seeding_rate
@@ -524,15 +524,15 @@ class UOMRepository:
         if seeding_uom.numerator != 'kg':
             kg_factor = self.convert_base_unit(1.0, seeding_uom.numerator, 'kg')
             seeding_rate_kg_per_ha *= kg_factor
-            print(f"DEBUG: Converted seeding rate numerator from {seeding_uom.numerator} to kg: factor={kg_factor}")
+            print(f"\t\tUOM_repo: Converted seeding rate numerator from {seeding_uom.numerator} to kg: factor={kg_factor}")
         
         # Convert denominator to ha  
         if seeding_uom.denominator != 'ha':
             ha_factor = self.convert_base_unit(1.0, seeding_uom.denominator, 'ha')
             seeding_rate_kg_per_ha /= ha_factor
-            print(f"DEBUG: Converted seeding rate denominator from {seeding_uom.denominator} to ha: factor={ha_factor}")
+            print(f"\t\tUOM_repo: Converted seeding rate denominator from {seeding_uom.denominator} to ha: factor={ha_factor}")
         
-        print(f"DEBUG: Standardized seeding rate: {seeding_rate_kg_per_ha} kg/ha")
+        print(f"\t\tUOM_repo: Standardized seeding rate: {seeding_rate_kg_per_ha} kg/ha")
         
         # Step 2: Standardize application rate to standard units per kg of seed
         # Determine if application rate numerator is wet or dry
@@ -540,32 +540,32 @@ class UOMRepository:
         if not app_num_unit:
             raise ValueError(f"Unknown application rate unit: {from_uom.numerator}")
         
-        print(f"DEBUG: Application rate numerator unit: {from_uom.numerator}, category: {app_num_unit.category}, state: {app_num_unit.state}")
+        print(f"\t\tUOM_repo: Application rate numerator unit: {from_uom.numerator}, category: {app_num_unit.category}, state: {app_num_unit.state}")
         
         # Convert application rate numerator to standard units
         if app_num_unit.state == 'wet' or app_num_unit.category == 'volume':
             # Convert to liters per kg of seed (l/kg)
             target_app_numerator = 'l'
             standard_app_rate = self.convert_base_unit(value, from_uom.numerator, 'l')
-            print(f"DEBUG: Converting wet/volume application rate to l/kg: {value} {from_uom.numerator} = {standard_app_rate} l")
+            print(f"\t\tUOM_repo: Converting wet/volume application rate to l/kg: {value} {from_uom.numerator} = {standard_app_rate} l")
         else:
             # Convert to kg per kg of seed (kg/kg) 
             target_app_numerator = 'kg'
             standard_app_rate = self.convert_base_unit(value, from_uom.numerator, 'kg')
-            print(f"DEBUG: Converting dry/weight application rate to kg/kg: {value} {from_uom.numerator} = {standard_app_rate} kg")
+            print(f"\t\tUOM_repo: Converting dry/weight application rate to kg/kg: {value} {from_uom.numerator} = {standard_app_rate} kg")
         
         # Convert application rate denominator to kg (seed weight)
         if from_uom.denominator != 'kg':
             seed_kg_factor = self.convert_base_unit(1.0, from_uom.denominator, 'kg')
             standard_app_rate /= seed_kg_factor
-            print(f"DEBUG: Converted application rate denominator from {from_uom.denominator} to kg: factor={seed_kg_factor}")
+            print(f"\t\tUOM_repo: Converted application rate denominator from {from_uom.denominator} to kg: factor={seed_kg_factor}")
         
-        print(f"DEBUG: Standardized application rate: {standard_app_rate} {target_app_numerator}/kg")
+        print(f"\t\tUOM_repo: Standardized application rate: {standard_app_rate} {target_app_numerator}/kg")
         
         # Step 3: Apply conversion formula
         # [amount/kg_seed] x [kg_seed/ha] = [amount/ha]
         amount_per_ha = standard_app_rate * seeding_rate_kg_per_ha
-        print(f"DEBUG: Applied formula: {standard_app_rate} {target_app_numerator}/kg × {seeding_rate_kg_per_ha} kg/ha = {amount_per_ha} {target_app_numerator}/ha")
+        print(f"\t\tUOM_repo: Applied formula: {standard_app_rate} {target_app_numerator}/kg × {seeding_rate_kg_per_ha} kg/ha = {amount_per_ha} {target_app_numerator}/ha")
         
         # Step 4: Convert to target UOM if needed
         final_result = amount_per_ha
@@ -574,13 +574,13 @@ class UOMRepository:
         if to_uom.numerator != target_app_numerator:
             num_factor = self.convert_base_unit(1.0, target_app_numerator, to_uom.numerator)
             final_result *= num_factor
-            print(f"DEBUG: Converted result numerator from {target_app_numerator} to {to_uom.numerator}: factor={num_factor}")
+            print(f"\t\tUOM_repo: Converted result numerator from {target_app_numerator} to {to_uom.numerator}: factor={num_factor}")
         
         # Convert denominator if needed (e.g., ha to acre)
         if to_uom.denominator != 'ha':
             den_factor = self.convert_base_unit(1.0, 'ha', to_uom.denominator)
             final_result *= den_factor
-            print(f"DEBUG: Converted result denominator from ha to {to_uom.denominator}: factor={den_factor}")
+            print(f"\t\tUOM_repo: Converted result denominator from ha to {to_uom.denominator}: factor={den_factor}")
         
-        print(f"DEBUG: Final result: {final_result} {to_uom.original_string}")
+        print(f"\t\tUOM_repo: Final result: {final_result} {to_uom.original_string}")
         return final_result
