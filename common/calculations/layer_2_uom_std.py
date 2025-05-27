@@ -67,31 +67,31 @@ class EIQUOMStandardizer:
         
         # Step 1: Handle application rate - use pre-standardized if available
         if pre_standardized_rate is not None and pre_standardized_rate_type is not None:
-            print(f"\tStep 1 - Using pre-standardized rate: {pre_standardized_rate} ({pre_standardized_rate_type}-based)")
+            print(f"\tSTEP 1 - Using pre-standardized rate: {pre_standardized_rate} ({pre_standardized_rate_type}-based)")
             rate_per_ha = pre_standardized_rate
             rate_unit_type = pre_standardized_rate_type
         else:
             print(f"\tNo pre-standardized rate provided, converting: {application_rate} {application_rate_uom}")
-            print("\tStep 1 - Standardizing application rate")
+            print("\tSTEP 1 - Standardizing application rate")
             rate_per_ha, rate_unit_type = self._standardize_application_rate(
                 application_rate, application_rate_uom, user_preferences
             )
             print(f"\tApplication rate standardized to {rate_per_ha} with unit type '{rate_unit_type}'")
         
         # Step 2: Standardize AI concentration to match rate units
-        print("\tStep 2 - Standardizing AI concentration to match rate units")
+        print("\tSTEP 2 - Standardizing AI concentration to match rate units")
         ai_concentration_per_unit = self._standardize_ai_concentration(
             ai_concentration, ai_concentration_uom, rate_unit_type
         )
         print(f"\tAI concentration standardized to {ai_concentration_per_unit}")
         
         # Step 3: Standardize EIQ to [eiq/kg] (Cornell is eiq/lb)
-        print("\tStep 3 - Standardizing AI EIQ from Cornell units")
+        print("\tSTEP 3 - Standardizing AI EIQ from Cornell units")
         ai_eiq_per_kg = self._standardize_ai_eiq(ai_eiq)
         print(f"\tAI EIQ standardized to {ai_eiq_per_kg} eiq/kg")
         
         # Step 4: Validate dimensional analysis
-        print("\tStep 4 - Validating dimensional analysis")
+        print("\tSTEP 4 - Validating dimensional analysis")
         self._validate_dimensional_analysis(rate_unit_type, ai_concentration_per_unit)
         print("\tDimensional analysis validation passed")
         
@@ -125,17 +125,17 @@ class EIQUOMStandardizer:
             ProductStandardizedInputs with all AIs standardized consistently
         """
         
-        print(f"\nL2 - standardize_product_inputs: Starting product standardization with {len(active_ingredients)} active ingredients, rate={application_rate} {application_rate_uom}, applications={applications}")
+        print(f"\nL2 - standardize_product_inputs (with {len(active_ingredients)} active ingredients, rate={application_rate} {application_rate_uom}, applications={applications})")
         
         # Step 1: Standardize application rate ONCE at product level
-        print("Step 1 - Standardizing product application rate")
+        print("STEP 1 - Standardizing product application rate...")
         rate_per_ha, rate_unit_type = self._standardize_application_rate(
             application_rate, application_rate_uom, user_preferences
         )
         print(f"Product application rate standardized to {rate_per_ha} with unit type '{rate_unit_type}'")
         
         # Step 2: Standardize all active ingredients using the pre-standardized rate
-        print("Step 2 - Standardizing all active ingredients using pre-standardized rate")
+        print("STEP 2 - Standardizing all active ingredients using pre-standardized rate...")
         standardized_ais = []
         for i, ai in enumerate(active_ingredients):
             print(f"\nProcessing AI {i+1}/{len(active_ingredients)}: {ai.get('name', 'Unknown')}")
@@ -145,7 +145,7 @@ class EIQUOMStandardizer:
                 continue
                 
             try:
-                # OPTIMIZED: Pass pre-standardized rate to avoid redundant conversion
+                # Pass pre-standardized rate to avoid redundant conversion
                 standardized_ai = self.standardize_single_ai_inputs(
                     ai_eiq=float(ai['eiq']),
                     ai_concentration=float(ai['concentration']),
@@ -154,7 +154,6 @@ class EIQUOMStandardizer:
                     application_rate_uom=application_rate_uom,
                     applications=1,  # Will be applied at product level
                     user_preferences=user_preferences,
-                    # NEW: Pass the already-standardized rate
                     pre_standardized_rate=rate_per_ha,
                     pre_standardized_rate_type=rate_unit_type
                 )
@@ -190,40 +189,32 @@ class EIQUOMStandardizer:
         Returns:
             Tuple of (standardized_rate, unit_type) where unit_type is "weight" or "volume"
         """
-        print(f"\tL2 - _standardize_application_rate: Converting rate {rate} {rate_uom} to standard units")
         
         if not rate or not rate_uom:
             raise ValueError("Application rate and UOM are required")
         
-        print(f"\tL2 - _standardize_application_rate: Parsing composite UOM from '{rate_uom}'")
         from_uom = CompositeUOM(rate_uom) # Parse the UOM into numerator / denominator
-        print(f"\tL2 - _standardize_application_rate: Parsed UOM - numerator: {from_uom.numerator}, denominator: {from_uom.denominator}")
         
         # Determine target unit (kg or l) based on numerator type
-        print(f"\tL2 - _standardize_application_rate: Getting base unit for numerator '{from_uom.numerator}'")
         numerator_unit = self.uom_repo.get_base_unit(from_uom.numerator)
         if not numerator_unit:
             raise ValueError(f"Unknown unit in rate: {from_uom.numerator}")
-        
-        print(f"\tL2 - _standardize_application_rate: Numerator unit category is '{numerator_unit.category}'")
-        
+                
         if numerator_unit.category == 'weight':
             target_uom = CompositeUOM("kg/ha")
             unit_type = "weight"
-            print("\tL2 - _standardize_application_rate: Target unit determined as kg/ha (weight-based)")
         elif numerator_unit.category == 'volume':
             target_uom = CompositeUOM("l/ha") 
             unit_type = "volume"
-            print("\tL2 - _standardize_application_rate: Target unit determined as l/ha (volume-based)")
         else:
             raise ValueError(f"Application rate must be weight/area or volume/area, got: {rate_uom}")
         
         # Convert to standard rate
-        print(f"\tL2 - _standardize_application_rate: Converting {rate} from {from_uom.original_string} to {target_uom.original_string}")
+        print(f"\tL2 - _standardize_application_rate: Converting {rate} from {from_uom.original_string} to {target_uom.original_string}... ",)
         standardized_rate = self.uom_repo.convert_composite_uom(
             rate, from_uom, target_uom, user_preferences
         )
-        print(f"\tL2 - _standardize_application_rate: Conversion complete - {rate} {rate_uom} = {standardized_rate} {target_uom.original_string}")
+        print(f"\tConversion complete - {rate} {rate_uom} = {standardized_rate} {target_uom.original_string}")
         
         return standardized_rate, unit_type
     
@@ -250,9 +241,7 @@ class EIQUOMStandardizer:
             print(f"\t\tL2 - _standardize_ai_concentration: Converting percentage - {concentration}% = {result} (decimal)")
             return result
         
-        print(f"\t\tL2 - _standardize_ai_concentration: Parsing composite UOM from '{concentration_uom}'")
         from_uom = CompositeUOM(concentration_uom) # Parse the UOM into numerator / denominator
-        print(f"\t\tL2 - _standardize_ai_concentration: Parsed concentration UOM - numerator: {from_uom.numerator}, denominator: {from_uom.denominator}")
         
         # Determine target concentration UOM based on rate type
         if target_rate_type == "weight":
@@ -266,11 +255,9 @@ class EIQUOMStandardizer:
         
         # Check if the conversion is physically possible (wet vs dry, can't mix them)
         if from_uom.is_concentration:
-            print("\t\tL2 - _standardize_ai_concentration: Checking physical compatibility of concentration units")
             # Check if source and target are compatible
             from_is_weight_per_volume = self._is_weight_per_volume(from_uom)
             from_is_weight_per_weight = self._is_weight_per_weight(from_uom)
-            print(f"\t\tL2 - _standardize_ai_concentration: Source is weight/volume: {from_is_weight_per_volume}, weight/weight: {from_is_weight_per_weight}")
             
             if from_is_weight_per_volume and target_rate_type == "weight":
                 # e.g. cannot convert lb/gal to kg/kg - this is physically impossible
@@ -286,14 +273,14 @@ class EIQUOMStandardizer:
         
         # Convert concentration
         try:
-            print(f"\t\tL2 - _standardize_ai_concentration: Converting {concentration} from {from_uom.original_string} to {target_uom.original_string}")
+            print(f"\t\tL2 - _standardize_ai_concentration: Converting {concentration} from {from_uom.original_string} to {target_uom.original_string}: ", end="")
             standardized_concentration = self.uom_repo.convert_composite_uom(
                 concentration, from_uom, target_uom
             )
-            print(f"\t\tL2 - _standardize_ai_concentration: Conversion complete - {concentration} {concentration_uom} = {standardized_concentration} {target_uom.original_string}")
+            print(f"Conversion complete - {concentration} {concentration_uom} = {standardized_concentration} {target_uom.original_string}")
             return standardized_concentration
         except Exception as e:
-            print(f"\t\tL2 - _standardize_ai_concentration: Conversion failed with error: {e}")
+            print(f"Conversion failed with error: {e}")
             raise ValueError(
                 f"\tL2._standardize_ai_concentration: Cannot convert concentration from {concentration_uom} to {target_uom.original_string}: {e}"
             )
@@ -308,7 +295,7 @@ class EIQUOMStandardizer:
         Returns:
             EIQ in standard units (eiq/kg)
         """
-        print(f"\t\tL2 - _standardize_ai_eiq: Converting AI EIQ {ai_eiq} from Cornell units (eiq/lb) to standard (eiq/kg)")
+        print(f"\t\tL2 - _standardize_ai_eiq: Converting AI EIQ {ai_eiq} from Cornell units (eiq/lb) to standard (eiq/kg): ", end="")
         
         if ai_eiq is None:
             print("\t\tL2 - _standardize_ai_eiq: WARNING! Missing AI eiq value, calculating assuming it is 0.")
@@ -319,12 +306,9 @@ class EIQUOMStandardizer:
             return 0.0
         
         # Cornell EIQ is per pound, convert to per kg
-        # Since 1 lb = 0.453592 kg, we divide the EIQ/lb value by this factor to get EIQ/kg
-        print("\t\tL2 - _standardize_ai_eiq: Converting from lb to kg using UOM repository")
-        # Convert 1 kg to lb to get the conversion factor
         conversion_factor = self.uom_repo.convert_base_unit(1,'lb','kg')
         result = ai_eiq / conversion_factor
-        print(f"\t\tL2 - _standardize_ai_eiq: Conversion complete - {ai_eiq} eiq/lb = {result} eiq/kg")
+        print(f"Conversion complete - {ai_eiq} eiq/lb = {result} eiq/kg")
         return result
     
     def _validate_dimensional_analysis(self, rate_unit_type: str, ai_concentration: float):
@@ -335,7 +319,7 @@ class EIQUOMStandardizer:
         - Weight rate: [kg/ha] x [kg/kg] x [eiq/kg] = [eiq/ha]
         - Volume rate: [l/ha]  x [kg/l]  x [eiq/kg] = [eiq/ha]
         """
-        print(f"\t\tL2 - _validate_dimensional_analysis: Validating dimensional analysis for rate type '{rate_unit_type}' with concentration {ai_concentration}")
+        print(f"\t\tL2 - _validate_dimensional_analysis: Validating dimensional analysis for rate type '{rate_unit_type}' with concentration {ai_concentration}: ", end="")
         
         if rate_unit_type not in ["weight", "volume"]:
             raise ValueError(f"Invalid rate unit type: {rate_unit_type}")
@@ -348,13 +332,12 @@ class EIQUOMStandardizer:
         # For example, checking reasonable ranges for concentrations
         if rate_unit_type == "weight" and ai_concentration > 1.0:
             print(f"\t\tL2 - _validate_dimensional_analysis: ERROR - Weight-based concentration {ai_concentration} cannot exceed 1.0 (100%)")
-            raise ValueError("Layer1._validate_dimensional_analysis: Weight-based concentration cannot exceed 1.0 (100%)")
+            raise ValueError("Layer2._validate_dimensional_analysis: Weight-based concentration cannot exceed 1.0 (100%)")
         
-        print("\t\tL2 - _validate_dimensional_analysis: All dimensional analysis checks passed")
+        print("passed")
         
     def _is_weight_per_volume(self, uom: CompositeUOM) -> bool:
         """Check if UOM is weight per volume (like lb/gal, g/l)."""
-        print(f"\t\tL2 - _is_weight_per_volume: Checking if {uom.original_string} is weight per volume")
         
         if not uom.is_concentration:
             print("\t\tL2 - _is_weight_per_volume: UOM is not a concentration, returning False")
@@ -369,14 +352,12 @@ class EIQUOMStandardizer:
     
     def _is_weight_per_weight(self, uom: CompositeUOM) -> bool:
         """Check if UOM is weight per weight (like g/kg, %)."""
-        print(f"\t\tL2 - _is_weight_per_weight: Checking if {uom.original_string} is weight per weight")
         
         if uom.numerator == '%':
             print("\t\tL2 - _is_weight_per_weight: UOM is percentage, returning True")
             return True
             
         if not uom.is_concentration:
-            print("\t\tL2 - _is_weight_per_weight: UOM is not a concentration, returning False")
             return False
         
         num_unit = self.uom_repo.get_base_unit(uom.numerator)
