@@ -6,7 +6,7 @@ with enhanced concentration conversion capabilities for EIQ calculations.
 """
 
 import csv
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict
 from dataclasses import dataclass
 from common import resource_path
 
@@ -22,7 +22,7 @@ class BaseUnit:
     standard: str  # standard unit for this category
 
 class CompositeUOM:
-    """Represents a composite unit like kg/ha, ml/100m, etc."""
+    """Represents a composite unit X/Y (like kg/ha, ml/100m, etc.)."""
     
     def __init__(self, uom_string: str):
         """Parse a UOM string like 'kg/ha' or 'ml/100 m'."""
@@ -50,7 +50,7 @@ class CompositeUOM:
         
         # For proper rate identification, ensure it's not a concentration
         if has_denom:
-            is_conc = self._check_if_concentration()
+            is_conc = self.is_concentration()
             return not is_conc
         
         return False
@@ -58,13 +58,6 @@ class CompositeUOM:
     @property
     def is_concentration(self) -> bool:
         """Check if this is a concentration (mass/volume or similar)."""
-        if self.denominator is None:
-            return self.numerator in ['%', 'g/l', 'lb/gal']
-        
-        return self._check_if_concentration()
-    
-    def _check_if_concentration(self) -> bool:
-        """Internal method to check if this represents a concentration."""
         # Handle special cases first
         if self.denominator is None:
             return self.numerator in ['%', 'g/l', 'lb/gal']

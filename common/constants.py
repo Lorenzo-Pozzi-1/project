@@ -44,7 +44,7 @@ EIQ_HIGH_THRESHOLD = 100.0
 # SCREEN SIZE DETECTION
 # ----------------------
 
-def get_screen_size(test_width = None, test_height = None):
+def get_screen_size(test_width = 1366, test_height = 768):
     """Get the primary screen size with testing override capability.
     
     Set environment variables to simulate different screen sizes:
