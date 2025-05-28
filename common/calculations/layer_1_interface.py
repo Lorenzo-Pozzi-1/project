@@ -5,7 +5,7 @@ Handles UOM standardization internally, exposes simple interfaces.
 """
 
 from typing import List, Dict
-from common.tracer import calculation_tracer
+from common.widgets.tracer import calculation_tracer
 from .layer_2_uom_std import EIQUOMStandardizer
 from .layer_3_eiq_math import calculate_field_eiq_product, calculate_field_eiq_scenario
 

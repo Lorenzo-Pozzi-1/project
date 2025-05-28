@@ -46,7 +46,7 @@ class CalculationTraceDialog(QDialog):
         self.resize(800, 600)
         
         # Import here to avoid circular imports
-        from common.tracer import calculation_tracer
+        from common.widgets.tracer import calculation_tracer
         self.tracer = calculation_tracer
         
         self.setup_ui()

@@ -58,7 +58,9 @@ from common.widgets import (
     create_button,
     ProductSelectionWidget,
     ApplicationParamsWidget,
-    SmartUOMComboBox
+    SmartUOMComboBox,
+    calculation_tracer, 
+    CalculationTraceDialog
 )
  
 # EIQ calculation functions
@@ -68,9 +70,6 @@ from common.calculations import eiq_calculator
 from data.repository_UOM import (
     UOMRepository, CompositeUOM
 )
-
-# Tracer
-from common.tracer import calculation_tracer, CalculationTraceDialog
 
 # Define what gets imported with "from common import *"
 __all__ = [
@@ -110,15 +109,12 @@ __all__ = [
     # Widgets and Widget Functions
     'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar', 'create_button', 
     'ProductSelectionWidget', 'ApplicationParamsWidget', 'SmartUOMComboBox',
+    'calculation_tracer', 'CalculationTraceDialog',
     
     # NEW EIQ calculations
     'eiq_calculator',
     
     # UOM system
     'UOMRepository',
-    'CompositeUOM',
-
-    # Tracer
-    'calculation_tracer',
-    'CalculationTraceDialog'
+    'CompositeUOM'
 ]

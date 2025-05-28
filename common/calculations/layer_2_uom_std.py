@@ -5,7 +5,7 @@ Handles all unit conversions and dimensional analysis validation
 
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
-from common.tracer import calculation_tracer
+from common.widgets.tracer import calculation_tracer
 from data.repository_UOM import UOMRepository, CompositeUOM
 
 @dataclass

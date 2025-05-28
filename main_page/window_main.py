@@ -72,23 +72,20 @@ class MainWindow(QMainWindow):
         self.eiq_calculator_page = EiqCalculatorPage(self)
         self.stacked_widget.addWidget(self.eiq_calculator_page)
         
-        # Add yellow bar at the bottom with author info
-        self.yellow_bar = QFrame()
+        # Add yellow bar at the bottom with tracer button and author info
+        self.yellow_bar = QFrame()  # Bar
         self.yellow_bar.setStyleSheet(YELLOW_BAR_STYLE)
-        yellow_bar_layout = QHBoxLayout(self.yellow_bar)  # Changed to QHBoxLayout
+        yellow_bar_layout = QHBoxLayout(self.yellow_bar)
         yellow_bar_layout.setContentsMargins(10, 2, 10, 2)
 
-        # Add calculation trace button on the left
-        self.trace_button = create_button(text="</>", style="tiny", callback=self.show_calculation_trace)
+        self.trace_button = create_button(text="</>", style="tiny", callback=self.show_calculation_trace)  # Button
         self.trace_button.setToolTip("Show calculation trace")
         self.trace_button.clicked.connect(self.show_calculation_trace)
         yellow_bar_layout.addWidget(self.trace_button)
 
-        # Add spacer to push author label to the right
-        yellow_bar_layout.addStretch()
+        yellow_bar_layout.addStretch()  # Add stretch to push author label to the right
 
-        # Add author label aligned to the right
-        author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")
+        author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")  # Author info
         author_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         yellow_bar_layout.addWidget(author_label)
         

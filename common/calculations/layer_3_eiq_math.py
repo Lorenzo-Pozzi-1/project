@@ -5,7 +5,7 @@ No UOM handling - all inputs must be pre-standardized.
 """
 
 from typing import List, Dict
-from common.tracer import calculation_tracer
+from common.widgets.tracer import calculation_tracer
 from dataclasses import dataclass
 
 @dataclass
