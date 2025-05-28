@@ -139,7 +139,6 @@ class UOMRepository:
         print(f"\t\tUOM_repo: Validating physical state compatibility...", end="")
         self._validate_physical_state_compatibility(from_uom, to_uom)
         print(f"passed")
-        print(f"\t\tUOM_repo: From UOM category: {from_uom.numerator}, To UOM category: {to_uom.numerator}")
 
         # Handle concentration units
         if from_uom.is_concentration and to_uom.is_concentration:
@@ -473,7 +472,6 @@ class UOMRepository:
         row_spacing_m = self.convert_base_unit(row_spacing, row_spacing_unit, 'm')
         print(f"\t\t\t  2. Standardize row spacing: {row_spacing} {row_spacing_unit} = {row_spacing_m} m")
 
-
         # Step 3: Calculate rows per meter and meters of rows per hectare
         m_of_rows_per_ha = 10000.0 / row_spacing_m
         print(f"\t\t\t  3. Meters of rows per hectare: {m_of_rows_per_ha} m/ha")
@@ -513,17 +511,14 @@ class UOMRepository:
             [amount/seed_weight] x [seed_weight/area] = [amount/area]
             e.g., [ml/cwt] x [cwt/ha] = [ml/ha] → [l/ha]
         """
-        print(f"\t\tUOM_repo: _convert_seed_treatment_to_area - Converting {value} {from_uom.original_string} to {to_uom.original_string}")
+        print(f"\t\tUOM_repo: _convert_seed_treatment_to_area")
         
         # Step 1: Parse and standardize seeding rate to kg/ha
         seeding_rate = user_preferences.get('default_seeding_rate', 25)
         seeding_rate_unit = user_preferences.get('default_seeding_rate_unit', 'cwt/acre')
-        
-        print(f"\t\tUOM_repo: Raw seeding rate: {seeding_rate} {seeding_rate_unit}")
-        
+                
         # Parse seeding rate UOM
         seeding_uom = CompositeUOM(seeding_rate_unit)
-        print(f"\t\tUOM_repo: Parsed seeding UOM - numerator: {seeding_uom.numerator}, denominator: {seeding_uom.denominator}")
         
         # Convert seeding rate to kg/ha
         seeding_rate_kg_per_ha = seeding_rate
@@ -532,15 +527,13 @@ class UOMRepository:
         if seeding_uom.numerator != 'kg':
             kg_factor = self.convert_base_unit(1.0, seeding_uom.numerator, 'kg')
             seeding_rate_kg_per_ha *= kg_factor
-            print(f"\t\tUOM_repo: Converted seeding rate numerator from {seeding_uom.numerator} to kg: factor={kg_factor}")
         
         # Convert denominator to ha  
         if seeding_uom.denominator != 'ha':
             ha_factor = self.convert_base_unit(1.0, seeding_uom.denominator, 'ha')
             seeding_rate_kg_per_ha /= ha_factor
-            print(f"\t\tUOM_repo: Converted seeding rate denominator from {seeding_uom.denominator} to ha: factor={ha_factor}")
         
-        print(f"\t\tUOM_repo: Standardized seeding rate: {seeding_rate_kg_per_ha} kg/ha")
+        print(f"\t\t  1. Standardized seeding rate: from {seeding_rate} {seeding_rate_unit} to {seeding_rate_kg_per_ha} kg/ha")
         
         # Step 2: Standardize application rate to standard units per kg of seed
         # Determine if application rate numerator is wet or dry
@@ -548,32 +541,27 @@ class UOMRepository:
         if not app_num_unit:
             raise ValueError(f"Unknown application rate unit: {from_uom.numerator}")
         
-        print(f"\t\tUOM_repo: Application rate numerator unit: {from_uom.numerator}, category: {app_num_unit.category}, state: {app_num_unit.state}")
         
         # Convert application rate numerator to standard units
         if app_num_unit.state == 'wet' or app_num_unit.category == 'volume':
             # Convert to liters per kg of seed (l/kg)
             target_app_numerator = 'l'
             standard_app_rate = self.convert_base_unit(value, from_uom.numerator, 'l')
-            print(f"\t\tUOM_repo: Converting wet/volume application rate to l/kg: {value} {from_uom.numerator} = {standard_app_rate} l")
         else:
             # Convert to kg per kg of seed (kg/kg) 
             target_app_numerator = 'kg'
             standard_app_rate = self.convert_base_unit(value, from_uom.numerator, 'kg')
-            print(f"\t\tUOM_repo: Converting dry/weight application rate to kg/kg: {value} {from_uom.numerator} = {standard_app_rate} kg")
         
         # Convert application rate denominator to kg (seed weight)
         if from_uom.denominator != 'kg':
             seed_kg_factor = self.convert_base_unit(1.0, from_uom.denominator, 'kg')
             standard_app_rate /= seed_kg_factor
-            print(f"\t\tUOM_repo: Converted application rate denominator from {from_uom.denominator} to kg: factor={seed_kg_factor}")
         
-        print(f"\t\tUOM_repo: Standardized application rate: {standard_app_rate} {target_app_numerator}/kg")
+        print(f"\t\t  2. Standardized application rate from {value} {from_uom.original_string} to {standard_app_rate} {target_app_numerator}/kg")
         
         # Step 3: Apply conversion formula
         # [amount/kg_seed] x [kg_seed/ha] = [amount/ha]
         amount_per_ha = standard_app_rate * seeding_rate_kg_per_ha
-        print(f"\t\tUOM_repo: Applied formula: {standard_app_rate} {target_app_numerator}/kg × {seeding_rate_kg_per_ha} kg/ha = {amount_per_ha} {target_app_numerator}/ha")
         
         # Step 4: Convert to target UOM if needed
         final_result = amount_per_ha
@@ -590,5 +578,5 @@ class UOMRepository:
             final_result *= den_factor
             print(f"\t\tUOM_repo: Converted result denominator from ha to {to_uom.denominator}: factor={den_factor}")
         
-        print(f"\t\tUOM_repo: Final result: {final_result} {to_uom.original_string}")
+        print(f"\t\t  3. Multiplying them we get: {final_result} {to_uom.original_string}")
         return final_result

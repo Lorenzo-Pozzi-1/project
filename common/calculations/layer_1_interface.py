@@ -53,7 +53,8 @@ class EIQCalculator:
                 rate_per_ha=standardized.rate_per_ha,
                 applications=standardized.applications
             )
-            
+
+            print(f"Summing up the results for all AIs I got: {result.field_eiq_per_ha} [EIQ/ha]")
             return result.field_eiq_per_ha
             
         except Exception as e:

@@ -214,7 +214,7 @@ class EIQUOMStandardizer:
         standardized_rate = self.uom_repo.convert_composite_uom(
             rate, from_uom, target_uom, user_preferences
         )
-        print(f"\tConversion complete - {rate} {rate_uom} = {standardized_rate} {target_uom.original_string}")
+        print(f"\tStandardization complete - {rate} {rate_uom} = {standardized_rate} {target_uom.original_string}")
         
         return standardized_rate, unit_type
     
@@ -362,5 +362,5 @@ class EIQUOMStandardizer:
         den_unit = self.uom_repo.get_base_unit(uom.denominator)
         
         is_weight_per_weight = (num_unit and den_unit and num_unit.category == 'weight' and den_unit.category == 'weight')
-        print(f"\t\t{uom.original_string} _is_weight_per_weight? {is_weight_per_weight}")
+        print(f"\t\t\t{uom.original_string} _is_weight_per_weight? {is_weight_per_weight}")
         return is_weight_per_weight
