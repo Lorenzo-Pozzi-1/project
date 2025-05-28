@@ -356,7 +356,7 @@ QTextEdit {{
     border-radius: 4px;
     padding: 8px;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: {get_small_text_size()}pt;
+    font-size: {get_medium_text_size()}pt;
     line-height: 1.4;
     selection-background-color: {BLUE};
     selection-color: {WHITE};

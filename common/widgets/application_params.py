@@ -7,7 +7,7 @@ This module provides widgets for entering application rate, units, and other par
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QFormLayout, QLabel
 from PySide6.QtCore import Signal, Property
 from common.styles import get_medium_font, get_small_font
-from common.widgets.header_and_frame import ContentFrame
+from common.widgets.header_frame_buttons import ContentFrame
 from common.widgets.SmartUOMComboBox import SmartUOMComboBox
 
 

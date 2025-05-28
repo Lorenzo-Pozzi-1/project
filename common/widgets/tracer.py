@@ -94,7 +94,7 @@ class CalculationTraceDialog(QDialog):
             cursor.movePosition(QTextCursor.MoveOperation.End)
             self.text_area.setTextCursor(cursor)
         else:
-            self.text_area.setPlainText("No calculation trace available yet.\n\nPerform an EIQ calculation to see the trace here.")
+            self.text_area.setPlainText("When calculations are performed, the trace will appear here.")
     
     def clear_trace(self):
         """Clear the calculation trace."""

@@ -6,7 +6,7 @@ application scenarios through tabs.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog
-from common import ContentFrame, HeaderWithHomeButton, create_button, ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font
+from common import ContentFrame, HeaderWithHomeButton, calculation_tracer, create_button, ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font
 from season_planner_page.tab_scenario import ScenarioTabPage
 from data import Scenario
 
@@ -26,6 +26,7 @@ class ScenariosManagerPage(QWidget):
         self.scenario_tabs = {}  # Map scenario names to tab pages
         self.setup_ui()
         self.add_new_scenario()  # Start with one default scenario
+        calculation_tracer.clear()
     
     def setup_ui(self):
         """Set up the UI components."""

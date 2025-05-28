@@ -13,7 +13,7 @@ Usage:
 """
 
 # Import and re-export the ContentFrame and HeaderWithHomeButton
-from common.widgets.header_and_frame import (
+from common.widgets.header_frame_buttons import (
     ContentFrame, 
     HeaderWithHomeButton,
     create_button
