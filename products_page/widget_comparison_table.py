@@ -8,7 +8,7 @@ side-by-side comparison of product properties.
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout, QSizePolicy
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
-from common import GENERIC_TABLE_STYLE, get_eiq_color, get_medium_font, get_config
+from common import GENERIC_TABLE_STYLE, get_eiq_color, get_medium_font, get_config, calculation_tracer
 from common.calculations import eiq_calculator
 from common.constants import get_spacing_xlarge
 
@@ -146,6 +146,9 @@ class ComparisonTable(QTableWidget):
             user_preferences = get_config("user_preferences", {})
             
             # Calculate Field EIQ
+            calculation_tracer.log(f"\n\n====================================================================")
+            calculation_tracer.log(f"{product.product_name}")
+            calculation_tracer.log(f"====================================================================")
             field_eiq = eiq_calculator.calculate_product_field_eiq(
                 active_ingredients=ai_data,
                 application_rate=rate,

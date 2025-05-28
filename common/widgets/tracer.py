@@ -1,7 +1,8 @@
 """Log calculations and provide a trace of operations."""
 
-from PySide6.QtWidgets import QDialog, QTextEdit, QDialogButtonBox
+from PySide6.QtWidgets import QDialog, QTextEdit, QDialogButtonBox, QVBoxLayout
 from PySide6.QtGui import QTextCursor
+from common.styles import CALCULATION_TRACE_DIALOG_STYLE, CALCULATION_TRACE_TEXT_AREA_STYLE, CALCULATION_TRACE_BUTTON_STYLE
 
 class CalculationTracer:
     _instance = None
@@ -16,8 +17,8 @@ class CalculationTracer:
         self.messages = []
         self.ui_dialog = None  # Reference to dialog for updates
     
-    def log(self, message):
-        self.messages.append(message)
+    def log(self, message, end=""):
+        self.messages.append(f"{message}{end}")
     
     def clear(self):
         self.messages.clear()
@@ -46,7 +47,6 @@ class CalculationTraceDialog(QDialog):
         self.resize(800, 600)
         
         # Import here to avoid circular imports
-        from common.widgets.tracer import calculation_tracer
         self.tracer = calculation_tracer
         
         self.setup_ui()
@@ -57,23 +57,22 @@ class CalculationTraceDialog(QDialog):
     
     def setup_ui(self):
         """Set up the dialog UI."""
-        from PySide6.QtWidgets import QVBoxLayout
-        from PySide6.QtGui import QFont
+
+        # Apply dialog stylesheet
+        self.setStyleSheet(CALCULATION_TRACE_DIALOG_STYLE)
         
         layout = QVBoxLayout(self)
         
         # Text area for trace content
         self.text_area = QTextEdit()
         self.text_area.setReadOnly(True)
-        
-        # Use monospace font for better formatting
-        mono_font = QFont("Courier New", 9)
-        self.text_area.setFont(mono_font)
+        self.text_area.setStyleSheet(CALCULATION_TRACE_TEXT_AREA_STYLE)
         
         layout.addWidget(self.text_area)
         
         # Button box with Clear and Close buttons
         button_box = QDialogButtonBox()
+        button_box.setStyleSheet(CALCULATION_TRACE_BUTTON_STYLE)
         
         # Clear button
         clear_button = button_box.addButton("Clear Terminal", QDialogButtonBox.ActionRole)
@@ -103,5 +102,11 @@ class CalculationTraceDialog(QDialog):
     
     def closeEvent(self, event):
         """Clean up when dialog is closed."""
-        self.tracer.ui_dialog = None
+        if hasattr(self, 'tracer') and self.tracer:
+            self.tracer.ui_dialog = None
+        
+        # Clean up the parent's reference to this dialog
+        if self.parent():
+            self.parent().trace_dialog = None
+        
         event.accept()

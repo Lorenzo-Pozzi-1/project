@@ -33,6 +33,7 @@ class MainWindow(QMainWindow):
         self.setup_window()
         self.init_ui()
         self.apply_config_preferences()
+        self.trace_dialog = None
         
     def setup_window(self):
         """Set up the window properties."""
@@ -172,9 +173,17 @@ class MainWindow(QMainWindow):
         self.apply_filters(default_country, default_region)
 
     def show_calculation_trace(self):
-            """Show the calculation trace dialog."""        
-            dialog = CalculationTraceDialog(self)
-            dialog.exec()
+        """Show the calculation trace dialog."""
+        # Check if dialog already exists and is visible
+        if self.trace_dialog is not None and self.trace_dialog.isVisible():
+            # Just bring it to front and focus it
+            self.trace_dialog.raise_()
+            self.trace_dialog.activateWindow()
+            return
+        
+        # Create new dialog if none exists or previous one was closed
+        self.trace_dialog = CalculationTraceDialog(self)
+        self.trace_dialog.show()
 
     def closeEvent(self, event):
         """Handle the close event, clean up __pycache__ directories."""

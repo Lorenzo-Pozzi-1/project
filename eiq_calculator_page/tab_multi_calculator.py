@@ -7,7 +7,7 @@ values of multiple pesticide products with card-based UI.
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
-from common import get_subtitle_font, ContentFrame, create_button, get_config
+from common import get_subtitle_font, ContentFrame, create_button, get_config, calculation_tracer
 from common.calculations import eiq_calculator
 from common.constants import get_margin_medium, get_spacing_large
 from eiq_calculator_page.widgets_results_display import EiqComparisonTable
@@ -175,6 +175,9 @@ class ProductComparisonCalculatorTab(QWidget):
             user_preferences = get_config("user_preferences", {})
             
             # Calculate field use EIQ for the product
+            calculation_tracer.log(f"\n\n====================================================================")
+            calculation_tracer.log(f"{product_data['product_name']}")
+            calculation_tracer.log(f"====================================================================")
             field_eiq = eiq_calculator.calculate_product_field_eiq(
                 active_ingredients=product_data["active_ingredients"],
                 application_rate=product_data["rate"],

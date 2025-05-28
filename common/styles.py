@@ -323,3 +323,73 @@ PRODUCT_CARD_STYLE = f"""
         border-radius: 4px;
     }}
 """
+
+# Calculation Trace Dialog Styles
+CALCULATION_TRACE_DIALOG_STYLE = """
+QDialog {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+QDialog QLabel {
+    color: #495057;
+    font-weight: 500;
+}
+"""
+
+CALCULATION_TRACE_TEXT_AREA_STYLE = """
+QTextEdit {
+    background-color: #2d3748;
+    color: #e2e8f0;
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 9pt;
+    line-height: 1.4;
+    selection-background-color: #4a5568;
+    selection-color: #ffffff;
+}
+
+QTextEdit:focus {
+    border: 2px solid #3182ce;
+}
+"""
+
+CALCULATION_TRACE_BUTTON_STYLE = """
+QPushButton {
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    padding: 6px 12px;
+    color: #374151;
+    font-weight: 500;
+    min-height: 24px;
+}
+
+QPushButton:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+QPushButton:pressed {
+    background-color: #f3f4f6;
+    border-color: #6b7280;
+}
+
+QPushButton[text="Clear Terminal"] {
+    background-color: #dc2626;
+    color: white;
+    border-color: #dc2626;
+}
+
+QPushButton[text="Clear Terminal"]:hover {
+    background-color: #b91c1c;
+    border-color: #b91c1c;
+}
+
+QPushButton[text="Clear Terminal"]:pressed {
+    background-color: #991b1b;
+    border-color: #991b1b;
+}
+"""

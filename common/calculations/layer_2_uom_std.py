@@ -333,7 +333,7 @@ class EIQUOMStandardizer:
             calculation_tracer.log(f"\t\tL2 - _validate_dimensional_analysis: ERROR - Weight-based concentration {ai_concentration} cannot exceed 1.0 (100%)")
             raise ValueError("Layer2._validate_dimensional_analysis: Weight-based concentration cannot exceed 1.0 (100%)")
         
-        calculation_tracer.log("passed")
+        calculation_tracer.log("\t\tUOM_repo: Validating physical state compatibility... passed")
         
     def _is_weight_per_volume(self, uom: CompositeUOM) -> bool:
         """Check if UOM is weight per volume (like lb/gal, g/l)."""

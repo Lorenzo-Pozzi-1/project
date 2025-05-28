@@ -3,7 +3,7 @@
 from contextlib import contextmanager
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QSizePolicy, QFrame, QMessageBox, QDoubleSpinBox, QComboBox
-from common import get_medium_text_size, get_config, FRAME_STYLE, ProductSelectionWidget, ApplicationParamsWidget, eiq_calculator
+from common import get_medium_text_size, get_config, FRAME_STYLE, ProductSelectionWidget, ApplicationParamsWidget, eiq_calculator, calculation_tracer
 from data import ProductRepository, AIRepository
 
 
@@ -221,6 +221,9 @@ class ApplicationRowWidget(QFrame):
             user_preferences = get_config("user_preferences", {})
             
             # Calculate Field use EIQ
+            calculation_tracer.log(f"\n\n====================================================================")
+            calculation_tracer.log(f"{product_name}")
+            calculation_tracer.log(f"====================================================================")
             field_eiq = eiq_calculator.calculate_product_field_eiq(
                 active_ingredients=product.get_ai_data(),
                 application_rate=params["rate"],

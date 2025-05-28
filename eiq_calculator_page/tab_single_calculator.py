@@ -7,7 +7,7 @@ for calculating EIQ of a single pesticide product.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem
 from PySide6.QtCore import Qt
-from common import GENERIC_TABLE_STYLE, ContentFrame, get_config
+from common import GENERIC_TABLE_STYLE, ContentFrame, get_config, calculation_tracer
 from common.constants import get_medium_text_size
 from data import ProductRepository
 from common.widgets.product_selection import ProductSelectionWidget
@@ -292,6 +292,9 @@ class SingleProductCalculatorTab(QWidget):
             user_preferences = get_config("user_preferences", {})
             
             # Calculate Field EIQ with user preferences
+            calculation_tracer.log(f"\n\n====================================================================")
+            calculation_tracer.log(f"{self.current_product.product_name}")
+            calculation_tracer.log(f"====================================================================")
             field_eiq = eiq_calculator.calculate_product_field_eiq(
                 active_ingredients=self.active_ingredients,
                 application_rate=params["rate"],
