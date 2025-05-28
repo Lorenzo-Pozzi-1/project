@@ -134,35 +134,28 @@ class UOMRepository:
         """Convert between composite UOMs, handling special cases with validation."""
         
         print(f"\t\tUOM_repo: Converting {value} from '{from_uom.original_string}' to '{to_uom.original_string}'")
-        print(f"\t\tUOM_repo: From UOM - numerator: {from_uom.numerator}, denominator: {from_uom.denominator}")
-        print(f"\t\tUOM_repo: To UOM - numerator: {to_uom.numerator}, denominator: {to_uom.denominator}")
         
         # Validate physical state compatibility
-        print(f"\t\tUOM_repo: Validating physical state compatibility...")
+        print(f"\t\tUOM_repo: Validating physical state compatibility...", end="")
         self._validate_physical_state_compatibility(from_uom, to_uom)
-        print(f"\t\tUOM_repo: Physical state compatibility validation passed")
+        print(f"passed")
         print(f"\t\tUOM_repo: From UOM category: {from_uom.numerator}, To UOM category: {to_uom.numerator}")
 
         # Handle concentration units
         if from_uom.is_concentration and to_uom.is_concentration:
-            print(f"\t\tUOM_repo: Detected concentration conversion")
             result = self._convert_concentration(value, from_uom, to_uom)
-            print(f"\t\tUOM_repo: Concentration conversion result: {result}")
             return result
         
         # IMPORTANT: Check for special conversions (user preferences) FIRST
         if self._needs_user_preferences(from_uom, to_uom):
             print(f"\t\tUOM_repo: Detected conversion requiring user preferences")
-            print(f"\t\tUOM_repo: User preferences: {user_preferences}")
             result = self._convert_with_preferences(value, from_uom, to_uom, user_preferences)
-            print(f"\t\tUOM_repo: User preference-based conversion result: {result}")
             return result
         
         # Handle standard rate conversions (only if not needing user preferences)
         if from_uom.is_rate and to_uom.is_rate:
             print(f"\t\tUOM_repo: Detected standard rate conversion")
             result = self._convert_rate(value, from_uom, to_uom, user_preferences)
-            print(f"\t\tUOM_repo: Rate conversion result: {result}")
             return result
         
         print(f"\t\tUOM_repo: No suitable conversion method found")
@@ -374,7 +367,7 @@ class UOMRepository:
     
     def _convert_concentration(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM) -> float:
         """Convert concentration units to standard units."""
-        print(f"\t\tUOM_repo: _convert_concentration - Converting {value} from {from_uom.original_string} to {to_uom.original_string}")
+        print(f"\t\tUOM_repo: _convert_concentration - from {value} {from_uom.original_string} to {to_uom.original_string}")
         
         # Handle percentage conversion
         if from_uom.numerator == '%':
@@ -383,16 +376,12 @@ class UOMRepository:
         
         # Handle other concentration conversions directly using base unit conversion
         try:
-            print(f"\t\tUOM_repo: _convert_concentration - Converting numerator: {from_uom.numerator} to {to_uom.numerator}")
             # Convert numerator (amount units: g to kg, lb to kg, etc.)
             num_factor = self.convert_base_unit(1.0, from_uom.numerator, to_uom.numerator)
-            print(f"\t\tUOM_repo: _convert_concentration - Numerator conversion factor: {num_factor}")
             
             # Convert denominator if different (volume units: l to l, gal to l, etc.)
             if from_uom.denominator and to_uom.denominator:
-                print(f"\t\tUOM_repo: _convert_concentration - Converting denominator: {from_uom.denominator} to {to_uom.denominator}")
                 den_factor = self.convert_base_unit(1.0, from_uom.denominator, to_uom.denominator)
-                print(f"\t\tUOM_repo: _convert_concentration - Denominator conversion factor: {den_factor}")
             else:
                 den_factor = 1.0
             

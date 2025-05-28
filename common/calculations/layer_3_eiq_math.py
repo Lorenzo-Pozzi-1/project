@@ -32,7 +32,7 @@ def calculate_field_eiq_single_ai(ai_concentration_per_unit: float,
     Returns:
         Field EIQ per hectare [eiq/ha]
     """
-    print(f"\nL3 - calculate_field_eiq_single_ai")
+    print(f"calculate_field_eiq_single_ai")
     if any(val <= 0 for val in [ai_concentration_per_unit, ai_eiq_per_kg, rate_per_ha]):
         return 0.0
     
@@ -41,7 +41,8 @@ def calculate_field_eiq_single_ai(ai_concentration_per_unit: float,
     
     # Pure mathematical calculation - units already validated
     field_eiq = rate_per_ha * ai_concentration_per_unit * ai_eiq_per_kg * applications
-    
+    print(f"\t\tField EIQ for this AI: {rate_per_ha} [-/ha] * {ai_concentration_per_unit} [kg/-] * {ai_eiq_per_kg:.2f} [EIQ/kg]* {applications} = {field_eiq:.2f} [EIQ/ha]")
+
     return field_eiq
 
 def calculate_field_eiq_product(standardized_ais: List[Dict],
@@ -61,7 +62,7 @@ def calculate_field_eiq_product(standardized_ais: List[Dict],
     Returns:
         EIQResult with total field EIQ and breakdown
     """
-    print(f"\nL3 - calculate_field_eiq_product")
+    print(f"\nI can now calculate_field_eiq_product (L3)")
     if not standardized_ais or rate_per_ha <= 0:
         return EIQResult(field_eiq_per_ha=0.0)
     
@@ -69,6 +70,7 @@ def calculate_field_eiq_product(standardized_ais: List[Dict],
     breakdown = {}
     
     for ai in standardized_ais:
+        print(f"\tCalculating EIQ for AI: {ai.get('name', 'Unknown')}. Calling ", end="")
         ai_field_eiq = calculate_field_eiq_single_ai(
             ai_concentration_per_unit=ai['concentration_per_unit'],
             ai_eiq_per_kg=ai['eiq_per_kg'],

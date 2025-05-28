@@ -37,7 +37,7 @@ class EIQCalculator:
             Total Field EIQ [eiq/ha]
         """
         try:
-            print(f"\nL1 - calculate_product_field_eiq")
+            print(f"\nI have to calculate_product_field_EIQ")
             # Layer 1: Standardize inputs
             standardized = self.standardizer.standardize_product_inputs(
                 active_ingredients=active_ingredients,
