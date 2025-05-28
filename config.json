@@ -1,7 +1,7 @@
 {
     "user_preferences": {
-        "default_country": "Canada",
-        "default_region": "New Brunswick",
+        "default_country": "United States",
+        "default_region": "None of these",
         "default_row_spacing": 34.0,
         "default_seeding_rate": 20.0,
         "default_row_spacing_unit": "inch",
