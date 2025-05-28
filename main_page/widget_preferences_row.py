@@ -123,7 +123,7 @@ class PreferencesRow(QWidget):
         preferences_layout.addSpacing(get_spacing_xlarge())
         
         # Save preferences button
-        self.save_preferences_button = create_button(text="Save preferences", style="yellow", callback=self.save_preferences)
+        self.save_preferences_button = create_button(text="Save", style="yellow", callback=self.save_preferences)
         preferences_layout.addWidget(self.save_preferences_button)
 
         # Monitor all controls for changes - Updated signal connections
