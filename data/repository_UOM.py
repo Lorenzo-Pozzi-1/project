@@ -446,35 +446,54 @@ class UOMRepository:
         raise ValueError(f"No preference-based conversion available for {from_uom.original_string} to {to_uom.original_string}")
     
     def _convert_linear_to_area(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM,
-                               user_preferences: dict) -> float:
+                            user_preferences: dict) -> float:
         """
         Convert linear rates to area rates using row spacing.
-        Formula: [amount/length] → [amount/ha]
-        
-        Steps:
-        1. Convert to [amount/m]
-        2. Convert row spacing to [rows/m] 
-        3. Convert to [m of rows/ha] (assuming 100m rows and 10,000 m²/ha)
-        4. Apply: [amount/m] x [m of rows/ha] = [amount/ha]
         """
+        print(f"\t\t\tUOM_repo: _convert_linear_to_area")
         # Step 1: Convert to standard linear rate (amount/m)
-        amount_per_m = self.convert_base_unit(value, from_uom.denominator, 'm')
+        # First convert the denominator part to meters
+        if from_uom.denominator in ['100m', '1000ft']:
+            # Handle special cases where denominator is not just a unit but a quantity
+            if from_uom.denominator == '100m':
+                amount_per_m = value / 100.0  # Convert from amount/100m to amount/m
+            elif from_uom.denominator == '1000ft':
+                feet_per_meter = self.convert_base_unit(1.0, 'm', 'ft')
+                amount_per_m = value / (1000.0 * feet_per_meter)  # Convert from amount/1000ft to amount/m
+        else:
+            # Standard conversion for simple units
+            meter_factor = self.convert_base_unit(1.0, from_uom.denominator, 'm')
+            amount_per_m = value * meter_factor  # Inverse because it's in denominator
+        print(f"\t\t\t  1. Standardize amount per meter: {value} {from_uom.original_string} = {amount_per_m} {from_uom.numerator}/m")
+        # Now we have amount_per_m in original units per meter
         
         # Step 2: Get row spacing and convert to meters
         row_spacing = user_preferences.get('default_row_spacing', 34.0)
         row_spacing_unit = user_preferences.get('default_row_spacing_unit', 'inch')
         row_spacing_m = self.convert_base_unit(row_spacing, row_spacing_unit, 'm')
-        
+        print(f"\t\t\t  2. Standardize row spacing: {row_spacing} {row_spacing_unit} = {row_spacing_m} m")
+
+
         # Step 3: Calculate rows per meter and meters of rows per hectare
-        m_of_rows_per_ha = 10000.0 / row_spacing_m  # m²/m = m
+        m_of_rows_per_ha = 10000.0 / row_spacing_m
+        print(f"\t\t\t  3. Meters of rows per hectare: {m_of_rows_per_ha} m/ha")
         
         # Step 4: Convert amount/m to amount/ha
         amount_per_ha = amount_per_m * m_of_rows_per_ha
+        print(f"\t\t\t  4. Amount per hectare: {amount_per_ha} {from_uom.numerator}/ha")
         
-        # Step 5: Convert to target area unit if needed
+        # Step 5: Convert numerator to match target unit if needed
+        if from_uom.numerator != to_uom.numerator:
+            num_factor = self.convert_base_unit(1.0, from_uom.numerator, to_uom.numerator)
+            amount_per_ha *= num_factor
+            print(f"\t\t\t  5. Converted numerator from {from_uom.numerator} to {to_uom.numerator}: factor={num_factor}")
+        
+        # Step 6: Convert to target area unit if needed
         if to_uom.denominator != 'ha':
             amount_per_ha = self.convert_base_unit(amount_per_ha, 'ha', to_uom.denominator)
+            print(f"\t\t\t  6. Converted area from ha to {to_uom.denominator}: factor={amount_per_ha}")
         
+        print(f"\t\t\t  Final result: {amount_per_ha} {to_uom.original_string}")
         return amount_per_ha
     
     def _convert_seed_treatment_to_area(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM, user_preferences: dict) -> float:
