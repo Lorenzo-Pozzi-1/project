@@ -225,7 +225,7 @@ class PreferencesRow(QWidget):
         self.row_spacing_spin.setValue(row_spacing)
         
         # Load seeding rate with unit
-        seeding_rate = config.get("default_seeding_rate", 25)
+        seeding_rate = config.get("default_seeding_rate", 20)
         seeding_rate_unit = config.get("default_seeding_rate_unit", "cwt/acre")
         
         # Updated to use setCurrentText instead of index-based approach

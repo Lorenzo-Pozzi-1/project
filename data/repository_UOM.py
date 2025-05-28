@@ -514,7 +514,7 @@ class UOMRepository:
         print(f"\t\tUOM_repo: _convert_seed_treatment_to_area")
         
         # Step 1: Parse and standardize seeding rate to kg/ha
-        seeding_rate = user_preferences.get('default_seeding_rate', 25)
+        seeding_rate = user_preferences.get('default_seeding_rate', 20)
         seeding_rate_unit = user_preferences.get('default_seeding_rate_unit', 'cwt/acre')
                 
         # Parse seeding rate UOM
