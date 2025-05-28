@@ -69,6 +69,9 @@ from data.repository_UOM import (
     UOMRepository, CompositeUOM
 )
 
+# Tracer
+from common.tracer import calculation_tracer, CalculationTraceDialog
+
 # Define what gets imported with "from common import *"
 __all__ = [
     # Config utilities
@@ -113,5 +116,9 @@ __all__ = [
     
     # UOM system
     'UOMRepository',
-    'CompositeUOM'
+    'CompositeUOM',
+
+    # Tracer
+    'calculation_tracer',
+    'CalculationTraceDialog'
 ]

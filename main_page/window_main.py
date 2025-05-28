@@ -6,9 +6,9 @@ for all pages in the application.
 """
 
 import os, shutil
-from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QFrame, QWidget, QLabel
+from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QFrame, QWidget, QLabel
 from PySide6.QtCore import Signal, Qt
-from common import load_config, YELLOW_BAR_STYLE
+from common import CalculationTraceDialog, load_config, create_button, YELLOW_BAR_STYLE
 from data import ProductRepository
 from main_page.page_home import HomePage
 from products_page import ProductsPage
@@ -75,9 +75,18 @@ class MainWindow(QMainWindow):
         # Add yellow bar at the bottom with author info
         self.yellow_bar = QFrame()
         self.yellow_bar.setStyleSheet(YELLOW_BAR_STYLE)
-        yellow_bar_layout = QVBoxLayout(self.yellow_bar)
+        yellow_bar_layout = QHBoxLayout(self.yellow_bar)  # Changed to QHBoxLayout
         yellow_bar_layout.setContentsMargins(10, 2, 10, 2)
-        
+
+        # Add calculation trace button on the left
+        self.trace_button = create_button(text="</>", style="tiny", callback=self.show_calculation_trace)
+        self.trace_button.setToolTip("Show calculation trace")
+        self.trace_button.clicked.connect(self.show_calculation_trace)
+        yellow_bar_layout.addWidget(self.trace_button)
+
+        # Add spacer to push author label to the right
+        yellow_bar_layout.addStretch()
+
         # Add author label aligned to the right
         author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")
         author_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
@@ -164,6 +173,11 @@ class MainWindow(QMainWindow):
         
         # Apply filters
         self.apply_filters(default_country, default_region)
+
+    def show_calculation_trace(self):
+            """Show the calculation trace dialog."""        
+            dialog = CalculationTraceDialog(self)
+            dialog.exec()
 
     def closeEvent(self, event):
         """Handle the close event, clean up __pycache__ directories."""

@@ -4,6 +4,7 @@ Common custom widgets for the LORENZO POZZI Pesticide App
 This module provides reusable custom widgets used throughout the application.
 """
 
+from math import floor
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QWidget, QSpacerItem
 from common.styles import *
@@ -65,7 +66,7 @@ def create_button(text=None, description=None, style='yellow', callback=None, pa
     Args:
         text (str): Button text
         description (str): Optional description for feature buttons
-        style (str): Button style ('yellow', 'white', 'special', 'feature', 'remove')
+        style (str): Button style ('yellow', 'white', 'special', 'feature', 'remove', 'tiny')
         callback (callable): Function to call when button is clicked
         parent (QWidget): Parent widget
         
@@ -110,6 +111,13 @@ def create_button(text=None, description=None, style='yellow', callback=None, pa
         button.setStyleSheet(REMOVE_BUTTON_STYLE)
         button.setText("×")
         button.setFixedSize(30, 30)
+
+    elif style == 'tiny':
+        # Tiny button for the terminal
+        button.setStyleSheet(TINY_BUTTON_STYLE)
+        button.setText(text)
+        button.setFont(get_small_font())
+        button.setFixedSize(25, 25)
     
     # Connect callback if provided
     if callback:

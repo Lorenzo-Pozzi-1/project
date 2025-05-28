@@ -5,6 +5,7 @@ Handles UOM standardization internally, exposes simple interfaces.
 """
 
 from typing import List, Dict
+from common.tracer import calculation_tracer
 from .layer_2_uom_std import EIQUOMStandardizer
 from .layer_3_eiq_math import calculate_field_eiq_product, calculate_field_eiq_scenario
 
@@ -37,7 +38,7 @@ class EIQCalculator:
             Total Field EIQ [eiq/ha]
         """
         try:
-            print(f"\nI have to calculate_product_field_EIQ")
+            calculation_tracer.log(f"\nI have to calculate_product_field_EIQ")
             # Layer 1: Standardize inputs
             standardized = self.standardizer.standardize_product_inputs(
                 active_ingredients=active_ingredients,
@@ -54,11 +55,13 @@ class EIQCalculator:
                 applications=standardized.applications
             )
 
-            print(f"Summing up the results for all AIs I got: {result.field_eiq_per_ha} [EIQ/ha]")
+            calculation_tracer.log(f"Summing up the results for all AIs I got: {result.field_eiq_per_ha} [EIQ/ha]")
+            calculation_tracer.calculation_complete()
             return result.field_eiq_per_ha
             
         except Exception as e:
-            print(f"Layer 1.calculate_product_field_eiq: Error calculating product Field EIQ: {e}")
+            calculation_tracer.log(f"Layer 1.calculate_product_field_eiq: Error calculating product Field EIQ: {e}")
+            calculation_tracer.calculation_complete()
             return 0.0
     
     def calculate_scenario_field_eiq(self,
@@ -104,7 +107,7 @@ class EIQCalculator:
             return scenario_result.field_eiq_per_ha
             
         except Exception as e:
-            print(f"Layer 1.calculate_scenario_field_eiq: Error calculating scenario Field EIQ: {e}")
+            calculation_tracer.log(f"Layer 1.calculate_scenario_field_eiq: Error calculating scenario Field EIQ: {e}")
             return 0.0
 
 # Create singleton instance for global use

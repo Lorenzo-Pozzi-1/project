@@ -207,6 +207,17 @@ REMOVE_BUTTON_STYLE = f"""
     }}
 """
 
+TINY_BUTTON_STYLE = f"""
+    QPushButton {{
+        background-color: transparent;
+        color: {BLACK};
+        border-radius: 1px;
+        padding-bottom: 3.5px;
+        font-weight: bold;
+        text-align: center;
+    }}
+"""
+
 # Tables style
 GENERIC_TABLE_STYLE = f"""
     /* Main table styling */
