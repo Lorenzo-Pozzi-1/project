@@ -158,13 +158,11 @@ class HomePage(QWidget):
         # EIQ description with concise information
         info_text = QLabel(
             "EIQ scores are a tool to asses and compare pesticides' use impacts.<br>"
-            "<b>Higher scores →  higher impacts</b>.<br><br>"
+            "<b>Higher scores →  Higher impacts</b>.<br><br>"
             "Each Active Ingredient has an EIQ value, but we compare products based on the <b>Field Use EIQ</b>, where:<br>"
             "<b>Field Use EIQ = Active Ingredient EIQ x Active Ingredient concentration x Product Application Rate</b><br>"
-            "EIQs evaluate three main components:<br>"
-            "1. Farm worker risk (applicator, harvester exposure)<br>"
-            "2. Consumer risk (food residue, groundwater pollution)<br>"
-            "3. Ecological risk (fishes, birds, bees, and beneficial insects)"
+            "EIQs evaluate the risk posed by an active ingredient to non-target beings:<br>"
+            "Farm worker risk &nbsp;&nbsp;&nbsp; Consumer risk &nbsp;&nbsp;&nbsp; Ecological risk"
         )
 
         info_text.setWordWrap(True)

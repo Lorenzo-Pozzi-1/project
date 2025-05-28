@@ -211,8 +211,18 @@ TINY_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: transparent;
         color: {BLACK};
-        border-radius: 1px;
-        padding-bottom: 3.5px;
+        padding-bottom: 3px;
+        border-radius: 5px;
+        border: 1px solid {BLACK};
+        font-weight: bold;
+        text-align: center;
+    }}
+    QPushButton:hover {{
+        background-color: {BLACK};
+        color: {WHITE};
+        padding-bottom: 3px;
+        border-radius: 5px;
+        border: 1px solid {BLACK};
         font-weight: bold;
         text-align: center;
     }}
@@ -325,71 +335,72 @@ PRODUCT_CARD_STYLE = f"""
 """
 
 # Calculation Trace Dialog Styles
-CALCULATION_TRACE_DIALOG_STYLE = """
-QDialog {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-}
+CALCULATION_TRACE_DIALOG_STYLE = f"""
+QDialog {{
+    background-color: {WHITE};
+    border: 1px solid {LIGHT_GRAY};
+    border-radius: 4px;
+}}
 
-QDialog QLabel {
-    color: #495057;
-    font-weight: 500;
-}
+QDialog QLabel {{
+    color: {BLACK};
+    font-weight: bold;
+}}
 """
 
-CALCULATION_TRACE_TEXT_AREA_STYLE = """
-QTextEdit {
-    background-color: #2d3748;
-    color: #e2e8f0;
-    border: 1px solid #4a5568;
+CALCULATION_TRACE_TEXT_AREA_STYLE = f"""
+QTextEdit {{
+    background-color: {BLACK};
+    color: {WHITE};
+    border: 1px solid {LIGHT_GRAY};
     border-radius: 4px;
     padding: 8px;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 9pt;
+    font-size: {get_small_text_size()}pt;
     line-height: 1.4;
-    selection-background-color: #4a5568;
-    selection-color: #ffffff;
-}
+    selection-background-color: {BLUE};
+    selection-color: {WHITE};
+}}
 
-QTextEdit:focus {
-    border: 2px solid #3182ce;
-}
+QTextEdit:focus {{
+    border: 2px solid {BLUE};
+}}
 """
 
-CALCULATION_TRACE_BUTTON_STYLE = """
-QPushButton {
-    background-color: #ffffff;
-    border: 1px solid #d1d5db;
+CALCULATION_TRACE_BUTTON_STYLE = f"""
+QPushButton {{
+    background-color: {WHITE};
+    border: 1px solid {LIGHT_GRAY};
     border-radius: 4px;
-    padding: 6px 12px;
-    color: #374151;
-    font-weight: 500;
+    padding: 8px 16px;
+    color: {BLACK};
+    font-weight: bold;
     min-height: 24px;
-}
+}}
 
-QPushButton:hover {
-    background-color: #f9fafb;
-    border-color: #9ca3af;
-}
+QPushButton:hover {{
+    background-color: {LIGHT_GRAY};
+    border-color: {BLUE};
+}}
 
-QPushButton:pressed {
-    background-color: #f3f4f6;
-    border-color: #6b7280;
-}
+QPushButton:pressed {{
+    background-color: {BEIGE};
+    border-color: {BLUE};
+}}
 
-QPushButton[text="Clear Terminal"] {
-    background-color: #dc2626;
-    color: white;
-    border-color: #dc2626;
-}
+QPushButton[text="Clear Terminal"] {{
+    background-color: {RED};
+    color: {WHITE};
+    border-color: {RED};
+}}
 
-QPushButton[text="Clear Terminal"]:hover {
-    background-color: #b91c1c;
-    border-color: #b91c1c;
-}
+QPushButton[text="Clear Terminal"]:hover {{
+    background-color: {RED_HOVER};
+    border-color: {RED_HOVER};
+}}
 
-QPushButton[text="Clear Terminal"]:pressed {
-    background-color: #991b1b;
-    border-color: #991b1b;
-}
+QPushButton[text="Clear Terminal"]:pressed {{
+    background-color: {RED_PRESSED};
+    border-color: {RED_PRESSED};
+}}
 """

@@ -117,7 +117,7 @@ def create_button(text=None, description=None, style='yellow', callback=None, pa
         button.setStyleSheet(TINY_BUTTON_STYLE)
         button.setText(text)
         button.setFont(get_small_font())
-        button.setFixedSize(25, 25)
+        button.setFixedSize(30, 20)
     
     # Connect callback if provided
     if callback:

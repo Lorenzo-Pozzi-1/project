@@ -1,7 +1,7 @@
 """Log calculations and provide a trace of operations."""
 
 from PySide6.QtWidgets import QDialog, QTextEdit, QDialogButtonBox, QVBoxLayout
-from PySide6.QtGui import QTextCursor
+from PySide6.QtGui import QTextCursor, Qt
 from common.styles import CALCULATION_TRACE_DIALOG_STYLE, CALCULATION_TRACE_TEXT_AREA_STYLE, CALCULATION_TRACE_BUTTON_STYLE
 
 class CalculationTracer:
@@ -43,8 +43,8 @@ class CalculationTraceDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Calculation Trace")
-        self.setModal(True)
-        self.resize(800, 600)
+        self.setModal(False)
+        self.setWindowState(self.windowState() | Qt.WindowMaximized)
         
         # Import here to avoid circular imports
         self.tracer = calculation_tracer
