@@ -115,10 +115,7 @@ class MainWindow(QMainWindow):
         # Apply filters to the products repository
         products_repo = ProductRepository.get_instance()
         products_repo.set_filters(country, region)
-        
-        print(f"Filters applied - Country: {country}, Region: {region}")
-        print(f"Filtered products count: {len(products_repo.get_filtered_products())}")
-        
+                
         # Notify pages to refresh their views
         self.filters_changed.emit()
         self.updating_products = False

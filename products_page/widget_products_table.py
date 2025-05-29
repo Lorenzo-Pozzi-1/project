@@ -1,7 +1,7 @@
 """
 Product table widget for the LORENZO POZZI Pesticide App.
 
-This module defines the ProductTable widget which provides a tabular
+This module defines the ProductTable widget which provides a table
 view of products with selection, filtering, and sorting capabilities.
 """
 
@@ -41,8 +41,7 @@ class ProductTable(QTableWidget):
         header.sectionClicked.connect(self.on_header_clicked)
     
     def set_products(self, products, column_keys=None, column_config=None):
-        """
-        Set the products to display in the table with configuration.
+        """Set the products to display in the table with configuration.
         
         Args:
             products: List of product objects
@@ -111,8 +110,7 @@ class ProductTable(QTableWidget):
         }
     
     def _setup_table_columns(self, config):
-        """
-        Configure table columns based on provided configuration.
+        """Configure table columns based on provided configuration.
         
         Args:
             config: Column configuration dictionary
@@ -205,8 +203,7 @@ class ProductTable(QTableWidget):
                 self.setColumnWidth(col, 100)
     
     def _populate_table(self, products, config):
-        """
-        Populate table with product data.
+        """Populate table with product data.
         
         Args:
             products: List of product objects

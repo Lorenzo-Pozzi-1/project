@@ -162,7 +162,6 @@ class PreferencesRow(QWidget):
             return  # Skip during initialization
             
         country = self.country_combo.currentText()
-        print(f"Country changed to: {country}")
         
         # Block signals during dropdown update to prevent cascading events
         self.region_combo.blockSignals(True)
@@ -184,7 +183,6 @@ class PreferencesRow(QWidget):
             return  # Skip during initialization
                 
         region = self.region_combo.currentText()
-        print(f"Region changed to: {region}")
         
         # Mark as changed
         self.mark_as_changed()
