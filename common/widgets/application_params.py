@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox,
 from PySide6.QtCore import Signal, Property
 from common.styles import get_medium_font, get_small_font
 from common.widgets.header_frame_buttons import ContentFrame
-from common.widgets.SmartUOMComboBox import SmartUOMComboBox
+from common.widgets.SmartUOMSelector import SmartUOMSelector
 
 
 class ApplicationRateWidget(QWidget):
@@ -39,8 +39,8 @@ class ApplicationRateWidget(QWidget):
         self._rate_spin.valueChanged.connect(self.value_changed)
         layout.addWidget(self._rate_spin)
         
-        # Unit combo box - UPDATED to use SmartUOMComboBox
-        self._unit_combo = SmartUOMComboBox(uom_type="application_rate")
+        # Unit combo box
+        self._unit_combo = SmartUOMSelector(uom_type="application_rate",)
         self._unit_combo.currentTextChanged.connect(self.value_changed)
         layout.addWidget(self._unit_combo)
     
@@ -53,7 +53,7 @@ class ApplicationRateWidget(QWidget):
     
     rate = Property(float, _get_rate, _set_rate)
     
-    # Property-based API for unit - UPDATED for SmartUOMComboBox
+    # Property-based API for unit
     def _get_unit(self):
         return self._unit_combo.currentText()
     
@@ -97,8 +97,7 @@ class ApplicationParamsWidget(QWidget):
         self._rate_widget = ApplicationRateWidget(style_config=self._style_config)
         self._rate_widget.value_changed.connect(self.params_changed)
         self._rate_widget._rate_spin.setFont(font)
-        # Note: _unit_combo is now a SmartUOMComboBox, so we set font on the internal combobox
-        self._rate_widget._unit_combo.combobox.setFont(font)
+        self._rate_widget._unit_combo.button.setFont(font)
         
         # Create layout based on orientation and label preferences
         if self._show_labels:

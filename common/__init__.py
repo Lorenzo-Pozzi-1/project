@@ -58,7 +58,7 @@ from common.widgets import (
     create_button,
     ProductSelectionWidget,
     ApplicationParamsWidget,
-    SmartUOMComboBox,
+    SmartUOMSelector,
     calculation_tracer, 
     CalculationTraceDialog
 )
@@ -108,7 +108,7 @@ __all__ = [
     
     # Widgets and Widget Functions
     'ContentFrame', 'HeaderWithHomeButton', 'ScoreBar', 'create_button', 
-    'ProductSelectionWidget', 'ApplicationParamsWidget', 'SmartUOMComboBox',
+    'ProductSelectionWidget', 'ApplicationParamsWidget', 'SmartUOMSelector',
     'calculation_tracer', 'CalculationTraceDialog',
     
     # NEW EIQ calculations

@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QComboBox
 from PySide6.QtCore import Signal
 from datetime import date
 from typing import Dict, Optional, Any
-from common import ContentFrame, get_medium_font, get_spacing_small
+from common import ContentFrame, SmartUOMSelector, get_medium_font, get_spacing_small
 
 
 class SeasonPlanMetadataWidget(QWidget):
@@ -30,7 +30,7 @@ class SeasonPlanMetadataWidget(QWidget):
         self.grower_name_edit: QLineEdit
         self.field_name_edit: QLineEdit
         self.field_area_spin: QDoubleSpinBox
-        self.field_area_uom_combo: QComboBox
+        self.field_area_uom_combo: SmartUOMSelector
         self.variety_edit: QLineEdit
         
         self.setup_ui()
@@ -78,10 +78,8 @@ class SeasonPlanMetadataWidget(QWidget):
         self.field_area_spin.valueChanged.connect(self.on_metadata_changed)
         area_layout.addWidget(self.field_area_spin)
         
-        self.field_area_uom_combo = QComboBox()
-        self.field_area_uom_combo.setFont(get_medium_font())
-        self.field_area_uom_combo.addItems(["acre", "ha"])
-        self.field_area_uom_combo.currentIndexChanged.connect(self.on_metadata_changed)
+        self.field_area_uom_combo = SmartUOMSelector(uom_type="area")
+        self.field_area_uom_combo.currentTextChanged.connect(self.on_metadata_changed)
         area_layout.addWidget(self.field_area_uom_combo)
         
         label = QLabel("Area:")
@@ -171,9 +169,7 @@ class SeasonPlanMetadataWidget(QWidget):
                 self.field_area_spin.setValue(0)  # Safe default
                 
             if "field_area_uom" in metadata and metadata["field_area_uom"]:
-                index = self.field_area_uom_combo.findText(metadata["field_area_uom"])
-                if index >= 0:
-                    self.field_area_uom_combo.setCurrentIndex(index)
+                self.field_area_uom_combo.setCurrentText(metadata["field_area_uom"])
         finally:
             self.blockSignals(False)
             self.metadata_changed.emit()

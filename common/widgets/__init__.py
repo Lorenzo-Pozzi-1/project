@@ -28,8 +28,8 @@ from common.widgets.application_params import ApplicationParamsWidget
 # Import and re-export the ScoreBar
 from common.widgets.scorebar import ScoreBar
 
-# Import and re-export the SmartUOMComboBox
-from common.widgets.SmartUOMComboBox import SmartUOMComboBox
+# Import and re-export the SmartUOMSelector
+from common.widgets.SmartUOMSelector import SmartUOMSelector
 
 # Import and reexport the calculation tracer
 from common.widgets.tracer import calculation_tracer, CalculationTraceDialog
@@ -42,7 +42,7 @@ __all__ = [
     'create_button',
     'ProductSelectionWidget',
     'ApplicationParamsWidget',
-    'SmartUOMComboBox',
+    'SmartUOMSelector',
     'calculation_tracer',
     'CalculationTraceDialog'
 ]

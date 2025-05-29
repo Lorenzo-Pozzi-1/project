@@ -122,7 +122,7 @@ INFO_TEXT_STYLE = f"""
     }}
 """
 
-# Buttons styles
+# General buttons styles
 FEATURE_BUTTON_STYLE = f"""
     QPushButton {{
         background-color: {WHITE};
@@ -204,27 +204,6 @@ REMOVE_BUTTON_STYLE = f"""
     }}
     QPushButton:pressed {{
         background-color: {RED_PRESSED};
-    }}
-"""
-
-TINY_BUTTON_STYLE = f"""
-    QPushButton {{
-        background-color: transparent;
-        color: {BLACK};
-        padding-bottom: 3px;
-        border-radius: 5px;
-        border: 1px solid {BLACK};
-        font-weight: bold;
-        text-align: center;
-    }}
-    QPushButton:hover {{
-        background-color: {BLACK};
-        color: {WHITE};
-        padding-bottom: 3px;
-        border-radius: 5px;
-        border: 1px solid {BLACK};
-        font-weight: bold;
-        text-align: center;
     }}
 """
 
@@ -335,6 +314,27 @@ PRODUCT_CARD_STYLE = f"""
 """
 
 # Calculation Trace Dialog Styles
+TINY_BUTTON_STYLE = f"""
+    QPushButton {{
+        background-color: transparent;
+        color: {BLACK};
+        padding-bottom: 3px;
+        border-radius: 5px;
+        border: 1px solid {BLACK};
+        font-weight: bold;
+        text-align: center;
+    }}
+    QPushButton:hover {{
+        background-color: {BLACK};
+        color: {WHITE};
+        padding-bottom: 3px;
+        border-radius: 5px;
+        border: 1px solid {BLACK};
+        font-weight: bold;
+        text-align: center;
+    }}
+"""
+
 CALCULATION_TRACE_DIALOG_STYLE = f"""
 QDialog {{
     background-color: {WHITE};

@@ -6,7 +6,7 @@ This module provides a preferences row widget for the application's home page.
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QComboBox, QDoubleSpinBox, QMessageBox
 from PySide6.QtCore import Qt, Signal
-from common import get_medium_font, create_button, get_config, save_config, SmartUOMComboBox
+from common import get_medium_font, create_button, get_config, save_config, SmartUOMSelector
 from common.constants import get_spacing_xlarge
 
 class PreferencesRow(QWidget):
@@ -86,12 +86,8 @@ class PreferencesRow(QWidget):
         
         preferences_layout.addSpacing(1)  # 1px spacing between value and UOM
 
-        # Replace QComboBox with SmartUOMComboBox for row spacing unit
-        self.row_spacing_unit = SmartUOMComboBox(uom_type="length")
-        # Clear default items and add only relevant length units
-        self.row_spacing_unit.combobox.clear()
-        self.row_spacing_unit.combobox.addItem("-- Select unit --")
-        self.row_spacing_unit.combobox.addItems(["inch", "cm", "m", "ft"])
+        # SmartUOMSelector for row spacing unit
+        self.row_spacing_unit = SmartUOMSelector(uom_type="length")
         preferences_layout.addWidget(self.row_spacing_unit)
         
         preferences_layout.addSpacing(get_spacing_xlarge())
@@ -112,12 +108,8 @@ class PreferencesRow(QWidget):
         
         preferences_layout.addSpacing(1)  # 1px spacing between value and UOM
         
-        # Replace QComboBox with SmartUOMComboBox for seeding rate unit
-        self.seeding_rate_unit = SmartUOMComboBox(uom_type="seeding_rate")
-        # Clear default items and add seeding rate specific units
-        self.seeding_rate_unit.combobox.clear()
-        self.seeding_rate_unit.combobox.addItem("-- Select unit --")
-        self.seeding_rate_unit.combobox.addItems(["cwt/acre", "kg/acre", "lb/acre", "kg/ha",  "lb/ha"])
+        # SmartUOMSelector for seeding rate unit
+        self.seeding_rate_unit = SmartUOMSelector(uom_type="seeding_rate")
         preferences_layout.addWidget(self.seeding_rate_unit)
         
         preferences_layout.addSpacing(get_spacing_xlarge())
