@@ -7,7 +7,7 @@ units based on a specified context.
 
 from PySide6.QtWidgets import (
     QWidget, QHBoxLayout, QPushButton, QDialog, QVBoxLayout, QLabel,
-    QListWidget, QListWidgetItem, QDialogButtonBox, QLineEdit
+    QListWidget, QListWidgetItem, QLineEdit
 )
 from PySide6.QtCore import Signal
 from common.styles import get_medium_font
@@ -31,7 +31,7 @@ UOM_CATEGORIES = {
 }
 
 class UOMSelectionDialog(QDialog):
-    """Dialog for selecting UOM from a single categorized list."""
+    """Dialog for selecting UOM with single-click selection."""
     
     def __init__(self, parent=None, uom_list=None, title="Select Unit of Measure"):
         super().__init__(parent)
@@ -61,7 +61,8 @@ class UOMSelectionDialog(QDialog):
         # UOM list
         self.uom_list = QListWidget()
         self.uom_list.setFont(get_medium_font())
-        self.uom_list.itemDoubleClicked.connect(self.accept)
+        # Connect single click to accept
+        self.uom_list.itemClicked.connect(self.on_item_clicked)
         
         # Populate list
         for uom in self.uom_list_data:
@@ -69,17 +70,6 @@ class UOMSelectionDialog(QDialog):
             self.uom_list.addItem(item)
         
         layout.addWidget(self.uom_list)
-        
-        # Buttons
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        button_box.accepted.connect(self.accept)
-        button_box.rejected.connect(self.reject)
-        layout.addWidget(button_box)
-        
-        # Initially disable OK button
-        self.ok_button = button_box.button(QDialogButtonBox.Ok)
-        self.ok_button.setEnabled(False)
-        self.uom_list.itemSelectionChanged.connect(self.on_uom_selection_changed)
     
     def filter_uoms(self, text):
         """Filter UOM list based on search text."""
@@ -87,17 +77,10 @@ class UOMSelectionDialog(QDialog):
             item = self.uom_list.item(i)
             item.setHidden(text.lower() not in item.text().lower())
     
-    def on_uom_selection_changed(self):
-        """Handle UOM selection change."""
-        has_selection = len(self.uom_list.selectedItems()) > 0
-        self.ok_button.setEnabled(has_selection)
-    
-    def accept(self):
-        """Accept dialog and store selected UOM."""
-        selected_items = self.uom_list.selectedItems()
-        if selected_items:
-            self.selected_uom = selected_items[0].text()
-        super().accept()
+    def on_item_clicked(self, item):
+        """Handle item click - select and close dialog."""
+        self.selected_uom = item.text()
+        self.accept()
     
     def get_selected_uom(self):
         """Get the selected UOM."""

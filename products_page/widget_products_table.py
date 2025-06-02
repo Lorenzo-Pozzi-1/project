@@ -95,7 +95,7 @@ class ProductTable(QTableWidget):
         return {
             "hide_columns": [
                 "country", "region", "min days between applications",
-                "min rate", "max rate", "rate UOM",
+                "min rate", "max rate", "rate UOM", "reg. #",
                 "[ai1]", "[ai1]uom", "ai1 eiq",
                 "[ai2]", "[ai2]uom", "ai2 eiq", "ai2",
                 "[ai3]", "[ai3]uom", "ai3 eiq", "ai3",

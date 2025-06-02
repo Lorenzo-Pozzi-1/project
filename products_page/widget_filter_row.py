@@ -45,7 +45,7 @@ class FilterRow(QWidget):
         
         # Field selection dropdown
         self.field_combo = QComboBox()
-        self.field_combo.addItem("Select field...")
+        self.field_combo.addItem("- Select field -")
         self.field_combo.setFont(get_medium_font())
         self.field_combo.addItems(self.fields)
         self.field_combo.setMinimumWidth(150)
