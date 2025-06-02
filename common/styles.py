@@ -207,6 +207,18 @@ REMOVE_BUTTON_STYLE = f"""
     }}
 """
 
+UOM_BUTTON_STYLE = f"""
+    QPushButton {{
+        background-color: transparent;
+        color: {BLACK};
+        border: 1px solid {BLACK};
+        border-radius: 4px;
+    }}
+    QPushButton:hover {{
+        background-color: {LIGHT_GRAY};
+    }}
+"""
+
 # Tables style
 GENERIC_TABLE_STYLE = f"""
     /* Main table styling */

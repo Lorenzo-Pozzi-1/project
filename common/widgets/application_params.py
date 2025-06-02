@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox,
 from PySide6.QtCore import Signal, Property
 from common.styles import get_medium_font, get_small_font
 from common.widgets.header_frame_buttons import ContentFrame
-from common.widgets.SmartUOMSelector import SmartUOMSelector
+from common.widgets.UOM_selector import SmartUOMSelector
 
 
 class ApplicationRateWidget(QWidget):

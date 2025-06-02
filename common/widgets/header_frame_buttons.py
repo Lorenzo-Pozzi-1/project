@@ -66,7 +66,7 @@ def create_button(text=None, description=None, style='yellow', callback=None, pa
     Args:
         text (str): Button text
         description (str): Optional description for feature buttons
-        style (str): Button style ('yellow', 'white', 'special', 'feature', 'remove', 'tiny')
+        style (str): Button style ('yellow', 'white', 'special', 'feature', 'remove', 'tiny', 'UOM)
         callback (callable): Function to call when button is clicked
         parent (QWidget): Parent widget
         
@@ -119,6 +119,13 @@ def create_button(text=None, description=None, style='yellow', callback=None, pa
         button.setFont(get_small_font())
         button.setFixedSize(30, 20)
     
+    elif style == 'UOM':
+        # Tiny button for the terminal
+        button.setStyleSheet(UOM_BUTTON_STYLE)
+        button.setText(text)
+        button.setFont(get_small_font())
+        button.setFixedSize(30, 20)
+
     # Connect callback if provided
     if callback:
         button.clicked.connect(callback)

@@ -7,39 +7,14 @@ It initializes the application, sets up the main window, and starts the event lo
 """
 
 import os, sys
-from PySide6.QtCore import QDir, QObject, QEvent
+from PySide6.QtCore import QDir
 from PySide6.QtWidgets import QApplication, QComboBox, QDoubleSpinBox
-from common import load_config
+from common import load_config, WheelProtectionFilter
 from data import ProductRepository, AIRepository
 from main_page import MainWindow
 
 # Silence messages when resizing the window
 os.environ['QT_LOGGING_RULES'] = '*=false' 
-
-class WheelProtectionFilter(QObject):
-    """Prevents widgets from changing values when scrolling without clicking first."""
-    
-    def __init__(self) -> None:
-        super().__init__()
-        self.clicked_widgets = set()  # Track which widgets have been clicked
-
-    def eventFilter(self, obj: QObject, event: QEvent) -> bool:
-        # Track widgets that have been clicked
-        if event.type() in (QEvent.MouseButtonPress, QEvent.KeyPress):
-            self.clicked_widgets.add(obj)
-        
-        # Block wheel events for widgets that haven't been clicked
-        elif event.type() == QEvent.Wheel and obj not in self.clicked_widgets:
-            return True  # Block the event
-        
-        # Reset clicked state when dropdown closes or focus is lost
-        elif event.type() == QEvent.Hide and hasattr(obj, 'view'):
-            self.clicked_widgets.discard(obj)
-        elif event.type() == QEvent.FocusOut:
-            self.clicked_widgets.discard(obj)
-        
-        # Let other events pass through
-        return super().eventFilter(obj, event)
 
 def main() -> int:
     """Main application entry point."""
@@ -57,9 +32,9 @@ def main() -> int:
     app.setStyle("Fusion")
     app.setApplicationName("Pesticides App")
     
-    # Remove scroll value changes for QComboBox and QDoubleSpinBox
+    # Block scroll to change value for QComboBox and QDoubleSpinBox
     wheel_filter = WheelProtectionFilter()
-    
+
     original_combo_init = QComboBox.__init__
     def filtered_combo_init(self, *args, **kwargs) -> None:
         original_combo_init(self, *args, **kwargs)

@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QListWidget, QListWidgetItem, QDialogButtonBox, QLineEdit
 )
 from PySide6.QtCore import Signal
-from common.styles import WHITE_BUTTON_STYLE, get_medium_font
+from common.styles import get_medium_font
 
 # Predefined UOM categories based on usage patterns from the app
 UOM_CATEGORIES = {
@@ -137,7 +137,7 @@ class SmartUOMSelector(QWidget):
         self.button = QPushButton("-- Select unit --")
         self.button.setFont(get_medium_font())
         self.button.clicked.connect(self.open_dialog)
-        self.button.setStyleSheet(WHITE_BUTTON_STYLE)
+        self.button.setStyleSheet("UOM")
         layout.addWidget(self.button)
     
     def open_dialog(self):

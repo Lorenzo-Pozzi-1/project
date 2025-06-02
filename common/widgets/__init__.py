@@ -29,7 +29,7 @@ from common.widgets.application_params import ApplicationParamsWidget
 from common.widgets.scorebar import ScoreBar
 
 # Import and re-export the SmartUOMSelector
-from common.widgets.SmartUOMSelector import SmartUOMSelector
+from common.widgets.UOM_selector import SmartUOMSelector
 
 # Import and reexport the calculation tracer
 from common.widgets.tracer import calculation_tracer, CalculationTraceDialog

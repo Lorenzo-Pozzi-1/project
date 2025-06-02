@@ -32,10 +32,7 @@ class ProductsPage(QWidget):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(get_margin_large(), get_margin_large(), get_margin_large(), get_margin_large())
         main_layout.setSpacing(get_spacing_medium())
-        
-        # Create a horizontal layout for the header section
-        header_layout = QHBoxLayout()
-        
+                
         # Header with back button
         header = HeaderWithHomeButton("Products List and Comparison")
         header.back_clicked.connect(lambda: self.parent.navigate_to_page(0))

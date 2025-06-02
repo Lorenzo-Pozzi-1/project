@@ -7,7 +7,7 @@ from PySide6.QtCore import QSize
 # COLOR DEFINITIONS
 # ----------------------
 
-# Primary color palette 
+# Color palette 
 YELLOW          = "#fee000"
 YELLOW_HOVER    = "#ffea66"
 YELLOW_PRESSED  = "#eccd00"
@@ -26,7 +26,7 @@ RED_PRESSED     = "#CC2A22"
 EIQ_LOW_COLOR = QColor(200, 255, 200)      # Pastel green for low EIQ
 EIQ_MEDIUM_COLOR = QColor(255, 255, 200)   # Pastel yellow for medium EIQ  
 EIQ_HIGH_COLOR = QColor(255, 200, 200)     # Pastel red for high EIQ
-EIQ_EXTREME_COLOR = QColor("#D19B9B")       # Pastel dark red for extreme EIQ
+EIQ_EXTREME_COLOR = QColor("#D19B9B")    # Pastel dark red for extreme EIQ
 
 # Table and list styling colors
 ALTERNATE_ROW_COLOR = QColor(BEIGE)  # Beige for alternating rows
@@ -36,8 +36,8 @@ ALTERNATE_ROW_COLOR = QColor(BEIGE)  # Beige for alternating rows
 # ----------------------
 
 # EIQ threshold constants
-EIQ_LOW_THRESHOLD = 33.3
-EIQ_MEDIUM_THRESHOLD = 66.6
+EIQ_LOW_THRESHOLD = 20.0
+EIQ_MEDIUM_THRESHOLD = 50.0
 EIQ_HIGH_THRESHOLD = 100.0
 
 # ----------------------

@@ -10,7 +10,8 @@ from common.utils import (
     get_config,
     load_config,
     save_config,
-    resource_path
+    resource_path,
+    WheelProtectionFilter
 )
 
 # Re-export all constants

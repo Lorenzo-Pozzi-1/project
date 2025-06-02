@@ -123,14 +123,25 @@ class FilterRowContainer(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(5)
         
+        # Header layout for title and add button
+        header_layout = QHBoxLayout()
+        header_layout.setContentsMargins(0, 0, 0, 0)
+        
         # Filter title
         selection_title = QLabel("Filter Products")
         selection_title.setFont(get_subtitle_font())
-        main_layout.addWidget(selection_title)
+        header_layout.addWidget(selection_title)
+        
+        # Add filter button - now in the header layout
+        add_filter_button = create_button(text="Add Another Filter", style='white', callback=self.add_filter_row)
+        header_layout.addWidget(add_filter_button)
+        header_layout.addStretch()  # Push items to the left
+        
+        # Add the header layout to main layout
+        main_layout.addLayout(header_layout)
         
         # Filter rows area
         self.filter_rows_container = QWidget()
-        self.filter_rows_container.setStyleSheet("background-color: white;")
         self.filter_rows_layout = QHBoxLayout(self.filter_rows_container)
         self.filter_rows_layout.setContentsMargins(0, 0, 0, 0)
         self.filter_rows_layout.setAlignment(Qt.AlignLeft)
@@ -145,10 +156,6 @@ class FilterRowContainer(QWidget):
         filter_scroll.setWidget(self.filter_rows_container)
         filter_scroll.setMaximumHeight(60)
         main_layout.addWidget(filter_scroll)
-        
-        # Add filter button
-        add_filter_button = create_button(text="Add Another Filter", style='white', callback=self.add_filter_row)
-        main_layout.addWidget(add_filter_button, alignment=Qt.AlignLeft)
     
     def set_filter_data(self, visible_columns, field_to_column_map):
         """
