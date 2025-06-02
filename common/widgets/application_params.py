@@ -2,6 +2,7 @@
 Application parameters widgets for the LORENZO POZZI Pesticide App.
 
 This module provides widgets for entering application rate, units, and other parameters.
+Enhanced with automatic rate conversion when UOM changes.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QFormLayout, QLabel
@@ -9,10 +10,13 @@ from PySide6.QtCore import Signal, Property
 from common.styles import get_medium_font, get_small_font
 from common.widgets.header_frame_buttons import ContentFrame
 from common.widgets.UOM_selector import SmartUOMSelector
+from common.widgets.tracer import calculation_tracer
+from common import get_config
+from data.repository_UOM import UOMRepository, CompositeUOM
 
 
 class ApplicationRateWidget(QWidget):
-    """Widget for entering application rate with unit selection."""
+    """Widget for entering application rate with unit selection and automatic conversion."""
     
     value_changed = Signal()
     
@@ -20,6 +24,7 @@ class ApplicationRateWidget(QWidget):
         """Initialize the application rate widget."""
         super().__init__(parent)
         self._style_config = style_config or {}
+        self._previous_uom = None  # Track previous UOM for conversion
         self._setup_ui()
 
     def _setup_ui(self):
@@ -40,9 +45,79 @@ class ApplicationRateWidget(QWidget):
         layout.addWidget(self._rate_spin)
         
         # Unit combo box
-        self._unit_combo = SmartUOMSelector(uom_type="application_rate",)
-        self._unit_combo.currentTextChanged.connect(self.value_changed)
+        self._unit_combo = SmartUOMSelector(uom_type="application_rate")
+        self._unit_combo.currentTextChanged.connect(self._on_uom_changed)
         layout.addWidget(self._unit_combo)
+    
+    def _on_uom_changed(self, new_uom):
+        """Handle UOM change and convert the rate value accordingly."""
+        if not new_uom or not self._previous_uom:
+            # First time setting UOM or empty UOM, just store it
+            self._previous_uom = new_uom
+            self.value_changed.emit()
+            return
+        
+        if new_uom == self._previous_uom:
+            # No actual change
+            return
+        
+        # Get current rate value
+        current_rate = self._rate_spin.value()
+        
+        # Convert the rate from previous UOM to new UOM
+        converted_rate = self._convert_rate(current_rate, self._previous_uom, new_uom)
+        
+        if converted_rate is not None:
+            # Temporarily block signals to avoid cascade events
+            self._rate_spin.blockSignals(True)
+            self._rate_spin.setValue(converted_rate)
+            self._rate_spin.blockSignals(False)
+            
+            calculation_tracer.log(f"Auto-converted rate: {current_rate} {self._previous_uom} → {converted_rate:.2f} {new_uom}")
+        
+        # Update previous UOM
+        self._previous_uom = new_uom
+        
+        # Emit change signal
+        self.value_changed.emit()
+    
+    def _convert_rate(self, value, from_uom, to_uom):
+        """
+        Convert rate value between UOMs.
+        
+        Args:
+            value (float): Rate value to convert
+            from_uom (str): Source UOM
+            to_uom (str): Target UOM
+            
+        Returns:
+            float or None: Converted value or None if conversion failed
+        """
+        if not from_uom or not to_uom:
+            return None
+        
+        try:
+            # Get UOM repository
+            uom_repo = UOMRepository.get_instance()
+            
+            # Create composite UOM objects
+            from_composite = CompositeUOM(from_uom)
+            to_composite = CompositeUOM(to_uom)
+            
+            # Get user preferences for complex conversions
+            user_preferences = get_config("user_preferences", {})
+            
+            # Perform conversion
+            converted_value = uom_repo.convert_composite_uom(
+                value, from_composite, to_composite, user_preferences
+            )
+            
+            return converted_value
+            
+        except Exception as e:
+            calculation_tracer.log(f"Rate conversion failed: {from_uom} → {to_uom}: {e}")
+            # If conversion fails, keep the original value
+            return value
     
     # Property-based API for rate
     def _get_rate(self):
@@ -58,7 +133,11 @@ class ApplicationRateWidget(QWidget):
         return self._unit_combo.currentText()
     
     def _set_unit(self, unit):
+        # Store previous UOM before setting new one
+        self._previous_uom = self._unit_combo.currentText()
         self._unit_combo.setCurrentText(unit)
+        # Update previous UOM to the new unit after setting
+        self._previous_uom = unit
     
     unit = Property(str, _get_unit, _set_unit)
 
@@ -93,7 +172,7 @@ class ApplicationParamsWidget(QWidget):
         # Create content frame
         content_frame = ContentFrame()
         
-        # Application rate widget - UPDATED to pass user preferences
+        # Application rate widget - Enhanced with conversion capability
         self._rate_widget = ApplicationRateWidget(style_config=self._style_config)
         self._rate_widget.value_changed.connect(self.params_changed)
         self._rate_widget._rate_spin.setFont(font)

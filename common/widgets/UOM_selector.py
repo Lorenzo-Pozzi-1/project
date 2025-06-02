@@ -17,7 +17,7 @@ UOM_CATEGORIES = {
     "application_rate": [
         "fl oz/acre", "fl oz/cwt", "fl oz/1000ft", "g/cwt", "g/ha", 
         "gal/acre", "kg/ha", "l/ha", "lb/acre", "lb/cwt", "ml/100kg", 
-        "ml/100m", "ml/acre", "ml/ha", "oz/acre", "oz/cwt", "pt/acre", "qt/acre"
+        "ml/100m", "ml/acre", "ml/ha", "ml/cwt", "oz/acre", "oz/cwt", "pt/acre", "qt/acre"
     ],
     "length": [
         "ft", "inch", "m", "cm"
