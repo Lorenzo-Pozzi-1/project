@@ -103,14 +103,14 @@ class HomePage(QWidget):
             "page_index": 1
             },
             {
-            "title": "EIQ Season Planner",
-            "description": "Plan applications, Compare scenarios\nImport and work from previous years plans",
-            "page_index": 2
-            },
-            {
             "title": "EIQ Calculator",
             "description": "Calculate Environmental Impact Quotients\nCompare EIQ of different applications",
             "page_index": 3
+            },
+            {
+            "title": "EIQ Season Planner",
+            "description": "Plan applications, Compare scenarios\nImport and work from previous years plans",
+            "page_index": 2
             }
         ]
         

@@ -45,6 +45,7 @@ class ScenariosManagerPage(QWidget):
         
         # Create buttons with fixed width
         buttons = {
+            "Import Scenario": ("white", self.import_scenario),  # Import is handled by adding a new sc
             "New Scenario": ("yellow", self.add_new_scenario),
             "Clone Current": ("white", self.clone_current_scenario),
             "Rename": ("white", self.rename_current_scenario),
@@ -306,6 +307,13 @@ class ScenariosManagerPage(QWidget):
         QMessageBox.information(
             self, "Not Implemented", 
             "The comparison feature will be implemented in a future update."
+        )
+
+    def import_scenario(self):
+        """Import scenarios (placeholder for future implementation)."""
+        QMessageBox.information(
+            self, "Not Implemented", 
+            "The import feature will be implemented in a future update."
         )
     
     def refresh_product_data(self):

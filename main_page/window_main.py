@@ -140,10 +140,9 @@ class MainWindow(QMainWindow):
         # warning for demo rollout
         if page_index == 2:  # Season Planner
             from PySide6.QtWidgets import QMessageBox
-            if QMessageBox.warning(self, "Work in Progress", 
+            QMessageBox.warning(self, "Work in Progress", 
                 "WORK IN PROGRESS!\n\nExplore and try the functionalities but be aware that they might present errors or change in the future!", 
-                QMessageBox.Ok | QMessageBox.Cancel) == QMessageBox.Cancel:
-                return 
+                QMessageBox.Ok)
         # end of warning    
         self.stacked_widget.setCurrentIndex(page_index)
 
