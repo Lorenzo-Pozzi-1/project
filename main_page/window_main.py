@@ -136,19 +136,16 @@ class MainWindow(QMainWindow):
         # in the future add any new page that needs to be refreshed
 
     def navigate_to_page(self, page_index):
-        """Navigate to the specified page index."""
-        if self.updating_products:
-            print("Please wait, I'm updating the products data...")
-            return
-            
-        # If we're on the home page and trying to navigate away, check for unsaved preferences
-        if self.stacked_widget.currentIndex() == 0 and page_index != 0:
-            if not self.home_page.check_unsaved_preferences():
-                return  # Stop navigation if the user cancelled
-        
-        # Proceed with navigation
-        if 0 <= page_index < self.stacked_widget.count():
-            self.stacked_widget.setCurrentIndex(page_index)
+        """Enhanced navigation with WIP warnings."""
+        # warning for demo rollout
+        if page_index == 2:  # Season Planner
+            from PySide6.QtWidgets import QMessageBox
+            if QMessageBox.warning(self, "Work in Progress", 
+                "WORK IN PROGRESS!\n\nExplore and try the functionalities but be aware that they might present errors or change in the future!", 
+                QMessageBox.Ok | QMessageBox.Cancel) == QMessageBox.Cancel:
+                return 
+        # end of warning    
+        self.stacked_widget.setCurrentIndex(page_index)
 
     def apply_config_preferences(self):
         """Apply user preferences from config."""
