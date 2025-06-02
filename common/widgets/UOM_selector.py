@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QListWidget, QListWidgetItem, QLineEdit
 )
 from PySide6.QtCore import Signal
-from common.styles import get_medium_font
+from common.styles import get_medium_font, BLUE
 
 # Predefined UOM categories based on usage patterns from the app
 UOM_CATEGORIES = {
@@ -39,7 +39,6 @@ class UOMSelectionDialog(QDialog):
         self.selected_uom = None
         self.setWindowTitle(title)
         self.setModal(True)
-        self.resize(400, 500)
         self.setup_ui()
     
     def setup_ui(self):
@@ -61,6 +60,14 @@ class UOMSelectionDialog(QDialog):
         # UOM list
         self.uom_list = QListWidget()
         self.uom_list.setFont(get_medium_font())
+        self.uom_list.setStyleSheet("""
+            QListWidget { 
+                background-color: white; 
+            }
+            QListWidget::item:hover { 
+                background-color: #ADD8E6; 
+            }
+        """)
         # Connect single click to accept
         self.uom_list.itemClicked.connect(self.on_item_clicked)
         
@@ -70,6 +77,14 @@ class UOMSelectionDialog(QDialog):
             self.uom_list.addItem(item)
         
         layout.addWidget(self.uom_list)
+        
+        # Size the dialog to fit contents
+        self.adjustSize()
+        
+        # Set a reasonable minimum width
+        min_width = 250
+        if self.width() < min_width:
+            self.setMinimumWidth(min_width)
     
     def filter_uoms(self, text):
         """Filter UOM list based on search text."""
@@ -117,7 +132,7 @@ class SmartUOMSelector(QWidget):
         layout.setSpacing(0)
         
         # Main button showing current selection
-        self.button = QPushButton("-- Select unit --")
+        self.button = QPushButton("- Select unit -")
         self.button.setFont(get_medium_font())
         self.button.clicked.connect(self.open_dialog)
         self.button.setStyleSheet("UOM")
@@ -144,7 +159,7 @@ class SmartUOMSelector(QWidget):
         """Set the current UOM text."""
         if text != self.current_uom:
             self.current_uom = text
-            self.button.setText(text if text else "-- Select unit --")
+            self.button.setText(text if text else "- Select unit -")
             if text:  # Only emit if not empty
                 self.currentTextChanged.emit(text)
     
