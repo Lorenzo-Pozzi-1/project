@@ -5,7 +5,7 @@ This module provides the main interface for managing multiple pesticide
 application scenarios through tabs.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog, QDialog
 from common import ContentFrame, HeaderWithHomeButton, calculation_tracer, create_button, ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font
 from season_planner_page.tab_scenario import ScenarioTabPage
 from data import Scenario
@@ -310,11 +310,18 @@ class ScenariosManagerPage(QWidget):
         )
 
     def import_scenario(self):
-        """Import scenarios (placeholder for future implementation)."""
-        QMessageBox.information(
-            self, "Not Implemented", 
-            "The import feature will be implemented in a future update."
-        )
+        """Import scenario from external file."""
+        from season_planner_page.import_scenario import ImportScenarioDialog
+        
+        dialog = ImportScenarioDialog(self)
+        if dialog.exec() == QDialog.Accepted:
+            imported_scenario = dialog.get_imported_scenario()
+            if imported_scenario:
+                self.add_new_scenario(imported_scenario)
+                QMessageBox.information(
+                    self, "Import Successful",
+                    f"Scenario '{imported_scenario.name}' has been imported successfully."
+                )
     
     def refresh_product_data(self):
         """Refresh product data when filtered products change in the main window."""
