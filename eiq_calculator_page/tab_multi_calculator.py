@@ -203,8 +203,10 @@ class ProductComparisonCalculatorTab(QWidget):
             
             if product_data and field_eiq > 0:
                 product_id = f"card_{i}"
+                # Create unique display name with card number
+                unique_name = f"Product {i + 1}. {product_data['product_name']}"
                 self.comparison_table.add_product_result(
-                    product_data["product_name"],
+                    unique_name,
                     field_eiq,
                     product_id=product_id
                 )
@@ -222,10 +224,13 @@ class ProductComparisonCalculatorTab(QWidget):
         
         # Update comparison table based on result
         if product_data and field_eiq > 0:
+            # Create unique display name with card number
+            unique_name = f"Product {card_index + 1}. {product_data['product_name']}"
             self.comparison_table.add_product_result(
-                product_data["product_name"],
+                unique_name,
                 field_eiq,
                 product_id=product_id
             )
         else:
-            self.comparison_table.add_product_result("0")
+            # Remove the product if no valid data
+            self.comparison_table.remove_product(product_id=product_id)
