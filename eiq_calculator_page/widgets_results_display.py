@@ -148,14 +148,16 @@ class EiqComparisonTable(QTableWidget):
     
     def setup_ui(self):
         """Set up the UI components."""
-
-        self.setStyleSheet(GENERIC_TABLE_STYLE)
+        
         # Set header labels
         self.setHorizontalHeaderLabels(["Product", "Field EIQ"])
         
         # Set up table properties
         header = self.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
+        
+        # Apply stylesheet ONLY to header like the working ComparisonTable does
+        header.setStyleSheet(GENERIC_TABLE_STYLE)
         
         # Set up visual style
         self.setAlternatingRowColors(True)
