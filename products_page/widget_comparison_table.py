@@ -50,8 +50,11 @@ class ComparisonTable(QTableWidget):
         self.setAlternatingRowColors(True)
         self.setSelectionBehavior(QTableWidget.SelectRows)
         self.setSelectionMode(QTableWidget.SingleSelection)
+        self.verticalHeader().setMinimumHeight(30)
         self.verticalHeader().setVisible(False)
         self.setEditTriggers(QTableWidget.NoEditTriggers)
+
+        
         
         # Style the horizontal header
         self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
@@ -124,6 +127,10 @@ class ComparisonTable(QTableWidget):
         self.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
         for col in range(1, self.columnCount()):
             self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
+        
+        # Force row heights to resize to content after populating data
+        self.setRowHeight(0,2*get_spacing_xlarge()) 
+        # self.resizeRowsToContents()
     
     def calculate_product_field_eiq(self, product):
         """Calculate the Field EIQ for a product using its maximum application rate."""

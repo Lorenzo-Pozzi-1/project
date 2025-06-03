@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
     def setup_window(self):
         """Set up the window properties."""
         
-        self.setWindowTitle("Pesticide App - author: Lorenzo Pozzi")
+        self.setWindowTitle("Pesticide App - Internship project of Lorenzo Pozzi")
         self.setMinimumSize(900, 700)
         self.showMaximized()
                 
