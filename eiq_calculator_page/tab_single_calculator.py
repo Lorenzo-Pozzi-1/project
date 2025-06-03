@@ -145,11 +145,18 @@ class SingleProductCalculatorTab(QWidget):
             return
         
         try:
-            # Get product from repository
-            self.current_product = self.products_repo.get_product_by_name(product_name)
+            # Get product from FILTERED products instead of all products
+            filtered_products = self.products_repo.get_filtered_products()
+            self.current_product = None
+            
+            # Find the product in the filtered list
+            for product in filtered_products:
+                if product.product_name == product_name:
+                    self.current_product = product
+                    break
             
             if not self.current_product:
-                raise ValueError(f"Product '{product_name}' not found")
+                raise ValueError(f"Product '{product_name}' not found in filtered products")
             
             # Get active ingredients data
             self.active_ingredients = self.current_product.get_ai_data()

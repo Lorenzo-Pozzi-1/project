@@ -114,9 +114,16 @@ class ProductCard(QFrame):
             return
         
         try:
-            # Get product from repository
+            # Get product from FILTERED products instead of all products
             products_repo = ProductRepository.get_instance()
-            self.product = products_repo.get_product_by_name(product_name)
+            filtered_products = products_repo.get_filtered_products()
+            self.product = None
+            
+            # Find the product in the filtered list
+            for product in filtered_products:
+                if product.product_name == product_name:
+                    self.product = product
+                    break
             
             # If product doesn't exist, clear and return
             if not self.product:

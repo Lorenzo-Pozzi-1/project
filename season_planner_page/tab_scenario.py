@@ -115,13 +115,33 @@ class ScenarioTabPage(QWidget):
             # Get all applications data
             applications_data = self.applications_container.get_applications()
             
+            # Get products from FILTERED products instead of all products
+            filtered_products = self.products_repo.get_filtered_products()
+            
+            # Build applications list with products from filtered list
+            applications = []
+            for app in applications_data:
+                product_name = app.get('product_name')
+                if not product_name:
+                    continue
+                    
+                # Find the product in the filtered list
+                product = None
+                for filtered_product in filtered_products:
+                    if filtered_product.product_name == product_name:
+                        product = filtered_product
+                        break
+                
+                if product:
+                    applications.append({
+                        'product': product,
+                        'rate': app.get('rate', 0),
+                        'rate_uom': app.get('rate_uom', ''),
+                    })
+            
             # Use the scenario-level calculation
             total_eiq = eiq_calculator.calculate_scenario_field_eiq(
-                applications=[{
-                    'product': self.products_repo.get_product_by_name(app.get('product_name')),
-                    'rate': app.get('rate', 0),
-                    'rate_uom': app.get('rate_uom', ''),
-                } for app in applications_data if app.get('product_name')],
+                applications=applications,
                 user_preferences=user_preferences
             )
             

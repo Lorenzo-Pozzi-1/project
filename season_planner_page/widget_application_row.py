@@ -171,7 +171,21 @@ class ApplicationRowWidget(QFrame):
     
     def on_product_selected(self, product_name):
         """Handle product selection from the product selection widget."""
-        product = None if not product_name else self.products_repo.get_product_by_name(product_name)
+        if not product_name:
+            self.ai_groups_label.setText("")
+            self.field_eiq_label.setText("")
+            self.on_data_changed()
+            return
+        
+        # Get product from FILTERED products instead of all products
+        filtered_products = self.products_repo.get_filtered_products()
+        product = None
+        
+        # Find the product in the filtered list
+        for filtered_product in filtered_products:
+            if filtered_product.product_name == product_name:
+                product = filtered_product
+                break
         
         if not product:
             self.ai_groups_label.setText("")
@@ -207,8 +221,17 @@ class ApplicationRowWidget(QFrame):
         if not product_name:
             self.field_eiq_label.setText("")
             return
+        
+        # Get product from FILTERED products instead of all products
+        filtered_products = self.products_repo.get_filtered_products()
+        product = None
+        
+        # Find the product in the filtered list
+        for filtered_product in filtered_products:
+            if filtered_product.product_name == product_name:
+                product = filtered_product
+                break
             
-        product = self.products_repo.get_product_by_name(product_name)
         if not product:
             self.field_eiq_label.setText("")
             return
@@ -261,9 +284,17 @@ class ApplicationRowWidget(QFrame):
         if not product_name:
             return None
         
-        # Get product type
-        product = self.products_repo.get_product_by_name(product_name)
-        product_type = product.product_type if product else ""
+        # Get product from FILTERED products instead of all products
+        filtered_products = self.products_repo.get_filtered_products()
+        product = None
+        product_type = ""
+        
+        # Find the product in the filtered list
+        for filtered_product in filtered_products:
+            if filtered_product.product_name == product_name:
+                product = filtered_product
+                product_type = product.product_type if product else ""
+                break
         
         # Get application parameters
         params = self.app_params.get_params()

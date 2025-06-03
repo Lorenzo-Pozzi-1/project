@@ -117,24 +117,6 @@ class ProductRepository:
             print(f"Error refreshing from CSV: {e}")
             return False
     
-    def get_product_by_name(self, product_name):
-        """
-        Get a specific product by name.
-        
-        Args:
-            product_name (str): Name of product to retrieve
-        
-        Returns:
-            Product: The requested product or None if not found
-        """
-        products = self.get_all_products()
-        
-        for product in products:
-            if product.product_name == product_name:
-                return product
-        
-        return None
-    
     @staticmethod
     def csv_to_dict(csv_file):
         """
