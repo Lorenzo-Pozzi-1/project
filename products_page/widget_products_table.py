@@ -210,6 +210,7 @@ class ProductTable(QTableWidget):
             config: Column configuration dictionary
         """
         special_columns = config.get("special_columns", {})
+        rename_columns = config.get("rename_columns", {})
         
         # Find AI1 column position (for Groups column)
         ai1_col = -1
@@ -270,11 +271,19 @@ class ProductTable(QTableWidget):
                 if groups_col > 0 and col >= groups_col:
                     table_col = col + 1  # Adjust for inserted Groups column
                 
-                value = product_dict.get(key, "")
-                if value is not None:
-                    self.setItem(row, table_col, QTableWidgetItem(str(value)))
+                # Check if this is the ai1 column that should show all AIs
+                if key.lower() == "ai1" and key.lower() in [k.lower() for k in rename_columns.keys()]:
+                    # Get all active ingredients and join them with commas
+                    all_ais = product.active_ingredients
+                    ais_text = ", ".join(all_ais) if all_ais else ""
+                    self.setItem(row, table_col, QTableWidgetItem(ais_text))
                 else:
-                    self.setItem(row, table_col, QTableWidgetItem(""))
+                    # Use the original product dictionary value
+                    value = product_dict.get(key, "")
+                    if value is not None:
+                        self.setItem(row, table_col, QTableWidgetItem(str(value)))
+                    else:
+                        self.setItem(row, table_col, QTableWidgetItem(""))
     
     def _update_visible_columns_map(self, config):
         """Update the list of visible columns and their mapping."""

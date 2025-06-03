@@ -82,8 +82,8 @@ class ProductSearchField(QWidget):
     
     def set_items(self, items):
         """Set the list of available items for autocomplete."""
-        self.all_items = items
-        model = QStringListModel(items, self.completer)
+        self.all_items = sorted(items)  # Sort items alphabetically
+        model = QStringListModel(self.all_items, self.completer)
         self.completer.setModel(model)
         
         # Show popup if field is focused
