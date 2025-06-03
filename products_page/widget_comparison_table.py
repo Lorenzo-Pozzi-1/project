@@ -39,6 +39,7 @@ class ComparisonTable(QTableWidget):
             ("Rate UOM", "rate UOM"),
             ("REI (hours)", "REI (h)"),
             ("PHI (days)", "PHI (d)"),
+            ("min days btwn apps", "min days between applications"),
             ("Type", "type"),
             ("Reg. #", "reg. #"),
             ("Registrant", "registrant")
