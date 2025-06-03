@@ -20,8 +20,36 @@ DEFAULT_CONFIG = {
     }
 }
 
-# Configuration file path
-CONFIG_FILE = "config.json"
+def get_config_file_path():
+    """
+    Get the appropriate path for the config file.
+    Uses a writable location that works for both dev and compiled versions.
+    
+    Returns:
+        str: Path to the config file
+    """
+    if getattr(sys, 'frozen', False):
+        # Running as compiled executable
+        # Get the directory where the executable is located
+        exe_dir = os.path.dirname(sys.executable)
+        config_path = os.path.join(exe_dir, "config.json")
+        
+        # Test if we can write to the exe directory
+        try:
+            test_file = os.path.join(exe_dir, "test_write.tmp")
+            with open(test_file, 'w') as f:
+                f.write("test")
+            os.remove(test_file)
+            return config_path
+        except (OSError, IOError):
+            # Can't write to exe directory, use user's home directory
+            home_dir = os.path.expanduser("~")
+            app_config_dir = os.path.join(home_dir, ".project")
+            os.makedirs(app_config_dir, exist_ok=True)
+            return os.path.join(app_config_dir, "config.json")
+    else:
+        # Running in development - use current directory
+        return "config.json"
 
 def load_config():
     """
@@ -30,7 +58,7 @@ def load_config():
     Returns:
         dict: The application configuration
     """
-    config_path = Path(CONFIG_FILE)
+    config_path = Path(get_config_file_path())
     
     if config_path.exists():
         try:
@@ -59,13 +87,36 @@ def save_config(config):
         bool: True if successful, False otherwise
     """
     try:
-        with open(CONFIG_FILE, 'w') as file:
+        config_path = get_config_file_path()
+        print(f"Attempting to save config to: {config_path}")  # Debug output
+        
+        # Ensure the directory exists
+        config_dir = os.path.dirname(config_path)
+        if config_dir:  # Only create if there's actually a directory part
+            os.makedirs(config_dir, exist_ok=True)
+        
+        with open(config_path, 'w') as file:
             json.dump(config, file, indent=4)
+        print(f"Config successfully saved to: {config_path}")  # Debug output
         return True
-    except IOError as e:
-        print(f"Error saving config: {e}")
-        return False
-    
+    except (IOError, OSError) as e:
+        print(f"Error saving config to {config_path}: {e}")
+        
+        # Fallback: try saving to a temp directory
+        try:
+            import tempfile
+            temp_dir = tempfile.gettempdir()
+            fallback_path = os.path.join(temp_dir, "mccain_pesticides_config.json")
+            print(f"Trying fallback location: {fallback_path}")
+            
+            with open(fallback_path, 'w') as file:
+                json.dump(config, file, indent=4)
+            print(f"Config saved to fallback location: {fallback_path}")
+            return True
+        except Exception as fallback_error:
+            print(f"Fallback save also failed: {fallback_error}")
+            return False
+
 def get_config(key, default=None):
     """
     Get a configuration value.
