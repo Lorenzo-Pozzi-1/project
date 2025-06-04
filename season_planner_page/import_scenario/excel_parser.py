@@ -192,35 +192,44 @@ class ExcelScenarioParser:
             scenario.field_area_uom = 'acre'  # Data shows acres
             scenario.variety = str(first_row.get('Variety', ''))
         
-        # Create applications from each row, but only for matched products
+        # Create applications from each row, including unmatched products
         applications = []
         product_mapping = product_validation['product_mapping']
         
         for _, row in df.iterrows():
             excel_product_name = str(row.get('Control Product', '')).strip()
             
-            # Skip if no product name or product not matched
+            # Skip if no product name
             if not excel_product_name or excel_product_name == 'nan':
                 continue
-                
+            
             matched_product = product_mapping.get(excel_product_name)
-            if matched_product is None:
-                # Skip unmatched products - could log this for debugging
-                continue
             
-            app_data = {
-                'application_date': str(row.get('Application Date', '')),
-                'product_name': matched_product.product_name,  # Use the matched product name
-                'product_type': matched_product.product_type,  # Set the product type from matched product
-                'rate': float(row.get('ConvertedRate', 0)) if pd.notna(row.get('ConvertedRate')) else 0.0,
-                'rate_uom': self._map_uom(row.get('ConvertedRateUOM', '')),
-                'application_method': str(row.get('Application Method', 'Broadcast')),
-                'area': float(row.get('Acres', 0)) if pd.notna(row.get('Acres')) else 0.0
-            }
+            if matched_product is not None:
+                # Use matched product data
+                app_data = {
+                    'application_date': self._format_date_string(row.get('Application Date', '')),
+                    'product_name': matched_product.product_name,  # Use the matched product name
+                    'product_type': matched_product.product_type,  # Set the product type from matched product
+                    'rate': float(row.get('ConvertedRate', 0)) if pd.notna(row.get('ConvertedRate')) else 0.0,
+                    'rate_uom': self._map_uom(row.get('ConvertedRateUOM', '')),
+                    'application_method': str(row.get('Application Method', 'Broadcast')),
+                    'area': float(row.get('Acres', 0)) if pd.notna(row.get('Acres')) else 0.0
+                }
+            else:
+                # Keep unmatched product data as-is from Excel
+                app_data = {
+                    'application_date': self._format_date_string(row.get('Application Date', '')),
+                    'product_name': excel_product_name,  # Keep original Excel name
+                    'product_type': '',  # Unknown product type
+                    'rate': float(row.get('ConvertedRate', 0)) if pd.notna(row.get('ConvertedRate')) else 0.0,
+                    'rate_uom': self._map_uom(row.get('ConvertedRateUOM', '')),
+                    'application_method': str(row.get('Application Method', 'Broadcast')),
+                    'area': float(row.get('Acres', 0)) if pd.notna(row.get('Acres')) else 0.0
+                }
             
-            # Only add if we have valid rate data
-            if app_data['rate'] > 0:
-                applications.append(Application.from_dict(app_data))
+            # Add application regardless of match status
+            applications.append(Application.from_dict(app_data))
         
         scenario.applications = applications
         
@@ -241,6 +250,57 @@ class ExcelScenarioParser:
         
         # Return mapped UOM if exists, otherwise return original (cleaned)
         return self.uom_mapping.get(excel_uom_clean, excel_uom.strip())
+    
+    def _format_date_string(self, date_value):
+        """
+        Format date value from Excel to a clean date string in DD/MM/YYYY format.
+        
+        Args:
+            date_value: Date value from Excel (could be string, datetime, etc.)
+            
+        Returns:
+            str: Cleaned date string in DD/MM/YYYY format
+        """
+        if not date_value or str(date_value).strip() == '' or str(date_value) == 'nan':
+            return ''
+        
+        try:
+            # If it's already a datetime object
+            if hasattr(date_value, 'strftime'):
+                return date_value.strftime('%d/%m/%Y')
+            
+            date_str = str(date_value).strip()
+            
+            # If it contains time (space followed by time), remove the time part
+            if ' ' in date_str and ':' in date_str:
+                date_str = date_str.split(' ')[0]
+            
+            # Try to parse the date string and format it
+            import datetime
+            
+            # Try common date formats
+            date_formats = [
+                '%Y-%m-%d',      # 2024-06-04
+                '%m/%d/%Y',      # 06/04/2024
+                '%d/%m/%Y',      # 04/06/2024
+                '%m-%d-%Y',      # 06-04-2024
+                '%d-%m-%Y',      # 04-06-2024
+                '%Y/%m/%d',      # 2024/06/04
+            ]
+            
+            for fmt in date_formats:
+                try:
+                    parsed_date = datetime.datetime.strptime(date_str, fmt)
+                    return parsed_date.strftime('%d/%m/%Y')
+                except ValueError:
+                    continue
+            
+            # If no format worked, return the original cleaned string
+            return date_str
+            
+        except Exception:
+            # If any error occurs, return the original value as string
+            return str(date_value).strip()
     
     def _extract_crop_year(self, crop_year_str):
         """Extract numeric year from crop year string like 'CY24'."""

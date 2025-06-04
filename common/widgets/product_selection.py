@@ -278,5 +278,34 @@ class ProductSelectionWidget(QWidget):
         return self.product_search.text
     
     def set_selected_product(self, product_name):
-        """Set the selected product."""
+        """Set the selected product and automatically set its type."""
+        if not product_name:
+            self.product_search.text = ""
+            return
+            
+        # First, try to find the product in the repository to get its type
+        try:
+            from data import ProductRepository
+            products_repo = ProductRepository.get_instance()
+            filtered_products = products_repo.get_filtered_products()
+            
+            # Find the product to get its type
+            product = None
+            for filtered_product in filtered_products:
+                if filtered_product.product_name == product_name:
+                    product = filtered_product
+                    break
+            
+            if product and product.product_type:
+                # Set the type first (this will filter the product list)
+                type_index = self.type_selector.findText(product.product_type)
+                if type_index >= 0:
+                    self.type_selector.setCurrentIndex(type_index)
+                    # This triggers _update_product_list() which updates the search field's available items
+        
+        except Exception as e:
+            print(f"Warning: Could not set product type for {product_name}: {e}")
+            # Continue anyway and just set the product name
+        
+        # Set the product name
         self.product_search.text = product_name

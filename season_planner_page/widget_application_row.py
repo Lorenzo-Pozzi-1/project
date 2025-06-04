@@ -60,7 +60,7 @@ class ApplicationRowWidget(QFrame):
         widgets = [
             self._create_app_number_label(),
             self._create_date_field(),
-            self._create_product_selection(),
+            self._create_product_info_section(),
             self._create_app_params(),
             self._create_area_field(),
             self._create_method_field(),
@@ -75,6 +75,63 @@ class ApplicationRowWidget(QFrame):
         for widget, stretch in zip(widgets, stretch_factors):
             layout.addWidget(widget)
             layout.setStretch(layout.count() - 1, stretch)
+    
+    def _create_product_info_section(self):
+        """Create the product selection widget."""
+        # Just create the normal product selection widget
+        style_config = {'font_size': get_medium_text_size(), 'bold': False}
+        self.product_selection = ProductSelectionWidget(
+            orientation='horizontal', 
+            style_config=style_config,
+            show_labels=False,
+        )
+        self.product_selection.product_selected.connect(self.on_product_selected)
+        return self.product_selection
+    
+    def on_product_selected(self, product_name):
+        """Handle product selection from the product selection widget."""
+        if not product_name:
+            self.ai_groups_label.setText("")
+            self.field_eiq_label.setText("")
+            self.on_data_changed()
+            return
+        
+        # Get product from FILTERED products
+        filtered_products = self.products_repo.get_filtered_products()
+        product = None
+        
+        # Find the product in the filtered list
+        for filtered_product in filtered_products:
+            if filtered_product.product_name == product_name:
+                product = filtered_product
+                break
+        
+        if product:
+            # Product found in repository - populate fields
+            # Note: Product type is already set by set_application_data() if this is from import
+            
+            # Update application parameters with product defaults if current params are empty/default
+            current_params = self.app_params.get_params()
+            if current_params["rate"] == 0.0 or not current_params["unit"]:
+                rate = (product.label_maximum_rate if product.label_maximum_rate is not None 
+                        else product.label_minimum_rate if product.label_minimum_rate is not None 
+                        else 0.0)
+                unit = product.rate_uom or ""
+                self.app_params.set_params(rate=rate, unit=unit)
+            
+            # Update AI Groups
+            ai_groups = product.get_ai_groups()
+            ai_groups_text = ", ".join(filter(None, ai_groups)) if ai_groups else ""
+            self.ai_groups_label.setText(ai_groups_text)
+            
+            # Calculate and update Field EIQ
+            self.calculate_field_eiq()
+        else:
+            # Product not found in repository (unmatched product from import)
+            self.ai_groups_label.setText("Product not found")
+            self.field_eiq_label.setText("0.00")
+        
+        self.on_data_changed()
         
     def _create_app_number_label(self):
         """Create the application number label."""
@@ -184,27 +241,28 @@ class ApplicationRowWidget(QFrame):
                 product = filtered_product
                 break
         
-        if not product:
-            self.ai_groups_label.setText("")
-            self.field_eiq_label.setText("")
-            self.on_data_changed()
-            return
+        if product:
+            # Product found in repository - populate all fields
+            # Update application parameters with product defaults if current params are empty/default
+            current_params = self.app_params.get_params()
+            if current_params["rate"] == 0.0 or not current_params["unit"]:
+                rate = (product.label_maximum_rate if product.label_maximum_rate is not None 
+                        else product.label_minimum_rate if product.label_minimum_rate is not None 
+                        else 0.0)
+                unit = product.rate_uom or ""
+                self.app_params.set_params(rate=rate, unit=unit)
+            
+            # Update AI Groups
+            ai_groups = product.get_ai_groups()
+            self.ai_groups_label.setText(", ".join(filter(None, ai_groups)))
+            
+            # Calculate and update Field EIQ
+            self.calculate_field_eiq()
+        else:
+            # Product not found in repository (unmatched product from import)
+            self.ai_groups_label.setText("Unknown product")
+            self.field_eiq_label.setText("0.00")
         
-        # Update application parameters
-        rate = (product.label_maximum_rate if product.label_maximum_rate is not None 
-                else product.label_minimum_rate if product.label_minimum_rate is not None 
-                else 0.0)
-        unit = product.rate_uom or ""
-        
-        # Set parameters in the application params widget
-        self.app_params.set_params(rate=rate, unit=unit)
-        
-        # Update AI Groups
-        ai_groups = product.get_ai_groups()
-        self.ai_groups_label.setText(", ".join(filter(None, ai_groups)))
-        
-        # Calculate and update Field EIQ
-        self.calculate_field_eiq()
         self.on_data_changed()
     
     def on_params_changed(self):
@@ -293,6 +351,10 @@ class ApplicationRowWidget(QFrame):
                 product_type = product.product_type if product else ""
                 break
         
+        # If product not found, it's an unmatched product - set empty product type
+        if not product:
+            product_type = "Unknown"
+        
         # Get application parameters
         params = self.app_params.get_params()
         
@@ -315,15 +377,6 @@ class ApplicationRowWidget(QFrame):
             if "application_date" in data:
                 self.date_edit.setText(data["application_date"])
             
-            # Set product (will also update product type internally)
-            if "product_name" in data:
-                self.product_selection.set_selected_product(data["product_name"])
-            
-            # Set application parameters
-            rate = data.get("rate")
-            unit = data.get("rate_uom")
-            self.app_params.set_params(rate=rate, unit=unit)
-            
             # Set area
             if "area" in data:
                 self.area_spin.setValue(data["area"])
@@ -331,8 +384,22 @@ class ApplicationRowWidget(QFrame):
             # Set application method
             if "application_method" in data:
                 self.method_edit.setText(data["application_method"])
+            
+            # Set application parameters BEFORE setting product (to avoid overriding with imported values)
+            rate = data.get("rate")
+            unit = data.get("rate_uom")
+            if rate is not None and unit:
+                self.app_params.set_params(rate=rate, unit=unit)
         
-        # Now let the signals propagate normally
+        # Set product LAST and outside blocked signals so it triggers full product selection logic
+        if "product_name" in data:
+            product_name = data["product_name"]
+            self.product_selection.set_selected_product(product_name)
+            
+            # Manually trigger the product selection logic to ensure all fields are populated
+            self.on_product_selected(product_name)
+        
+        # Final update to ensure everything is in sync
         self.calculate_field_eiq()
         self.data_changed.emit(self)
     

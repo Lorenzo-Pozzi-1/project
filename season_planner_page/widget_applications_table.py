@@ -37,9 +37,9 @@ class ApplicationsTableContainer(QWidget):
         header_row_layout.setContentsMargins(2, 1, 2, 1)
         header_row_layout.setSpacing(5)
         
-        # Define headers and their stretch factors
-        headers = ["Product No", "Date", "Type", "Product", "Rate", "Area", "Method", "AI Groups", "Field EIQ"]
-        stretches = [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+        # Define headers and their stretch factors - UPDATED to match application row widget
+        headers = ["App #", "Date", "Product", "Rate", "Area", "Method", "AI Groups", "Field EIQ"]
+        stretches = [1, 1, 3, 1, 1, 1, 1, 1, 0]  # Product gets more space (stretch=3)
         
         # Create and add header labels
         for i, header_text in enumerate(headers):
