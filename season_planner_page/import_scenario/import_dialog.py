@@ -134,8 +134,6 @@ Applications found: {preview_info['total_rows']} records
 
 Sample applications:
 {preview_info['sample_data']}
-
-CSV debug file saved to: {preview_info['csv_path']}
 """
         self.preview_text.setPlainText(preview_text)
     

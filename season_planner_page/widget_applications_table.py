@@ -2,7 +2,7 @@
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel, QHBoxLayout
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtGui import QColor
 from common import ContentFrame, GENERIC_TABLE_STYLE, WHITE, ALTERNATE_ROW_COLOR, get_config
 from season_planner_page.widget_application_row import ApplicationRowWidget
 
@@ -38,8 +38,8 @@ class ApplicationsTableContainer(QWidget):
         header_row_layout.setSpacing(5)
         
         # Define headers and their stretch factors
-        headers = ["Product No", "Date", "Type", "Product", "Rate", "UOM", "Area", "Method", "AI Groups", "Field EIQ"]
-        stretches = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+        headers = ["Product No", "Date", "Type", "Product", "Rate", "Area", "Method", "AI Groups", "Field EIQ"]
+        stretches = [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
         
         # Create and add header labels
         for i, header_text in enumerate(headers):
@@ -117,15 +117,12 @@ class ApplicationsTableContainer(QWidget):
         return row_widget
     
     def update_row_colors(self):
-        """Apply alternating background colors to all rows."""
+        """Apply alternating background colors to all rows."""        
         for i, row in enumerate(self.application_rows):
-            palette = row.palette()
             if i % 2 == 1:  # Odd rows
-                palette.setColor(QPalette.Window, QColor(ALTERNATE_ROW_COLOR))
+                row.setStyleSheet(f"background-color: {ALTERNATE_ROW_COLOR.name()};")
             else:  # Even rows
-                palette.setColor(QPalette.Window, QColor(WHITE))
-            row.setPalette(palette)
-            row.setAutoFillBackground(True)
+                row.setStyleSheet(f"background-color: {QColor(WHITE).name()};")
     
     def get_total_field_eiq(self):
         """Calculate the total Field EIQ for all applications."""
@@ -154,15 +151,18 @@ class ApplicationsTableContainer(QWidget):
                 if (app_data := row_widget.get_application_data())]
 
     def set_applications(self, applications):
-        """Set the container contents from a list of application dictionaries."""
+        """Set the container contents from a list of application dictionaries, excluding empty ones."""
         self.clear_applications()
         
         for app_data in applications:
             row_widget = self.add_application_row()
             row_widget.set_application_data(app_data)
         
-        # Make sure colors are correctly applied after loading applications
+        # Force update of row colors after all rows are loaded
         self.update_row_colors()
+        
+        # Emit the change signal
+        self.applications_changed.emit()
 
     def clear_applications(self):
         """Clear all application rows from the container."""

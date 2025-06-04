@@ -14,7 +14,15 @@ class ExcelScenarioParser:
     
     def __init__(self):
         """Initialize the parser."""
-        self.debug_mode = True  # For development - saves CSV files
+        # UOM mapping from Excel format to application format
+        self.uom_mapping = {
+            "GHA": "g/ha",
+            "LHA": "l/ha",
+            "KGHA": "kg/ha",
+            "MLHA": "ml/ha",
+            "LAC": "l/acre"
+            # Add more mappings as needed
+        }
     
     def parse_file(self, file_path):
         """
@@ -39,11 +47,6 @@ class ExcelScenarioParser:
             # Clean the dataframe
             applications_df = self._clean_dataframe(applications_df)
             
-            # Save CSV for development/debugging
-            csv_path = None
-            if self.debug_mode:
-                csv_path = self._save_debug_csv(applications_df, file_path)
-            
             # Create scenario from the data
             scenario = self._create_scenario(applications_df, file_path)
             
@@ -52,7 +55,6 @@ class ExcelScenarioParser:
                 'total_rows': len(applications_df),
                 'headers': list(applications_df.columns),
                 'sample_data': self._format_sample_applications(applications_df),
-                'csv_path': csv_path,
                 # Add scenario metadata
                 'crop_year': scenario.crop_year if scenario else 'N/A',
                 'grower_name': scenario.grower_name if scenario else 'N/A',
@@ -65,7 +67,6 @@ class ExcelScenarioParser:
             return scenario, preview_info
             
         except Exception as e:
-            print(f"Error parsing Excel file: {e}")
             return None, None
     
     def _find_data_end(self, df):
@@ -95,26 +96,6 @@ class ExcelScenarioParser:
         
         return df
     
-    def _save_debug_csv(self, df, original_file_path):
-        """Save dataframe as CSV for debugging purposes."""
-        try:
-            # Create debug filename
-            base_name = os.path.splitext(os.path.basename(original_file_path))[0]
-            csv_filename = f"{base_name}_imported_debug.csv"
-            
-            # Save in same directory as original file
-            csv_path = os.path.join(os.path.dirname(original_file_path), csv_filename)
-            
-            # Save CSV
-            df.to_csv(csv_path, index=False)
-            
-            print(f"Debug CSV saved to: {csv_path}")
-            return csv_path
-            
-        except Exception as e:
-            print(f"Could not save debug CSV: {e}")
-            return None
-    
     def _format_sample_applications(self, df):
         """Format sample applications for preview display."""
         if len(df) == 0:
@@ -124,8 +105,8 @@ class ExcelScenarioParser:
         for i, (_, row) in enumerate(df.head(3).iterrows()):
             date = row.get('Application Date', 'N/A')
             product = row.get('Control Product', 'N/A')
-            rate = row.get('Rate', 'N/A')
-            uom = row.get('Rate UOM', 'N/A')
+            rate = row.get('ConvertedRate', 'N/A')
+            uom = row.get('ConvertedRateUOM', 'N/A')
             method = row.get('Application Method', 'N/A')
             
             sample_lines.append(f"{i+1}. {date} - {product} @ {rate} {uom} ({method})")
@@ -163,8 +144,8 @@ class ExcelScenarioParser:
             app_data = {
                 'application_date': str(row.get('Application Date', '')),
                 'product_name': str(row.get('Control Product', '')),
-                'rate': float(row.get('Rate', 0)) if pd.notna(row.get('Rate')) else 0.0,
-                'rate_uom': str(row.get('Rate UOM', '')),
+                'rate': float(row.get('ConvertedRate', 0)) if pd.notna(row.get('ConvertedRate')) else 0.0,
+                'rate_uom': self._map_uom(row.get('ConvertedRateUOM', '')),
                 'application_method': str(row.get('Application Method', 'Broadcast')),
                 'area': float(row.get('Acres', 0)) if pd.notna(row.get('Acres')) else 0.0,
                 'product_type': ''  # Will be determined by product matching later
@@ -177,6 +158,22 @@ class ExcelScenarioParser:
         scenario.applications = applications
         
         return scenario
+    
+    def _map_uom(self, excel_uom):
+        """
+        Map Excel UOM format to application UOM format.
+        
+        Args:
+            excel_uom (str): UOM string from Excel file
+            
+        Returns:
+            str: Mapped UOM string for application use
+        """
+        # Strip whitespace and convert to uppercase for consistent lookup
+        excel_uom_clean = str(excel_uom).strip().upper()
+        
+        # Return mapped UOM if exists, otherwise return original (cleaned)
+        return self.uom_mapping.get(excel_uom_clean, excel_uom.strip())
     
     def _extract_crop_year(self, crop_year_str):
         """Extract numeric year from crop year string like 'CY24'."""

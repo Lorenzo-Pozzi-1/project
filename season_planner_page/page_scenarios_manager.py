@@ -318,6 +318,15 @@ class ScenariosManagerPage(QWidget):
             imported_scenario = dialog.get_imported_scenario()
             if imported_scenario:
                 self.add_new_scenario(imported_scenario)
+                
+                # Force UI update before showing message
+                self.update_ui_state()
+                
+                # Process any pending events to ensure UI is fully updated
+                from PySide6.QtCore import QCoreApplication
+                QCoreApplication.processEvents()
+                
+                # Now show the success message
                 QMessageBox.information(
                     self, "Import Successful",
                     f"Scenario '{imported_scenario.name}' has been imported successfully."

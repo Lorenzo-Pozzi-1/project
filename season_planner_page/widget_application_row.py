@@ -63,7 +63,7 @@ class ApplicationRowWidget(QFrame):
             self._create_product_selection(),
             self._create_app_params(),
             self._create_area_field(),
-            self._create_method_combo(),
+            self._create_method_field(),
             self._create_ai_groups_label(),
             self._create_field_eiq_label(),
             self._create_delete_button()
@@ -129,16 +129,13 @@ class ApplicationRowWidget(QFrame):
         
         return frame
     
-    def _create_method_combo(self):
-        """Create the application method combo box."""
-        self.method_combo = QComboBox()
-        methods = [
-            "Broadcast", "Band", "Foliar spray", "Soil incorporation",
-            "Seed treatment", "Spot treatment", "Chemigation"
-        ]
-        self.method_combo.addItems(methods)
-        self.method_combo.currentIndexChanged.connect(self.on_data_changed)
-        return self.method_combo
+    def _create_method_field(self):
+        """Create the application method text field."""
+        self.method_edit = QLineEdit()
+        self.method_edit.setPlaceholderText("Enter application method")
+        self.method_edit.setText("")
+        self.method_edit.textChanged.connect(self.on_data_changed)
+        return self.method_edit
     
     def _create_ai_groups_label(self):
         """Create the AI groups label."""
@@ -306,7 +303,7 @@ class ApplicationRowWidget(QFrame):
             "rate": params["rate"],
             "rate_uom": params["unit"],
             "area": self.area_spin.value(),
-            "application_method": self.method_combo.currentText(),
+            "application_method": self.method_edit.text(),
             "ai_groups": self.ai_groups_label.text().split(", ") if self.ai_groups_label.text() else [],
             "field_eiq": self.get_field_eiq()
         }
@@ -333,9 +330,7 @@ class ApplicationRowWidget(QFrame):
             
             # Set application method
             if "application_method" in data:
-                index = self.method_combo.findText(data["application_method"])
-                if index >= 0:
-                    self.method_combo.setCurrentIndex(index)
+                self.method_edit.setText(data["application_method"])
         
         # Now let the signals propagate normally
         self.calculate_field_eiq()
