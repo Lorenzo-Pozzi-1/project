@@ -1,7 +1,7 @@
 """
 Scenario Tab for Season Planner V2.
 
-Individual scenario tab using the new table-based applications interface.
+Final production version using the new table-based applications interface.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
@@ -17,8 +17,8 @@ class ScenarioTabPage(QWidget):
     """
     Tab page for displaying and editing a single scenario using the new table interface.
     
-    This replaces the old widget-based approach with a clean table view that provides
-    Excel-like editing capabilities.
+    This provides Excel-like editing capabilities with custom delegates for
+    different data types (products, UOMs, dates, etc.).
     """
     
     scenario_changed = Signal(object)  # Emitted when scenario data changes
@@ -56,7 +56,7 @@ class ScenarioTabPage(QWidget):
         applications_layout = QVBoxLayout()
         applications_layout.addWidget(QLabel("Applications", font=get_subtitle_font()))
         
-        # Applications Table Widget
+        # Applications Table Widget - NEW TABLE INTERFACE
         self.applications_table = ApplicationsTableWidget()
         applications_layout.addWidget(self.applications_table)
         
@@ -128,6 +128,4 @@ class ScenarioTabPage(QWidget):
     
     def get_scenario(self):
         """Get the current scenario object."""
-        # Ensure scenario is up to date before returning
-        self.update_scenario()
         return self.scenario

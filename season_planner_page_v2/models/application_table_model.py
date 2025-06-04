@@ -73,16 +73,20 @@ class ApplicationTableModel(QAbstractTableModel):
     
     def rowCount(self, parent=QModelIndex()) -> int:
         """Return the number of applications."""
+        if parent.isValid():
+            return 0  # No children for table items
         return len(self._applications)
     
     def columnCount(self, parent=QModelIndex()) -> int:
         """Return the number of columns."""
+        if parent.isValid():
+            return 0  # No children for table items
         return len(self.COLUMNS)
     
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.DisplayRole) -> Any:
         """Return header data for the table."""
         if role == Qt.DisplayRole:
-            if orientation == Qt.Horizontal:
+            if orientation == Qt.Horizontal and 0 <= section < len(self.COLUMNS):
                 return self.COLUMNS[section]
             elif orientation == Qt.Vertical:
                 return str(section + 1)
@@ -90,58 +94,68 @@ class ApplicationTableModel(QAbstractTableModel):
     
     def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> Any:
         """Return data for the given index and role."""
-        if not index.isValid() or index.row() >= len(self._applications):
+        if not index.isValid() or index.row() >= len(self._applications) or index.column() >= len(self.COLUMNS):
             return None
         
-        app = self._applications[index.row()]
-        col = index.column()
-        
-        if role == Qt.DisplayRole or role == Qt.EditRole:
-            return self._get_cell_data(app, col)
-        
-        elif role == Qt.BackgroundRole:
-            # Yellow background for validation errors
-            if (index.row(), col) in self._validation_errors:
-                return QColor("#fff3cd")  # Light yellow
-        
-        elif role == Qt.ToolTipRole:
-            # Show validation error as tooltip
-            error = self._validation_errors.get((index.row(), col))
-            if error:
-                return error
+        try:
+            app = self._applications[index.row()]
+            col = index.column()
+            
+            if role == Qt.DisplayRole or role == Qt.EditRole:
+                return self._get_cell_data(app, col)
+            
+            elif role == Qt.BackgroundRole:
+                # Yellow background for validation errors
+                if (index.row(), col) in self._validation_errors:
+                    return QColor("#fff3cd")  # Light yellow
+            
+            elif role == Qt.ToolTipRole:
+                # Show validation error as tooltip
+                error = self._validation_errors.get((index.row(), col))
+                if error:
+                    return error
+            
+        except Exception as e:
+            print(f"Error in data() method: {e}")
+            return None
         
         return None
     
     def setData(self, index: QModelIndex, value: Any, role: int = Qt.EditRole) -> bool:
         """Set data for the given index."""
-        if not index.isValid() or index.row() >= len(self._applications):
+        if not index.isValid() or index.row() >= len(self._applications) or index.column() >= len(self.COLUMNS):
             return False
         
         if role != Qt.EditRole:
             return False
         
-        app = self._applications[index.row()]
-        col = index.column()
-        
-        # Only allow editing of editable columns
-        if col not in self.EDITABLE_COLUMNS:
+        try:
+            app = self._applications[index.row()]
+            col = index.column()
+            
+            # Only allow editing of editable columns
+            if col not in self.EDITABLE_COLUMNS:
+                return False
+            
+            # Validate and set the data
+            if self._set_cell_data(app, col, value, index.row()):
+                # Emit dataChanged signal
+                self.dataChanged.emit(index, index, [Qt.DisplayRole, Qt.BackgroundRole, Qt.ToolTipRole])
+                
+                # Recalculate dependent fields if necessary
+                self._update_dependent_fields(app, col, index.row())
+                
+                return True
+                
+        except Exception as e:
+            print(f"Error in setData() method: {e}")
             return False
-        
-        # Validate and set the data
-        if self._set_cell_data(app, col, value, index.row()):
-            # Emit dataChanged signal
-            self.dataChanged.emit(index, index, [Qt.DisplayRole, Qt.BackgroundRole, Qt.ToolTipRole])
-            
-            # Recalculate dependent fields if necessary
-            self._update_dependent_fields(app, col, index.row())
-            
-            return True
         
         return False
     
     def flags(self, index: QModelIndex) -> Qt.ItemFlags:
         """Return flags for the given index."""
-        if not index.isValid():
+        if not index.isValid() or index.row() >= len(self._applications) or index.column() >= len(self.COLUMNS):
             return Qt.NoItemFlags
         
         flags = Qt.ItemIsEnabled | Qt.ItemIsSelectable
@@ -154,34 +168,71 @@ class ApplicationTableModel(QAbstractTableModel):
     
     def insertRows(self, position: int, rows: int, parent: QModelIndex = QModelIndex()) -> bool:
         """Insert new application rows."""
-        self.beginInsertRows(parent, position, position + rows - 1)
+        if parent.isValid():
+            return False
+            
+        if position < 0 or position > len(self._applications):
+            position = len(self._applications)
         
-        for i in range(rows):
-            app = Application(
-                area=self._field_area,
-                application_method="Ground"
-            )
-            self._applications.insert(position + i, app)
-        
-        self.endInsertRows()
-        self._emit_eiq_changed()
-        return True
+        try:
+            print(f"DEBUG: insertRows() called - position={position}, rows={rows}, current count={len(self._applications)}")
+            
+            self.beginInsertRows(parent, position, position + rows - 1)
+            
+            for i in range(rows):
+                app = Application(
+                    area=self._field_area,
+                    application_method="Ground"
+                )
+                print(f"DEBUG: Created application: {app}")
+                self._applications.insert(position + i, app)
+            
+            self.endInsertRows()
+            
+            print(f"DEBUG: insertRows() completed - new count={len(self._applications)}")
+            
+            # Emit EIQ changed signal
+            try:
+                self._emit_eiq_changed()
+            except Exception as e:
+                print(f"DEBUG: Error in _emit_eiq_changed: {e}")
+            
+            return True
+            
+        except Exception as e:
+            print(f"ERROR in insertRows(): {e}")
+            import traceback
+            traceback.print_exc()
+            return False
     
     def removeRows(self, position: int, rows: int, parent: QModelIndex = QModelIndex()) -> bool:
         """Remove application rows."""
+        if parent.isValid():
+            return False
+            
         if position < 0 or position >= len(self._applications):
             return False
         
-        self.beginRemoveRows(parent, position, position + rows - 1)
-        
-        for i in range(rows):
-            if position < len(self._applications):
-                self._applications.pop(position)
-        
-        self.endRemoveRows()
-        self._clear_validation_errors_for_removed_rows(position, rows)
-        self._emit_eiq_changed()
-        return True
+        try:
+            print(f"DEBUG: removeRows() called - position={position}, rows={rows}")
+            
+            self.beginRemoveRows(parent, position, position + rows - 1)
+            
+            for i in range(rows):
+                if position < len(self._applications):
+                    removed = self._applications.pop(position)
+                    print(f"DEBUG: Removed application: {removed}")
+            
+            self.endRemoveRows()
+            self._clear_validation_errors_for_removed_rows(position, rows)
+            self._emit_eiq_changed()
+            return True
+            
+        except Exception as e:
+            print(f"ERROR in removeRows(): {e}")
+            import traceback
+            traceback.print_exc()
+            return False
     
     # --- Public Interface ---
     
@@ -191,18 +242,35 @@ class ApplicationTableModel(QAbstractTableModel):
     
     def set_applications(self, applications: List[Application]):
         """Set the applications list."""
-        self.beginResetModel()
-        self._applications = applications.copy()
-        self._validation_errors.clear()
-        self.endResetModel()
-        self._recalculate_all_eiq()
-        self._emit_eiq_changed()
+        try:
+            print(f"DEBUG: set_applications() called with {len(applications)} applications")
+            self.beginResetModel()
+            self._applications = applications.copy()
+            self._validation_errors.clear()
+            self.endResetModel()
+            self._recalculate_all_eiq()
+            self._emit_eiq_changed()
+        except Exception as e:
+            print(f"ERROR in set_applications(): {e}")
+            import traceback
+            traceback.print_exc()
     
     def add_application(self) -> int:
         """Add a new application and return its row index."""
-        row = len(self._applications)
-        self.insertRows(row, 1)
-        return row
+        try:
+            row = len(self._applications)
+            print(f"DEBUG: add_application() - adding at row {row}")
+            success = self.insertRows(row, 1)
+            if success:
+                return row
+            else:
+                print("ERROR: insertRows() returned False")
+                return -1
+        except Exception as e:
+            print(f"ERROR in add_application(): {e}")
+            import traceback
+            traceback.print_exc()
+            return -1
     
     def remove_application(self, row: int) -> bool:
         """Remove application at the given row."""
@@ -215,32 +283,40 @@ class ApplicationTableModel(QAbstractTableModel):
     
     def get_total_field_eiq(self) -> float:
         """Calculate total Field EIQ for all applications."""
-        return sum(app.field_eiq or 0.0 for app in self._applications)
+        try:
+            return sum(app.field_eiq or 0.0 for app in self._applications)
+        except Exception as e:
+            print(f"ERROR in get_total_field_eiq(): {e}")
+            return 0.0
     
     # --- Private Methods ---
     
     def _get_cell_data(self, app: Application, col: int) -> Any:
         """Get data for a specific cell."""
-        if col == self.COL_APP_NUM:
-            # App number is the row index + 1
-            return self._applications.index(app) + 1
-        elif col == self.COL_DATE:
-            return app.application_date or ""
-        elif col == self.COL_PRODUCT:
-            return app.product_name or ""
-        elif col == self.COL_RATE:
-            return app.rate or 0.0
-        elif col == self.COL_RATE_UOM:
-            return app.rate_uom or ""
-        elif col == self.COL_AREA:
-            return app.area or 0.0
-        elif col == self.COL_METHOD:
-            return app.application_method or ""
-        elif col == self.COL_AI_GROUPS:
-            return ", ".join(app.ai_groups) if app.ai_groups else ""
-        elif col == self.COL_FIELD_EIQ:
-            return f"{app.field_eiq:.2f}" if app.field_eiq else "0.00"
-        return None
+        try:
+            if col == self.COL_APP_NUM:
+                # App number is the row index + 1
+                return self._applications.index(app) + 1
+            elif col == self.COL_DATE:
+                return app.application_date or ""
+            elif col == self.COL_PRODUCT:
+                return app.product_name or ""
+            elif col == self.COL_RATE:
+                return app.rate or 0.0
+            elif col == self.COL_RATE_UOM:
+                return app.rate_uom or ""
+            elif col == self.COL_AREA:
+                return app.area or 0.0
+            elif col == self.COL_METHOD:
+                return app.application_method or ""
+            elif col == self.COL_AI_GROUPS:
+                return ", ".join(app.ai_groups) if app.ai_groups else ""
+            elif col == self.COL_FIELD_EIQ:
+                return f"{app.field_eiq:.2f}" if app.field_eiq else "0.00"
+            return None
+        except Exception as e:
+            print(f"ERROR in _get_cell_data(): {e}")
+            return ""
     
     def _set_cell_data(self, app: Application, col: int, value: Any, row: int) -> bool:
         """Set data for a specific cell with validation."""
@@ -292,52 +368,60 @@ class ApplicationTableModel(QAbstractTableModel):
     
     def _update_dependent_fields(self, app: Application, changed_col: int, row: int):
         """Update fields that depend on the changed column."""
-        if changed_col == self.COL_PRODUCT:
-            # Product changed - update AI groups and recalculate EIQ
-            self._update_ai_groups(app, row)
-            self._calculate_field_eiq(app, row)
-        
-        elif changed_col in {self.COL_RATE, self.COL_RATE_UOM}:
-            # Rate parameters changed - recalculate EIQ
-            self._calculate_field_eiq(app, row)
-        
-        # Emit dataChanged for potentially affected columns
-        affected_cols = []
-        if changed_col == self.COL_PRODUCT:
-            affected_cols = [self.COL_AI_GROUPS, self.COL_FIELD_EIQ]
-        elif changed_col in {self.COL_RATE, self.COL_RATE_UOM}:
-            affected_cols = [self.COL_FIELD_EIQ]
-        
-        for col in affected_cols:
-            index = self.index(row, col)
-            self.dataChanged.emit(index, index, [Qt.DisplayRole, Qt.BackgroundRole, Qt.ToolTipRole])
+        try:
+            if changed_col == self.COL_PRODUCT:
+                # Product changed - update AI groups and recalculate EIQ
+                self._update_ai_groups(app, row)
+                self._calculate_field_eiq(app, row)
+            
+            elif changed_col in {self.COL_RATE, self.COL_RATE_UOM}:
+                # Rate parameters changed - recalculate EIQ
+                self._calculate_field_eiq(app, row)
+            
+            # Emit dataChanged for potentially affected columns
+            affected_cols = []
+            if changed_col == self.COL_PRODUCT:
+                affected_cols = [self.COL_AI_GROUPS, self.COL_FIELD_EIQ]
+            elif changed_col in {self.COL_RATE, self.COL_RATE_UOM}:
+                affected_cols = [self.COL_FIELD_EIQ]
+            
+            for col in affected_cols:
+                index = self.index(row, col)
+                self.dataChanged.emit(index, index, [Qt.DisplayRole, Qt.BackgroundRole, Qt.ToolTipRole])
+                
+        except Exception as e:
+            print(f"ERROR in _update_dependent_fields(): {e}")
     
     def _update_ai_groups(self, app: Application, row: int):
         """Update AI groups based on the selected product."""
-        if not app.product_name:
-            app.ai_groups = []
-            return
-        
-        product = self._find_product(app.product_name)
-        if product:
-            ai_groups = product.get_ai_groups()
-            app.ai_groups = [group for group in ai_groups if group]
-        else:
+        try:
+            if not app.product_name:
+                app.ai_groups = []
+                return
+            
+            product = self._find_product(app.product_name)
+            if product:
+                ai_groups = product.get_ai_groups()
+                app.ai_groups = [group for group in ai_groups if group]
+            else:
+                app.ai_groups = []
+        except Exception as e:
+            print(f"ERROR in _update_ai_groups(): {e}")
             app.ai_groups = []
     
     def _calculate_field_eiq(self, app: Application, row: int):
         """Calculate Field EIQ for a single application."""
-        if not app.product_name or not app.rate or not app.rate_uom:
-            app.field_eiq = 0.0
-            return
-        
-        product = self._find_product(app.product_name)
-        if not product:
-            app.field_eiq = 0.0
-            self._validation_errors[(row, self.COL_FIELD_EIQ)] = "Cannot calculate EIQ: product not found"
-            return
-        
         try:
+            if not app.product_name or not app.rate or not app.rate_uom:
+                app.field_eiq = 0.0
+                return
+            
+            product = self._find_product(app.product_name)
+            if not product:
+                app.field_eiq = 0.0
+                self._validation_errors[(row, self.COL_FIELD_EIQ)] = "Cannot calculate EIQ: product not found"
+                return
+            
             ai_data = product.get_ai_data()
             if not ai_data:
                 app.field_eiq = 0.0
@@ -356,49 +440,63 @@ class ApplicationTableModel(QAbstractTableModel):
             self._validation_errors.pop((row, self.COL_FIELD_EIQ), None)
             
         except Exception as e:
+            print(f"ERROR in _calculate_field_eiq(): {e}")
             app.field_eiq = 0.0
             self._validation_errors[(row, self.COL_FIELD_EIQ)] = f"EIQ calculation error: {e}"
     
     def _find_product(self, product_name: str):
         """Find a product by name in the filtered products list."""
-        if not product_name:
+        try:
+            if not product_name:
+                return None
+            
+            filtered_products = self._products_repo.get_filtered_products()
+            for product in filtered_products:
+                if product.product_name == product_name:
+                    return product
             return None
-        
-        filtered_products = self._products_repo.get_filtered_products()
-        for product in filtered_products:
-            if product.product_name == product_name:
-                return product
-        return None
+        except Exception as e:
+            print(f"ERROR in _find_product(): {e}")
+            return None
     
     def _recalculate_all_eiq(self):
         """Recalculate EIQ for all applications."""
-        for row, app in enumerate(self._applications):
-            self._update_ai_groups(app, row)
-            self._calculate_field_eiq(app, row)
+        try:
+            for row, app in enumerate(self._applications):
+                self._update_ai_groups(app, row)
+                self._calculate_field_eiq(app, row)
+        except Exception as e:
+            print(f"ERROR in _recalculate_all_eiq(): {e}")
     
     def _emit_eiq_changed(self):
         """Emit signal when total EIQ changes."""
-        total_eiq = self.get_total_field_eiq()
-        self.eiq_changed.emit(total_eiq)
+        try:
+            total_eiq = self.get_total_field_eiq()
+            self.eiq_changed.emit(total_eiq)
+        except Exception as e:
+            print(f"ERROR in _emit_eiq_changed(): {e}")
     
     def _clear_validation_errors_for_removed_rows(self, position: int, rows: int):
         """Clear validation errors for removed rows and adjust indices."""
-        # Remove errors for deleted rows
-        keys_to_remove = []
-        keys_to_update = {}
-        
-        for (row, col), error in self._validation_errors.items():
-            if position <= row < position + rows:
-                # Row was deleted
-                keys_to_remove.append((row, col))
-            elif row >= position + rows:
-                # Row index needs to be adjusted
-                keys_to_update[(row - rows, col)] = error
-                keys_to_remove.append((row, col))
-        
-        # Apply changes
-        for key in keys_to_remove:
-            self._validation_errors.pop(key, None)
-        
-        for key, error in keys_to_update.items():
-            self._validation_errors[key] = error
+        try:
+            # Remove errors for deleted rows
+            keys_to_remove = []
+            keys_to_update = {}
+            
+            for (row, col), error in self._validation_errors.items():
+                if position <= row < position + rows:
+                    # Row was deleted
+                    keys_to_remove.append((row, col))
+                elif row >= position + rows:
+                    # Row index needs to be adjusted
+                    keys_to_update[(row - rows, col)] = error
+                    keys_to_remove.append((row, col))
+            
+            # Apply changes
+            for key in keys_to_remove:
+                self._validation_errors.pop(key, None)
+            
+            for key, error in keys_to_update.items():
+                self._validation_errors[key] = error
+        except Exception as e:
+            print(f"ERROR in _clear_validation_errors_for_removed_rows(): {e}")

@@ -1,11 +1,11 @@
 """
-Date Delegate for Season Planner V2.
+FIXED Date Delegate for Season Planner V2.
 
-QStyledItemDelegate that provides date input with validation.
+Fixed version that plays nicely with other delegates.
 """
 
 from PySide6.QtWidgets import QStyledItemDelegate, QLineEdit
-from PySide6.QtCore import Qt, QEvent
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QValidator
 
 
@@ -19,7 +19,6 @@ class DateValidator(QValidator):
             return QValidator.Acceptable, input_str, pos
         
         # Allow any reasonable date-like string
-        # This is intentionally permissive since users might enter descriptions
         if len(input_str) <= 50:  # Reasonable length limit
             return QValidator.Acceptable, input_str, pos
         
@@ -28,10 +27,12 @@ class DateValidator(QValidator):
 
 class DateDelegate(QStyledItemDelegate):
     """
-    Delegate for date input.
+    FIXED Date delegate that doesn't interfere with other delegates.
     
-    Provides a QLineEdit with placeholder text and basic validation.
-    Allows flexible date formats and descriptive text.
+    Key fixes:
+    - Proper editor lifecycle management
+    - No custom event handling that might interfere
+    - Simplified validation
     """
     
     def __init__(self, parent=None):
@@ -41,21 +42,30 @@ class DateDelegate(QStyledItemDelegate):
     def createEditor(self, parent, option, index):
         """Create a QLineEdit editor for date input."""
         editor = QLineEdit(parent)
-        editor.setPlaceholderText("Enter date or description (e.g., '24/05/2024' or 'Pre-planting')")
+        editor.setPlaceholderText("Enter date (e.g., '24/05/2024')")
         
         # Set validator
         validator = DateValidator()
         editor.setValidator(validator)
         
+        # IMPORTANT: Don't install event filters or custom event handling
+        # that might interfere with other delegates
+        
         return editor
     
     def setEditorData(self, editor, index):
         """Set the current data in the editor."""
+        if not isinstance(editor, QLineEdit):
+            return
+            
         value = index.data(Qt.EditRole) or ""
         editor.setText(str(value))
     
     def setModelData(self, editor, model, index):
         """Set the model data from the editor."""
+        if not isinstance(editor, QLineEdit):
+            return
+            
         value = editor.text().strip()
         model.setData(index, value, Qt.EditRole)
     
@@ -68,3 +78,5 @@ class DateDelegate(QStyledItemDelegate):
         if value is None or str(value).strip() == "":
             return ""
         return str(value)
+    
+    # REMOVED: Custom event handling that might interfere with other delegates

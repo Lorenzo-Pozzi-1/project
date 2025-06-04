@@ -1,7 +1,7 @@
 """
-Numeric Delegate for Season Planner V2.
+FIXED Numeric Delegate for Season Planner V2.
 
-QStyledItemDelegate that provides numeric input with appropriate ranges and validation.
+Fixed version that doesn't interfere with other delegates.
 """
 
 from PySide6.QtWidgets import QStyledItemDelegate, QDoubleSpinBox
@@ -10,23 +10,16 @@ from PySide6.QtCore import Qt
 
 class NumericDelegate(QStyledItemDelegate):
     """
-    Delegate for numeric input with validation.
+    FIXED Numeric delegate that plays nicely with other delegates.
     
-    Provides QDoubleSpinBox editors with appropriate ranges for different
-    types of numeric data (rates, areas, etc.).
+    Key fixes:
+    - Simplified editor creation
+    - No complex signal handling
+    - Proper focus management
     """
     
     def __init__(self, parent=None, min_value=0.0, max_value=9999.99, decimals=2, suffix=""):
-        """
-        Initialize the numeric delegate.
-        
-        Args:
-            parent: Parent widget
-            min_value: Minimum allowed value
-            max_value: Maximum allowed value
-            decimals: Number of decimal places
-            suffix: Optional suffix to display (e.g., "kg")
-        """
+        """Initialize the numeric delegate."""
         super().__init__(parent)
         self.min_value = min_value
         self.max_value = max_value
@@ -42,7 +35,7 @@ class NumericDelegate(QStyledItemDelegate):
         if self.suffix:
             editor.setSuffix(f" {self.suffix}")
         
-        # Set some reasonable step sizes based on the range
+        # Set reasonable step sizes
         if self.max_value <= 10:
             editor.setSingleStep(0.1)
         elif self.max_value <= 100:
@@ -50,10 +43,16 @@ class NumericDelegate(QStyledItemDelegate):
         else:
             editor.setSingleStep(10.0)
         
+        # IMPORTANT: Set focus policy to avoid conflicts
+        editor.setFocusPolicy(Qt.StrongFocus)
+        
         return editor
     
     def setEditorData(self, editor, index):
         """Set the current data in the editor."""
+        if not isinstance(editor, QDoubleSpinBox):
+            return
+            
         value = index.data(Qt.EditRole)
         if value is not None:
             try:
@@ -65,6 +64,10 @@ class NumericDelegate(QStyledItemDelegate):
     
     def setModelData(self, editor, model, index):
         """Set the model data from the editor."""
+        if not isinstance(editor, QDoubleSpinBox):
+            return
+            
+        # IMPORTANT: Explicitly interpret text before getting value
         editor.interpretText()
         value = editor.value()
         model.setData(index, value, Qt.EditRole)
@@ -94,7 +97,7 @@ class NumericDelegate(QStyledItemDelegate):
 
 
 class RateDelegate(NumericDelegate):
-    """Specialized numeric delegate for application rates."""
+    """Fixed rate delegate."""
     
     def __init__(self, parent=None):
         super().__init__(
@@ -107,7 +110,7 @@ class RateDelegate(NumericDelegate):
 
 
 class AreaDelegate(NumericDelegate):
-    """Specialized numeric delegate for areas."""
+    """Fixed area delegate."""
     
     def __init__(self, parent=None):
         super().__init__(

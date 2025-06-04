@@ -1,32 +1,31 @@
 """
 Applications Table Widget for Season Planner V2.
 
-Main table widget that combines QTableView with ApplicationTableModel
-and custom delegates to provide Excel-like editing experience.
+Final production version with sequential delegate assignment to avoid Qt conflicts.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableView, QPushButton, QHeaderView, QAbstractItemView
-from PySide6.QtCore import Qt, Signal, QItemSelectionModel
+from PySide6.QtCore import Qt, Signal, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
 from typing import List
 
 from common import create_button, GENERIC_TABLE_STYLE
 from data import Application
 from ..models.application_table_model import ApplicationTableModel
+from ..delegates.date_delegate import DateDelegate
+from ..delegates.numeric_delegate import RateDelegate, AreaDelegate
+from ..delegates.method_delegate import MethodDelegate
 from ..delegates.product_delegate import ProductDelegate
 from ..delegates.uom_delegate import UOMDelegate
-from ..delegates.numeric_delegate import RateDelegate, AreaDelegate
-from ..delegates.date_delegate import DateDelegate
-from ..delegates.method_delegate import MethodDelegate
 
 
 class ApplicationsTableWidget(QWidget):
     """
     Main applications table widget with Excel-like editing capabilities.
     
+    Uses sequential delegate assignment to avoid Qt initialization conflicts.
     Combines QTableView with ApplicationTableModel and custom delegates
-    to provide a clean, professional table interface for managing
-    pesticide applications.
+    to provide a clean, professional table interface.
     """
     
     # Signals
@@ -45,8 +44,10 @@ class ApplicationsTableWidget(QWidget):
         self.model.rowsRemoved.connect(lambda: self.applications_changed.emit())
         
         self.setup_ui()
-        self.setup_delegates()
         self.setup_shortcuts()
+        
+        # IMPORTANT: Set up delegates after widget initialization to avoid Qt conflicts
+        QTimer.singleShot(100, self.setup_delegates_sequential)
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -101,7 +102,7 @@ class ApplicationsTableWidget(QWidget):
         vertical_header.setVisible(False)  # Hide row numbers (we have App # column)
         
         # Enable sorting
-        self.table_view.setSortingEnabled(False)  # Disable for now to maintain order
+        self.table_view.setSortingEnabled(False)  # Disable to maintain order
         
         # Configure editing
         self.table_view.setEditTriggers(
@@ -139,30 +140,53 @@ class ApplicationsTableWidget(QWidget):
         # Make product column stretch to fill available space
         header.setSectionResizeMode(self.model.COL_PRODUCT, QHeaderView.Stretch)
     
-    def setup_delegates(self):
-        """Set up custom delegates for different column types."""
-        # Date delegate
-        date_delegate = DateDelegate()
-        self.table_view.setItemDelegateForColumn(self.model.COL_DATE, date_delegate)
+    def setup_delegates_sequential(self):
+        """
+        Set up delegates sequentially to avoid Qt initialization conflicts.
         
-        # Product selection delegate
-        product_delegate = ProductDelegate()
-        self.table_view.setItemDelegateForColumn(self.model.COL_PRODUCT, product_delegate)
-        
-        # Numeric delegates
-        rate_delegate = RateDelegate()
-        self.table_view.setItemDelegateForColumn(self.model.COL_RATE, rate_delegate)
-        
-        # UOM selection delegate for rate UOM
-        rate_uom_delegate = UOMDelegate(uom_type="application_rate")
-        self.table_view.setItemDelegateForColumn(self.model.COL_RATE_UOM, rate_uom_delegate)
-        
-        area_delegate = AreaDelegate()
-        self.table_view.setItemDelegateForColumn(self.model.COL_AREA, area_delegate)
-        
-        # Method delegate
-        method_delegate = MethodDelegate()
-        self.table_view.setItemDelegateForColumn(self.model.COL_METHOD, method_delegate)
+        This method assigns delegates one by one with small delays to prevent
+        the crashes that occur when multiple delegates are assigned simultaneously.
+        """
+        try:
+            # Phase 1: Simple text-based delegates
+            date_delegate = DateDelegate(self)
+            self.table_view.setItemDelegateForColumn(self.model.COL_DATE, date_delegate)
+            
+            # Phase 2: Numeric delegates with small delay
+            QTimer.singleShot(25, self._setup_numeric_delegates)
+            
+        except Exception as e:
+            print(f"Error in setup_delegates_sequential(): {e}")
+    
+    def _setup_numeric_delegates(self):
+        """Set up numeric delegates."""
+        try:
+            rate_delegate = RateDelegate(self)
+            self.table_view.setItemDelegateForColumn(self.model.COL_RATE, rate_delegate)
+            
+            area_delegate = AreaDelegate(self)
+            self.table_view.setItemDelegateForColumn(self.model.COL_AREA, area_delegate)
+            
+            # Phase 3: Complex delegates with delay
+            QTimer.singleShot(25, self._setup_complex_delegates)
+            
+        except Exception as e:
+            print(f"Error in _setup_numeric_delegates(): {e}")
+    
+    def _setup_complex_delegates(self):
+        """Set up complex delegates (dialogs, combos)."""
+        try:
+            method_delegate = MethodDelegate(self)
+            self.table_view.setItemDelegateForColumn(self.model.COL_METHOD, method_delegate)
+            
+            product_delegate = ProductDelegate(self)
+            self.table_view.setItemDelegateForColumn(self.model.COL_PRODUCT, product_delegate)
+            
+            uom_delegate = UOMDelegate(self, uom_type="application_rate")
+            self.table_view.setItemDelegateForColumn(self.model.COL_RATE_UOM, uom_delegate)
+            
+        except Exception as e:
+            print(f"Error in _setup_complex_delegates(): {e}")
     
     def setup_shortcuts(self):
         """Set up keyboard shortcuts."""
@@ -191,9 +215,10 @@ class ApplicationsTableWidget(QWidget):
         row = self.model.add_application()
         
         # Select the new row
-        new_index = self.model.index(row, self.model.COL_DATE)
-        self.table_view.setCurrentIndex(new_index)
-        self.table_view.selectRow(row)
+        if row >= 0:
+            new_index = self.model.index(row, self.model.COL_DATE)
+            self.table_view.setCurrentIndex(new_index)
+            self.table_view.selectRow(row)
         
         return row
     
