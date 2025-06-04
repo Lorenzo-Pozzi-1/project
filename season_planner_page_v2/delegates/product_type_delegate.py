@@ -1,53 +1,59 @@
 """
-Method Delegate for Season Planner V2.
+Product Type Delegate for Season Planner V2.
 
-QStyledItemDelegate that provides application method input with common suggestions.
+QStyledItemDelegate that provides product type selection with common pesticide types.
 """
 
 from PySide6.QtWidgets import QStyledItemDelegate, QComboBox
 from PySide6.QtCore import Qt
+from data import ProductRepository
 
 
-class MethodDelegate(QStyledItemDelegate):
+class ProductTypeDelegate(QStyledItemDelegate):
     """
-    Delegate for application method input.
+    Delegate for product type input.
     
-    Provides a QComboBox with common application methods but allows
-    custom text entry for flexibility.
+    Provides a QComboBox with common product types from the database
+    but allows custom text entry for flexibility.
     """
-    
-    # Common application methods
-    COMMON_METHODS = [
-        "",  # Empty option
-        "Ground",
-        "Aerial", 
-        "Broadcast",
-        "Band",
-        "Foliar",
-        "Seed Treatment",
-        "In-Furrow",
-        "Chemigation",
-        "Fertigation",
-        "Soil Incorporation"
-    ]
     
     def __init__(self, parent=None):
-        """Initialize the method delegate."""
+        """Initialize the product type delegate."""
         super().__init__(parent)
+        self._product_types = []
+        self._load_product_types()
+    
+    def _load_product_types(self):
+        """Load unique product types from repository."""
+        try:
+            products_repo = ProductRepository.get_instance()
+            filtered_products = products_repo.get_filtered_products()
+            
+            # Extract unique product types
+            types = set()
+            for product in filtered_products:
+                if product.product_type:
+                    types.add(product.product_type)
+            
+            self._product_types = sorted(list(types))
+        except Exception as e:
+            print(f"Error loading product types: {e}")
+            self._product_types = []
     
     def createEditor(self, parent, option, index):
-        """Create a QComboBox editor with common methods."""
+        """Create a QComboBox editor with common product types."""
         editor = QComboBox(parent)
         
-        # Make it editable so users can enter custom methods
+        # Make it editable so users can enter custom types
         editor.setEditable(True)
         editor.setInsertPolicy(QComboBox.NoInsert)
         
-        # Add common methods
-        editor.addItems(self.COMMON_METHODS)
+        # Add empty option first, then product types
+        editor.addItem("")  # Empty option
+        editor.addItems(self._product_types)
         
         # Set placeholder text on the line edit
-        editor.lineEdit().setPlaceholderText("Select or enter application method")
+        editor.lineEdit().setPlaceholderText("Select or enter product type")
         
         # DON'T show popup here - do it in updateEditorGeometry after geometry is set
         
@@ -55,6 +61,9 @@ class MethodDelegate(QStyledItemDelegate):
     
     def setEditorData(self, editor, index):
         """Set the current data in the editor."""
+        if not isinstance(editor, QComboBox):
+            return
+            
         value = index.data(Qt.EditRole) or ""
         
         # Try to find the value in the combo box
@@ -67,6 +76,9 @@ class MethodDelegate(QStyledItemDelegate):
     
     def setModelData(self, editor, model, index):
         """Set the model data from the editor."""
+        if not isinstance(editor, QComboBox):
+            return
+            
         value = editor.currentText().strip()
         model.setData(index, value, Qt.EditRole)
     
@@ -86,3 +98,7 @@ class MethodDelegate(QStyledItemDelegate):
         if value is None or str(value).strip() == "":
             return ""
         return str(value)
+    
+    def refresh_product_types(self):
+        """Refresh the product types list from repository."""
+        self._load_product_types()

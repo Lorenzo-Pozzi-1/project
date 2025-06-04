@@ -28,7 +28,8 @@ class ApplicationTableModel(QAbstractTableModel):
     COLUMNS = [
         "App #",
         "Date", 
-        "Product",
+        "Product Type",
+        "Product Name",
         "Rate",
         "Rate UOM",
         "Area",
@@ -40,16 +41,17 @@ class ApplicationTableModel(QAbstractTableModel):
     # Column indices for easy reference
     COL_APP_NUM = 0
     COL_DATE = 1
-    COL_PRODUCT = 2
-    COL_RATE = 3
-    COL_RATE_UOM = 4
-    COL_AREA = 5
-    COL_METHOD = 6
-    COL_AI_GROUPS = 7
-    COL_FIELD_EIQ = 8
+    COL_PRODUCT_TYPE = 2
+    COL_PRODUCT_NAME = 3
+    COL_RATE = 4
+    COL_RATE_UOM = 5
+    COL_AREA = 6
+    COL_METHOD = 7
+    COL_AI_GROUPS = 8
+    COL_FIELD_EIQ = 9
     
     # Editable columns
-    EDITABLE_COLUMNS = {COL_DATE, COL_PRODUCT, COL_RATE, COL_RATE_UOM, COL_AREA, COL_METHOD}
+    EDITABLE_COLUMNS = {COL_DATE, COL_PRODUCT_TYPE, COL_PRODUCT_NAME, COL_RATE, COL_RATE_UOM, COL_AREA, COL_METHOD}
     
     def __init__(self, parent=None):
         """Initialize the application table model."""
@@ -299,7 +301,9 @@ class ApplicationTableModel(QAbstractTableModel):
                 return self._applications.index(app) + 1
             elif col == self.COL_DATE:
                 return app.application_date or ""
-            elif col == self.COL_PRODUCT:
+            elif col == self.COL_PRODUCT_TYPE:
+                return app.product_type or ""
+            elif col == self.COL_PRODUCT_NAME:
                 return app.product_name or ""
             elif col == self.COL_RATE:
                 return app.rate or 0.0
@@ -317,7 +321,7 @@ class ApplicationTableModel(QAbstractTableModel):
         except Exception as e:
             print(f"ERROR in _get_cell_data(): {e}")
             return ""
-    
+
     def _set_cell_data(self, app: Application, col: int, value: Any, row: int) -> bool:
         """Set data for a specific cell with validation."""
         # Clear any existing validation error for this cell
@@ -327,18 +331,28 @@ class ApplicationTableModel(QAbstractTableModel):
             if col == self.COL_DATE:
                 app.application_date = str(value) if value else ""
             
-            elif col == self.COL_PRODUCT:
+            elif col == self.COL_PRODUCT_TYPE:  # NEW
+                app.product_type = str(value) if value else ""
+            
+            elif col == self.COL_PRODUCT_NAME:
                 product_name = str(value) if value else ""
                 app.product_name = product_name
                 
-                # Auto-populate product type if product is found
+                # Auto-populate product type if product is found and type not manually set
                 if product_name:
                     product = self._find_product(product_name)
                     if product:
-                        app.product_type = product.product_type
+                        # Only auto-set product type if it's currently empty
+                        if not app.product_type:
+                            app.product_type = product.product_type
                     else:
-                        app.product_type = "Unknown"
+                        # Only auto-set to "Unknown" if type is currently empty
+                        if not app.product_type:
+                            app.product_type = "Unknown"
                         self._validation_errors[(row, col)] = "Product not found in database"
+                
+                # Note: Rate/UOM auto-population is handled by auto_populate_from_product()
+                # which is called from the ProductDelegate after this method completes
             
             elif col == self.COL_RATE:
                 rate = float(value) if value else 0.0
@@ -365,14 +379,19 @@ class ApplicationTableModel(QAbstractTableModel):
         except (ValueError, TypeError) as e:
             self._validation_errors[(row, col)] = f"Invalid value: {e}"
             return False
-    
+
     def _update_dependent_fields(self, app: Application, changed_col: int, row: int):
         """Update fields that depend on the changed column."""
         try:
-            if changed_col == self.COL_PRODUCT:
+            if changed_col == self.COL_PRODUCT_NAME:
                 # Product changed - update AI groups and recalculate EIQ
+                # Also emit signal for product type column in case it was auto-updated
                 self._update_ai_groups(app, row)
                 self._calculate_field_eiq(app, row)
+                
+                # Emit dataChanged for product type in case it was auto-updated
+                type_index = self.index(row, self.COL_PRODUCT_TYPE)
+                self.dataChanged.emit(type_index, type_index, [Qt.DisplayRole])
             
             elif changed_col in {self.COL_RATE, self.COL_RATE_UOM}:
                 # Rate parameters changed - recalculate EIQ
@@ -380,7 +399,7 @@ class ApplicationTableModel(QAbstractTableModel):
             
             # Emit dataChanged for potentially affected columns
             affected_cols = []
-            if changed_col == self.COL_PRODUCT:
+            if changed_col == self.COL_PRODUCT_NAME:
                 affected_cols = [self.COL_AI_GROUPS, self.COL_FIELD_EIQ]
             elif changed_col in {self.COL_RATE, self.COL_RATE_UOM}:
                 affected_cols = [self.COL_FIELD_EIQ]
@@ -500,3 +519,59 @@ class ApplicationTableModel(QAbstractTableModel):
                 self._validation_errors[key] = error
         except Exception as e:
             print(f"ERROR in _clear_validation_errors_for_removed_rows(): {e}")
+
+    def auto_populate_from_product(self, row: int, product_name: str):
+        """
+        Auto-populate application rate and UOM from product label data.
+        
+        Args:
+            row (int): Row index of the application
+            product_name (str): Name of the selected product
+        """
+        try:
+            if row >= len(self._applications):
+                return
+            
+            app = self._applications[row]
+            product = self._find_product(product_name)
+            
+            if not product:
+                return
+            
+            # Check if rate and UOM are currently empty/default before auto-populating
+            current_rate = app.rate or 0.0
+            current_uom = app.rate_uom or ""
+            
+            should_populate_rate = current_rate <= 0.0
+            should_populate_uom = not current_uom
+            
+            # Determine the best rate to use from product label data
+            if should_populate_rate and (product.label_maximum_rate is not None or product.label_minimum_rate is not None):
+                # Use maximum rate if available, otherwise minimum rate
+                best_rate = (product.label_maximum_rate if product.label_maximum_rate is not None 
+                           else product.label_minimum_rate)
+                
+                if best_rate and best_rate > 0:
+                    app.rate = float(best_rate)
+                    
+                    # Emit dataChanged for rate column
+                    rate_index = self.index(row, self.COL_RATE)
+                    self.dataChanged.emit(rate_index, rate_index, [Qt.DisplayRole])
+            
+            # Auto-populate UOM if available and current UOM is empty
+            if should_populate_uom and product.rate_uom:
+                app.rate_uom = product.rate_uom
+                
+                # Emit dataChanged for UOM column
+                uom_index = self.index(row, self.COL_RATE_UOM)
+                self.dataChanged.emit(uom_index, uom_index, [Qt.DisplayRole])
+            
+            # Recalculate EIQ since rate data may have changed
+            self._calculate_field_eiq(app, row)
+            
+            # Emit dataChanged for EIQ column
+            eiq_index = self.index(row, self.COL_FIELD_EIQ)
+            self.dataChanged.emit(eiq_index, eiq_index, [Qt.DisplayRole])
+            
+        except Exception as e:
+            print(f"ERROR in auto_populate_from_product(): {e}")

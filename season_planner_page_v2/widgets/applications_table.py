@@ -15,7 +15,8 @@ from ..models.application_table_model import ApplicationTableModel
 from ..delegates.date_delegate import DateDelegate
 from ..delegates.numeric_delegate import RateDelegate, AreaDelegate
 from ..delegates.method_delegate import MethodDelegate
-from ..delegates.product_delegate import ProductDelegate
+from ..delegates.product_name_delegate import ProductNameDelegate
+from ..delegates.product_type_delegate import ProductTypeDelegate
 from ..delegates.uom_delegate import UOMDelegate
 
 
@@ -123,22 +124,23 @@ class ApplicationsTableWidget(QWidget):
         
         # Column widths (in pixels)
         column_widths = {
-            self.model.COL_APP_NUM: 60,    # App #
-            self.model.COL_DATE: 100,      # Date
-            self.model.COL_PRODUCT: 200,   # Product (widest)
-            self.model.COL_RATE: 80,       # Rate
-            self.model.COL_RATE_UOM: 100,  # Rate UOM
-            self.model.COL_AREA: 80,       # Area
-            self.model.COL_METHOD: 120,    # Method
-            self.model.COL_AI_GROUPS: 150, # AI Groups
-            self.model.COL_FIELD_EIQ: 80   # Field EIQ
+            self.model.COL_APP_NUM: 60,       # App #
+            self.model.COL_DATE: 100,         # Date
+            self.model.COL_PRODUCT_TYPE: 120, # Product Type
+            self.model.COL_PRODUCT_NAME: 200,      # Product
+            self.model.COL_RATE: 80,          # Rate
+            self.model.COL_RATE_UOM: 100,     # Rate UOM
+            self.model.COL_AREA: 80,          # Area
+            self.model.COL_METHOD: 120,       # Method
+            self.model.COL_AI_GROUPS: 150,    # AI Groups
+            self.model.COL_FIELD_EIQ: 80      # Field EIQ
         }
         
         for col, width in column_widths.items():
             header.resizeSection(col, width)
         
         # Make product column stretch to fill available space
-        header.setSectionResizeMode(self.model.COL_PRODUCT, QHeaderView.Stretch)
+        header.setSectionResizeMode(self.model.COL_PRODUCT_NAME, QHeaderView.Stretch)
     
     def setup_delegates_sequential(self):
         """
@@ -176,18 +178,39 @@ class ApplicationsTableWidget(QWidget):
     def _setup_complex_delegates(self):
         """Set up complex delegates (dialogs, combos)."""
         try:
+            # Import delegates
+            from ..delegates.product_type_delegate import ProductTypeDelegate
+            
+            # IMPORTANT: Use the model's column constants to ensure correct assignment
+            print(f"DEBUG: Setting up delegates with columns:")
+            print(f"  COL_PRODUCT_TYPE = {self.model.COL_PRODUCT_TYPE}")
+            print(f"  COL_PRODUCT_NAME = {self.model.COL_PRODUCT_NAME}")
+            print(f"  COL_METHOD = {self.model.COL_METHOD}")
+            print(f"  COL_RATE_UOM = {self.model.COL_RATE_UOM}")
+            
+            # Product type delegate (column 2)
+            product_type_delegate = ProductTypeDelegate(self)
+            self.table_view.setItemDelegateForColumn(self.model.COL_PRODUCT_TYPE, product_type_delegate)
+            
+            # Method delegate (column 7)
             method_delegate = MethodDelegate(self)
             self.table_view.setItemDelegateForColumn(self.model.COL_METHOD, method_delegate)
             
-            product_delegate = ProductDelegate(self)
-            self.table_view.setItemDelegateForColumn(self.model.COL_PRODUCT, product_delegate)
+            # Product delegate (column 3) - this will auto-populate rate/UOM
+            product_name_delegate = ProductNameDelegate(self)
+            self.table_view.setItemDelegateForColumn(self.model.COL_PRODUCT_NAME, product_name_delegate)
             
+            # UOM delegate (column 5)
             uom_delegate = UOMDelegate(self, uom_type="application_rate")
             self.table_view.setItemDelegateForColumn(self.model.COL_RATE_UOM, uom_delegate)
             
+            print("DEBUG: Delegates setup complete")
+            
         except Exception as e:
             print(f"Error in _setup_complex_delegates(): {e}")
-    
+            import traceback
+            traceback.print_exc()
+
     def setup_shortcuts(self):
         """Set up keyboard shortcuts."""
         # F2 to edit current cell
@@ -251,6 +274,25 @@ class ApplicationsTableWidget(QWidget):
     def refresh_product_data(self):
         """Refresh product data when filtered products change."""
         # Force recalculation of all EIQ values
+        self.model._recalculate_all_eiq()
+        
+        # Emit data changed for all cells to refresh display
+        if self.model.rowCount() > 0:
+            top_left = self.model.index(0, 0)
+            bottom_right = self.model.index(
+                self.model.rowCount() - 1, 
+                self.model.columnCount() - 1
+            )
+            self.model.dataChanged.emit(top_left, bottom_right)
+
+    def refresh_product_data(self):
+        """Refresh product data when filtered products change."""
+        # Refresh product data in the ProductNameDelegate
+        product_name_delegate = self.table_view.itemDelegateForColumn(self.model.COL_PRODUCT_NAME)
+        if hasattr(product_name_delegate, 'refresh_products'):
+            product_name_delegate.refresh_products()
+        
+        # Force recalculation of all EIQ values since product availability may have changed
         self.model._recalculate_all_eiq()
         
         # Emit data changed for all cells to refresh display
