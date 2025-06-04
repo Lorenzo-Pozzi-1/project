@@ -4,13 +4,13 @@ Scenario Tab for Season Planner V2.
 Final production version using the new table-based applications interface.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PySide6.QtCore import Signal
 
-from common import create_button, ContentFrame, get_margin_large, get_spacing_medium, get_subtitle_font
+from common import ContentFrame, get_margin_large, get_spacing_medium, get_subtitle_font
 from season_planner_page_v2.widgets.metadata_widget import SeasonPlanMetadataWidget
 from season_planner_page_v2.widgets.applications_table import ApplicationsTableWidget
-from data import Scenario, Application, ProductRepository
+from data import Scenario, ProductRepository
 
 
 class ScenarioTabPage(QWidget):

@@ -7,7 +7,7 @@ EIQ calculations and validation.
 
 from PySide6.QtCore import QAbstractTableModel, Qt, QModelIndex, Signal
 from PySide6.QtGui import QColor
-from typing import List, Any, Optional
+from typing import List, Any
 from data import Application, ProductRepository
 from common import eiq_calculator, get_config
 

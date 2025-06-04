@@ -6,7 +6,6 @@ using the new table-based interface.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog, QDialog
-from PySide6.QtCore import Signal
 
 from common import (
     ContentFrame, HeaderWithHomeButton, calculation_tracer, create_button, 

@@ -4,9 +4,8 @@ Applications Table Widget for Season Planner V2.
 Final production version with sequential delegate assignment to avoid Qt conflicts.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableView, QPushButton, QHeaderView, QAbstractItemView
-from PySide6.QtCore import Qt, Signal, QTimer
-from PySide6.QtGui import QKeySequence, QShortcut
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableView, QHeaderView, QAbstractItemView
+from PySide6.QtCore import Signal, QTimer
 from typing import List
 
 from common import create_button, GENERIC_TABLE_STYLE
@@ -16,7 +15,6 @@ from ..delegates.date_delegate import DateDelegate
 from ..delegates.numeric_delegate import RateDelegate, AreaDelegate
 from ..delegates.method_delegate import MethodDelegate
 from ..delegates.product_name_delegate import ProductNameDelegate
-from ..delegates.product_type_delegate import ProductTypeDelegate
 from ..delegates.uom_delegate import UOMDelegate
 
 

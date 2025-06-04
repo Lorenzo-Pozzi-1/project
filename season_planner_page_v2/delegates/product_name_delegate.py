@@ -6,8 +6,7 @@ with autocomplete functionality, filtered by product type when specified.
 """
 
 from PySide6.QtWidgets import QStyledItemDelegate, QComboBox, QCompleter
-from PySide6.QtCore import Qt, QStringListModel
-from PySide6.QtGui import QStandardItemModel, QStandardItem
+from PySide6.QtCore import Qt
 from data import ProductRepository
 
 
