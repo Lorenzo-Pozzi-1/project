@@ -3,7 +3,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QFrame, QLabel, QHBoxLayout
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor
-from common import ContentFrame, GENERIC_TABLE_STYLE, WHITE, ALTERNATE_ROW_COLOR, get_config
+from common import ContentFrame, GENERIC_TABLE_STYLE, WHITE, get_config, LIGHT_GRAY
 from season_planner_page.widget_application_row import ApplicationRowWidget
 
 
@@ -120,7 +120,7 @@ class ApplicationsTableContainer(QWidget):
         """Apply alternating background colors to all rows."""        
         for i, row in enumerate(self.application_rows):
             if i % 2 == 1:  # Odd rows
-                row.setStyleSheet(f"background-color: {ALTERNATE_ROW_COLOR.name()};")
+                row.setStyleSheet(f"background-color: {QColor(LIGHT_GRAY).name()};")
             else:  # Even rows
                 row.setStyleSheet(f"background-color: {QColor(WHITE).name()};")
     

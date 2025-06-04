@@ -12,8 +12,10 @@ from common import CalculationTraceDialog, load_config, create_button, YELLOW_BA
 from data import ProductRepository
 from main_page.page_home import HomePage
 from products_page import ProductsPage
-from season_planner_page import ScenariosManagerPage
 from eiq_calculator_page import EiqCalculatorPage
+
+#from season_planner_page import ScenariosManagerPage
+from season_planner_page_v2 import ScenariosManagerPage
 
 class MainWindow(QMainWindow):
     """
@@ -66,7 +68,7 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.products_page)
         
         # Create and add the scenarios manager page (index 2)
-        self.scenarios_manager_page = ScenariosManagerPage(self)
+        self.scenarios_manager_page = ScenariosManagerPage(self) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         self.stacked_widget.addWidget(self.scenarios_manager_page)
         
         # Create and add the EIQ calculator page (index 3)
