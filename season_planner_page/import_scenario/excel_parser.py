@@ -1,28 +1,31 @@
 """
 Excel parser for scenario import.
 
-Simple parser that reads Excel files and extracts application data.
+Enhanced parser that validates product names against the application's product repository.
 """
 
 import os
 import pandas as pd
-from data import Scenario, Application
+from data import Scenario, Application, ProductRepository
 
 
 class ExcelScenarioParser:
-    """Parser for Excel scenario files."""
+    """Parser for Excel scenario files with product validation."""
     
     def __init__(self):
         """Initialize the parser."""
         # UOM mapping from Excel format to application format
         self.uom_mapping = {
             "GHA": "g/ha",
-            "LHA": "l/ha",
+            "LHA": "l/ha", 
             "KGHA": "kg/ha",
             "MLHA": "ml/ha",
             "LAC": "l/acre"
             # Add more mappings as needed
         }
+        
+        # Get product repository instance
+        self.products_repo = ProductRepository.get_instance()
     
     def parse_file(self, file_path):
         """
@@ -47,8 +50,11 @@ class ExcelScenarioParser:
             # Clean the dataframe
             applications_df = self._clean_dataframe(applications_df)
             
+            # Validate and match products
+            product_validation = self._validate_products(applications_df)
+            
             # Create scenario from the data
-            scenario = self._create_scenario(applications_df, file_path)
+            scenario = self._create_scenario(applications_df, file_path, product_validation)
             
             # Prepare preview info
             preview_info = {
@@ -61,13 +67,62 @@ class ExcelScenarioParser:
                 'field_name': scenario.field_name if scenario else 'N/A', 
                 'field_area': scenario.field_area if scenario else 'N/A',
                 'field_area_uom': scenario.field_area_uom if scenario else '',
-                'variety': scenario.variety if scenario else 'N/A'
+                'variety': scenario.variety if scenario else 'N/A',
+                # Add product validation info
+                'product_validation': product_validation
             }
             
             return scenario, preview_info
             
         except Exception as e:
             return None, None
+    
+    def _validate_products(self, df):
+        """
+        Validate product names against the application's product repository.
+        
+        Args:
+            df: DataFrame containing application data
+            
+        Returns:
+            dict: Validation results with matched/unmatched products
+        """
+        validation_results = {
+            'total_products': 0,
+            'matched_products': 0,
+            'unmatched_products': 0,
+            'matched_list': [],
+            'unmatched_list': [],
+            'product_mapping': {}  # Excel name -> Repository product
+        }
+        
+        # Get all available products from repository (use filtered products)
+        available_products = self.products_repo.get_filtered_products()
+        available_product_names = {product.product_name.lower(): product for product in available_products}
+        
+        # Extract unique product names from Excel
+        excel_products = df['Control Product'].dropna().unique()
+        excel_products = [str(prod).strip() for prod in excel_products if str(prod).strip()]
+        
+        validation_results['total_products'] = len(excel_products)
+        
+        for excel_product in excel_products:
+            # Try exact match (case-insensitive)
+            excel_product_lower = excel_product.lower()
+            
+            if excel_product_lower in available_product_names:
+                # Found exact match
+                matched_product = available_product_names[excel_product_lower]
+                validation_results['matched_products'] += 1
+                validation_results['matched_list'].append(excel_product)
+                validation_results['product_mapping'][excel_product] = matched_product
+            else:
+                # No match found
+                validation_results['unmatched_products'] += 1
+                validation_results['unmatched_list'].append(excel_product)
+                validation_results['product_mapping'][excel_product] = None
+        
+        return validation_results
     
     def _find_data_end(self, df):
         """Find the index where application data ends (first blank row)."""
@@ -116,7 +171,7 @@ class ExcelScenarioParser:
         
         return "\n".join(sample_lines)
 
-    def _create_scenario(self, df, file_path):
+    def _create_scenario(self, df, file_path, product_validation):
         """Create a Scenario object from the parsed dataframe."""
         # Extract base filename for scenario name
         base_name = os.path.splitext(os.path.basename(file_path))[0]
@@ -137,22 +192,34 @@ class ExcelScenarioParser:
             scenario.field_area_uom = 'acre'  # Data shows acres
             scenario.variety = str(first_row.get('Variety', ''))
         
-        # Create applications from each row
+        # Create applications from each row, but only for matched products
         applications = []
+        product_mapping = product_validation['product_mapping']
         
         for _, row in df.iterrows():
+            excel_product_name = str(row.get('Control Product', '')).strip()
+            
+            # Skip if no product name or product not matched
+            if not excel_product_name or excel_product_name == 'nan':
+                continue
+                
+            matched_product = product_mapping.get(excel_product_name)
+            if matched_product is None:
+                # Skip unmatched products - could log this for debugging
+                continue
+            
             app_data = {
                 'application_date': str(row.get('Application Date', '')),
-                'product_name': str(row.get('Control Product', '')),
+                'product_name': matched_product.product_name,  # Use the matched product name
+                'product_type': matched_product.product_type,  # Set the product type from matched product
                 'rate': float(row.get('ConvertedRate', 0)) if pd.notna(row.get('ConvertedRate')) else 0.0,
                 'rate_uom': self._map_uom(row.get('ConvertedRateUOM', '')),
                 'application_method': str(row.get('Application Method', 'Broadcast')),
-                'area': float(row.get('Acres', 0)) if pd.notna(row.get('Acres')) else 0.0,
-                'product_type': ''  # Will be determined by product matching later
+                'area': float(row.get('Acres', 0)) if pd.notna(row.get('Acres')) else 0.0
             }
             
-            # Only add if we have at least a product name and valid rate
-            if app_data['product_name'] and app_data['product_name'] != 'nan':
+            # Only add if we have valid rate data
+            if app_data['rate'] > 0:
                 applications.append(Application.from_dict(app_data))
         
         scenario.applications = applications
