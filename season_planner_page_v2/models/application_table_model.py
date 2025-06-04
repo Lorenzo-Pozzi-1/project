@@ -245,17 +245,43 @@ class ApplicationTableModel(QAbstractTableModel):
     def set_applications(self, applications: List[Application]):
         """Set the applications list."""
         try:
-            print(f"DEBUG: set_applications() called with {len(applications)} applications")
+            print(f"DEBUG: ApplicationTableModel.set_applications() called with {len(applications)} applications")
+            
             self.beginResetModel()
-            self._applications = applications.copy()
+            
+            # Ensure we have Application objects, not dicts
+            self._applications = []
+            for i, app in enumerate(applications):
+                if hasattr(app, 'product_name'):
+                    # It's already an Application object
+                    self._applications.append(app)
+                    print(f"  Model App {i+1}: {app.product_name} @ {getattr(app, 'rate', 'N/A')} {getattr(app, 'rate_uom', 'N/A')}")
+                else:
+                    # Convert dict to Application if needed
+                    from data import Application
+                    app_obj = Application.from_dict(app)
+                    self._applications.append(app_obj)
+                    print(f"  Model App {i+1} (converted): {app_obj.product_name} @ {app_obj.rate} {app_obj.rate_uom}")
+            
+            # Clear validation errors
             self._validation_errors.clear()
+            
             self.endResetModel()
+            
+            print(f"DEBUG: Model reset complete. Row count: {len(self._applications)}")
+            
+            # Recalculate EIQ for all applications
             self._recalculate_all_eiq()
             self._emit_eiq_changed()
+            
+            print(f"DEBUG: EIQ recalculation complete")
+            
         except Exception as e:
-            print(f"ERROR in set_applications(): {e}")
+            print(f"ERROR in ApplicationTableModel.set_applications(): {e}")
             import traceback
             traceback.print_exc()
+            # Ensure we end the reset even if there's an error
+            self.endResetModel()
     
     def add_application(self) -> int:
         """Add a new application and return its row index."""
@@ -331,8 +357,18 @@ class ApplicationTableModel(QAbstractTableModel):
             if col == self.COL_DATE:
                 app.application_date = str(value) if value else ""
             
-            elif col == self.COL_PRODUCT_TYPE:  # NEW
+            elif col == self.COL_PRODUCT_TYPE:
+                old_type = app.product_type
                 app.product_type = str(value) if value else ""
+                
+                # If type changed and we have a product selected, validate compatibility
+                if app.product_name and old_type != app.product_type:
+                    product = self._find_product(app.product_name)
+                    if product and product.product_type != app.product_type:
+                        # Product doesn't match new type - add validation warning
+                        self._validation_errors[(row, self.COL_PRODUCT_NAME)] = (
+                            f"Product '{app.product_name}' is not of type '{app.product_type}'"
+                        )
             
             elif col == self.COL_PRODUCT_NAME:
                 product_name = str(value) if value else ""
@@ -342,9 +378,17 @@ class ApplicationTableModel(QAbstractTableModel):
                 if product_name:
                     product = self._find_product(product_name)
                     if product:
-                        # Only auto-set product type if it's currently empty
-                        if not app.product_type:
-                            app.product_type = product.product_type
+                        # Check if current type is compatible
+                        if app.product_type and app.product_type != product.product_type:
+                            # Type mismatch - add validation warning
+                            self._validation_errors[(row, col)] = (
+                                f"Product type mismatch: '{product_name}' is '{product.product_type}', "
+                                f"but row type is '{app.product_type}'"
+                            )
+                        else:
+                            # Only auto-set product type if it's currently empty
+                            if not app.product_type:
+                                app.product_type = product.product_type
                     else:
                         # Only auto-set to "Unknown" if type is currently empty
                         if not app.product_type:
@@ -383,7 +427,26 @@ class ApplicationTableModel(QAbstractTableModel):
     def _update_dependent_fields(self, app: Application, changed_col: int, row: int):
         """Update fields that depend on the changed column."""
         try:
-            if changed_col == self.COL_PRODUCT_NAME:
+            if changed_col == self.COL_PRODUCT_TYPE:
+                # Product type changed - clear product name if it doesn't match the new type
+                if app.product_name:
+                    product = self._find_product(app.product_name)
+                    if product and product.product_type != app.product_type:
+                        # Product doesn't match the new type - clear it
+                        app.product_name = ""
+                        app.ai_groups = []
+                        app.field_eiq = 0.0
+                        
+                        # Emit dataChanged for affected columns
+                        name_index = self.index(row, self.COL_PRODUCT_NAME)
+                        groups_index = self.index(row, self.COL_AI_GROUPS)
+                        eiq_index = self.index(row, self.COL_FIELD_EIQ)
+                        
+                        self.dataChanged.emit(name_index, name_index, [Qt.DisplayRole])
+                        self.dataChanged.emit(groups_index, groups_index, [Qt.DisplayRole])
+                        self.dataChanged.emit(eiq_index, eiq_index, [Qt.DisplayRole])
+            
+            elif changed_col == self.COL_PRODUCT_NAME:
                 # Product changed - update AI groups and recalculate EIQ
                 # Also emit signal for product type column in case it was auto-updated
                 self._update_ai_groups(app, row)

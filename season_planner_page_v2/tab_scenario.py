@@ -85,14 +85,35 @@ class ScenarioTabPage(QWidget):
         }
         self.metadata_widget.set_metadata(metadata)
         
-        # Update applications table
-        self.applications_table.set_applications(self.scenario.applications)
+        # Debug: Check what we're loading
+        print(f"DEBUG: Loading scenario '{self.scenario.name}' with {len(self.scenario.applications)} applications")
+        for i, app in enumerate(self.scenario.applications):
+            print(f"  App {i+1}: {app.product_name} @ {app.rate} {app.rate_uom}")
         
-        # Set field area for new applications
+        # Set field area for new applications BEFORE loading applications
         self.applications_table.set_field_area(
             self.scenario.field_area or 0,
             self.scenario.field_area_uom or "acre"
         )
+        
+        # Update applications table - ensure we're passing Application objects
+        if self.scenario.applications:
+            # Verify these are Application objects
+            applications = []
+            for app in self.scenario.applications:
+                if hasattr(app, 'to_dict'):
+                    # It's already an Application object
+                    applications.append(app)
+                else:
+                    # It might be a dict, convert to Application
+                    from data import Application
+                    applications.append(Application.from_dict(app))
+            
+            print(f"DEBUG: Setting {len(applications)} applications in table")
+            self.applications_table.set_applications(applications)
+        else:
+            print("DEBUG: No applications to load")
+            self.applications_table.clear_applications()
     
     def update_scenario(self):
         """Update scenario with current UI data and emit change signal."""

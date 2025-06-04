@@ -45,7 +45,6 @@ class ApplicationsTableWidget(QWidget):
         self.model.rowsRemoved.connect(lambda: self.applications_changed.emit())
         
         self.setup_ui()
-        self.setup_shortcuts()
         
         # IMPORTANT: Set up delegates after widget initialization to avoid Qt conflicts
         QTimer.singleShot(100, self.setup_delegates_sequential)
@@ -210,20 +209,6 @@ class ApplicationsTableWidget(QWidget):
             print(f"Error in _setup_complex_delegates(): {e}")
             import traceback
             traceback.print_exc()
-
-    def setup_shortcuts(self):
-        """Set up keyboard shortcuts."""
-        # F2 to edit current cell
-        edit_shortcut = QShortcut(QKeySequence(Qt.Key_F2), self.table_view)
-        edit_shortcut.activated.connect(self._edit_current_cell)
-        
-        # Delete key to remove selected row
-        delete_shortcut = QShortcut(QKeySequence(Qt.Key_Delete), self.table_view)
-        delete_shortcut.activated.connect(self.remove_selected_application)
-        
-        # Insert key to add new row
-        insert_shortcut = QShortcut(QKeySequence(Qt.Key_Insert), self.table_view)
-        insert_shortcut.activated.connect(self.add_application)
     
     def _edit_current_cell(self):
         """Start editing the current cell."""
@@ -247,8 +232,64 @@ class ApplicationsTableWidget(QWidget):
     
     def remove_selected_application(self):
         """Remove the currently selected application."""
-        current_row = self.table_view.currentIndex().row()
-        if current_row >= 0:
+        # Get the current selection
+        selection_model = self.table_view.selectionModel()
+        
+        if not selection_model.hasSelection():
+            # No selection - show warning dialog
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self,
+                "No Application Selected",
+                "Please select an application to remove.",
+                QMessageBox.Ok
+            )
+            return
+        
+        # Get the selected row
+        selected_indexes = selection_model.selectedRows()
+        if not selected_indexes:
+            # Fallback check - should not happen but be safe
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self,
+                "No Application Selected", 
+                "Please select an application to remove.",
+                QMessageBox.Ok
+            )
+            return
+        
+        # Get the row number from the first selected index
+        current_row = selected_indexes[0].row()
+        
+        # Validate row number
+        if current_row < 0 or current_row >= self.model.rowCount():
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self,
+                "Invalid Selection",
+                "The selected application is no longer valid.",
+                QMessageBox.Ok
+            )
+            return
+        
+        # Optional: Show confirmation dialog for deletion
+        from PySide6.QtWidgets import QMessageBox
+        
+        # Get application info for confirmation
+        app_data = self.model.get_applications()[current_row]
+        product_name = app_data.product_name or "Unnamed Application"
+        
+        reply = QMessageBox.question(
+            self,
+            "Confirm Removal",
+            f"Are you sure you want to remove this application?\n\n{product_name}",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            # Remove the application
             self.model.remove_application(current_row)
     
     def get_applications(self) -> List[Application]:
@@ -257,7 +298,35 @@ class ApplicationsTableWidget(QWidget):
     
     def set_applications(self, applications: List[Application]):
         """Set the applications list."""
-        self.model.set_applications(applications)
+        try:
+            print(f"DEBUG: ApplicationsTableWidget.set_applications() called with {len(applications)} applications")
+            
+            # Ensure we have Application objects
+            app_objects = []
+            for i, app in enumerate(applications):
+                if hasattr(app, 'product_name'):
+                    # It's already an Application object
+                    app_objects.append(app)
+                    print(f"  App {i+1}: {app.product_name} @ {getattr(app, 'rate', 'N/A')} {getattr(app, 'rate_uom', 'N/A')}")
+                else:
+                    # Convert dict to Application
+                    from data import Application
+                    app_obj = Application.from_dict(app)
+                    app_objects.append(app_obj)
+                    print(f"  App {i+1} (converted): {app_obj.product_name} @ {app_obj.rate} {app_obj.rate_uom}")
+            
+            # Set applications in model
+            self.model.set_applications(app_objects)
+            
+            # Force view update
+            self.table_view.reset()
+            
+            print(f"DEBUG: Model now has {self.model.rowCount()} rows")
+            
+        except Exception as e:
+            print(f"ERROR in set_applications(): {e}")
+            import traceback
+            traceback.print_exc()
     
     def clear_applications(self):
         """Clear all applications."""
