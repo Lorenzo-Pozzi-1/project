@@ -11,6 +11,7 @@ Key improvements over V1:
 - Clean data/view separation
 - Scalable performance
 - Custom dialogs for complex inputs (products, UOMs)
+- Import scenarios from Excel files
 """
 
 from season_planner_page_v2.page_scenarios_manager import ScenariosManagerPage
@@ -24,6 +25,9 @@ from season_planner_page_v2.widgets.eiq_summary import EIQSummaryWidget
 # Import models
 from season_planner_page_v2.models.application_table_model import ApplicationTableModel
 
+# Import scenario functionality
+from season_planner_page_v2.import_scenario import ImportScenarioDialog
+
 __all__ = [
     # Main page and tabs
     'ScenariosManagerPage', 
@@ -35,5 +39,8 @@ __all__ = [
     'EIQSummaryWidget',
     
     # Models
-    'ApplicationTableModel'
+    'ApplicationTableModel',
+    
+    # Import functionality
+    'ImportScenarioDialog'
 ]

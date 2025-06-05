@@ -6,12 +6,14 @@ using the new table-based interface.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog, QDialog
+from PySide6.QtCore import QCoreApplication
 
 from common import (
     ContentFrame, HeaderWithHomeButton, calculation_tracer, create_button, 
     ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font
 )
 from season_planner_page_v2.tab_scenario import ScenarioTabPage
+from season_planner_page_v2.import_scenario import ImportScenarioDialog
 from data import Scenario
 
 
@@ -297,15 +299,10 @@ class ScenariosManagerPage(QWidget):
 
     def import_scenario(self):
         """Import scenario from external file."""
-        # Import the dialog from the old season planner for now
-        # This can be moved to season_planner_page_v2 later if needed
-        from season_planner_page.import_scenario import ImportScenarioDialog
-        
         dialog = ImportScenarioDialog(self)
         if dialog.exec() == QDialog.Accepted:
             imported_scenario = dialog.get_imported_scenario()
             if imported_scenario:
-                                
                 # Add the scenario
                 self.add_new_scenario(imported_scenario)
                 
@@ -313,7 +310,6 @@ class ScenariosManagerPage(QWidget):
                 self.update_ui_state()
                 
                 # Process any pending events to ensure UI is fully updated
-                from PySide6.QtCore import QCoreApplication
                 QCoreApplication.processEvents()
                 
                 # Now show the success message
@@ -321,10 +317,6 @@ class ScenariosManagerPage(QWidget):
                     self, "Import Successful",
                     f"Scenario '{imported_scenario.name}' has been imported successfully."
                 )
-            else:
-                print("season planner > page scenario manager > No scenario returned from import dialog")
-        else:
-            print("season planner > page scenario manager > Import dialog was cancelled")
     
     def refresh_product_data(self):
         """Refresh product data when filtered products change in the main window."""

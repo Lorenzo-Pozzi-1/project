@@ -10,7 +10,7 @@ from PySide6.QtCore import Signal
 from common import ContentFrame, get_margin_large, get_spacing_medium, get_subtitle_font
 from season_planner_page_v2.widgets.metadata_widget import SeasonPlanMetadataWidget
 from season_planner_page_v2.widgets.applications_table import ApplicationsTableWidget
-from data import Scenario, ProductRepository
+from data import Scenario, ProductRepository, Application
 
 
 class ScenarioTabPage(QWidget):
@@ -36,9 +36,11 @@ class ScenarioTabPage(QWidget):
         self.scenario = scenario or Scenario()
         self.products_repo = ProductRepository.get_instance()
         
+        # IMPORTANT: Set up UI first, then load data, THEN connect signals
+        # This prevents signals from firing during data loading and overwriting the scenario
         self.setup_ui()
-        self.connect_signals()
         self.load_scenario_data()
+        self.connect_signals()  # Connect signals AFTER loading data
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -92,21 +94,20 @@ class ScenarioTabPage(QWidget):
         )
         
         # Update applications table - ensure we're passing Application objects
-        if self.scenario.applications:
+        if self.scenario.applications is not None and len(self.scenario.applications) > 0:
             # Verify these are Application objects
             applications = []
-            for app in self.scenario.applications:
+            for i, app in enumerate(self.scenario.applications):
                 if hasattr(app, 'to_dict'):
                     # It's already an Application object
                     applications.append(app)
                 else:
                     # It might be a dict, convert to Application
-                    from data import Application
-                    applications.append(Application.from_dict(app))
+                    app_obj = Application.from_dict(app)
+                    applications.append(app_obj)
             
             self.applications_table.set_applications(applications)
         else:
-            print("season planner > tab scenario > No applications to load")
             self.applications_table.clear_applications()
     
     def update_scenario(self):
@@ -122,7 +123,7 @@ class ScenarioTabPage(QWidget):
             metadata["field_area_uom"]
         )
         
-        # Update applications
+        # FIXED: Update applications - get Application objects directly from table
         self.scenario.applications = self.applications_table.get_applications()
         
         # Emit signal
