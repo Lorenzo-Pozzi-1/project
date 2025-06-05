@@ -1,5 +1,5 @@
 """
-EIQ Summary Widget for Season Planner V2.
+EIQ Summary Widget for the Season Planner.
 
 Widget for displaying EIQ calculation results and environmental impact scoring.
 """

@@ -1,21 +1,29 @@
 """
-Scenarios Manager page for the LORENZO POZZI Pesticide App.
+Scenarios Manager Page for the Season Planner.
 
-This module provides the main interface for managing multiple pesticide
-application scenarios through tabs.
+Main interface for managing multiple pesticide application scenarios
+using the new table-based interface.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog, QDialog
-from common import ContentFrame, HeaderWithHomeButton, calculation_tracer, create_button, ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font
+from PySide6.QtCore import QCoreApplication
+
+from common import (
+    ContentFrame, HeaderWithHomeButton, calculation_tracer, create_button, 
+    ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font
+)
 from season_planner_page.tab_scenario import ScenarioTabPage
+from season_planner_page.import_scenario import ImportScenarioDialog
 from data import Scenario
+
 
 class ScenariosManagerPage(QWidget):
     """
     Container for multiple scenario tabs with management functionality.
     
     This page serves as the main interface for the Season Planner feature,
-    allowing users to create, edit, and compare multiple scenarios.
+    using the new table-based applications interface for better performance
+    and user experience.
     """
     
     def __init__(self, parent=None):
@@ -45,7 +53,7 @@ class ScenariosManagerPage(QWidget):
         
         # Create buttons with fixed width
         buttons = {
-            "Import Scenario": ("white", self.import_scenario),  # Import is handled by adding a new sc
+            "Import Scenario": ("white", self.import_scenario),
             "New Scenario": ("yellow", self.add_new_scenario),
             "Clone Current": ("white", self.clone_current_scenario),
             "Rename": ("white", self.rename_current_scenario),
@@ -72,8 +80,6 @@ class ScenariosManagerPage(QWidget):
         
         # Tab widget for scenarios
         self.tab_widget = QTabWidget()
-        # self.tab_widget.setTabsClosable(True)      # uncomment to get the x next to the tabs                               
-        # self.tab_widget.tabCloseRequested.connect(self.on_tab_close_requested)    
         self.tab_widget.currentChanged.connect(self.update_ui_state)
         
         tabs_layout.addWidget(self.tab_widget)
@@ -83,8 +89,11 @@ class ScenariosManagerPage(QWidget):
         # EIQ Results Display
         results_frame = ContentFrame()
         results_layout = QVBoxLayout()
-        results_layout.addWidget(QLabel("Scenario EIQ Impact", font=get_subtitle_font()))
-        
+
+        # Combined title with scenario info
+        self.scenario_info_title = QLabel("New Scenario: 0 applications, field EIQ score: 0.00", font=get_subtitle_font())
+        results_layout.addWidget(self.scenario_info_title)
+
         # Create score bar with custom thresholds and labels
         self.eiq_score_bar = ScoreBar(
             thresholds=[200, 500, 800, 2500],
@@ -95,22 +104,7 @@ class ScenariosManagerPage(QWidget):
         )
         self.eiq_score_bar.set_value(0, "No applications")
         results_layout.addWidget(self.eiq_score_bar)
-        
-        # Add information labels
-        eiq_info_layout = QHBoxLayout()
-        eiq_info_layout.addWidget(QLabel("Total Field EIQ:"))
-        self.total_eiq_value = QLabel("0")
-        eiq_info_layout.addWidget(self.total_eiq_value)
-        
-        eiq_info_layout.addSpacing(20)
-        
-        eiq_info_layout.addWidget(QLabel("Applications Count:"))
-        self.applications_count_value = QLabel("0")
-        eiq_info_layout.addWidget(self.applications_count_value)
-        
-        eiq_info_layout.addStretch(1)
-        results_layout.addLayout(eiq_info_layout)
-        
+
         results_frame.layout.addLayout(results_layout)
         main_layout.addWidget(results_frame)
     
@@ -162,8 +156,8 @@ class ScenariosManagerPage(QWidget):
         """Clone the current scenario and add it as a new tab."""
         page, _ = self.get_current_scenario_page()
         if page:
-            original_scenario = page.get_scenario()            
-            new_scenario = original_scenario.clone()            
+            original_scenario = page.get_scenario()
+            new_scenario = original_scenario.clone()
             self.add_new_scenario(new_scenario)
     
     def rename_current_scenario(self):
@@ -236,11 +230,6 @@ class ScenariosManagerPage(QWidget):
                 
             self.update_ui_state()
     
-    def on_tab_close_requested(self, index):
-        """Handle tab close request with confirmation."""
-        # Just call the delete_current_scenario with the current index
-        self.delete_current_scenario()
-    
     def on_scenario_changed(self, scenario):
         """Handle changes to a scenario."""
         # Find the scenario page
@@ -276,54 +265,51 @@ class ScenariosManagerPage(QWidget):
         """Update buttons state and EIQ display based on current state."""
         # Update buttons state
         has_tabs = self.tab_widget.count() > 0
-        multiple_tabs = self.tab_widget.count() > 1
         
         self.action_buttons["Clone Current"].setEnabled(has_tabs)
         self.action_buttons["Rename"].setEnabled(has_tabs)
-        # Always allow deletion, even with a single tab
         self.action_buttons["Delete"].setEnabled(has_tabs)
         
         # Update EIQ display
         page, _ = self.get_current_scenario_page()
         if not page:
-            self.eiq_score_bar.set_value(0, "No scenario selected")
-            self.total_eiq_value.setText("0")
-            self.applications_count_value.setText("0")
-            return
+            scenario_name = "No scenario selected"
+            total_eiq = 0.0
+            applications_count = 0
+        else:
+            scenario_name = page.get_scenario().name
+            total_eiq = page.get_total_field_eiq()
+            applications = page.applications_table.get_applications()
+            applications_count = len(applications)
         
-        total_eiq = page.get_total_field_eiq()
-        applications = page.applications_container.get_applications()
+        # Update combined title
+        self.scenario_info_title.setText(
+            f"{scenario_name}: {applications_count} applications, field EIQ score: {total_eiq:.2f}"
+        )
         
         self.eiq_score_bar.set_value(
             total_eiq if total_eiq > 0 else 0, 
             "" if total_eiq > 0 else "No applications"
         )
         
-        self.total_eiq_value.setText(f"{total_eiq:.2f}")
-        self.applications_count_value.setText(str(len(applications)))
-    
     def compare_scenarios(self):
-        """Compare selected scenarios (placeholder for future implementation)."""
-        QMessageBox.information(
-            self, "Not Implemented", 
-            "The comparison feature will be implemented in a future update."
-        )
+        """Navigate to scenarios comparison page."""
+        if self.parent:
+            self.parent.navigate_to_page(4)  # Navigate to the comparison page
 
     def import_scenario(self):
         """Import scenario from external file."""
-        from season_planner_page.import_scenario import ImportScenarioDialog
-        
         dialog = ImportScenarioDialog(self)
         if dialog.exec() == QDialog.Accepted:
             imported_scenario = dialog.get_imported_scenario()
             if imported_scenario:
+                # Add the scenario
                 self.add_new_scenario(imported_scenario)
                 
                 # Force UI update before showing message
                 self.update_ui_state()
                 
                 # Process any pending events to ensure UI is fully updated
-                from PySide6.QtCore import QCoreApplication
                 QCoreApplication.processEvents()
                 
                 # Now show the success message

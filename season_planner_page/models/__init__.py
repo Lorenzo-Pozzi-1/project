@@ -1,7 +1,5 @@
 """
-Models package for Season Planner V2.
-
-Data models and table models for the new table-based interface.
+Models package for the Season Planner.
 """
 
 from .application_table_model import ApplicationTableModel

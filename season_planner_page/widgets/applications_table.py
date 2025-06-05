@@ -1,5 +1,5 @@
 """
-Applications Table Widget for Season Planner V2.
+Applications Table Widget for the Season Planner.
 
 Final production version with sequential delegate assignment to avoid Qt conflicts.
 """

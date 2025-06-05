@@ -1,5 +1,5 @@
 """
-Date Delegate for Season Planner V2.
+Date Delegate for the Season Planner.
 """
 
 from PySide6.QtWidgets import QStyledItemDelegate, QLineEdit
@@ -25,7 +25,7 @@ class DateValidator(QValidator):
 
 class DateDelegate(QStyledItemDelegate):
     """
-    Date delegate for Season Planner V2.
+    Date delegate for the Season Planner.
     """
     
     def __init__(self, parent=None):

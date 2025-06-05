@@ -1,5 +1,5 @@
 """
-Scenarios Comparison Page for Season Planner V2.
+Scenarios Comparison Page for the Season Planner.
 
 Placeholder page that displays a preview image for the upcoming
 scenarios comparison feature.

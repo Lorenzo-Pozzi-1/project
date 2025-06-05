@@ -1,22 +1,24 @@
 """
-Scenario tab for the LORENZO POZZI Pesticide App.
+Scenario Tab for the Season Planner.
 
-This module provides a tab for viewing and editing the individual scenarios.
+Final production version using the new table-based applications interface.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PySide6.QtCore import Signal
-from common import create_button, ContentFrame, get_config, eiq_calculator, get_margin_large, get_spacing_medium, get_subtitle_font
-from season_planner_page.widget_metadata_row import SeasonPlanMetadataWidget
-from season_planner_page.widget_applications_table import ApplicationsTableContainer
-from data import Scenario, Application, ProductRepository
+
+from common import ContentFrame, get_margin_large, get_spacing_medium, get_subtitle_font
+from season_planner_page.widgets.metadata_widget import SeasonPlanMetadataWidget
+from season_planner_page.widgets.applications_table import ApplicationsTableWidget
+from data import Scenario, ProductRepository, Application
+
 
 class ScenarioTabPage(QWidget):
     """
-    Tab page for displaying and editing a single scenario.
+    Tab page for displaying and editing a single scenario using the new table interface.
     
-    This is a modified version of SeasonPlannerPage designed to work
-    within the scenarios tab interface.
+    This provides Excel-like editing capabilities with custom delegates for
+    different data types (products, UOMs, dates, etc.).
     """
     
     scenario_changed = Signal(object)  # Emitted when scenario data changes
@@ -31,10 +33,14 @@ class ScenarioTabPage(QWidget):
         """
         super().__init__(parent)
         self.parent = parent
-        self.scenario = scenario or Scenario()    
-        self.products_repo = ProductRepository.get_instance()    
+        self.scenario = scenario or Scenario()
+        self.products_repo = ProductRepository.get_instance()
+        
+        # IMPORTANT: Set up UI first, then load data, THEN connect signals
+        # This prevents signals from firing during data loading and overwriting the scenario
         self.setup_ui()
         self.load_scenario_data()
+        self.connect_signals()  # Connect signals AFTER loading data
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -45,7 +51,6 @@ class ScenarioTabPage(QWidget):
         
         # Scenario Metadata Widget
         self.metadata_widget = SeasonPlanMetadataWidget()
-        self.metadata_widget.metadata_changed.connect(self.update_scenario)
         main_layout.addWidget(self.metadata_widget)
         
         # Applications Table Frame
@@ -53,27 +58,25 @@ class ScenarioTabPage(QWidget):
         applications_layout = QVBoxLayout()
         applications_layout.addWidget(QLabel("Applications", font=get_subtitle_font()))
         
-        # Applications Table Container
-        self.applications_container = ApplicationsTableContainer()
-        self.applications_container.applications_changed.connect(self.update_scenario)
-        applications_layout.addWidget(self.applications_container)
+        # Applications Table Widget - NEW TABLE INTERFACE
+        self.applications_table = ApplicationsTableWidget()
+        applications_layout.addWidget(self.applications_table)
         
-        # Add application button
-        buttons_layout = QHBoxLayout()
-        add_button = create_button(text="Add Application", style="white", callback=self.applications_container.add_application_row, parent=self)
-        buttons_layout.addWidget(add_button)
-        buttons_layout.addStretch(1)
-        applications_layout.addLayout(buttons_layout)
         applications_frame.layout.addLayout(applications_layout)
         main_layout.addWidget(applications_frame)
     
+    def connect_signals(self):
+        """Connect widget signals to update handlers."""
+        # Metadata changes
+        self.metadata_widget.metadata_changed.connect(self.update_scenario)
+        
+        # Applications changes
+        self.applications_table.applications_changed.connect(self.update_scenario)
+        self.applications_table.eiq_changed.connect(self._on_eiq_changed)
+    
     def load_scenario_data(self):
         """Populate the UI with data from the current scenario object."""
-        
-        # Convert application objects to dictionaries for the table widget
-        app_dicts = [app.to_dict() for app in self.scenario.applications]
-
-        # Update the metadata widget with the scenario's values with safe defaults
+        # Update metadata widget
         metadata = {
             "crop_year": self.scenario.crop_year,
             "grower_name": self.scenario.grower_name or "",
@@ -83,78 +86,62 @@ class ScenarioTabPage(QWidget):
             "variety": self.scenario.variety or ""
         }
         self.metadata_widget.set_metadata(metadata)
-
-        # Populate the applications table with the scenario's application data
-        self.applications_container.set_applications(app_dicts)
         
+        # Set field area for new applications BEFORE loading applications
+        self.applications_table.set_field_area(
+            self.scenario.field_area or 0,
+            self.scenario.field_area_uom or "acre"
+        )
+        
+        # Update applications table - ensure we're passing Application objects
+        if self.scenario.applications is not None and len(self.scenario.applications) > 0:
+            # Verify these are Application objects
+            applications = []
+            for i, app in enumerate(self.scenario.applications):
+                if hasattr(app, 'to_dict'):
+                    # It's already an Application object
+                    applications.append(app)
+                else:
+                    # It might be a dict, convert to Application
+                    app_obj = Application.from_dict(app)
+                    applications.append(app_obj)
+            
+            self.applications_table.set_applications(applications)
+        else:
+            self.applications_table.clear_applications()
+    
     def update_scenario(self):
         """Update scenario with current UI data and emit change signal."""
         # Update metadata
         metadata = self.metadata_widget.get_metadata()
         for key, value in metadata.items():
             setattr(self.scenario, key, value)
-            
-        # Update field area in applications container
-        self.applications_container.set_field_area(metadata["field_area"], metadata["field_area_uom"])
         
-        # Update applications
-        self.scenario.applications = [
-            Application.from_dict(app_data) 
-            for app_data in self.applications_container.get_applications()
-        ]
+        # Update field area in applications table
+        self.applications_table.set_field_area(
+            metadata["field_area"], 
+            metadata["field_area_uom"]
+        )
+        
+        # Update applications - get Application objects directly from table
+        self.scenario.applications = self.applications_table.get_applications()
         
         # Emit signal
         self.scenario_changed.emit(self.scenario)
     
+    def _on_eiq_changed(self, total_eiq):
+        """Handle EIQ changes from the applications table."""
+        # This can be used for real-time EIQ updates in the parent
+        pass
+    
     def get_total_field_eiq(self):
         """Calculate the total Field EIQ for all applications."""
-        try:
-            # Get user preferences for UOM conversions
-            user_preferences = get_config("user_preferences", {})
-            
-            # Get all applications data
-            applications_data = self.applications_container.get_applications()
-            
-            # Get products from FILTERED products instead of all products
-            filtered_products = self.products_repo.get_filtered_products()
-            
-            # Build applications list with products from filtered list
-            applications = []
-            for app in applications_data:
-                product_name = app.get('product_name')
-                if not product_name:
-                    continue
-                    
-                # Find the product in the filtered list
-                product = None
-                for filtered_product in filtered_products:
-                    if filtered_product.product_name == product_name:
-                        product = filtered_product
-                        break
-                
-                if product:
-                    applications.append({
-                        'product': product,
-                        'rate': app.get('rate', 0),
-                        'rate_uom': app.get('rate_uom', ''),
-                    })
-            
-            # Use the scenario-level calculation
-            total_eiq = eiq_calculator.calculate_scenario_field_eiq(
-                applications=applications,
-                user_preferences=user_preferences
-            )
-            
-            return total_eiq
-            
-        except Exception as e:
-            print(f"Error calculating total scenario EIQ: {e}")
-            return 0.0
+        return self.applications_table.get_total_field_eiq()
     
     def refresh_product_data(self):
         """Refresh product data when filtered products change in the main window."""
-        self.applications_container.set_applications(self.applications_container.get_applications())
-        
+        self.applications_table.refresh_product_data()
+    
     def get_scenario(self):
         """Get the current scenario object."""
         return self.scenario

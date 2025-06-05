@@ -1,5 +1,5 @@
 """
-Application Table Model for Season Planner V2.
+Application Table Model for the Season Planner.
 
 QAbstractTableModel that manages pesticide application data with automatic
 EIQ calculations and validation.

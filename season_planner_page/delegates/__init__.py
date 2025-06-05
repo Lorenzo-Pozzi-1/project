@@ -1,5 +1,5 @@
 """
-Delegates package for Season Planner V2.
+Delegates package for the Season Planner.
 
 Custom QStyledItemDelegate implementations for different data types
 in the applications table.

@@ -1,5 +1,5 @@
 """
-UOM Delegate for Season Planner V2.
+UOM Delegate for the Season Planner.
 
 QStyledItemDelegate that provides UOM selection through a dialog
 with automatic rate conversion functionality.

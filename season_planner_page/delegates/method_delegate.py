@@ -1,5 +1,5 @@
 """
-Method Delegate for Season Planner V2.
+Method Delegate for the Season Planner.
 
 QStyledItemDelegate that provides application method input with common suggestions.
 """

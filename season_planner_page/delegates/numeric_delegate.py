@@ -1,5 +1,5 @@
 """
-Numeric Delegate for Season Planner V2.
+Numeric Delegate for the Season Planner.
 """
 
 from PySide6.QtWidgets import QStyledItemDelegate, QDoubleSpinBox

@@ -1,5 +1,5 @@
 """
-Product Type Delegate for Season Planner V2.
+Product Type Delegate for the Season Planner.
 
 QStyledItemDelegate that provides product type selection with common pesticide types.
 """

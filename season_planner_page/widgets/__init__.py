@@ -1,5 +1,5 @@
 """
-Widgets package for Season Planner V2.
+Widgets package for the Season Planner.
 
 UI widgets for the new table-based season planner interface.
 """

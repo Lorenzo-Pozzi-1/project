@@ -15,7 +15,7 @@ from products_page import ProductsPage
 from eiq_calculator_page import EiqCalculatorPage
 
 #from season_planner_page import ScenariosManagerPage
-from season_planner_page_v2 import ScenariosManagerPage
+from season_planner_page import ScenariosManagerPage
 
 class MainWindow(QMainWindow):
     """
@@ -75,10 +75,10 @@ class MainWindow(QMainWindow):
         self.eiq_calculator_page = EiqCalculatorPage(self)
         self.stacked_widget.addWidget(self.eiq_calculator_page)
 
-        # Create and add the scenarios comparison page (index 4)
-        from season_planner_page_v2.page_sceanrios_comparison import ScenariosComparisonPage
-        self.scenarios_comparison_page = ScenariosComparisonPage(self)
-        self.stacked_widget.addWidget(self.scenarios_comparison_page)
+        # Create and add the scenarios comparison picture placeholder (index 4) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage # ~~~~~~~~~~~~~~~~~
+        self.scenarios_comparison_page = ScenariosComparisonPage(self) # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        self.stacked_widget.addWidget(self.scenarios_comparison_page) # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         # Add yellow bar at the bottom with tracer button and author info
         self.yellow_bar = QFrame()  # Bar
@@ -153,14 +153,7 @@ class MainWindow(QMainWindow):
         # in the future add any new page that needs to be refreshed
 
     def navigate_to_page(self, page_index):
-        """Enhanced navigation with WIP warnings."""
-        # warning for demo rollout
-        if page_index == 2:  # Season Planner
-            from PySide6.QtWidgets import QMessageBox
-            QMessageBox.warning(self, "Work in Progress", 
-                "WORK IN PROGRESS!\n\nExplore and try the functionalities but be aware that they might present errors or change in the future!", 
-                QMessageBox.Ok)
-        # end of warning    
+        """Navigate to a specific page in the stacked widget."""  
         self.stacked_widget.setCurrentIndex(page_index)
 
     def apply_config_preferences(self):
