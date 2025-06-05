@@ -74,6 +74,11 @@ class MainWindow(QMainWindow):
         # Create and add the EIQ calculator page (index 3)
         self.eiq_calculator_page = EiqCalculatorPage(self)
         self.stacked_widget.addWidget(self.eiq_calculator_page)
+
+        # Create and add the scenarios comparison page (index 4)
+        from season_planner_page_v2.page_sceanrios_comparison import ScenariosComparisonPage
+        self.scenarios_comparison_page = ScenariosComparisonPage(self)
+        self.stacked_widget.addWidget(self.scenarios_comparison_page)
         
         # Add yellow bar at the bottom with tracer button and author info
         self.yellow_bar = QFrame()  # Bar
@@ -81,21 +86,24 @@ class MainWindow(QMainWindow):
         yellow_bar_layout = QHBoxLayout(self.yellow_bar)
         yellow_bar_layout.setContentsMargins(10, 2, 10, 2)
 
-        self.trace_button = create_button(text="</>", style="tiny", callback=self.show_calculation_trace)  # Button
+        # Add tracer button
+        self.trace_button = create_button(text="</>", style="tiny", callback=self.show_calculation_trace)
         self.trace_button.setToolTip("Show calculation trace")
         self.trace_button.clicked.connect(self.show_calculation_trace)
         yellow_bar_layout.addWidget(self.trace_button)
 
         # Add feedback link
-        feedback_label = QLabel('<a href="https://docs.google.com/forms/d/e/1FAIpQLSc87WWFElSQ3aMeD2NhX1WWLQdkVNthRYkg_nufDZ8ciHXQ6g/viewform?usp=header" style="color: #0066cc; text-decoration: none;">Give feedback!</a>')
+        feedback_label = QLabel('<a href="https://docs.google.com/forms/d/e/1FAIpQLSc87WWFElSQ3aMeD2NhX1WWLQdkVNthRYkg_nufDZ8ciHXQ6g/viewform?usp=header" style="color: #0066cc;">Give me a feedback!</a>')
         feedback_label.setOpenExternalLinks(True)
         feedback_label.setAlignment(Qt.AlignCenter)
         feedback_label.setToolTip("Click to provide feedback about the application")
         yellow_bar_layout.addWidget(feedback_label)
 
+        # Add stretch to push author info to the right
         yellow_bar_layout.addStretch()
 
-        author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")  # Author info
+        # Add author information
+        author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")
         author_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         yellow_bar_layout.addWidget(author_label)
         

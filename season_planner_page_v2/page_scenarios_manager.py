@@ -300,11 +300,9 @@ class ScenariosManagerPage(QWidget):
         self.applications_count_value.setText(str(len(applications)))
     
     def compare_scenarios(self):
-        """Compare selected scenarios (placeholder for future implementation)."""
-        QMessageBox.information(
-            self, "Not Implemented", 
-            "The comparison feature will be implemented in a future update."
-        )
+        """Navigate to scenarios comparison page."""
+        if self.parent:
+            self.parent.navigate_to_page(4)  # Navigate to the comparison page
 
     def import_scenario(self):
         """Import scenario from external file."""
