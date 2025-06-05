@@ -16,6 +16,7 @@ from ..delegates.numeric_delegate import RateDelegate, AreaDelegate
 from ..delegates.method_delegate import MethodDelegate
 from ..delegates.product_name_delegate import ProductNameDelegate
 from ..delegates.uom_delegate import UOMDelegate
+from ..delegates.product_type_delegate import ProductTypeDelegate
 
 
 class ApplicationsTableWidget(QWidget):
@@ -175,16 +176,6 @@ class ApplicationsTableWidget(QWidget):
     def _setup_complex_delegates(self):
         """Set up complex delegates (dialogs, combos)."""
         try:
-            # Import delegates
-            from ..delegates.product_type_delegate import ProductTypeDelegate
-            
-            # IMPORTANT: Use the model's column constants to ensure correct assignment
-            print(f"DEBUG: Setting up delegates with columns:")
-            print(f"  COL_PRODUCT_TYPE = {self.model.COL_PRODUCT_TYPE}")
-            print(f"  COL_PRODUCT_NAME = {self.model.COL_PRODUCT_NAME}")
-            print(f"  COL_METHOD = {self.model.COL_METHOD}")
-            print(f"  COL_RATE_UOM = {self.model.COL_RATE_UOM}")
-            
             # Product type delegate (column 2)
             product_type_delegate = ProductTypeDelegate(self)
             self.table_view.setItemDelegateForColumn(self.model.COL_PRODUCT_TYPE, product_type_delegate)
@@ -200,8 +191,6 @@ class ApplicationsTableWidget(QWidget):
             # UOM delegate (column 5)
             uom_delegate = UOMDelegate(self, uom_type="application_rate")
             self.table_view.setItemDelegateForColumn(self.model.COL_RATE_UOM, uom_delegate)
-            
-            print("DEBUG: Delegates setup complete")
             
         except Exception as e:
             print(f"Error in _setup_complex_delegates(): {e}")
@@ -297,8 +286,6 @@ class ApplicationsTableWidget(QWidget):
     def set_applications(self, applications: List[Application]):
         """Set the applications list."""
         try:
-            print(f"DEBUG: ApplicationsTableWidget.set_applications() called with {len(applications)} applications")
-            
             # Ensure we have Application objects
             app_objects = []
             for i, app in enumerate(applications):
@@ -318,8 +305,6 @@ class ApplicationsTableWidget(QWidget):
             
             # Force view update
             self.table_view.reset()
-            
-            print(f"DEBUG: Model now has {self.model.rowCount()} rows")
             
         except Exception as e:
             print(f"ERROR in set_applications(): {e}")

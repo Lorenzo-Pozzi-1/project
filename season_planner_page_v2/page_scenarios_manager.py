@@ -316,14 +316,7 @@ class ScenariosManagerPage(QWidget):
         if dialog.exec() == QDialog.Accepted:
             imported_scenario = dialog.get_imported_scenario()
             if imported_scenario:
-                print(f"DEBUG: Importing scenario '{imported_scenario.name}' with {len(imported_scenario.applications)} applications")
-                
-                # Debug: Check the imported applications
-                for i, app in enumerate(imported_scenario.applications):
-                    print(f"  Imported App {i+1}: {type(app)} - {getattr(app, 'product_name', 'NO_NAME')} @ {getattr(app, 'rate', 'NO_RATE')} {getattr(app, 'rate_uom', 'NO_UOM')}")
-                    if hasattr(app, 'to_dict'):
-                        print(f"    Dict: {app.to_dict()}")
-                
+                                
                 # Add the scenario
                 self.add_new_scenario(imported_scenario)
                 
@@ -334,21 +327,15 @@ class ScenariosManagerPage(QWidget):
                 from PySide6.QtCore import QCoreApplication
                 QCoreApplication.processEvents()
                 
-                # Debug: Check the created tab
-                current_page, _ = self.get_current_scenario_page()
-                if current_page:
-                    apps = current_page.applications_table.get_applications()
-                    print(f"DEBUG: Tab created with {len(apps)} applications in table")
-                
                 # Now show the success message
                 QMessageBox.information(
                     self, "Import Successful",
                     f"Scenario '{imported_scenario.name}' has been imported successfully."
                 )
             else:
-                print("DEBUG: No scenario returned from import dialog")
+                print("season planner > page scenario manager > No scenario returned from import dialog")
         else:
-            print("DEBUG: Import dialog was cancelled")
+            print("season planner > page scenario manager > Import dialog was cancelled")
     
     def refresh_product_data(self):
         """Refresh product data when filtered products change in the main window."""

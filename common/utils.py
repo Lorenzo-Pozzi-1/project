@@ -88,7 +88,6 @@ def save_config(config):
     """
     try:
         config_path = get_config_file_path()
-        print(f"Attempting to save config to: {config_path}")  # Debug output
         
         # Ensure the directory exists
         config_dir = os.path.dirname(config_path)
@@ -97,7 +96,6 @@ def save_config(config):
         
         with open(config_path, 'w') as file:
             json.dump(config, file, indent=4)
-        print(f"Config successfully saved to: {config_path}")  # Debug output
         return True
     except (IOError, OSError) as e:
         print(f"Error saving config to {config_path}: {e}")

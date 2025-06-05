@@ -85,11 +85,6 @@ class ScenarioTabPage(QWidget):
         }
         self.metadata_widget.set_metadata(metadata)
         
-        # Debug: Check what we're loading
-        print(f"DEBUG: Loading scenario '{self.scenario.name}' with {len(self.scenario.applications)} applications")
-        for i, app in enumerate(self.scenario.applications):
-            print(f"  App {i+1}: {app.product_name} @ {app.rate} {app.rate_uom}")
-        
         # Set field area for new applications BEFORE loading applications
         self.applications_table.set_field_area(
             self.scenario.field_area or 0,
@@ -109,10 +104,9 @@ class ScenarioTabPage(QWidget):
                     from data import Application
                     applications.append(Application.from_dict(app))
             
-            print(f"DEBUG: Setting {len(applications)} applications in table")
             self.applications_table.set_applications(applications)
         else:
-            print("DEBUG: No applications to load")
+            print("season planner > tab scenario > No applications to load")
             self.applications_table.clear_applications()
     
     def update_scenario(self):

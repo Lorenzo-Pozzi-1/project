@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.products_page)
         
         # Create and add the scenarios manager page (index 2)
-        self.scenarios_manager_page = ScenariosManagerPage(self) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        self.scenarios_manager_page = ScenariosManagerPage(self)
         self.stacked_widget.addWidget(self.scenarios_manager_page)
         
         # Create and add the EIQ calculator page (index 3)
@@ -86,7 +86,14 @@ class MainWindow(QMainWindow):
         self.trace_button.clicked.connect(self.show_calculation_trace)
         yellow_bar_layout.addWidget(self.trace_button)
 
-        yellow_bar_layout.addStretch()  # Add stretch to push author label to the right
+        # Add feedback link
+        feedback_label = QLabel('<a href="https://docs.google.com/forms/d/e/1FAIpQLSc87WWFElSQ3aMeD2NhX1WWLQdkVNthRYkg_nufDZ8ciHXQ6g/viewform?usp=header" style="color: #0066cc; text-decoration: none;">Give feedback!</a>')
+        feedback_label.setOpenExternalLinks(True)
+        feedback_label.setAlignment(Qt.AlignCenter)
+        feedback_label.setToolTip("Click to provide feedback about the application")
+        yellow_bar_layout.addWidget(feedback_label)
+
+        yellow_bar_layout.addStretch()
 
         author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")  # Author info
         author_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)

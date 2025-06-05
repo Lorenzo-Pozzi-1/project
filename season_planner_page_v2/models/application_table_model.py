@@ -176,9 +176,7 @@ class ApplicationTableModel(QAbstractTableModel):
         if position < 0 or position > len(self._applications):
             position = len(self._applications)
         
-        try:
-            print(f"DEBUG: insertRows() called - position={position}, rows={rows}, current count={len(self._applications)}")
-            
+        try:            
             self.beginInsertRows(parent, position, position + rows - 1)
             
             for i in range(rows):
@@ -186,18 +184,15 @@ class ApplicationTableModel(QAbstractTableModel):
                     area=self._field_area,
                     application_method="Ground"
                 )
-                print(f"DEBUG: Created application: {app}")
                 self._applications.insert(position + i, app)
             
             self.endInsertRows()
-            
-            print(f"DEBUG: insertRows() completed - new count={len(self._applications)}")
-            
+                        
             # Emit EIQ changed signal
             try:
                 self._emit_eiq_changed()
             except Exception as e:
-                print(f"DEBUG: Error in _emit_eiq_changed: {e}")
+                print(f"Error in _emit_eiq_changed: {e}")
             
             return True
             
@@ -215,16 +210,9 @@ class ApplicationTableModel(QAbstractTableModel):
         if position < 0 or position >= len(self._applications):
             return False
         
-        try:
-            print(f"DEBUG: removeRows() called - position={position}, rows={rows}")
-            
+        try:            
             self.beginRemoveRows(parent, position, position + rows - 1)
-            
-            for i in range(rows):
-                if position < len(self._applications):
-                    removed = self._applications.pop(position)
-                    print(f"DEBUG: Removed application: {removed}")
-            
+
             self.endRemoveRows()
             self._clear_validation_errors_for_removed_rows(position, rows)
             self._emit_eiq_changed()
@@ -245,8 +233,6 @@ class ApplicationTableModel(QAbstractTableModel):
     def set_applications(self, applications: List[Application]):
         """Set the applications list."""
         try:
-            print(f"DEBUG: ApplicationTableModel.set_applications() called with {len(applications)} applications")
-            
             self.beginResetModel()
             
             # Ensure we have Application objects, not dicts
@@ -268,13 +254,9 @@ class ApplicationTableModel(QAbstractTableModel):
             
             self.endResetModel()
             
-            print(f"DEBUG: Model reset complete. Row count: {len(self._applications)}")
-            
             # Recalculate EIQ for all applications
             self._recalculate_all_eiq()
             self._emit_eiq_changed()
-            
-            print(f"DEBUG: EIQ recalculation complete")
             
         except Exception as e:
             print(f"ERROR in ApplicationTableModel.set_applications(): {e}")
@@ -287,7 +269,6 @@ class ApplicationTableModel(QAbstractTableModel):
         """Add a new application and return its row index."""
         try:
             row = len(self._applications)
-            print(f"DEBUG: add_application() - adding at row {row}")
             success = self.insertRows(row, 1)
             if success:
                 return row
