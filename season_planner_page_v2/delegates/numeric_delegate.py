@@ -1,7 +1,5 @@
 """
-FIXED Numeric Delegate for Season Planner V2.
-
-Fixed version that doesn't interfere with other delegates.
+Numeric Delegate for Season Planner V2.
 """
 
 from PySide6.QtWidgets import QStyledItemDelegate, QDoubleSpinBox
@@ -10,7 +8,7 @@ from PySide6.QtCore import Qt
 
 class NumericDelegate(QStyledItemDelegate):
     """
-    FIXED Numeric delegate that plays nicely with other delegates.
+    Numeric delegate that plays nicely with other delegates.
     
     Key fixes:
     - Simplified editor creation
@@ -97,7 +95,7 @@ class NumericDelegate(QStyledItemDelegate):
 
 
 class RateDelegate(NumericDelegate):
-    """Fixed rate delegate."""
+    """Rate delegate."""
     
     def __init__(self, parent=None):
         super().__init__(
@@ -110,7 +108,7 @@ class RateDelegate(NumericDelegate):
 
 
 class AreaDelegate(NumericDelegate):
-    """Fixed area delegate."""
+    """Area delegate."""
     
     def __init__(self, parent=None):
         super().__init__(

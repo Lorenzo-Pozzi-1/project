@@ -1,7 +1,5 @@
 """
-FIXED Date Delegate for Season Planner V2.
-
-Fixed version that plays nicely with other delegates.
+Date Delegate for Season Planner V2.
 """
 
 from PySide6.QtWidgets import QStyledItemDelegate, QLineEdit
@@ -27,12 +25,7 @@ class DateValidator(QValidator):
 
 class DateDelegate(QStyledItemDelegate):
     """
-    FIXED Date delegate that doesn't interfere with other delegates.
-    
-    Key fixes:
-    - Proper editor lifecycle management
-    - No custom event handling that might interfere
-    - Simplified validation
+    Date delegate for Season Planner V2.
     """
     
     def __init__(self, parent=None):

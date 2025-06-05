@@ -4,9 +4,10 @@ Applications Table Widget for Season Planner V2.
 Final production version with sequential delegate assignment to avoid Qt conflicts.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableView, QHeaderView, QAbstractItemView
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableView, QHeaderView, QAbstractItemView, QMessageBox
 from PySide6.QtCore import Signal, QTimer
 from typing import List
+import traceback
 
 from common import create_button, GENERIC_TABLE_STYLE, get_medium_font
 from data import Application
@@ -184,7 +185,6 @@ class ApplicationsTableWidget(QWidget):
             
         except Exception as e:
             print(f"Error in _setup_complex_delegates(): {e}")
-            import traceback
             traceback.print_exc()
     
     def _edit_current_cell(self):
@@ -214,7 +214,6 @@ class ApplicationsTableWidget(QWidget):
         
         if not selection_model.hasSelection():
             # No selection - show warning dialog
-            from PySide6.QtWidgets import QMessageBox
             QMessageBox.warning(
                 self,
                 "No Application Selected",
@@ -227,7 +226,6 @@ class ApplicationsTableWidget(QWidget):
         selected_indexes = selection_model.selectedRows()
         if not selected_indexes:
             # Fallback check - should not happen but be safe
-            from PySide6.QtWidgets import QMessageBox
             QMessageBox.warning(
                 self,
                 "No Application Selected", 
@@ -241,7 +239,6 @@ class ApplicationsTableWidget(QWidget):
         
         # Validate row number
         if current_row < 0 or current_row >= self.model.rowCount():
-            from PySide6.QtWidgets import QMessageBox
             QMessageBox.warning(
                 self,
                 "Invalid Selection",
@@ -250,12 +247,9 @@ class ApplicationsTableWidget(QWidget):
             )
             return
         
-        # Optional: Show confirmation dialog for deletion
-        from PySide6.QtWidgets import QMessageBox
-        
         # Get application info for confirmation
         app_data = self.model.get_applications()[current_row]
-        product_name = app_data.product_name or "Unnamed Application"
+        product_name = app_data.product_name or f"Application number: {current_row + 1}"
         
         reply = QMessageBox.question(
             self,

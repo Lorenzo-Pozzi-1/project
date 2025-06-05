@@ -130,7 +130,7 @@ class CalculationTraceDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Calculation Trace")
+        self.setWindowTitle("Calculation Trace - STILL IN DEVELOPMENT: needs some visual touch-ups")
         self.setModal(False)
         self.setWindowState(self.windowState() | Qt.WindowMaximized)
         

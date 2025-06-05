@@ -1,5 +1,5 @@
 """
-Fixed Product Delegate for Season Planner V2.
+Product Name Delegate for Season Planner V2.
 
 QStyledItemDelegate that provides product selection through an editable combobox
 with autocomplete functionality, filtered by product type when specified.
@@ -12,7 +12,7 @@ from data import ProductRepository
 
 class ProductNameDelegate(QStyledItemDelegate):
     """
-    Fixed delegate for product selection using an editable combobox.
+    Delegate for product name selection using an editable combobox.
     
     Provides autocomplete functionality and filters products by type when
     a product type is selected in the same row.

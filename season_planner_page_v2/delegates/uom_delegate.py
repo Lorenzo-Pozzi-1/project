@@ -1,5 +1,5 @@
 """
-Fixed UOM Delegate for Season Planner V2.
+UOM Delegate for Season Planner V2.
 
 QStyledItemDelegate that provides UOM selection through a dialog
 with automatic rate conversion functionality.
@@ -7,14 +7,14 @@ with automatic rate conversion functionality.
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QStyledItemDelegate, QApplication, QDialog
-from common import get_config
+from common import get_config, calculation_tracer
 from common.widgets.UOM_selector import UOMSelectionDialog, UOM_CATEGORIES
 from data.repository_UOM import UOMRepository, CompositeUOM
 
 
 class UOMDelegate(QStyledItemDelegate):
     """
-    Fixed delegate for UOM selection using a dialog.
+    Delegate for UOM selection using a dialog.
     
     Provides UOM selection and handles automatic rate conversion
     when application rate UOMs change.
@@ -137,7 +137,18 @@ class UOMDelegate(QStyledItemDelegate):
                 model.setData(rate_index, converted_rate, Qt.EditRole)
                 model.setData(uom_index, new_uom, Qt.EditRole)
                 
-                print(f"Auto-converted rate: {current_rate} {current_uom} → {converted_rate:.2f} {new_uom}")
+                calculation_tracer.log_header(f"UOM Conversion - Application Rate")
+                calculation_tracer.log_step("Rate Unit Conversion")
+                calculation_tracer.log_conversion(
+                    value=current_rate,
+                    from_unit=current_uom, 
+                    to_unit=new_uom,
+                    result=converted_rate,
+                    level=1,
+                    is_last=True
+                )
+                calculation_tracer.log_result("Converted Rate", f"{converted_rate:.2f}", new_uom)
+                calculation_tracer.calculation_complete()
                 return True
             else:
                 # Conversion failed - just update UOM

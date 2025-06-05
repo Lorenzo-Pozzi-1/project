@@ -123,7 +123,7 @@ class ScenarioTabPage(QWidget):
             metadata["field_area_uom"]
         )
         
-        # FIXED: Update applications - get Application objects directly from table
+        # Update applications - get Application objects directly from table
         self.scenario.applications = self.applications_table.get_applications()
         
         # Emit signal
