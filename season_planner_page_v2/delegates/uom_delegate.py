@@ -1,20 +1,20 @@
 """
 Fixed UOM Delegate for Season Planner V2.
 
-QStyledItemDelegate that provides UOM selection through a combobox
+QStyledItemDelegate that provides UOM selection through a dialog
 with automatic rate conversion functionality.
 """
-
-from PySide6.QtWidgets import QStyledItemDelegate, QComboBox
-from PySide6.QtCore import Qt
-from common.widgets.UOM_selector import UOM_CATEGORIES
+from PySide6.QtCore import QEvent, Qt
+from PySide6.QtGui import QMouseEvent
+from PySide6.QtWidgets import QStyledItemDelegate, QApplication, QDialog
 from common import get_config
+from common.widgets.UOM_selector import UOMSelectionDialog, UOM_CATEGORIES
 from data.repository_UOM import UOMRepository, CompositeUOM
 
 
 class UOMDelegate(QStyledItemDelegate):
     """
-    Fixed delegate for UOM selection using a combobox.
+    Fixed delegate for UOM selection using a dialog.
     
     Provides UOM selection and handles automatic rate conversion
     when application rate UOMs change.
@@ -26,52 +26,68 @@ class UOMDelegate(QStyledItemDelegate):
         self.uom_type = uom_type
         self._uom_list = UOM_CATEGORIES.get(uom_type, [])
     
-    def createEditor(self, parent, option, index):
-        """Create a QComboBox editor with appropriate UOMs."""
-        editor = QComboBox(parent)
-        editor.setEditable(True)
-        editor.setInsertPolicy(QComboBox.NoInsert)
+    def editorEvent(self, event, model, option, index):
+        """Handle editor events - open dialog directly on double-click."""
         
-        # Add empty option first, then all UOMs for this type
-        editor.addItem("")  # Empty option
-        editor.addItems(self._uom_list)
+        # Check if it's a double-click event
+        if (event.type() == QEvent.MouseButtonDblClick and 
+            isinstance(event, QMouseEvent)):
+            
+            # Open dialog directly
+            success = self._open_uom_dialog_direct(model, index)
+            return success
         
-        # Set placeholder text
-        editor.lineEdit().setPlaceholderText("Select unit...")
-        
-        return editor
+        # Let the base class handle other events
+        return super().editorEvent(event, model, option, index)
     
-    def setEditorData(self, editor, index):
-        """Set the current data in the editor."""
-        if not isinstance(editor, QComboBox):
-            return
-        
-        value = index.data(Qt.EditRole) or ""
-        
-        # Try to find exact match first
-        index_in_combo = editor.findText(value, Qt.MatchExactly)
-        if index_in_combo >= 0:
-            editor.setCurrentIndex(index_in_combo)
-        else:
-            # Set custom text (for imported or custom UOMs)
-            editor.setEditText(value)
+    def displayText(self, value, locale):
+        """Format the display text."""
+        if value is None or str(value).strip() == "":
+            return ""
+        return str(value)
     
-    def setModelData(self, editor, model, index):
-        """Set the model data from the editor."""
-        if not isinstance(editor, QComboBox):
-            return
+    def _open_uom_dialog_direct(self, model, index):
+        """Open the UOM selection dialog directly and update model."""
+        try:
+            # Get the table view as parent for proper positioning
+            parent = QApplication.activeWindow()
+            
+            dialog = UOMSelectionDialog(
+                parent=parent,
+                uom_list=self._uom_list,
+                title="Select Application Rate Unit"
+            )
+            
+            # Set current selection if any
+            current_uom = index.data(Qt.EditRole) or ""
+            
+            if current_uom:
+                # Pre-select current UOM in dialog if possible
+                for i in range(dialog.uom_list.count()):
+                    if dialog.uom_list.item(i).text() == current_uom:
+                        dialog.uom_list.setCurrentRow(i)
+                        break
+            
+            result = dialog.exec()
+            
+            if result == QDialog.Accepted:
+                selected_uom = dialog.get_selected_uom()
+                
+                if selected_uom:
+                    # Handle rate conversion for application rate UOMs
+                    if self.uom_type == "application_rate":
+                        success = self._handle_rate_conversion(model, index, selected_uom)
+                    else:
+                        # For non-rate UOMs, just update directly
+                        model.setData(index, selected_uom, Qt.EditRole)
+                    return True
+            
+        except Exception as e:
+            print(f"Error in _open_uom_dialog_direct: {e}")
+            import traceback
+            traceback.print_exc()
         
-        new_uom = editor.currentText().strip()
-        
-        # Handle rate conversion for application rate UOMs
-        if self.uom_type == "application_rate" and new_uom:
-            success = self._handle_rate_conversion(model, index, new_uom)
-            if not success:
-                # If conversion failed, still update the UOM
-                model.setData(index, new_uom, Qt.EditRole)
-        else:
-            # For non-rate UOMs, just update directly
-            model.setData(index, new_uom, Qt.EditRole)
+        return False
     
     def _handle_rate_conversion(self, model, uom_index, new_uom):
         """
@@ -167,13 +183,3 @@ class UOMDelegate(QStyledItemDelegate):
         except Exception as e:
             print(f"UOM conversion failed: {from_uom} → {to_uom}: {e}")
             return None
-    
-    def updateEditorGeometry(self, editor, option, index):
-        """Update editor geometry to match the cell."""
-        editor.setGeometry(option.rect)
-    
-    def displayText(self, value, locale):
-        """Format the display text."""
-        if value is None or str(value).strip() == "":
-            return ""
-        return str(value)

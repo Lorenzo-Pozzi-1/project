@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableView, QHe
 from PySide6.QtCore import Signal, QTimer
 from typing import List
 
-from common import create_button, GENERIC_TABLE_STYLE
+from common import create_button, GENERIC_TABLE_STYLE, get_medium_font
 from data import Application
 from ..models.application_table_model import ApplicationTableModel
 from ..delegates.date_delegate import DateDelegate
@@ -101,7 +101,7 @@ class ApplicationsTableWidget(QWidget):
         vertical_header.setVisible(False)  # Hide row numbers (we have App # column)
         
         # Enable sorting
-        self.table_view.setSortingEnabled(False)  # Disable to maintain order
+        # self.table_view.setSortingEnabled(False)  # Disable to maintain order
         
         # Configure editing
         self.table_view.setEditTriggers(
@@ -113,32 +113,22 @@ class ApplicationsTableWidget(QWidget):
         # Set alternating row colors
         self.table_view.setAlternatingRowColors(True)
         
+        # Set the table contents to use the medium font
+        self.table_view.setFont(get_medium_font()) 
+
         # Set initial column widths
         self._set_initial_column_widths()
     
     def _set_initial_column_widths(self):
-        """Set initial column widths for better appearance."""
+        """Set all columns to equal width with uniform stretching."""
         header = self.table_view.horizontalHeader()
         
-        # Column widths (in pixels)
-        column_widths = {
-            self.model.COL_APP_NUM: 60,       # App #
-            self.model.COL_DATE: 100,         # Date
-            self.model.COL_PRODUCT_TYPE: 120, # Product Type
-            self.model.COL_PRODUCT_NAME: 200,      # Product
-            self.model.COL_RATE: 80,          # Rate
-            self.model.COL_RATE_UOM: 100,     # Rate UOM
-            self.model.COL_AREA: 80,          # Area
-            self.model.COL_METHOD: 120,       # Method
-            self.model.COL_AI_GROUPS: 150,    # AI Groups
-            self.model.COL_FIELD_EIQ: 80      # Field EIQ
-        }
-        
-        for col, width in column_widths.items():
-            header.resizeSection(col, width)
-        
-        # Make product column stretch to fill available space
-        header.setSectionResizeMode(self.model.COL_PRODUCT_NAME, QHeaderView.Stretch)
+        # Set all columns to stretch equally
+        for col in range(self.model.columnCount()):
+            header.setSectionResizeMode(col, QHeaderView.Stretch)
+            
+            # Make product column stretch to fill available space
+            header.setSectionResizeMode(self.model.COL_PRODUCT_NAME, QHeaderView.Stretch)
     
     def setup_delegates_sequential(self):
         """

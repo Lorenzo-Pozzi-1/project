@@ -87,8 +87,11 @@ class ScenariosManagerPage(QWidget):
         # EIQ Results Display
         results_frame = ContentFrame()
         results_layout = QVBoxLayout()
-        results_layout.addWidget(QLabel("Scenario EIQ Impact", font=get_subtitle_font()))
-        
+
+        # Combined title with scenario info
+        self.scenario_info_title = QLabel("New Scenario: 0 applications, field EIQ score: 0.00", font=get_subtitle_font())
+        results_layout.addWidget(self.scenario_info_title)
+
         # Create score bar with custom thresholds and labels
         self.eiq_score_bar = ScoreBar(
             thresholds=[200, 500, 800, 2500],
@@ -99,22 +102,7 @@ class ScenariosManagerPage(QWidget):
         )
         self.eiq_score_bar.set_value(0, "No applications")
         results_layout.addWidget(self.eiq_score_bar)
-        
-        # Add information labels
-        eiq_info_layout = QHBoxLayout()
-        eiq_info_layout.addWidget(QLabel("Total Field EIQ:"))
-        self.total_eiq_value = QLabel("0")
-        eiq_info_layout.addWidget(self.total_eiq_value)
-        
-        eiq_info_layout.addSpacing(20)
-        
-        eiq_info_layout.addWidget(QLabel("Applications Count:"))
-        self.applications_count_value = QLabel("0")
-        eiq_info_layout.addWidget(self.applications_count_value)
-        
-        eiq_info_layout.addStretch(1)
-        results_layout.addLayout(eiq_info_layout)
-        
+
         results_frame.layout.addLayout(results_layout)
         main_layout.addWidget(results_frame)
     
@@ -283,22 +271,25 @@ class ScenariosManagerPage(QWidget):
         # Update EIQ display
         page, _ = self.get_current_scenario_page()
         if not page:
-            self.eiq_score_bar.set_value(0, "No scenario selected")
-            self.total_eiq_value.setText("0")
-            self.applications_count_value.setText("0")
-            return
+            scenario_name = "No scenario selected"
+            total_eiq = 0.0
+            applications_count = 0
+        else:
+            scenario_name = page.get_scenario().name
+            total_eiq = page.get_total_field_eiq()
+            applications = page.applications_table.get_applications()
+            applications_count = len(applications)
         
-        total_eiq = page.get_total_field_eiq()
-        applications = page.applications_table.get_applications()
+        # Update combined title
+        self.scenario_info_title.setText(
+            f"{scenario_name}: {applications_count} applications, field EIQ score: {total_eiq:.2f}"
+        )
         
         self.eiq_score_bar.set_value(
             total_eiq if total_eiq > 0 else 0, 
             "" if total_eiq > 0 else "No applications"
         )
         
-        self.total_eiq_value.setText(f"{total_eiq:.2f}")
-        self.applications_count_value.setText(str(len(applications)))
-    
     def compare_scenarios(self):
         """Navigate to scenarios comparison page."""
         if self.parent:
