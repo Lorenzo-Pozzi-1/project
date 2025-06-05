@@ -86,26 +86,26 @@ class MainWindow(QMainWindow):
         yellow_bar_layout = QHBoxLayout(self.yellow_bar)
         yellow_bar_layout.setContentsMargins(10, 2, 10, 2)
 
-        # Add tracer button
+        # Add tracer button (left corner)
         self.trace_button = create_button(text="</>", style="tiny", callback=self.show_calculation_trace)
         self.trace_button.setToolTip("Show calculation trace")
         self.trace_button.clicked.connect(self.show_calculation_trace)
         yellow_bar_layout.addWidget(self.trace_button)
 
+        # Add stretch to push content to the right
+        yellow_bar_layout.addStretch()
+
+        # Add author information (right corner)
+        author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")
+        author_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        yellow_bar_layout.addWidget(author_label)
+
         # Add feedback link
-        feedback_label = QLabel('<a href="https://docs.google.com/forms/d/e/1FAIpQLSc87WWFElSQ3aMeD2NhX1WWLQdkVNthRYkg_nufDZ8ciHXQ6g/viewform?usp=header" style="color: #0066cc;">Give me a feedback!</a>')
+        feedback_label = QLabel('<a href="https://docs.google.com/forms/d/e/1FAIpQLSc87WWFElSQ3aMeD2NhX1WWLQdkVNthRYkg_nufDZ8ciHXQ6g/viewform?usp=header" style="color: #0066cc;">Give feedback or REPORT A PROBLEM</a>')
         feedback_label.setOpenExternalLinks(True)
         feedback_label.setAlignment(Qt.AlignCenter)
         feedback_label.setToolTip("Click to provide feedback about the application")
         yellow_bar_layout.addWidget(feedback_label)
-
-        # Add stretch to push author info to the right
-        yellow_bar_layout.addStretch()
-
-        # Add author information
-        author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")
-        author_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        yellow_bar_layout.addWidget(author_label)
         
         main_layout.addWidget(self.yellow_bar)
         
