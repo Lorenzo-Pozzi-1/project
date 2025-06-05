@@ -37,7 +37,7 @@ class ApplicationRateWidget(QWidget):
         
         # Rate spinbox
         self._rate_spin = QDoubleSpinBox()
-        self._rate_spin.setRange(0.0, 9999.99)
+        self._rate_spin.setRange(0.0, 999999.99)
         self._rate_spin.setValue(0.0)
         self._rate_spin.setDecimals(2)
         self._rate_spin.setFont(font)

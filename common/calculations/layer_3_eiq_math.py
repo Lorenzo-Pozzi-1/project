@@ -1,5 +1,5 @@
 """
-Pure EIQ Calculation Functions (2nd Layer)
+Pure EIQ Calculation Functions (Layer 3) with Enhanced Logging
 Only accepts standardized inputs, performs mathematical calculations only.
 No UOM handling - all inputs must be pre-standardized.
 """
@@ -33,7 +33,6 @@ def calculate_field_eiq_single_ai(ai_concentration_per_unit: float,
     Returns:
         Field EIQ per hectare [eiq/ha]
     """
-    calculation_tracer.log(f"calculate_field_eiq_single_ai")
     if any(val <= 0 for val in [ai_concentration_per_unit, ai_eiq_per_kg, rate_per_ha]):
         return 0.0
     
@@ -42,8 +41,6 @@ def calculate_field_eiq_single_ai(ai_concentration_per_unit: float,
     
     # Pure mathematical calculation - units already validated
     field_eiq = rate_per_ha * ai_concentration_per_unit * ai_eiq_per_kg * applications
-    calculation_tracer.log(f"\t\tField EIQ for this AI: {rate_per_ha} [-/ha] * {ai_concentration_per_unit} [kg/-] * {ai_eiq_per_kg:.2f} [EIQ/kg]* {applications} = {field_eiq:.2f} [EIQ/ha]")
-
     return field_eiq
 
 def calculate_field_eiq_product(standardized_ais: List[Dict],
@@ -63,15 +60,16 @@ def calculate_field_eiq_product(standardized_ais: List[Dict],
     Returns:
         EIQResult with total field EIQ and breakdown
     """
-    calculation_tracer.log(f"\nI can now calculate_field_eiq_product (L3)")
     if not standardized_ais or rate_per_ha <= 0:
         return EIQResult(field_eiq_per_ha=0.0)
     
     total_field_eiq = 0.0
     breakdown = {}
     
-    for ai in standardized_ais:
-        calculation_tracer.log(f"\tCalculating EIQ for AI: {ai.get('name', 'Unknown')}. Calling ", end="")
+    # Calculate for each AI and log the formula
+    for i, ai in enumerate(standardized_ais):
+        is_last = (i == len(standardized_ais) - 1)
+        
         ai_field_eiq = calculate_field_eiq_single_ai(
             ai_concentration_per_unit=ai['concentration_per_unit'],
             ai_eiq_per_kg=ai['eiq_per_kg'],
@@ -79,8 +77,18 @@ def calculate_field_eiq_product(standardized_ais: List[Dict],
             applications=applications
         )
         
+        # Log the formula with substituted values
+        formula = f"{ai['name']}: {rate_per_ha:.1f} × {ai['concentration_per_unit']:.3f} × {ai['eiq_per_kg']:.1f} × {applications} = {ai_field_eiq:.1f} eiq/ha"
+        calculation_tracer.log_substep(formula, level=2, is_last=is_last)
+        
         total_field_eiq += ai_field_eiq
         breakdown[ai.get('name', 'Unknown')] = ai_field_eiq
+    
+    # Log the total calculation
+    if len(standardized_ais) > 1:
+        calculation_tracer.add_blank_line()
+        total_parts = " + ".join([f"{eiq:.1f}" for eiq in breakdown.values()])
+        calculation_tracer.log_substep(f"Total: {total_parts} = {total_field_eiq:.1f} eiq/ha", level=2, is_last=True)
     
     return EIQResult(
         field_eiq_per_ha=total_field_eiq,
@@ -97,11 +105,17 @@ def calculate_field_eiq_scenario(application_eiq_values: List[float]) -> EIQResu
     Returns:
         EIQResult with total scenario EIQ and breakdown by application
     """
-    calculation_tracer.log(f"\nL3 - calculate_field_eiq_scenario")
     if not application_eiq_values:
         return EIQResult(field_eiq_per_ha=0.0)
     
-    total_scenario_eiq = sum(eiq for eiq in application_eiq_values if eiq >= 0)
+    valid_eiq_values = [eiq for eiq in application_eiq_values if eiq >= 0]
+    total_scenario_eiq = sum(valid_eiq_values)
+    
+    # Log scenario calculation if multiple applications
+    if len(valid_eiq_values) > 1:
+        calculation_tracer.log_step("Scenario Total")
+        total_parts = " + ".join([f"{eiq:.1f}" for eiq in valid_eiq_values])
+        calculation_tracer.log_substep(f"Total: {total_parts} = {total_scenario_eiq:.1f} eiq/ha", level=1, is_last=True)
     
     breakdown = {
         f'Application {i+1}': eiq 

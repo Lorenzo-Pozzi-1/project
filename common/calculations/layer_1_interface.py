@@ -38,8 +38,26 @@ class EIQCalculator:
             Total Field EIQ [eiq/ha]
         """
         try:
-            calculation_tracer.log(f"\nI have to calculate_product_field_EIQ")
-            # Layer 1: Standardize inputs
+            # Determine product name for header
+            product_name = "Product Calculation"
+            if active_ingredients and len(active_ingredients) > 0:
+                first_ai = active_ingredients[0].get('name', 'Unknown')
+                if len(active_ingredients) == 1:
+                    product_name = f"Product with {first_ai}"
+                else:
+                    product_name = f"Product with {first_ai} + {len(active_ingredients)-1} others"
+            
+            # Start structured logging
+            calculation_tracer.log_header(f"EIQ CALCULATION FOR {product_name}")
+            
+            # Step 1: Product Information
+            calculation_tracer.log_step("Product Information")
+            calculation_tracer.log_ai_list(active_ingredients, level=1)
+            calculation_tracer.log_application_info(application_rate, application_rate_uom, applications, level=1)
+            calculation_tracer.add_blank_line()
+            
+            # Step 2: Unit Standardization
+            calculation_tracer.log_step("Unit Standardization")
             standardized = self.standardizer.standardize_product_inputs(
                 active_ingredients=active_ingredients,
                 application_rate=application_rate,
@@ -47,20 +65,24 @@ class EIQCalculator:
                 applications=applications,
                 user_preferences=user_preferences
             )
+            calculation_tracer.add_blank_line()
             
-            # Layer 2: Pure calculation
+            # Step 3: Field EIQ Calculation
+            calculation_tracer.log_step("Field EIQ Calculation")
+            calculation_tracer.log_substep("Formula: Rate × Concentration × EIQ × Applications", level=1)
+            
             result = calculate_field_eiq_product(
                 standardized_ais=standardized.active_ingredients,
                 rate_per_ha=standardized.rate_per_ha,
                 applications=standardized.applications
             )
 
-            calculation_tracer.log(f"Summing up the results for all AIs I got: {result.field_eiq_per_ha} [EIQ/ha]")
+            calculation_tracer.log_result("Field EIQ", f"{result.field_eiq_per_ha:.1f}", "eiq/ha")
             calculation_tracer.calculation_complete()
             return result.field_eiq_per_ha
             
         except Exception as e:
-            calculation_tracer.log(f"Layer 1.calculate_product_field_eiq: Error calculating product Field EIQ: {e}")
+            calculation_tracer.log(f"Error calculating product Field EIQ: {e}")
             calculation_tracer.calculation_complete()
             return 0.0
     
@@ -78,17 +100,23 @@ class EIQCalculator:
             Total scenario Field EIQ [eiq/ha]
         """
         try:
+            calculation_tracer.log_header(f"SCENARIO EIQ CALCULATION ({len(applications)} applications)")
+            
             application_eiq_values = []
             
-            for app in applications:
+            for i, app in enumerate(applications):
+                calculation_tracer.log_step(f"Application {i+1}")
+                
                 # Extract application data
                 product = app.get('product')
                 if not product:
+                    calculation_tracer.log_substep("No product specified", level=1, is_last=True)
                     continue
                 
                 # Get active ingredients data
                 active_ingredients = product.get_ai_data() if hasattr(product, 'get_ai_data') else []
                 if not active_ingredients:
+                    calculation_tracer.log_substep("No active ingredients found", level=1, is_last=True)
                     continue
                 
                 # Calculate EIQ for this application
@@ -101,13 +129,18 @@ class EIQCalculator:
                 )
                 
                 application_eiq_values.append(app_eiq)
+                calculation_tracer.log_result(f"Application {i+1} EIQ", f"{app_eiq:.1f}", "eiq/ha", level=1)
+                calculation_tracer.add_blank_line()
             
             # Sum all application EIQs
             scenario_result = calculate_field_eiq_scenario(application_eiq_values)
+            calculation_tracer.log_result("Total Scenario EIQ", f"{scenario_result.field_eiq_per_ha:.1f}", "eiq/ha")
+            calculation_tracer.calculation_complete()
             return scenario_result.field_eiq_per_ha
             
         except Exception as e:
-            calculation_tracer.log(f"Layer 1.calculate_scenario_field_eiq: Error calculating scenario Field EIQ: {e}")
+            calculation_tracer.log(f"Error calculating scenario Field EIQ: {e}")
+            calculation_tracer.calculation_complete()
             return 0.0
 
 # Create singleton instance for global use

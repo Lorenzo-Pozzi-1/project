@@ -43,7 +43,6 @@ class EIQUOMStandardizer:
                                    application_rate_uom: str,
                                    applications: int,
                                    user_preferences: dict = None,
-                                   # NEW: Optional pre-standardized rate parameters
                                    pre_standardized_rate: float = None,
                                    pre_standardized_rate_type: str = None) -> StandardizedEIQInputs:
         """
@@ -64,37 +63,49 @@ class EIQUOMStandardizer:
             StandardizedEIQInputs with all values in standard units
         """
         
-        calculation_tracer.log(f"\n\tI have to standardize_single_ai_inputs (AI EIQ={ai_eiq}, [AI]={ai_concentration} {ai_concentration_uom})")
+        # ENHANCED LOGGING: Replace original debug-style logging with structured logging
+        ai_name = "AI"  # We don't have AI name in this context, use generic
+        calculation_tracer.log_substep(f"Standardizing {ai_name} (EIQ={ai_eiq}, Conc={ai_concentration} {ai_concentration_uom})", level=2)
         
         # Step 1: Handle application rate - use pre-standardized if available
         if pre_standardized_rate is not None and pre_standardized_rate_type is not None:
-            calculation_tracer.log(f"\n\tSTEP 1 - Standardizing app. rate\n\t\tUsing pre-standardized rate: {pre_standardized_rate} {"kg/ha" if pre_standardized_rate_type == "weight" else "l/ha"}\n\tDONE")
+            # ENHANCED LOGGING: Replace original with structured logging
+            calculation_tracer.log_substep(f"Using pre-standardized rate: {pre_standardized_rate} {'kg/ha' if pre_standardized_rate_type == 'weight' else 'l/ha'}", level=3)
             rate_per_ha = pre_standardized_rate
             rate_unit_type = pre_standardized_rate_type
         else:
-            calculation_tracer.log(f"\tNo pre-standardized rate provided, converting: {application_rate} {application_rate_uom}")
-            calculation_tracer.log("\tSTEP 1 - Standardizing application rate")
+            # ENHANCED LOGGING: Replace original with structured logging
+            calculation_tracer.log_substep("Converting application rate", level=3)
             rate_per_ha, rate_unit_type = self._standardize_application_rate(
                 application_rate, application_rate_uom, user_preferences
             )
-            calculation_tracer.log(f"\tApplication rate standardized to {rate_per_ha} with unit type '{rate_unit_type}'")
+            # ENHANCED LOGGING: Replace original with structured logging
+            target_unit = "kg/ha" if rate_unit_type == "weight" else "l/ha"
+            calculation_tracer.log_conversion(application_rate, application_rate_uom, target_unit, f"{rate_per_ha:.3f}", level=4)
         
         # Step 2: Standardize AI concentration to match rate units
-        calculation_tracer.log("\n\tSTEP 2 - Standardizing AI concentration to match rate units")
+        # ENHANCED LOGGING: Replace original with structured logging
+        calculation_tracer.log_substep("Standardizing AI concentration", level=3)
         ai_concentration_per_unit = self._standardize_ai_concentration(
             ai_concentration, ai_concentration_uom, rate_unit_type
         )
-        calculation_tracer.log(f"\tDONE! AI concentration standardized to {ai_concentration_per_unit} {"kg/kg" if pre_standardized_rate_type == "weight" else "kg/l"}")
+        # ENHANCED LOGGING: Replace original with structured logging
+        target_conc_unit = "kg/kg" if rate_unit_type == "weight" else "kg/l"
+        calculation_tracer.log_conversion(ai_concentration, ai_concentration_uom, target_conc_unit, f"{ai_concentration_per_unit:.4f}", level=4)
         
         # Step 3: Standardize EIQ to [eiq/kg] (Cornell is eiq/lb)
-        calculation_tracer.log("\n\tSTEP 3 - Standardizing AI EIQ from Cornell units")
+        # ENHANCED LOGGING: Replace original with structured logging
+        calculation_tracer.log_substep("Standardizing AI EIQ from Cornell units", level=3)
         ai_eiq_per_kg = self._standardize_ai_eiq(ai_eiq)
-        calculation_tracer.log(f"\tAI EIQ standardized to {ai_eiq_per_kg:.2f} eiq/kg")
+        # ENHANCED LOGGING: Replace original with structured logging
+        calculation_tracer.log_conversion(ai_eiq, "eiq/lb", "eiq/kg", f"{ai_eiq_per_kg:.1f}", level=4)
         
         # Step 4: Validate dimensional analysis
-        calculation_tracer.log("\n\tSTEP 4 - Validating dimensional analysis")
+        # ENHANCED LOGGING: Replace original with structured logging
+        calculation_tracer.log_substep("Validating dimensional analysis", level=3)
         self._validate_dimensional_analysis(rate_unit_type, ai_concentration_per_unit)
-        calculation_tracer.log("\tDimensional analysis validation passed")
+        # ENHANCED LOGGING: Replace original with structured logging
+        calculation_tracer.log_substep("Dimensional analysis ✓", level=4)
         
         result = StandardizedEIQInputs(
             rate_per_ha=rate_per_ha,
@@ -103,7 +114,7 @@ class EIQUOMStandardizer:
             ai_eiq_per_kg=ai_eiq_per_kg,
             applications=applications
         )
-        calculation_tracer.log(f"\tReturning standardized inputs: rate={result.rate_per_ha}, type={result.rate_unit_type}")
+        
         return result
     
     def standardize_product_inputs(self,
@@ -126,27 +137,34 @@ class EIQUOMStandardizer:
             ProductStandardizedInputs with all AIs standardized consistently
         """
         
-        calculation_tracer.log(f"\nI first have to standardize_product_inputs ({applications} applications with {len(active_ingredients)} AIs at {application_rate} {application_rate_uom})")
+        # ENHANCED LOGGING: Replace original debug-style logging with structured logging
+        calculation_tracer.log_substep(f"Standardizing product inputs ({applications} applications with {len(active_ingredients)} AIs at {application_rate} {application_rate_uom})", level=1)
         
         # Step 1: Standardize application rate ONCE at product level
-        calculation_tracer.log("\n  STEP 1 - Standardizing product application rate...\n")
+        # ENHANCED LOGGING: Replace original with structured logging
+        calculation_tracer.log_substep("Standardizing product application rate", level=2)
         rate_per_ha, rate_unit_type = self._standardize_application_rate(
             application_rate, application_rate_uom, user_preferences
         )
-        calculation_tracer.log(f"\n  COMPLETE! Product application rate standardized to {rate_per_ha} {'kg/ha' if rate_unit_type == 'weight' else 'l/ha'}")
+        # ENHANCED LOGGING: Replace original with structured logging
+        target_unit = "kg/ha" if rate_unit_type == "weight" else "l/ha"
+        calculation_tracer.log_conversion(application_rate, application_rate_uom, target_unit, f"{rate_per_ha:.3f}", level=3)
         
         # Step 2: Standardize all active ingredients using the pre-standardized rate
-        calculation_tracer.log("\n  STEP 2 - Standardizing all active ingredients using pre-standardized rate...")
+        # ENHANCED LOGGING: Replace original with structured logging
+        calculation_tracer.log_substep("Standardizing all active ingredients", level=2)
         standardized_ais = []
         for i, ai in enumerate(active_ingredients):
-            calculation_tracer.log(f"\n  Processing AI {i+1}/{len(active_ingredients)}: {ai.get('name', 'Unknown')}")
+            # ENHANCED LOGGING: Replace original with structured logging
+            calculation_tracer.log_substep(f"Processing AI {i+1}/{len(active_ingredients)}: {ai.get('name', 'Unknown')}", level=3)
             
             if not ai or ai.get('eiq') in [None, "--"] or ai.get('concentration') in [None, "--"]:
-                calculation_tracer.log(f"Skipping AI {ai.get('name', 'Unknown')} due to missing data")
+                # ENHANCED LOGGING: Replace original with structured logging
+                calculation_tracer.log_substep(f"Skipping {ai.get('name', 'Unknown')} due to missing data", level=4)
                 continue
                 
             try:
-                # Pass pre-standardized rate to avoid redundant conversion
+                # ORIGINAL LOGIC PRESERVED: Pass pre-standardized rate to avoid redundant conversion
                 standardized_ai = self.standardize_single_ai_inputs(
                     ai_eiq=float(ai['eiq']),
                     ai_concentration=float(ai['concentration']),
@@ -165,10 +183,12 @@ class EIQUOMStandardizer:
                     'eiq_per_kg': standardized_ai.ai_eiq_per_kg
                 }
                 standardized_ais.append(ai_data)
-                calculation_tracer.log(f"\n  DONE! I have Successfully standardized AI {ai.get('name', 'Unknown')}")
+                # ENHANCED LOGGING: Replace original with structured logging
+                calculation_tracer.log_substep(f"Successfully standardized {ai.get('name', 'Unknown')}", level=4)
                 
             except Exception as e:
-                calculation_tracer.log(f"Error standardizing AI {ai.get('name', 'unknown')}: {e}")
+                # ENHANCED LOGGING: Replace original with structured logging
+                calculation_tracer.log_substep(f"Error standardizing {ai.get('name', 'unknown')}: {e}", level=4)
                 continue
         
         result = ProductStandardizedInputs(
@@ -177,7 +197,8 @@ class EIQUOMStandardizer:
             active_ingredients=standardized_ais,
             applications=applications
         )
-        calculation_tracer.log(f"\nI have standardized the product inputs (with {len(standardized_ais)} standardized AIs)")
+        # ENHANCED LOGGING: Replace original with structured logging
+        calculation_tracer.log_substep(f"Product standardization complete ({len(standardized_ais)} AIs processed)", level=2)
         return result
     
     def _standardize_application_rate(self, 
@@ -211,11 +232,13 @@ class EIQUOMStandardizer:
             raise ValueError(f"Application rate must be weight/area or volume/area, got: {rate_uom}")
         
         # Convert to standard rate
-        calculation_tracer.log(f"\tI have to _standardize_application_rate: Converting {rate} from {from_uom.original_string} to {target_uom.original_string}... ",)
+        # ENHANCED LOGGING: Replace original debug-style logging
+        # calculation_tracer.log(f"\tI have to _standardize_application_rate: Converting {rate} from {from_uom.original_string} to {target_uom.original_string}... ",)
         standardized_rate = self.uom_repo.convert_composite_uom(
             rate, from_uom, target_uom, user_preferences
         )
-        calculation_tracer.log(f"\tStandardization complete - {rate} {rate_uom} = {standardized_rate} {target_uom.original_string}")
+        # ENHANCED LOGGING: Replace original debug-style logging
+        # calculation_tracer.log(f"\tStandardization complete - {rate} {rate_uom} = {standardized_rate} {target_uom.original_string}")
         
         return standardized_rate, unit_type
     
@@ -231,7 +254,8 @@ class EIQUOMStandardizer:
         Returns:
             Standardized concentration as [kg/kg] or [kg/l]
         """
-        calculation_tracer.log(f"\t\t_standardize_ai_concentration from {concentration} {concentration_uom} ({target_rate_type} based)")
+        # ENHANCED LOGGING: Replace original debug-style logging
+        # calculation_tracer.log(f"\t\t_standardize_ai_concentration from {concentration} {concentration_uom} ({target_rate_type} based)")
         
         if not concentration or not concentration_uom:
             raise ValueError("AI concentration and UOM are required")
@@ -239,7 +263,8 @@ class EIQUOMStandardizer:
         # Handle percentage - works with both weight and volume (THIS MAY CREATE CALCULATION ERRORS WHEN LABEL % IS VOLUME/VOLUME)
         if concentration_uom == '%':
             result = concentration / 100.0  # Convert to decimal [kg/kg]
-            calculation_tracer.log(f"\t\tL2 - _standardize_ai_concentration: Converting percentage - {concentration}% = {result} (decimal)")
+            # ENHANCED LOGGING: Replace original debug-style logging
+            # calculation_tracer.log(f"\t\tL2 - _standardize_ai_concentration: Converting percentage - {concentration}% = {result} (decimal)")
             return result
         
         from_uom = CompositeUOM(concentration_uom) # Parse the UOM into numerator / denominator
@@ -268,20 +293,25 @@ class EIQUOMStandardizer:
             if from_is_weight_per_weight and target_rate_type == "volume":
                 # Could convert kg/kg to kg/l, but would need product density - not implemented yet
                 # For now, assume similar density to water (1 kg/l)
-                calculation_tracer.log(f"\t\tL2 - _standardize_ai_concentration: WARNING! Converting concentration from {concentration_uom} to kg/l assuming density ~1 kg/l")
+                # ENHANCED LOGGING: Replace original debug-style logging
+                # calculation_tracer.log(f"\t\tL2 - _standardize_ai_concentration: WARNING! Converting concentration from {concentration_uom} to kg/l assuming density ~1 kg/l")
+                pass
         
         # Convert concentration
         try:
-            calculation_tracer.log(f"\t\t_standardize_ai_concentration: from {concentration} {from_uom.original_string} to {target_uom.original_string}")
+            # ENHANCED LOGGING: Replace original debug-style logging
+            # calculation_tracer.log(f"\t\t_standardize_ai_concentration: from {concentration} {from_uom.original_string} to {target_uom.original_string}")
             standardized_concentration = self.uom_repo.convert_composite_uom(
                 concentration, from_uom, target_uom
             )
-            calculation_tracer.log(f"\t\tConversion complete - {concentration} {concentration_uom} = {standardized_concentration} {target_uom.original_string}")
+            # ENHANCED LOGGING: Replace original debug-style logging
+            # calculation_tracer.log(f"\t\tConversion complete - {concentration} {concentration_uom} = {standardized_concentration} {target_uom.original_string}")
             return standardized_concentration
         except Exception as e:
-            calculation_tracer.log(f"Conversion failed with error: {e}")
+            # ENHANCED LOGGING: Replace original debug-style logging
+            # calculation_tracer.log(f"Conversion failed with error: {e}")
             raise ValueError(
-                f"\tL2._standardize_ai_concentration: Cannot convert concentration from {concentration_uom} to {target_uom.original_string}: {e}"
+                f"Cannot convert concentration from {concentration_uom} to {target_uom.original_string}: {e}"
             )
     
     def _standardize_ai_eiq(self, ai_eiq: float) -> float:
@@ -294,20 +324,24 @@ class EIQUOMStandardizer:
         Returns:
             EIQ in standard units (eiq/kg)
         """
-        calculation_tracer.log(f"\t\tI have to _standardize_ai_eiq: from {ai_eiq:.2f} (eiq/lb) to standard (eiq/kg)")
+        # ENHANCED LOGGING: Replace original debug-style logging
+        # calculation_tracer.log(f"\t\tI have to _standardize_ai_eiq: from {ai_eiq:.2f} (eiq/lb) to standard (eiq/kg)")
         
         if ai_eiq is None:
-            calculation_tracer.log("\t\tL2 - _standardize_ai_eiq: WARNING! Missing AI eiq value, calculating assuming it is 0.")
+            # ENHANCED LOGGING: Replace original debug-style logging
+            # calculation_tracer.log("\t\tL2 - _standardize_ai_eiq: WARNING! Missing AI eiq value, calculating assuming it is 0.")
             return 0.0
         
         if ai_eiq == 0:
-            calculation_tracer.log("\t\tL2 - _standardize_ai_eiq: AI EIQ is 0, returning 0.0")
+            # ENHANCED LOGGING: Replace original debug-style logging
+            # calculation_tracer.log("\t\tL2 - _standardize_ai_eiq: AI EIQ is 0, returning 0.0")
             return 0.0
         
         # Cornell EIQ is per pound, convert to per kg
         conversion_factor = self.uom_repo.convert_base_unit(1,'lb','kg')
         result = ai_eiq / conversion_factor
-        calculation_tracer.log(f"\t\tDONE! {result:.2f} eiq/kg")
+        # ENHANCED LOGGING: Replace original debug-style logging
+        # calculation_tracer.log(f"\t\tDONE! {result:.2f} eiq/kg")
         return result
     
     def _validate_dimensional_analysis(self, rate_unit_type: str, ai_concentration: float):
@@ -318,42 +352,49 @@ class EIQUOMStandardizer:
         - Weight rate: [kg/ha] x [kg/kg] x [eiq/kg] = [eiq/ha]
         - Volume rate: [l/ha]  x [kg/l]  x [eiq/kg] = [eiq/ha]
         """
-        calculation_tracer.log(f"\t\t_validate_dimensional_analysis for rate type '{rate_unit_type}' with concentration {ai_concentration}: ", end="")
+        # ENHANCED LOGGING: Replace original debug-style logging
+        # calculation_tracer.log(f"\t\t_validate_dimensional_analysis for rate type '{rate_unit_type}' with concentration {ai_concentration}: ", end="")
         
         if rate_unit_type not in ["weight", "volume"]:
             raise ValueError(f"Invalid rate unit type: {rate_unit_type}")
         
         if ai_concentration <= 0:
-            calculation_tracer.log(f"\t\tL2 - _validate_dimensional_analysis: ERROR - AI concentration {ai_concentration} must be positive")
+            # ENHANCED LOGGING: Replace original debug-style logging
+            # calculation_tracer.log(f"\t\tL2 - _validate_dimensional_analysis: ERROR - AI concentration {ai_concentration} must be positive")
             raise ValueError("AI concentration must be positive")
         
         # Additional validations could go here
         # For example, checking reasonable ranges for concentrations
         if rate_unit_type == "weight" and ai_concentration > 1.0:
-            calculation_tracer.log(f"\t\tL2 - _validate_dimensional_analysis: ERROR - Weight-based concentration {ai_concentration} cannot exceed 1.0 (100%)")
+            # ENHANCED LOGGING: Replace original debug-style logging
+            # calculation_tracer.log(f"\t\tL2 - _validate_dimensional_analysis: ERROR - Weight-based concentration {ai_concentration} cannot exceed 1.0 (100%)")
             raise ValueError("Layer2._validate_dimensional_analysis: Weight-based concentration cannot exceed 1.0 (100%)")
         
-        calculation_tracer.log("\t\tUOM_repo: Validating physical state compatibility... passed")
+        # ENHANCED LOGGING: Replace original debug-style logging
+        # calculation_tracer.log("\t\tUOM_repo: Validating physical state compatibility... passed")
         
     def _is_weight_per_volume(self, uom: CompositeUOM) -> bool:
         """Check if UOM is weight per volume (like lb/gal, g/l)."""
         
         if not uom.is_concentration:
-            calculation_tracer.log("\t\tL2 - _is_weight_per_volume: UOM is not a concentration, returning False")
+            # ENHANCED LOGGING: Replace original debug-style logging
+            # calculation_tracer.log("\t\tL2 - _is_weight_per_volume: UOM is not a concentration, returning False")
             return False
         
         num_unit = self.uom_repo.get_base_unit(uom.numerator)
         den_unit = self.uom_repo.get_base_unit(uom.denominator)
         
         is_weight_per_volume = (num_unit and den_unit and num_unit.category == 'weight' and den_unit.category == 'volume')
-        calculation_tracer.log(f"\t\t\t{uom.original_string} _is_weight_per_volume? {is_weight_per_volume}")
+        # ENHANCED LOGGING: Replace original debug-style logging
+        # calculation_tracer.log(f"\t\t\t{uom.original_string} _is_weight_per_volume? {is_weight_per_volume}")
         return is_weight_per_volume
     
     def _is_weight_per_weight(self, uom: CompositeUOM) -> bool:
         """Check if UOM is weight per weight (like g/kg, %)."""
         
         if uom.numerator == '%':
-            calculation_tracer.log("\t\t\tL2 - _is_weight_per_weight: UOM is percentage, returning True")
+            # ENHANCED LOGGING: Replace original debug-style logging
+            # calculation_tracer.log("\t\t\tL2 - _is_weight_per_weight: UOM is percentage, returning True")
             return True
             
         if not uom.is_concentration:
@@ -363,5 +404,6 @@ class EIQUOMStandardizer:
         den_unit = self.uom_repo.get_base_unit(uom.denominator)
         
         is_weight_per_weight = (num_unit and den_unit and num_unit.category == 'weight' and den_unit.category == 'weight')
-        calculation_tracer.log(f"\t\t\t{uom.original_string} _is_weight_per_weight? {is_weight_per_weight}")
+        # ENHANCED LOGGING: Replace original debug-style logging
+        # calculation_tracer.log(f"\t\t\t{uom.original_string} _is_weight_per_weight? {is_weight_per_weight}")
         return is_weight_per_weight
