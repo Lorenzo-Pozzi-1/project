@@ -6,7 +6,7 @@ with automatic rate conversion functionality.
 """
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QMouseEvent
-from PySide6.QtWidgets import QStyledItemDelegate, QApplication, QDialog
+from PySide6.QtWidgets import QStyledItemDelegate, QApplication, QDialog, QMessageBox
 from common import get_config, calculation_tracer
 from common.widgets.UOM_selector import UOMSelectionDialog, UOM_CATEGORIES
 from data.repository_UOM import UOMRepository, CompositeUOM
@@ -117,14 +117,14 @@ class UOMDelegate(QStyledItemDelegate):
             
             if rate_col is None:
                 print("Could not determine rate column for UOM conversion")
-                model.setData(uom_index, new_uom, Qt.EditRole)
+                # Don't change UOM if we can't find rate column
                 return False
             
             # Get current rate
             rate_index = model.index(uom_index.row(), rate_col)
             current_rate = rate_index.data(Qt.EditRole) or 0.0
             
-            # Skip conversion if rate is 0 or no current UOM
+            # Skip conversion if rate is 0 or no current UOM, but still update UOM
             if current_rate <= 0 or not current_uom:
                 model.setData(uom_index, new_uom, Qt.EditRole)
                 return True
@@ -151,15 +151,15 @@ class UOMDelegate(QStyledItemDelegate):
                 calculation_tracer.calculation_complete()
                 return True
             else:
-                # Conversion failed - just update UOM
-                model.setData(uom_index, new_uom, Qt.EditRole)
+                # Conversion failed - keep original UOM and rate unchanged
+                print(f"UOM conversion failed: {current_uom} → {new_uom}, keeping original values")
                 return False
                 
         except Exception as e:
             print(f"Error in rate conversion: {e}")
-            model.setData(uom_index, new_uom, Qt.EditRole)
+            # Don't change anything if there's an exception
             return False
-    
+
     def _convert_rate(self, value, from_uom, to_uom):
         """
         Convert rate value between UOMs.
@@ -192,5 +192,23 @@ class UOMDelegate(QStyledItemDelegate):
             return converted_value
             
         except Exception as e:
+            # Show warning dialog for incompatible conversions
+            # Get the active window as parent
+            parent = QApplication.activeWindow()
+            
+            msg_box = QMessageBox(parent)
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle("Unit Conversion Error")
+            msg_box.setText(
+                f"Cannot convert application rate from '{from_uom}' to '{to_uom}'"
+            )
+            msg_box.setInformativeText(
+                "These units are incompatible. Please select a compatible unit or "
+                "check if additional settings (like row spacing) are needed."
+            )
+            msg_box.setDetailedText(str(e))
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec()
+            
             print(f"UOM conversion failed: {from_uom} → {to_uom}: {e}")
             return None

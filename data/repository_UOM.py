@@ -136,27 +136,41 @@ class UOMRepository:
         
         calculation_tracer.log_substep(f"Converting {value} {from_uom.original_string} → {to_uom.original_string}", level=3)
         
-        # Validate physical state compatibility
-        self._validate_physical_state_compatibility(from_uom, to_uom)
+        try:
+            # Validate physical state compatibility
+            self._validate_physical_state_compatibility(from_uom, to_uom)
 
-        # Handle concentration units
-        if from_uom.is_concentration and to_uom.is_concentration:
-            result = self._convert_concentration(value, from_uom, to_uom)
-            return result
-        
-        # IMPORTANT: Check for special conversions (user preferences) FIRST
-        if self._needs_user_preferences(from_uom, to_uom):
-            calculation_tracer.log_substep("Requires user preferences (row spacing/seeding rate)", level=4)
-            result = self._convert_with_preferences(value, from_uom, to_uom, user_preferences)
-            return result
-        
-        # Handle standard rate conversions (only if not needing user preferences)
-        if from_uom.is_rate and to_uom.is_rate:
-            calculation_tracer.log_substep("Standard rate conversion", level=4)
-            result = self._convert_rate(value, from_uom, to_uom, user_preferences)
-            return result
-        
-        raise ValueError(f"Cannot convert {from_uom.original_string} to {to_uom.original_string}")
+            # Handle concentration units
+            if from_uom.is_concentration and to_uom.is_concentration:
+                result = self._convert_concentration(value, from_uom, to_uom)
+                return result
+            
+            # IMPORTANT: Check for special conversions (user preferences) FIRST
+            if self._needs_user_preferences(from_uom, to_uom):
+                calculation_tracer.log_substep("Requires user preferences (row spacing/seeding rate)", level=4)
+                result = self._convert_with_preferences(value, from_uom, to_uom, user_preferences)
+                return result
+            
+            # Handle standard rate conversions (only if not needing user preferences)
+            if from_uom.is_rate and to_uom.is_rate:
+                calculation_tracer.log_substep("Standard rate conversion", level=4)
+                result = self._convert_rate(value, from_uom, to_uom, user_preferences)
+                return result
+            
+            # If we get here, the conversion is not supported
+            if from_uom.is_concentration and to_uom.is_rate:
+                raise ValueError(f"Cannot convert concentration unit '{from_uom.original_string}' to rate unit '{to_uom.original_string}'")
+            elif from_uom.is_rate and to_uom.is_concentration:
+                raise ValueError(f"Cannot convert rate unit '{from_uom.original_string}' to concentration unit '{to_uom.original_string}'")
+            else:
+                raise ValueError(f"Unsupported conversion: {from_uom.original_string} to {to_uom.original_string}")
+                
+        except ValueError as e:
+            # Re-raise ValueError with more context
+            raise ValueError(f"Unit conversion error: {str(e)}")
+        except Exception as e:
+            # Handle other exceptions
+            raise ValueError(f"Unexpected error during unit conversion from {from_uom.original_string} to {to_uom.original_string}: {str(e)}")
     
     def convert_concentration(self, 
                             value: float, 
@@ -354,10 +368,16 @@ class UOMRepository:
         
         # Check if trying to convert between dry and wet
         if from_num_unit.state == 'dry' and to_num_unit.state == 'wet':
-            raise ValueError(f"Cannot convert dry weight ({from_uom.numerator}) to liquid volume ({to_uom.numerator})")
+            raise ValueError(
+                f"Cannot convert dry weight unit '{from_uom.numerator}' to liquid volume unit '{to_uom.numerator}'. "
+                f"These represent different physical states and cannot be directly converted."
+            )
         
         if from_num_unit.state == 'wet' and to_num_unit.state == 'dry':
-            raise ValueError(f"Cannot convert liquid volume ({from_uom.numerator}) to dry weight ({to_uom.numerator})")
+            raise ValueError(
+                f"Cannot convert liquid volume unit '{from_uom.numerator}' to dry weight unit '{to_uom.numerator}'. "
+                f"These represent different physical states and cannot be directly converted."
+            )
         
         # Allow conversions within same state or involving 'no' state (area, length)
         return

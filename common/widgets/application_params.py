@@ -5,7 +5,7 @@ This module provides widgets for entering application rate, units, and other par
 Enhanced with automatic rate conversion when UOM changes.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QFormLayout, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QFormLayout, QLabel, QMessageBox
 from PySide6.QtCore import Signal, Property
 from common.styles import get_medium_font, get_small_font
 from common.widgets.header_frame_buttons import ContentFrame
@@ -68,17 +68,25 @@ class ApplicationRateWidget(QWidget):
         converted_rate = self._convert_rate(current_rate, self._previous_uom, new_uom)
         
         if converted_rate is not None:
-            # Temporarily block signals to avoid cascade events
+            # Conversion successful - update rate and previous UOM
             self._rate_spin.blockSignals(True)
             self._rate_spin.setValue(converted_rate)
             self._rate_spin.blockSignals(False)
             
             calculation_tracer.log(f"Auto-converted rate: {current_rate} {self._previous_uom} → {converted_rate:.2f} {new_uom}")
+            
+            # Update previous UOM only after successful conversion
+            self._previous_uom = new_uom
+        else:
+            # Conversion failed - revert UOM back to previous value
+            self._unit_combo.blockSignals(True)
+            self._unit_combo.setCurrentText(self._previous_uom)
+            self._unit_combo.blockSignals(False)
+            
+            # Don't update _previous_uom since we're keeping the old one
+            return  # Exit early to avoid emitting value_changed
         
-        # Update previous UOM
-        self._previous_uom = new_uom
-        
-        # Emit change signal
+        # Emit change signal only if conversion was successful
         self.value_changed.emit()
     
     def _convert_rate(self, value, from_uom, to_uom):
@@ -115,9 +123,20 @@ class ApplicationRateWidget(QWidget):
             return converted_value
             
         except Exception as e:
+            # Show warning dialog for incompatible conversions
+            msg_box = QMessageBox(self)
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle("Unit Conversion Error!")
+            msg_box.setText(
+                f"Cannot convert from '{from_uom}' to '{to_uom}'"
+            )
+            msg_box.setDetailedText(str(e))
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec()
+            
             calculation_tracer.log(f"Rate conversion failed: {from_uom} → {to_uom}: {e}")
-            # If conversion fails, keep the original value
-            return value
+            # Return None to signal conversion failure - original value will be kept
+            return None
     
     # Property-based API for rate
     def _get_rate(self):
