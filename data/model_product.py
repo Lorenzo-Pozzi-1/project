@@ -268,7 +268,9 @@ class Product:
         Get all active ingredients data with their EIQ values and concentration info.
         
         Returns:
-            list: List of dictionaries with name, eiq, concentration, and its uom for each AI
+            list: List of dictionaries with name, eiq, concentration, and its uom for each AI.
+             If an AI has no EIQ data, it will still be included with eiq set to 0
+             so it is visualized but does not break the calculations.
         """
         
         ai_repo = AIRepository.get_instance()
@@ -282,10 +284,10 @@ class Product:
                 
             eiq = ai_repo.get_ai_eiq(name)
             
-            if eiq is not None and concentration is not None:
+            if concentration is not None:
                 ai_data.append({
                     'name': name,
-                    'eiq': eiq,
+                    'eiq': eiq if eiq is not None else 0,  # Use 0 if no EIQ value found
                     'concentration': concentration,
                     'uom': uom
                 })

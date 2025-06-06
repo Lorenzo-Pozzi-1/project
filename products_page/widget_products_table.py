@@ -10,19 +10,45 @@ from PySide6.QtCore import Qt, Signal
 from common import GENERIC_TABLE_STYLE, get_medium_font
 
 
+class NumericTableWidgetItem(QTableWidgetItem):
+    """A table widget item that sorts numerically instead of alphabetically."""
+    
+    def __lt__(self, other):
+        """Override less than comparison for proper numeric sorting."""
+        try:
+            # Try to convert both values to float for comparison
+            self_value = float(self.text()) if self.text() and self.text() != "--" else 0
+            other_value = float(other.text()) if other.text() and other.text() != "--" else 0
+            return self_value < other_value
+        except (ValueError, TypeError):
+            # Fall back to string comparison if conversion fails
+            return super().__lt__(other)
+
+
 class ProductTable(QTableWidget):
     """A table widget for displaying product information."""
     
     selection_changed = Signal(list)  # Signal emitted when selection changes
+    
+    # Define the exact columns we want in the exact order
+    COLUMNS = [
+        {"key": "checkbox", "header": "", "width": 25, "resize": "fixed"},
+        {"key": "type", "header": "Type", "width": 150, "resize": "fixed"},
+        {"key": "name", "header": "Name", "width": None, "resize": "stretch"},
+        {"key": "use", "header": "Use", "width": 200, "resize": "fixed"},
+        {"key": "registrant", "header": "Registrant", "width": None, "resize": "stretch"},
+        {"key": "formulation", "header": "Formulation", "width": 120, "resize": "fixed"},
+        {"key": "REI (h)", "header": "REI (h)", "width": 80, "resize": "fixed"},
+        {"key": "PHI (d)", "header": "PHI (d)", "width": 80, "resize": "fixed"},
+        {"key": "AIs", "header": "AIs", "width": 200, "resize": "fixed"},
+        {"key": "Groups", "header": "Groups", "width": 200, "resize": "fixed"},
+    ]
     
     def __init__(self, parent=None):
         """Initialize the product table."""
         super().__init__(parent)
         self.all_products = []
         self.selected_products = []
-        self.column_keys = []
-        self.visible_columns = []
-        self.field_to_column_map = {}
         self.setup_ui()
     
     def setup_ui(self):
@@ -35,33 +61,40 @@ class ProductTable(QTableWidget):
         self.setSelectionBehavior(QTableWidget.SelectRows)
         self.setEditTriggers(QTableWidget.NoEditTriggers)
         
-        # Configure header
+        # Set up columns
+        self.setColumnCount(len(self.COLUMNS))
+        
+        # Set headers and column properties
+        headers = []
+        for col_index, col_config in enumerate(self.COLUMNS):
+            headers.append(col_config["header"])
+            
+            # Set column width and resize mode
+            if col_config["resize"] == "fixed":
+                self.horizontalHeader().setSectionResizeMode(col_index, QHeaderView.Fixed)
+                if col_config["width"]:
+                    self.setColumnWidth(col_index, col_config["width"])
+            elif col_config["resize"] == "stretch":
+                self.horizontalHeader().setSectionResizeMode(col_index, QHeaderView.Stretch)
+        
+        self.setHorizontalHeaderLabels(headers)
+        
+        # Configure header for sorting
         header = self.horizontalHeader()
         header.setSectionsClickable(True)
         header.sectionClicked.connect(self.on_header_clicked)
     
     def set_products(self, products, column_keys=None, column_config=None):
-        """Set the products to display in the table with configuration.
+        """Set the products to display in the table.
         
         Args:
             products: List of product objects
-            column_keys: Optional list of column keys to display
-            column_config: Optional configuration for columns 
-                {
-                   "hide_columns": [...],
-                   "rename_columns": {"original": "new"},
-                   "special_columns": {"groups": {"after": "ai1"}}
-                }
+            column_keys: Ignored - kept for backward compatibility
+            column_config: Ignored - kept for backward compatibility
         """
-        # Default configuration if not provided
-        if column_config is None:
-            column_config = self.get_default_column_config()
-        
-        # Clear existing table
-        self.clear()
+        # Clear existing table data (but preserve headers)
         self.setRowCount(0)
-        self.visible_columns = []
-        self.field_to_column_map = {}
+        self.clearContents()  # Only clear cell contents, not headers
         
         # Store products
         self.all_products = products
@@ -70,273 +103,100 @@ class ProductTable(QTableWidget):
         if not products:
             return
         
-        # Determine columns to display
-        if column_keys is None:
-            # Get columns from first product
-            first_product = products[0].to_dict()
-            self.column_keys = list(first_product.keys())
-        else:
-            self.column_keys = column_keys
-        
-        # Configure table columns using the configuration
-        self._setup_table_columns(column_config)
-        
         # Set row count
         self.setRowCount(len(products))
         
-        # Fill table with data
-        self._populate_table(products, column_config)
-        
-        # Update visible columns and mapping for filtering
-        self._update_visible_columns_map(column_config)
-    
-    def get_default_column_config(self):
-        """Get the default column configuration."""
-        return {
-            "hide_columns": [
-                "country", "region", "min days between applications",
-                "min rate", "max rate", "rate UOM", "reg. #",
-                "[ai1]", "[ai1]uom", "ai1 eiq",
-                "[ai2]", "[ai2]uom", "ai2 eiq", "ai2",
-                "[ai3]", "[ai3]uom", "ai3 eiq", "ai3",
-                "[ai4]", "[ai4]uom", "ai4 eiq", "ai4"
-            ],
-            "rename_columns": {
-                "ai1": "AIs"
-            },
-            "special_columns": {
-                "groups": {"after": "ai1"}
-            }
-        }
-    
-    def _setup_table_columns(self, config):
-        """Configure table columns based on provided configuration.
-        
-        Args:
-            config: Column configuration dictionary
-        """
-        hide_columns = config.get("hide_columns", [])
-        rename_columns = config.get("rename_columns", {})
-        special_columns = config.get("special_columns", {})
-        
-        # Find special column positions
-        special_col_positions = {}
-        
-        # Find AI1 column position (used for Groups column)
-        ai1_col = -1
-        for i, key in enumerate(self.column_keys):
-            if key.lower() == "ai1":
-                ai1_col = i
-                break
-        
-        # Calculate positions for special columns
-        for special_key, special_config in special_columns.items():
-            if special_config.get("after") == "ai1" and ai1_col >= 0:
-                special_col_positions[special_key] = ai1_col + 2  # +1 for checkbox, +1 for position after AI1
-        
-        # Calculate total number of columns needed
-        additional_cols = 1  # +1 for checkbox
-        for special_key in special_col_positions:
-            if special_key not in self.column_keys:  # Only count if not already in column_keys
-                additional_cols += 1
-                
-        col_count = len(self.column_keys) + additional_cols
-        self.setColumnCount(col_count)
-        
-        # Set header labels
-        headers = [""] + self.column_keys  # [""] for checkbox column
-        
-        # Insert special column headers
-        for special_key, position in special_col_positions.items():
-            if position > 0 and special_key not in self.column_keys:
-                headers.insert(position, special_key.capitalize())
-        
+        # Restore headers (in case they were cleared)
+        headers = [col_config["header"] for col_config in self.COLUMNS]
         self.setHorizontalHeaderLabels(headers)
         
-        # Apply rename operations
-        for col, key in enumerate(self.column_keys, start=1):
-            # Calculate the actual table column index
-            table_col = col
-            for special_key, position in special_col_positions.items():
-                if position > 0 and col >= position and special_key not in self.column_keys:
-                    table_col = col + 1  # Adjust for inserted special column
-            
-            # Apply column renaming
-            if key.lower() in [k.lower() for k in rename_columns.keys()]:
-                for orig_key, new_name in rename_columns.items():
-                    if key.lower() == orig_key.lower():
-                        self.horizontalHeader().model().setHeaderData(
-                            table_col, Qt.Horizontal, new_name
-                        )
-            
-            # Hide specified columns
-            if any(key.lower() == hide_key.lower() for hide_key in hide_columns):
-                self.setColumnHidden(table_col, True)
-        
-        # Set column sizing
-        for col in range(col_count):
-            # Set checkbox column to fixed width
-            if col == 0:
-                self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Fixed)
-                self.setColumnWidth(col, 25)
-            # Set name column to stretch
-            elif self.horizontalHeaderItem(col) and self.horizontalHeaderItem(col).text().lower() == "name":
-                self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
-            # Set AIs column to fixed width
-            elif self.horizontalHeaderItem(col) and self.horizontalHeaderItem(col).text().lower() == "ais":
-                self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Fixed)
-                self.setColumnWidth(col, 200)
-            # Set Groups column to fixed width
-            elif self.horizontalHeaderItem(col) and self.horizontalHeaderItem(col).text().lower() == "groups":
-                self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Fixed)
-                self.setColumnWidth(col, 200)
-            # Set registrant column to stretch
-            elif self.horizontalHeaderItem(col) and self.horizontalHeaderItem(col).text().lower() == "registrant":
-                self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
-            # Set type column to fixed width
-            elif self.horizontalHeaderItem(col) and self.horizontalHeaderItem(col).text().lower() == "type":
-                self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Fixed)
-                self.setColumnWidth(col, 150)
-            # Set all other columns to fixed width
-            elif not self.isColumnHidden(col):
-                self.horizontalHeader().setSectionResizeMode(col, QHeaderView.Fixed)
-                self.setColumnWidth(col, 100)
+        # Fill table with data
+        self._populate_table(products)
     
-    def _populate_table(self, products, config):
-        """Populate table with product data.
-        
-        Args:
-            products: List of product objects
-            config: Column configuration dictionary
-        """
-        special_columns = config.get("special_columns", {})
-        rename_columns = config.get("rename_columns", {})
-        
-        # Find AI1 column position (for Groups column)
-        ai1_col = -1
-        for i, key in enumerate(self.column_keys):
-            if key.lower() == "ai1":
-                ai1_col = i
-                break
-        
-        # Calculate groups column position
-        groups_col = -1
-        if "groups" in special_columns and special_columns["groups"].get("after") == "ai1" and ai1_col >= 0:
-            groups_col = ai1_col + 2  # +1 for checkbox, +1 for position after AI1
-        
-        # Fill table rows
+    def _populate_table(self, products):
+        """Populate table with product data."""
         for row, product in enumerate(products):
-            product_dict = product.to_dict()
-            
-            # Add checkbox
-            checkbox = QCheckBox()
-            checkbox.stateChanged.connect(lambda state, r=row: self.product_selected(r, state))
-            checkbox_cell = QWidget()
-            checkbox_layout = QHBoxLayout(checkbox_cell)
-            checkbox_layout.addWidget(checkbox)
-            checkbox_layout.setAlignment(Qt.AlignCenter)
-            checkbox_layout.setContentsMargins(0, 0, 0, 0)
-            self.setCellWidget(row, 0, checkbox_cell)
-            
-            # Process groups data if needed
-            if groups_col > 0:
-                ai_groups = product.get_ai_groups()
-                # Process groups to consolidate by organization code
-                org_groups = {}
-                for group_text in ai_groups:
-                    if not group_text:
-                        continue
-                    for part in group_text.split(', '):
-                        if ':' in part:
-                            org, code = part.split(':', 1)
-                            org = org.strip()
-                            code = code.strip()
-                            if org not in org_groups:
-                                org_groups[org] = []
-                            if code not in org_groups[org]:
-                                org_groups[org].append(code)
+            for col_index, col_config in enumerate(self.COLUMNS):
+                col_key = col_config["key"]
                 
-                # Format the consolidated groups
-                groups_formatted = []
-                for org, codes in org_groups.items():
-                    groups_formatted.append(f"{org}: {', '.join(codes)}")
+                if col_key == "checkbox":
+                    # Add checkbox
+                    checkbox = QCheckBox()
+                    checkbox.stateChanged.connect(lambda state, r=row: self.product_selected(r, state))
+                    checkbox_cell = QWidget()
+                    checkbox_layout = QHBoxLayout(checkbox_cell)
+                    checkbox_layout.addWidget(checkbox)
+                    checkbox_layout.setAlignment(Qt.AlignCenter)
+                    checkbox_layout.setContentsMargins(0, 0, 0, 0)
+                    self.setCellWidget(row, col_index, checkbox_cell)
                 
-                groups_text = "; ".join(groups_formatted)
-                self.setItem(row, groups_col, QTableWidgetItem(groups_text))
-            
-            # Fill all other data cells
-            for col, key in enumerate(self.column_keys, start=1):
-                # Calculate the actual table column index
-                table_col = col
-                if groups_col > 0 and col >= groups_col:
-                    table_col = col + 1  # Adjust for inserted Groups column
+                elif col_key == "AIs":
+                    # Show all active ingredients
+                    ais_text = ", ".join(product.active_ingredients) if product.active_ingredients else ""
+                    self.setItem(row, col_index, QTableWidgetItem(ais_text))
                 
-                # Check if this is the ai1 column that should show all AIs
-                if key.lower() == "ai1" and key.lower() in [k.lower() for k in rename_columns.keys()]:
-                    # Get all active ingredients and join them with commas
-                    all_ais = product.active_ingredients
-                    ais_text = ", ".join(all_ais) if all_ais else ""
-                    self.setItem(row, table_col, QTableWidgetItem(ais_text))
-                else:
-                    # Use the original product dictionary value
-                    value = product_dict.get(key, "")
-                    if value is not None:
-                        self.setItem(row, table_col, QTableWidgetItem(str(value)))
+                elif col_key == "Groups":
+                    # Show mode of action groups
+                    ai_groups = product.get_ai_groups()
+                    groups_text = self._format_groups(ai_groups)
+                    self.setItem(row, col_index, QTableWidgetItem(groups_text))
+                
+                elif col_key in ["REI (h)", "PHI (d)"]:
+                    # Numeric columns - use NumericTableWidgetItem for proper sorting
+                    product_dict = product.to_dict()
+                    value = product_dict.get(col_key, "")
+                    if value is not None and value != "":
+                        self.setItem(row, col_index, NumericTableWidgetItem(str(value)))
                     else:
-                        self.setItem(row, table_col, QTableWidgetItem(""))
+                        self.setItem(row, col_index, NumericTableWidgetItem("--"))
+                
+                else:
+                    # Standard product field - map to product dictionary
+                    product_dict = product.to_dict()
+                    value = product_dict.get(col_key, "")
+                    if value is not None:
+                        self.setItem(row, col_index, QTableWidgetItem(str(value)))
+                    else:
+                        self.setItem(row, col_index, QTableWidgetItem(""))
     
-    def _update_visible_columns_map(self, config):
-        """Update the list of visible columns and their mapping."""
-        hide_columns = config.get("hide_columns", [])
-        rename_columns = config.get("rename_columns", {})
-        special_columns = config.get("special_columns", {})
+    def _format_groups(self, ai_groups):
+        """Format mode of action groups for display."""
+        if not ai_groups:
+            return ""
         
-        self.visible_columns = []
-        self.field_to_column_map = {}
+        # Consolidate groups by organization
+        org_groups = {}
+        for group_text in ai_groups:
+            if not group_text:
+                continue
+            for part in group_text.split(', '):
+                if ':' in part:
+                    org, code = part.split(':', 1)
+                    org = org.strip()
+                    code = code.strip()
+                    if org not in org_groups:
+                        org_groups[org] = []
+                    if code not in org_groups[org]:
+                        org_groups[org].append(code)
         
-        # Find AI column first
-        ai1_col = -1
-        for i, key in enumerate(self.column_keys):
-            if key.lower() == "ai1":
-                ai1_col = i
-                break
+        # Format the consolidated groups
+        groups_formatted = []
+        for org, codes in org_groups.items():
+            groups_formatted.append(f"{org}: {', '.join(codes)}")
         
-        # Calculate groups column position
-        groups_col = -1
-        if "groups" in special_columns and special_columns["groups"].get("after") == "ai1" and ai1_col >= 0:
-            groups_col = ai1_col + 2  # +1 for checkbox, +1 for position after AI1
-        
-        # Setup column properties
-        for col, key in enumerate(self.column_keys, start=1):
-            # Calculate the actual table column index
-            table_col = col
-            if groups_col > 0 and col >= groups_col:
-                table_col = col + 1  # Adjust for inserted Groups column
-            
-            # Rename AI column
-            if key.lower() == "ai1":
-                # Add to visible columns for filtering with new name
-                display_name = rename_columns.get(key, key)
-                self.visible_columns.append(display_name)
-                self.field_to_column_map[display_name] = table_col
-            
-            # Skip hidden columns
-            elif any(key.lower() == hide_key.lower() for hide_key in hide_columns):
-                pass
-            
-            # Add visible columns to filter options
-            else:
-                self.visible_columns.append(key)
-                self.field_to_column_map[key] = table_col
-        
-        # Add Groups column to visible columns if present
-        if groups_col > 0:
-            self.visible_columns.append("Groups")
-            self.field_to_column_map["Groups"] = groups_col
+        return "; ".join(groups_formatted)
     
     def get_visible_columns(self):
-        """Get visible columns and their mapping."""
-        return self.visible_columns, self.field_to_column_map
+        """Get visible columns and their mapping for filtering."""
+        visible_columns = []
+        field_to_column_map = {}
+        
+        for col_index, col_config in enumerate(self.COLUMNS):
+            if col_config["key"] != "checkbox":  # Skip checkbox column
+                visible_columns.append(col_config["header"])
+                field_to_column_map[col_config["header"]] = col_index
+        
+        return visible_columns, field_to_column_map
     
     def product_selected(self, row, state):
         """Handle product selection from checkbox."""
@@ -360,7 +220,7 @@ class ProductTable(QTableWidget):
         
         # Uncheck all checkboxes
         for row in range(self.rowCount()):
-            checkbox_widget = self.cellWidget(row, 0)
+            checkbox_widget = self.cellWidget(row, 0)  # Checkbox is always column 0
             if checkbox_widget:
                 layout = checkbox_widget.layout()
                 if layout and layout.count() > 0:
@@ -397,7 +257,11 @@ class ProductTable(QTableWidget):
             self.setRowHidden(row, not show_row)
     
     def apply_filters(self, filters):
-        """Apply multiple filters to the table."""
+        """Apply multiple filters to the table.
+        
+        Args:
+            filters: List of (column_index, filter_text) tuples
+        """
         # Show all rows initially
         for row in range(self.rowCount()):
             self.showRow(row)

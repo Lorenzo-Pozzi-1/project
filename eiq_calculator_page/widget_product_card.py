@@ -42,6 +42,9 @@ class ProductCard(QFrame):
         self.setMinimumHeight(250)
         
         self.setup_ui()
+        
+        # Initialize the product data after UI setup
+        self.refresh_product_data()
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -98,9 +101,15 @@ class ProductCard(QFrame):
         self.app_params.params_changed.connect(lambda: self.data_changed.emit(self.index))
         layout.addWidget(self.app_params)
     
+    def refresh_product_data(self):
+        """Refresh the product data in the selection widget."""
+        # This is the missing method that properly initializes the product search
+        self.product_selection.refresh_data()
+    
     def refresh_product_types(self):
         """Refresh the product types in the selection widget."""
-        self.product_selection.refresh_data()
+        # Keep this method for backward compatibility
+        self.refresh_product_data()
     
     def update_product_info(self, product_name):
         """

@@ -13,8 +13,6 @@ from data import ProductRepository
 from main_page.page_home import HomePage
 from products_page import ProductsPage
 from eiq_calculator_page import EiqCalculatorPage
-
-#from season_planner_page import ScenariosManagerPage
 from season_planner_page import ScenariosManagerPage
 
 class MainWindow(QMainWindow):
