@@ -309,20 +309,7 @@ class ApplicationsTableWidget(QWidget):
     
     def refresh_product_data(self):
         """Refresh product data when filtered products change."""
-        # Force recalculation of all EIQ values
-        self.model._recalculate_all_eiq()
-        
-        # Emit data changed for all cells to refresh display
-        if self.model.rowCount() > 0:
-            top_left = self.model.index(0, 0)
-            bottom_right = self.model.index(
-                self.model.rowCount() - 1, 
-                self.model.columnCount() - 1
-            )
-            self.model.dataChanged.emit(top_left, bottom_right)
 
-    def refresh_product_data(self):
-        """Refresh product data when filtered products change."""
         # Refresh product data in the ProductNameDelegate
         product_name_delegate = self.table_view.itemDelegateForColumn(self.model.COL_PRODUCT_NAME)
         if hasattr(product_name_delegate, 'refresh_products'):
