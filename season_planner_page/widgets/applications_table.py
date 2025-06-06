@@ -44,10 +44,13 @@ class ApplicationsTableWidget(QWidget):
         self.model.rowsInserted.connect(lambda: self.applications_changed.emit())
         self.model.rowsRemoved.connect(lambda: self.applications_changed.emit())
         
+        # Store delegates to prevent garbage collection
+        self.delegates = {}
+        
         self.setup_ui()
         
-        # IMPORTANT: Set up delegates after widget initialization to avoid Qt conflicts
-        QTimer.singleShot(100, self.setup_delegates_sequential)
+        # Set up delegates after widget is fully shown. This ensures proper geometry and event loop initialization
+        self.installEventFilter(self)
     
     def setup_ui(self):
         """Set up the UI components."""
@@ -131,62 +134,75 @@ class ApplicationsTableWidget(QWidget):
             # Make product column stretch to fill available space
             header.setSectionResizeMode(self.model.COL_PRODUCT_NAME, QHeaderView.Stretch)
     
-    def setup_delegates_sequential(self):
-        """
-        Set up delegates sequentially to avoid Qt initialization conflicts.
+    def eventFilter(self, obj, event):
+        """Handle events to set up delegates when widget is ready."""
+        if obj == self and event.type() == event.Type.Show:
+            # Widget is now visible and fully initialized
+            QTimer.singleShot(10, self._setup_all_delegates)
+            self.removeEventFilter(self)  # Only do this once
         
-        This method assigns delegates one by one with small delays to prevent
-        the crashes that occur when multiple delegates are assigned simultaneously.
-        """
+        return super().eventFilter(obj, event)
+
+    def _setup_all_delegates(self):
+        """Set up all delegates in one robust operation."""
+        if not self._is_ready_for_delegates():
+            # Not ready yet, try again soon
+            QTimer.singleShot(50, self._setup_all_delegates)
+            return
+        
         try:
-            # Phase 1: Simple text-based delegates
-            date_delegate = DateDelegate(self)
-            self.table_view.setItemDelegateForColumn(self.model.COL_DATE, date_delegate)
+            # Define all delegates with their configurations
+            delegate_configs = [
+                (self.model.COL_DATE, DateDelegate),
+                (self.model.COL_RATE, RateDelegate), 
+                (self.model.COL_AREA, AreaDelegate),
+                (self.model.COL_PRODUCT_TYPE, ProductTypeDelegate),
+                (self.model.COL_METHOD, MethodDelegate),
+                (self.model.COL_PRODUCT_NAME, ProductNameDelegate),
+                (self.model.COL_RATE_UOM, lambda parent: UOMDelegate(parent, uom_type="application_rate")),
+            ]
             
-            # Phase 2: Numeric delegates with small delay
-            QTimer.singleShot(25, self._setup_numeric_delegates)
+            # Set up all delegates at once
+            for col, delegate_class in delegate_configs:
+                self._setup_single_delegate(col, delegate_class)
+                
+            print("All delegates successfully initialized")
             
         except Exception as e:
-            print(f"Error in setup_delegates_sequential(): {e}")
-    
-    def _setup_numeric_delegates(self):
-        """Set up numeric delegates."""
+            print(f"Error setting up delegates: {e}")
+            # Fallback: try again in a moment
+            QTimer.singleShot(100, self._setup_all_delegates)
+
+    def _is_ready_for_delegates(self):
+        """Check if the widget is ready for delegate assignment."""
+        return (
+            self.isVisible() and 
+            self.table_view.model() is not None and
+            self.table_view.geometry().isValid() and
+            self.table_view.horizontalHeader().geometry().isValid()
+        )
+
+    def _setup_single_delegate(self, column, delegate_class):
+        """Set up a single delegate with error handling."""
         try:
-            rate_delegate = RateDelegate(self)
-            self.table_view.setItemDelegateForColumn(self.model.COL_RATE, rate_delegate)
+            # Create delegate instance
+            if callable(delegate_class) and not isinstance(delegate_class, type):
+                # It's a lambda or function
+                delegate = delegate_class(self)
+            else:
+                # It's a regular class
+                delegate = delegate_class(self)
             
-            area_delegate = AreaDelegate(self)
-            self.table_view.setItemDelegateForColumn(self.model.COL_AREA, area_delegate)
+            # Store reference to prevent garbage collection
+            self.delegates[column] = delegate
             
-            # Phase 3: Complex delegates with delay
-            QTimer.singleShot(25, self._setup_complex_delegates)
+            # Assign to table
+            self.table_view.setItemDelegateForColumn(column, delegate)
             
         except Exception as e:
-            print(f"Error in _setup_numeric_delegates(): {e}")
-    
-    def _setup_complex_delegates(self):
-        """Set up complex delegates (dialogs, combos)."""
-        try:
-            # Product type delegate (column 2)
-            product_type_delegate = ProductTypeDelegate(self)
-            self.table_view.setItemDelegateForColumn(self.model.COL_PRODUCT_TYPE, product_type_delegate)
-            
-            # Method delegate (column 7)
-            method_delegate = MethodDelegate(self)
-            self.table_view.setItemDelegateForColumn(self.model.COL_METHOD, method_delegate)
-            
-            # Product delegate (column 3) - this will auto-populate rate/UOM
-            product_name_delegate = ProductNameDelegate(self)
-            self.table_view.setItemDelegateForColumn(self.model.COL_PRODUCT_NAME, product_name_delegate)
-            
-            # UOM delegate (column 5)
-            uom_delegate = UOMDelegate(self, uom_type="application_rate")
-            self.table_view.setItemDelegateForColumn(self.model.COL_RATE_UOM, uom_delegate)
-            
-        except Exception as e:
-            print(f"Error in _setup_complex_delegates(): {e}")
-            traceback.print_exc()
-    
+            print(f"Failed to set up delegate for column {column}: {e}")
+            raise  # Re-raise to trigger fallback retry
+        
     def _edit_current_cell(self):
         """Start editing the current cell."""
         current_index = self.table_view.currentIndex()
