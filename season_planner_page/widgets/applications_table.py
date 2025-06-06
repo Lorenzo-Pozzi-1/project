@@ -19,6 +19,7 @@ from ..delegates.method_delegate import MethodDelegate
 from ..delegates.product_name_delegate import ProductNameDelegate
 from ..delegates.uom_delegate import UOMDelegate
 from ..delegates.product_type_delegate import ProductTypeDelegate
+from ..delegates.reorder_delegate import ReorderDelegate
 
 
 class ApplicationsTableWidget(QWidget):
@@ -57,12 +58,12 @@ class ApplicationsTableWidget(QWidget):
     def _create_delegates(self):
         """
         Create all delegate instances with proper parent relationships.
-        
-        Delegates are created here but not assigned to columns until showEvent().
+          Delegates are created here but not assigned to columns until showEvent().
         This ensures they have proper parent-child relationships while avoiding
         Qt initialization timing issues.
         """
         self.delegates: Dict[str, Any] = {
+            'reorder': ReorderDelegate(self),
             'date': DateDelegate(self),
             'rate': RateDelegate(self), 
             'area': AreaDelegate(self),
@@ -71,6 +72,10 @@ class ApplicationsTableWidget(QWidget):
             'product_name': ProductNameDelegate(self),
             'rate_uom': UOMDelegate(self, uom_type="application_rate")
         }
+        
+        # Connect reorder delegate signals
+        self.delegates['reorder'].move_up.connect(self._on_move_up)
+        self.delegates['reorder'].move_down.connect(self._on_move_down)
         
         # Store delegate references to prevent garbage collection
         # This is critical - without these references, delegates can be destroyed
@@ -143,8 +148,7 @@ class ApplicationsTableWidget(QWidget):
         
         # Set alternating row colors
         self.table_view.setAlternatingRowColors(True)
-        
-        # Set the table contents to use the medium font
+          # Set the table contents to use the medium font
         self.table_view.setFont(get_medium_font()) 
 
         # Set initial column widths
@@ -154,9 +158,15 @@ class ApplicationsTableWidget(QWidget):
         """Set column width policies."""
         header = self.table_view.horizontalHeader()
         
-        # Set all columns to stretch equally
+        # Set reorder column to fixed width (just needs space for up/down buttons)
+        if self.model.columnCount() > self.model.COL_REORDER:
+            header.setSectionResizeMode(self.model.COL_REORDER, QHeaderView.Fixed)
+            header.resizeSection(self.model.COL_REORDER, 80)  # Fixed width for buttons
+        
+        # Set all other columns to stretch equally
         for col in range(self.model.columnCount()):
-            header.setSectionResizeMode(col, QHeaderView.Stretch)
+            if col != self.model.COL_REORDER:
+                header.setSectionResizeMode(col, QHeaderView.Stretch)
             
         # Make product name column stretch more to accommodate longer names
         if self.model.columnCount() > self.model.COL_PRODUCT_NAME:
@@ -188,9 +198,10 @@ class ApplicationsTableWidget(QWidget):
         - Model is properly attached
         - Event handling is ready
         """
-        try:
+        try:    
             # Define column-to-delegate mapping
             column_assignments = {
+                self.model.COL_REORDER: self.delegates['reorder'],
                 self.model.COL_DATE: self.delegates['date'],
                 self.model.COL_RATE: self.delegates['rate'],
                 self.model.COL_AREA: self.delegates['area'],
@@ -222,6 +233,7 @@ class ApplicationsTableWidget(QWidget):
             bool: True if all expected delegates are assigned, False otherwise
         """
         expected_columns = [
+            self.model.COL_REORDER,
             self.model.COL_DATE,
             self.model.COL_RATE,
             self.model.COL_AREA,
@@ -238,6 +250,22 @@ class ApplicationsTableWidget(QWidget):
                 return False
         
         return True
+    
+    def _on_move_up(self, row: int):
+        """Handle move up signal from reorder delegate."""
+        if self.model.move_application_up(row):
+            # Update selection to follow the moved row
+            new_index = self.model.index(row - 1, self.model.COL_REORDER)
+            self.table_view.selectionModel().setCurrentIndex(new_index, self.table_view.selectionModel().SelectionFlag.ClearAndSelect | self.table_view.selectionModel().SelectionFlag.Rows)
+            self.applications_changed.emit()
+    
+    def _on_move_down(self, row: int):
+        """Handle move down signal from reorder delegate."""
+        if self.model.move_application_down(row):
+            # Update selection to follow the moved row
+            new_index = self.model.index(row + 1, self.model.COL_REORDER)
+            self.table_view.selectionModel().setCurrentIndex(new_index, self.table_view.selectionModel().SelectionFlag.ClearAndSelect | self.table_view.selectionModel().SelectionFlag.Rows)
+            self.applications_changed.emit()
     
     # --- Public Interface Methods ---
     
@@ -432,7 +460,6 @@ class ApplicationsTableWidget(QWidget):
             bool: True if delegates are assigned and functional
         """
         return self._delegates_assigned and self._validate_delegate_assignment()
-    
     def get_delegate_info(self) -> Dict[str, str]:
         """
         Get information about assigned delegates for debugging.
@@ -445,6 +472,7 @@ class ApplicationsTableWidget(QWidget):
         
         delegate_info = {}
         column_names = [
+            ("reorder", self.model.COL_REORDER),
             ("date", self.model.COL_DATE),
             ("rate", self.model.COL_RATE),
             ("area", self.model.COL_AREA),

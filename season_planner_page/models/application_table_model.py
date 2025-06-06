@@ -23,9 +23,9 @@ class ApplicationTableModel(QAbstractTableModel):
     # Signals
     eiq_changed = Signal(float)  # Emitted when total EIQ changes
     validation_changed = Signal()  # Emitted when validation state changes
-    
-    # Column definitions
+      # Column definitions
     COLUMNS = [
+        "Reorder",
         "App #",
         "Date", 
         "Product Type",
@@ -39,19 +39,19 @@ class ApplicationTableModel(QAbstractTableModel):
     ]
     
     # Column indices for easy reference
-    COL_APP_NUM = 0
-    COL_DATE = 1
-    COL_PRODUCT_TYPE = 2
-    COL_PRODUCT_NAME = 3
-    COL_RATE = 4
-    COL_RATE_UOM = 5
-    COL_AREA = 6
-    COL_METHOD = 7
-    COL_AI_GROUPS = 8
-    COL_FIELD_EIQ = 9
-    
-    # Editable columns
-    EDITABLE_COLUMNS = {COL_DATE, COL_PRODUCT_TYPE, COL_PRODUCT_NAME, COL_RATE, COL_RATE_UOM, COL_AREA, COL_METHOD}
+    COL_REORDER = 0
+    COL_APP_NUM = 1
+    COL_DATE = 2
+    COL_PRODUCT_TYPE = 3
+    COL_PRODUCT_NAME = 4
+    COL_RATE = 5
+    COL_RATE_UOM = 6
+    COL_AREA = 7
+    COL_METHOD = 8
+    COL_AI_GROUPS = 9
+    COL_FIELD_EIQ = 10
+      # Editable columns (reorder column uses special delegate for button interaction)
+    EDITABLE_COLUMNS = {COL_REORDER, COL_DATE, COL_PRODUCT_TYPE, COL_PRODUCT_NAME, COL_RATE, COL_RATE_UOM, COL_AREA, COL_METHOD}
     
     def __init__(self, parent=None):
         """Initialize the application table model."""
@@ -309,12 +309,53 @@ class ApplicationTableModel(QAbstractTableModel):
             print(f"ERROR in get_total_field_eiq(): {e}")
             return 0.0
     
+    def move_application_up(self, row: int) -> bool:
+        """Move an application up by one position."""
+        if row <= 0 or row >= len(self._applications):
+            return False
+        
+        try:
+            # Swap applications
+            self._applications[row], self._applications[row - 1] = self._applications[row - 1], self._applications[row]
+            
+            # Emit data changed for both rows
+            top_left = self.index(row - 1, 0)
+            bottom_right = self.index(row, self.columnCount() - 1)
+            self.dataChanged.emit(top_left, bottom_right, [Qt.DisplayRole])
+            
+            return True
+        except Exception as e:
+            print(f"ERROR in move_application_up(): {e}")
+            return False
+    
+    def move_application_down(self, row: int) -> bool:
+        """Move an application down by one position."""
+        if row < 0 or row >= len(self._applications) - 1:
+            return False
+        
+        try:
+            # Swap applications
+            self._applications[row], self._applications[row + 1] = self._applications[row + 1], self._applications[row]
+            
+            # Emit data changed for both rows
+            top_left = self.index(row, 0)
+            bottom_right = self.index(row + 1, self.columnCount() - 1)
+            self.dataChanged.emit(top_left, bottom_right, [Qt.DisplayRole])
+            
+            return True
+        except Exception as e:
+            print(f"ERROR in move_application_down(): {e}")
+            return False
+    
     # --- Private Methods ---
     
     def _get_cell_data(self, app: Application, col: int) -> Any:
         """Get data for a specific cell."""
         try:
-            if col == self.COL_APP_NUM:
+            if col == self.COL_REORDER:
+                # Reorder column - return empty string (buttons handled by delegate)
+                return ""
+            elif col == self.COL_APP_NUM:
                 # App number is the row index + 1
                 return self._applications.index(app) + 1
             elif col == self.COL_DATE:
@@ -346,7 +387,10 @@ class ApplicationTableModel(QAbstractTableModel):
         self._validation_errors.pop((row, col), None)
         
         try:
-            if col == self.COL_DATE:
+            if col == self.COL_REORDER:
+                # Reorder column is not directly editable
+                return False
+            elif col == self.COL_DATE:
                 app.application_date = str(value) if value else ""
             
             elif col == self.COL_PRODUCT_TYPE:

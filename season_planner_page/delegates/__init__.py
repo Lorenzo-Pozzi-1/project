@@ -11,6 +11,7 @@ from .uom_delegate import UOMDelegate
 from .numeric_delegate import NumericDelegate, RateDelegate, AreaDelegate
 from .date_delegate import DateDelegate
 from .method_delegate import MethodDelegate
+from .reorder_delegate import ReorderDelegate
 
 __all__ = [
     'ProductNameDelegate',
@@ -20,5 +21,6 @@ __all__ = [
     'RateDelegate',
     'AreaDelegate',
     'DateDelegate',
-    'MethodDelegate'
+    'MethodDelegate',
+    'ReorderDelegate'
 ]
