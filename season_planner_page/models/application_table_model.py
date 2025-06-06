@@ -182,7 +182,7 @@ class ApplicationTableModel(QAbstractTableModel):
             for i in range(rows):
                 app = Application(
                     area=self._field_area,
-                    application_method="Ground"
+                    application_method=""
                 )
                 self._applications.insert(position + i, app)
             
@@ -206,13 +206,24 @@ class ApplicationTableModel(QAbstractTableModel):
         """Remove application rows."""
         if parent.isValid():
             return False
-            
+        
+        # Validate position and rows
         if position < 0 or position >= len(self._applications):
             return False
         
-        try:            
+        # Ensure we don't remove more rows than exist
+        rows = min(rows, len(self._applications) - position)
+        if rows <= 0:
+            return False
+        
+        try:
             self.beginRemoveRows(parent, position, position + rows - 1)
-
+            
+            for i in range(rows):
+                if position < len(self._applications):
+                    removed_app = self._applications.pop(position)
+                    print(f"Removed application: {removed_app.product_name} at position {position+1}")
+            
             self.endRemoveRows()
             self._clear_validation_errors_for_removed_rows(position, rows)
             self._emit_eiq_changed()

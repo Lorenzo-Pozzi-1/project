@@ -1,12 +1,13 @@
 """
 Applications Table Widget for the Season Planner.
 
-Final production version with sequential delegate assignment to avoid Qt conflicts.
+Rewritten version with proper Qt lifecycle management and deterministic delegate timing.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableView, QHeaderView, QAbstractItemView, QMessageBox
-from PySide6.QtCore import Signal, QTimer
-from typing import List
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QShowEvent
+from typing import List, Dict, Any
 import traceback
 
 from common import create_button, GENERIC_TABLE_STYLE, get_medium_font
@@ -24,9 +25,9 @@ class ApplicationsTableWidget(QWidget):
     """
     Main applications table widget with Excel-like editing capabilities.
     
-    Uses sequential delegate assignment to avoid Qt initialization conflicts.
-    Combines QTableView with ApplicationTableModel and custom delegates
-    to provide a clean, professional table interface.
+    Uses proper Qt lifecycle management to avoid delegate initialization race conditions.
+    Delegates are created during construction but only assigned after the widget is shown
+    and geometry is properly established.
     """
     
     # Signals
@@ -37,23 +38,47 @@ class ApplicationsTableWidget(QWidget):
         """Initialize the applications table widget."""
         super().__init__(parent)
         
-        # Create the model
+        # Create the model first
         self.model = ApplicationTableModel()
         self.model.eiq_changed.connect(self.eiq_changed)
         self.model.dataChanged.connect(lambda: self.applications_changed.emit())
         self.model.rowsInserted.connect(lambda: self.applications_changed.emit())
         self.model.rowsRemoved.connect(lambda: self.applications_changed.emit())
         
-        # Store delegates to prevent garbage collection
-        self.delegates = {}
+        # Create delegates immediately but don't assign them yet
+        self._create_delegates()
         
+        # Set up UI
         self.setup_ui()
         
-        # Set up delegates after widget is fully shown. This ensures proper geometry and event loop initialization
-        self.installEventFilter(self)
+        # Track delegate assignment state
+        self._delegates_assigned = False
+    
+    def _create_delegates(self):
+        """
+        Create all delegate instances with proper parent relationships.
+        
+        Delegates are created here but not assigned to columns until showEvent().
+        This ensures they have proper parent-child relationships while avoiding
+        Qt initialization timing issues.
+        """
+        self.delegates: Dict[str, Any] = {
+            'date': DateDelegate(self),
+            'rate': RateDelegate(self), 
+            'area': AreaDelegate(self),
+            'product_type': ProductTypeDelegate(self),
+            'method': MethodDelegate(self),
+            'product_name': ProductNameDelegate(self),
+            'rate_uom': UOMDelegate(self, uom_type="application_rate")
+        }
+        
+        # Store delegate references to prevent garbage collection
+        # This is critical - without these references, delegates can be destroyed
+        for delegate in self.delegates.values():
+            delegate.setParent(self)
     
     def setup_ui(self):
-        """Set up the UI components."""
+        """Set up the UI components without delegate assignment."""
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
@@ -90,7 +115,12 @@ class ApplicationsTableWidget(QWidget):
     def _configure_table_view(self):
         """Configure the table view appearance and behavior."""
         # Set style
-        self.table_view.setStyleSheet(GENERIC_TABLE_STYLE)
+        self.table_view.setStyleSheet(GENERIC_TABLE_STYLE + """
+            QTableView::item:selected {
+                background-color: #0078d4;
+                color: white;
+            }
+        """)
         
         # Configure selection
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -103,9 +133,6 @@ class ApplicationsTableWidget(QWidget):
         
         vertical_header = self.table_view.verticalHeader()
         vertical_header.setVisible(False)  # Hide row numbers (we have App # column)
-        
-        # Enable sorting
-        # self.table_view.setSortingEnabled(False)  # Disable to maintain order
         
         # Configure editing
         self.table_view.setEditTriggers(
@@ -124,167 +151,203 @@ class ApplicationsTableWidget(QWidget):
         self._set_initial_column_widths()
     
     def _set_initial_column_widths(self):
-        """Set all columns to equal width with uniform stretching."""
+        """Set column width policies."""
         header = self.table_view.horizontalHeader()
         
         # Set all columns to stretch equally
         for col in range(self.model.columnCount()):
             header.setSectionResizeMode(col, QHeaderView.Stretch)
             
-            # Make product column stretch to fill available space
+        # Make product name column stretch more to accommodate longer names
+        if self.model.columnCount() > self.model.COL_PRODUCT_NAME:
             header.setSectionResizeMode(self.model.COL_PRODUCT_NAME, QHeaderView.Stretch)
     
-    def eventFilter(self, obj, event):
-        """Handle events to set up delegates when widget is ready."""
-        if obj == self and event.type() == event.Type.Show:
-            # Widget is now visible and fully initialized
-            QTimer.singleShot(10, self._setup_all_delegates)
-            self.removeEventFilter(self)  # Only do this once
+    def showEvent(self, event: QShowEvent):
+        """
+        Handle widget show event - assign delegates when geometry is ready.
         
-        return super().eventFilter(obj, event)
-
-    def _setup_all_delegates(self):
-        """Set up all delegates in one robust operation."""
-        if not self._is_ready_for_delegates():
-            # Not ready yet, try again soon
-            QTimer.singleShot(50, self._setup_all_delegates)
-            return
+        This is the critical timing fix. Qt guarantees that when showEvent() fires:
+        - Widget geometry is valid and established
+        - Event loop is properly initialized
+        - Parent-child relationships are stable
+        - All UI components are ready for delegate assignment
+        """
+        super().showEvent(event)
         
-        try:
-            # Define all delegates with their configurations
-            delegate_configs = [
-                (self.model.COL_DATE, DateDelegate),
-                (self.model.COL_RATE, RateDelegate), 
-                (self.model.COL_AREA, AreaDelegate),
-                (self.model.COL_PRODUCT_TYPE, ProductTypeDelegate),
-                (self.model.COL_METHOD, MethodDelegate),
-                (self.model.COL_PRODUCT_NAME, ProductNameDelegate),
-                (self.model.COL_RATE_UOM, lambda parent: UOMDelegate(parent, uom_type="application_rate")),
-            ]
-            
-            # Set up all delegates at once
-            for col, delegate_class in delegate_configs:
-                self._setup_single_delegate(col, delegate_class)
-                
-            print("All delegates successfully initialized")
-            
-        except Exception as e:
-            print(f"Error setting up delegates: {e}")
-            # Fallback: try again in a moment
-            QTimer.singleShot(100, self._setup_all_delegates)
-
-    def _is_ready_for_delegates(self):
-        """Check if the widget is ready for delegate assignment."""
-        return (
-            self.isVisible() and 
-            self.table_view.model() is not None and
-            self.table_view.geometry().isValid() and
-            self.table_view.horizontalHeader().geometry().isValid()
-        )
-
-    def _setup_single_delegate(self, column, delegate_class):
-        """Set up a single delegate with error handling."""
-        try:
-            # Create delegate instance
-            if callable(delegate_class) and not isinstance(delegate_class, type):
-                # It's a lambda or function
-                delegate = delegate_class(self)
-            else:
-                # It's a regular class
-                delegate = delegate_class(self)
-            
-            # Store reference to prevent garbage collection
-            self.delegates[column] = delegate
-            
-            # Assign to table
-            self.table_view.setItemDelegateForColumn(column, delegate)
-            
-        except Exception as e:
-            print(f"Failed to set up delegate for column {column}: {e}")
-            raise  # Re-raise to trigger fallback retry
-        
-    def _edit_current_cell(self):
-        """Start editing the current cell."""
-        current_index = self.table_view.currentIndex()
-        if current_index.isValid():
-            self.table_view.edit(current_index)
+        # Only assign delegates once, on first show
+        if not self._delegates_assigned:
+            self._assign_delegates_to_columns()
+            self._delegates_assigned = True
     
-    # --- Public Interface ---
+    def _assign_delegates_to_columns(self):
+        """
+        Assign pre-created delegates to their respective table columns.
+        
+        This method is called from showEvent() when we're guaranteed that:
+        - Table geometry is valid
+        - Model is properly attached
+        - Event handling is ready
+        """
+        try:
+            # Define column-to-delegate mapping
+            column_assignments = {
+                self.model.COL_DATE: self.delegates['date'],
+                self.model.COL_RATE: self.delegates['rate'],
+                self.model.COL_AREA: self.delegates['area'],
+                self.model.COL_PRODUCT_TYPE: self.delegates['product_type'],
+                self.model.COL_METHOD: self.delegates['method'],
+                self.model.COL_PRODUCT_NAME: self.delegates['product_name'],
+                self.model.COL_RATE_UOM: self.delegates['rate_uom']
+            }
+            
+            # Assign each delegate to its column
+            for column_index, delegate in column_assignments.items():
+                if column_index < self.model.columnCount():
+                    self.table_view.setItemDelegateForColumn(column_index, delegate)
+                else:
+                    print(f"Warning: Column index {column_index} exceeds model column count")
+            
+            print(f"Successfully assigned {len(column_assignments)} delegates to table columns")
+            
+        except Exception as e:
+            print(f"Error assigning delegates to columns: {e}")
+            traceback.print_exc()
+            # Don't re-raise - we want the table to remain functional even if delegates fail
+    
+    def _validate_delegate_assignment(self) -> bool:
+        """
+        Validate that delegates are properly assigned and functional.
+        
+        Returns:
+            bool: True if all expected delegates are assigned, False otherwise
+        """
+        expected_columns = [
+            self.model.COL_DATE,
+            self.model.COL_RATE,
+            self.model.COL_AREA,
+            self.model.COL_PRODUCT_TYPE,
+            self.model.COL_METHOD,
+            self.model.COL_PRODUCT_NAME,
+            self.model.COL_RATE_UOM
+        ]
+        
+        for col in expected_columns:
+            delegate = self.table_view.itemDelegateForColumn(col)
+            if delegate is None or delegate == self.table_view.itemDelegate():
+                print(f"Warning: Column {col} does not have a custom delegate assigned")
+                return False
+        
+        return True
+    
+    # --- Public Interface Methods ---
     
     def add_application(self):
         """Add a new application row."""
         row = self.model.add_application()
         
-        # Select the new row
+        # Just scroll to show the new row, but don't select it
         if row >= 0:
             new_index = self.model.index(row, self.model.COL_DATE)
-            self.table_view.setCurrentIndex(new_index)
-            self.table_view.selectRow(row)
+            self.table_view.scrollTo(new_index, QAbstractItemView.EnsureVisible)
+            # Don't select - let user explicitly choose what to select
         
         return row
     
     def remove_selected_application(self):
-        """Remove the currently selected application."""
+        """Remove the currently selected application with confirmation."""
         # Get the current selection
         selection_model = self.table_view.selectionModel()
         
-        if not selection_model.hasSelection():
-            # No selection - show warning dialog
-            QMessageBox.warning(
+        # Check if we have any applications at all
+        if self.model.rowCount() == 0:
+            QMessageBox.information(
                 self,
-                "No Application Selected",
-                "Please select an application to remove.",
+                "No Applications",
+                "There are no applications to remove.",
                 QMessageBox.Ok
             )
             return
         
-        # Get the selected row
-        selected_indexes = selection_model.selectedRows()
-        if not selected_indexes:
-            # Fallback check - should not happen but be safe
+        # More robust selection detection
+        selected_rows = selection_model.selectedRows()
+        current_index = selection_model.currentIndex()
+        
+        # Check for explicit row selection (user clicked on a row)
+        has_explicit_selection = (
+            len(selected_rows) > 0 and 
+            any(self.table_view.selectionModel().isRowSelected(idx.row()) for idx in selected_rows)
+        )
+        
+        if not has_explicit_selection:
+            # No explicit selection - show warning dialog
             QMessageBox.warning(
                 self,
-                "No Application Selected", 
-                "Please select an application to remove.",
+                "No Application Selected",
+                "Please select an application to remove by clicking on a row.\n\n"
+                "Tip: Click on any cell in the row you want to remove.",
+                QMessageBox.Ok
+            )
+            return
+        
+        # Get the explicitly selected row
+        if not selected_rows:
+            # Fallback check - should not happen given the above logic
+            QMessageBox.warning(
+                self,
+                "Selection Error", 
+                "Unable to determine which row is selected. Please try again.",
                 QMessageBox.Ok
             )
             return
         
         # Get the row number from the first selected index
-        current_row = selected_indexes[0].row()
+        current_row = selected_rows[0].row()
         
-        # Validate row number
+        # Validate row number against BOTH model and view
         if current_row < 0 or current_row >= self.model.rowCount():
             QMessageBox.warning(
                 self,
                 "Invalid Selection",
-                "The selected application is no longer valid.",
+                f"The selected row ({current_row}) is not valid. Please select a visible application.",
                 QMessageBox.Ok
             )
             return
         
-        # Get application info for confirmation
-        app_data = self.model.get_applications()[current_row]
-        product_name = app_data.product_name or f"Application number: {current_row + 1}"
+        # Confirm removal
+        # Get product name or use "Empty row" if not available
+        product_name = self.model.data(self.model.index(current_row, self.model.COL_PRODUCT_NAME))
+        display_name = product_name if product_name else "Empty row"
         
         reply = QMessageBox.question(
             self,
             "Confirm Removal",
-            f"Are you sure you want to remove this application?\n\n{product_name}",
+            f"Are you sure you want to remove this application?\n\nApp # {current_row+1}: {display_name}",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )
         
         if reply == QMessageBox.Yes:
             # Remove the application
-            self.model.remove_application(current_row)
+            success = self.model.remove_application(current_row)
+            if not success:
+                QMessageBox.warning(
+                    self,
+                    "Removal Failed",
+                    "Failed to remove the selected application.",
+                    QMessageBox.Ok
+                )
     
     def get_applications(self) -> List[Application]:
-        """Get all applications."""
+        """Get all current applications."""
         return self.model.get_applications()
     
     def set_applications(self, applications: List[Application]):
-        """Set the applications list."""
+        """
+        Set the applications list.
+        
+        Args:
+            applications: List of Application objects to display
+        """
         try:
             # Ensure we have Application objects
             app_objects = []
@@ -292,53 +355,110 @@ class ApplicationsTableWidget(QWidget):
                 if hasattr(app, 'product_name'):
                     # It's already an Application object
                     app_objects.append(app)
-                    print(f"  App {i+1}: {app.product_name} @ {getattr(app, 'rate', 'N/A')} {getattr(app, 'rate_uom', 'N/A')}")
                 else:
-                    # Convert dict to Application
+                    # Convert dict to Application if needed
                     from data import Application
                     app_obj = Application.from_dict(app)
                     app_objects.append(app_obj)
-                    print(f"  App {i+1} (converted): {app_obj.product_name} @ {app_obj.rate} {app_obj.rate_uom}")
             
             # Set applications in model
             self.model.set_applications(app_objects)
             
-            # Force view update
+            # Force view refresh
             self.table_view.reset()
             
         except Exception as e:
             print(f"ERROR in set_applications(): {e}")
-            import traceback
             traceback.print_exc()
     
     def clear_applications(self):
-        """Clear all applications."""
+        """Clear all applications from the table."""
         self.model.set_applications([])
     
     def set_field_area(self, area: float, uom: str):
-        """Set default field area for new applications."""
+        """
+        Set default field area for new applications.
+        
+        Args:
+            area: Field area value
+            uom: Field area unit of measure
+        """
         self.model.set_field_area(area, uom)
     
     def get_total_field_eiq(self) -> float:
-        """Get total Field EIQ for all applications."""
+        """Calculate and return total Field EIQ for all applications."""
         return self.model.get_total_field_eiq()
     
     def refresh_product_data(self):
-        """Refresh product data when filtered products change."""
-
-        # Refresh product data in the ProductNameDelegate
-        product_name_delegate = self.table_view.itemDelegateForColumn(self.model.COL_PRODUCT_NAME)
-        if hasattr(product_name_delegate, 'refresh_products'):
-            product_name_delegate.refresh_products()
+        """
+        Refresh product data when filtered products change in the main application.
         
-        # Force recalculation of all EIQ values since product availability may have changed
-        self.model._recalculate_all_eiq()
+        This method is called when the main window's product filters change,
+        requiring delegates to refresh their product lists and the model to
+        recalculate EIQ values.
+        """
+        try:
+            # Refresh product data in the ProductNameDelegate
+            product_name_delegate = self.delegates.get('product_name')
+            if product_name_delegate and hasattr(product_name_delegate, 'refresh_products'):
+                product_name_delegate.refresh_products()
+            
+            # Refresh product data in the ProductTypeDelegate
+            product_type_delegate = self.delegates.get('product_type')
+            if product_type_delegate and hasattr(product_type_delegate, 'refresh_product_types'):
+                product_type_delegate.refresh_product_types()
+            
+            # Force recalculation of all EIQ values since product availability may have changed
+            self.model._recalculate_all_eiq()
+            
+            # Emit data changed for all cells to refresh display
+            if self.model.rowCount() > 0:
+                top_left = self.model.index(0, 0)
+                bottom_right = self.model.index(
+                    self.model.rowCount() - 1, 
+                    self.model.columnCount() - 1
+                )
+                self.model.dataChanged.emit(top_left, bottom_right)
+                
+        except Exception as e:
+            print(f"Error refreshing product data: {e}")
+            traceback.print_exc()
+    
+    def is_delegates_ready(self) -> bool:
+        """
+        Check if delegates have been properly assigned and are ready for use.
         
-        # Emit data changed for all cells to refresh display
-        if self.model.rowCount() > 0:
-            top_left = self.model.index(0, 0)
-            bottom_right = self.model.index(
-                self.model.rowCount() - 1, 
-                self.model.columnCount() - 1
-            )
-            self.model.dataChanged.emit(top_left, bottom_right)
+        Returns:
+            bool: True if delegates are assigned and functional
+        """
+        return self._delegates_assigned and self._validate_delegate_assignment()
+    
+    def get_delegate_info(self) -> Dict[str, str]:
+        """
+        Get information about assigned delegates for debugging.
+        
+        Returns:
+            Dict mapping column names to delegate class names
+        """
+        if not self._delegates_assigned:
+            return {"status": "Delegates not yet assigned"}
+        
+        delegate_info = {}
+        column_names = [
+            ("date", self.model.COL_DATE),
+            ("rate", self.model.COL_RATE),
+            ("area", self.model.COL_AREA),
+            ("product_type", self.model.COL_PRODUCT_TYPE),
+            ("method", self.model.COL_METHOD),
+            ("product_name", self.model.COL_PRODUCT_NAME),
+            ("rate_uom", self.model.COL_RATE_UOM)
+        ]
+        
+        for name, col_index in column_names:
+            delegate = self.table_view.itemDelegateForColumn(col_index)
+            if delegate:
+                delegate_info[name] = delegate.__class__.__name__
+            else:
+                delegate_info[name] = "No delegate assigned"
+        
+        return delegate_info
