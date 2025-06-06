@@ -26,6 +26,7 @@ from common.constants import (
     ALTERNATE_ROW_COLOR,
     
     # EIQ thresholds
+    LEADING, ADVANCED, ENGAGED, ONBOARDING,
     EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD,
         
     # Spacing and margins
@@ -87,6 +88,7 @@ __all__ = [
     'ALTERNATE_ROW_COLOR',
     
     # EIQ Thresholds
+    'LEADING', 'ADVANCED', 'ENGAGED', 'ONBOARDING',
     'EIQ_LOW_THRESHOLD', 'EIQ_MEDIUM_THRESHOLD', 'EIQ_HIGH_THRESHOLD',
     
     # EIQ Utility Functions

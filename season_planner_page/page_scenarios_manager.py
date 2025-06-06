@@ -10,7 +10,8 @@ from PySide6.QtCore import QCoreApplication
 
 from common import (
     ContentFrame, HeaderWithHomeButton, calculation_tracer, create_button, 
-    ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font
+    ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font,
+    LEADING, ADVANCED, ENGAGED, ONBOARDING
 )
 from season_planner_page.tab_scenario import ScenarioTabPage
 from season_planner_page.import_scenario import ImportScenarioDialog
@@ -95,13 +96,7 @@ class ScenariosManagerPage(QWidget):
         results_layout.addWidget(self.scenario_info_title)
 
         # Create score bar with custom thresholds and labels
-        self.eiq_score_bar = ScoreBar(
-            thresholds=[200, 500, 800, 2500],
-            labels=["Leading", "Advanced", "Engaged", "Onboarding", "Out of range"],
-            min_value=0,
-            max_value=2500,
-            title_text="RegenAg framework class:"
-        )
+        self.eiq_score_bar = ScoreBar(preset="regen_ag")
         self.eiq_score_bar.set_value(0, "No applications")
         results_layout.addWidget(self.eiq_score_bar)
 

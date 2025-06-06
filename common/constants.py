@@ -3,6 +3,12 @@
 from PySide6.QtGui import QColor, QGuiApplication
 from PySide6.QtCore import QSize
 
+
+LEADING = 200
+ADVANCED = 500
+ENGAGED = 800
+ONBOARDING = 2500
+
 # ----------------------
 # COLOR DEFINITIONS
 # ----------------------
@@ -26,7 +32,7 @@ RED_PRESSED     = "#CC2A22"
 EIQ_LOW_COLOR = QColor(200, 255, 200)      # Pastel green for low EIQ
 EIQ_MEDIUM_COLOR = QColor(255, 255, 200)   # Pastel yellow for medium EIQ  
 EIQ_HIGH_COLOR = QColor(255, 200, 200)     # Pastel red for high EIQ
-EIQ_EXTREME_COLOR = QColor("#D19B9B")    # Pastel dark red for extreme EIQ
+EIQ_EXTREME_COLOR = QColor(RED)    # Pastel dark red for extreme EIQ
 
 # Table and list styling colors
 ALTERNATE_ROW_COLOR = QColor(BEIGE)  # Beige for alternating rows
