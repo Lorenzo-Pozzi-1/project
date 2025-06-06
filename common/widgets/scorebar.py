@@ -10,7 +10,7 @@ from PySide6.QtGui import QColor, QBrush, QPainter, QPen, QLinearGradient
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 from common.constants import (
     EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD,
-    ADVANCED, ONBOARDING, ENGAGED, LEADING,
+    ADVANCED, ONBOARDING, ENGAGED, LEADING, GREEN, YELLOW_PRESSED,
     get_medium_text_size, get_large_text_size,
     get_margin_small, get_spacing_medium
 )
@@ -50,7 +50,7 @@ class ScoreBar(QWidget):
         if self.preset == "calculator":
             self.title_text = "Field EIQ score:"
             self.thresholds = [EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD]
-            self.labels = ["Low", "Medium", "High", "EXTREME"]
+            self.labels = ["Low", "Medium", "High", "Very High"]
             self.min_value = 0
             self.max_value = EIQ_HIGH_THRESHOLD
             
@@ -61,8 +61,8 @@ class ScoreBar(QWidget):
                 QColor(239, 68, 68)    # Bright red
             ]
             self.region_colors = [
-                QColor(34, 197, 94),   # Green region
-                QColor(255, 235, 59),  # Yellow region
+                QColor(GREEN),   # Green region
+                QColor(YELLOW_PRESSED),  # Yellow region
                 QColor(255, 152, 0),   # Orange region
                 QColor(239, 68, 68)    # Red region
             ]
@@ -81,10 +81,10 @@ class ScoreBar(QWidget):
                 QColor(239, 68, 68)    # Bright red
             ]
             self.region_colors = [
-                QColor(34, 197, 94),   # Leading (green)
+                QColor(GREEN),   # Leading (green)
                 QColor(102, 204, 102), # Advanced (medium green)
                 QColor(153, 221, 68),  # Engaged (light green)
-                QColor(255, 152, 0),   # Onboarding (orange)
+                QColor(YELLOW_PRESSED),  # Onboarding (yellow)
                 QColor(239, 68, 68)    # Out of range (red)
             ]
             
@@ -154,11 +154,18 @@ class ScoreBar(QWidget):
         bar_y = title_rect.bottom() + get_spacing_medium()
         bar_rect = QRect(bar_x, bar_y, bar_width, bar_height)
         
-        # Create simple 3-color gradient
+        # Create gradient based on preset
         gradient = QLinearGradient(bar_rect.topLeft(), bar_rect.topRight())
-        gradient.setColorAt(0, self.gradient_colors[0])    # Green at start
-        gradient.setColorAt(0.5, self.gradient_colors[1])  # Yellow at middle
-        gradient.setColorAt(1, self.gradient_colors[2])    # Red at end
+        
+        if self.preset == "calculator":
+            gradient.setColorAt(0, self.gradient_colors[0])    # Green
+            gradient.setColorAt(0.35, self.gradient_colors[1]) # Yellow
+            gradient.setColorAt(1, self.gradient_colors[2])    # Red
+            
+        elif self.preset == "regen_ag":
+            gradient.setColorAt(0, self.gradient_colors[0])    # Green
+            gradient.setColorAt(0.6, self.gradient_colors[1])  # Yellow
+            gradient.setColorAt(1, self.gradient_colors[2])    # Red
         
         painter.fillRect(bar_rect, gradient)
         painter.setPen(QPen(QColor("#CCCCCC"), 1))
@@ -212,7 +219,7 @@ class ScoreBar(QWidget):
         ]
         
         painter.setBrush(QBrush(QColor("#333333")))
-        painter.setPen(QPen(QColor("#333333"), 1))
+        painter.setPen(QPen(QColor("#000000"), 1))
         painter.drawPolygon(points)
         
         # Draw score level text using responsive font
