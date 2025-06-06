@@ -54,7 +54,7 @@ class HomePage(QWidget):
         top_layout.addSpacing(get_spacing_medium())
         
         # Title in the center
-        title_label = QLabel("McCain Pesticides App")
+        title_label = QLabel("Pesticides App")
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setFont(get_title_font())
         top_layout.addWidget(title_label)

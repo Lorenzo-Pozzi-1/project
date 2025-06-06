@@ -180,7 +180,7 @@ class ScoreBar(QWidget):
 
     def _draw_ticks_and_labels(self, painter, bar_x, bar_y, bar_width, bar_height):
         """Draw tick marks and labels for thresholds."""
-        painter.setPen(QPen(QColor(160, 160, 160, 120), 1))
+        painter.setPen(QPen(QColor(160, 160, 160, 200), 1))
         painter.setFont(get_medium_font(size=8))
         
         # Collect all positions

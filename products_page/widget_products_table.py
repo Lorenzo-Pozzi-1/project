@@ -162,7 +162,7 @@ class ProductTable(QTableWidget):
     def _format_groups(self, ai_groups):
         """Format mode of action groups for display."""
         if not ai_groups:
-            return ""
+            return "--"
         
         # Consolidate groups by organization
         org_groups = {}
@@ -178,6 +178,10 @@ class ProductTable(QTableWidget):
                         org_groups[org] = []
                     if code not in org_groups[org]:
                         org_groups[org].append(code)
+        
+        # If no valid groups were found after processing, return "--"
+        if not org_groups:
+            return "--"
         
         # Format the consolidated groups
         groups_formatted = []
