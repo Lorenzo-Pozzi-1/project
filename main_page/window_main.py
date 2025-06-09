@@ -8,7 +8,7 @@ for all pages in the application.
 import os, shutil
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QFrame, QWidget, QLabel
 from PySide6.QtCore import Signal, Qt
-from common import CalculationTraceDialog, load_config, create_button, YELLOW_BAR_STYLE
+from common import CalculationTraceDialog, load_config, YELLOW_BAR_STYLE
 from data import ProductRepository
 from main_page.page_home import HomePage
 from products_page import ProductsPage
@@ -100,10 +100,10 @@ class MainWindow(QMainWindow):
         yellow_bar_layout.addStretch()
 
         # Add feedback link
-        feedback_label = QLabel('<a href="https://docs.google.com/forms/d/e/1FAIpQLSc87WWFElSQ3aMeD2NhX1WWLQdkVNthRYkg_nufDZ8ciHXQ6g/viewform?usp=header" style="color: #0066cc;">Give feedback or REPORT A PROBLEM</a>')
+        feedback_label = QLabel('<a href="https://forms.office.com/Pages/ResponsePage.aspx?id=l3f6WeyrBUWB5ozgkmQhkLYcF0biYxVBtOqFfBkqK7JUMERBRDZaNVNaNVpDVlg4UVJCVUNJQUFQMy4u" style="color: #0066cc;">GIVE FEEDBACK - REPORT A PROBLEM</a>')
         feedback_label.setOpenExternalLinks(True)
         feedback_label.setAlignment(Qt.AlignCenter)
-        feedback_label.setToolTip("Click to provide feedback about the application")
+        feedback_label.setToolTip("Click to give an answer")
         yellow_bar_layout.addWidget(feedback_label)
         
         main_layout.addWidget(self.yellow_bar)

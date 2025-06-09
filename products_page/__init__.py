@@ -9,7 +9,7 @@ from products_page.tab_products_list import ProductsListTab
 from products_page.tab_products_comparison import ProductsComparisonTab
 
 # Import widgets
-from products_page.widget_filter_row import FilterRow, FilterRowContainer
+from products_page.widget_filter_row import FilterChip, FiltersRow
 from products_page.widget_products_table import ProductTable
 from products_page.widget_comparison_table import ComparisonTable, ComparisonView
 
@@ -20,8 +20,8 @@ __all__ = [
     'ProductsComparisonTab',
     
     # Widget components
-    'FilterRow',
-    'FilterRowContainer',
+    'FilterChip',
+    'FiltersRow',
     'ProductTable',
     'ComparisonTable',
     'ComparisonView'

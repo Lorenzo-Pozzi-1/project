@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
 from PySide6.QtCore import Qt
 from common import ContentFrame, create_button
 from data import ProductRepository
-from products_page.widget_filter_row import FilterRowContainer
+from products_page.widget_filter_row import FiltersRow
 from products_page.widget_products_table import ProductTable
 
 
@@ -40,8 +40,8 @@ class ProductsListTab(QWidget):
         filter_frame = ContentFrame()
         filter_layout = QVBoxLayout()
         
-        # Use the FilterRowContainer widget
-        self.filter_container = FilterRowContainer()
+        # Use the FiltersRow widget
+        self.filter_container = FiltersRow()
         self.filter_container.filters_changed.connect(self.apply_filters)
         filter_layout.addWidget(self.filter_container)
         

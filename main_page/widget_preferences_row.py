@@ -222,9 +222,29 @@ class PreferencesRow(QWidget):
         self.seeding_rate_unit.setCurrentText(seeding_rate_unit)
         self.seeding_rate_spin.setValue(seeding_rate)
 
-        # After loading, reset the unsaved changes flag
+        # After loading, reset the unsaved changes flag and update button
         self.has_unsaved_changes = False
-        
+        self.update_save_button_state()
+    
+    def mark_as_changed(self):
+        """Mark preferences as changed but not saved."""
+        if not self.initializing:
+            self.has_unsaved_changes = True
+            self.update_save_button_state()
+            self.preferences_changed_unsaved.emit()
+    
+    def update_save_button_state(self):
+        """Update the save button appearance based on whether there are unsaved changes."""
+        if self.has_unsaved_changes:
+            # Unsaved changes - enable button and show "Save"
+            self.save_preferences_button.setText("Save")
+            self.save_preferences_button.setEnabled(True)
+            # Keep the yellow style for unsaved changes
+        else:
+            # No unsaved changes - disable button and show "Saved"
+            self.save_preferences_button.setText("Saved")
+            self.save_preferences_button.setEnabled(False)
+    
     def save_preferences(self):
         """Save preferences to config."""
         config = get_config("user_preferences", {})
@@ -247,9 +267,11 @@ class PreferencesRow(QWidget):
         
         # Emit signal to notify that preferences have changed
         self.preferences_changed.emit()
-        # After saving, reset the unsaved changes flag
-        self.has_unsaved_changes = False
         
+        # After saving, reset the unsaved changes flag and update button
+        self.has_unsaved_changes = False
+        self.update_save_button_state()
+    
     def show_confirmation_dialog(self):
         """Show a confirmation dialog that preferences have been saved."""
         msg_box = QMessageBox(self)
@@ -263,9 +285,3 @@ class PreferencesRow(QWidget):
         
         # Show the dialog
         msg_box.exec()
-
-    def mark_as_changed(self):
-        """Mark preferences as changed but not saved."""
-        if not self.initializing:
-            self.has_unsaved_changes = True
-            self.preferences_changed_unsaved.emit()

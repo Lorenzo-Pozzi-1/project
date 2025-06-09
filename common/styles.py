@@ -325,6 +325,37 @@ PRODUCT_CARD_STYLE = f"""
     }}
 """
 
+# Filter chip style
+FILTER_CHIP_STYLE = f"""
+    FilterChip {{
+        background-color: {WHITE};
+        border: 1px solid {BLACK};
+        border-radius: 15px;
+        margin: 2px;
+        padding: 4px;
+    }}
+    FilterChip:hover {{
+        background-color: {LIGHT_GRAY};
+    }}
+    FilterChip QLineEdit {{
+        border: none;
+        background: transparent;
+        padding: 2px;
+    }}
+    FilterChip QPushButton {{
+        border: none;
+        background: transparent;
+        color: #666;
+        font-weight: bold;
+        border-radius: 10px;
+    }}
+    FilterChip QPushButton:hover {{
+        background-color: {RED};
+        color: {WHITE};
+    }}
+"""
+
+
 # Calculation Trace Dialog Styles
 TINY_BUTTON_STYLE = f"""
     QPushButton {{
