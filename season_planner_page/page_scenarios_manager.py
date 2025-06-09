@@ -300,6 +300,9 @@ class ScenariosManagerPage(QWidget):
         if dialog.exec() == QDialog.Accepted:
             imported_scenario = dialog.get_imported_scenario()
             if imported_scenario:
+                # Check if we should remove the empty placeholder scenario
+                self._remove_empty_placeholder_if_needed()
+                
                 # Add the scenario
                 self.add_new_scenario(imported_scenario)
                 
@@ -315,6 +318,41 @@ class ScenariosManagerPage(QWidget):
                     f"Scenario '{imported_scenario.name}' has been imported successfully."
                 )
     
+    def _remove_empty_placeholder_if_needed(self):
+        """Remove the empty placeholder scenario if it's the only one and is empty."""
+        # Only proceed if there's exactly one scenario
+        if len(self.scenarios) != 1:
+            return
+            
+        # Get the single scenario
+        scenario = self.scenarios[0]
+        
+        # Check if it's an empty placeholder
+        if self._is_scenario_empty(scenario):
+            # Find the tab page and remove it
+            for i in range(self.tab_widget.count()):
+                page = self.tab_widget.widget(i)
+                if page.get_scenario() is scenario:
+                    # Remove the tab
+                    self.tab_widget.removeTab(i)
+                    # Remove from our data structures
+                    self.scenarios.remove(scenario)
+                    del self.scenario_tabs[scenario.name]
+                    break
+    
+    def _is_scenario_empty(self, scenario):
+        """Check if a scenario is empty (no meaningful applications)."""
+        # If no applications at all, it's empty
+        if not scenario.applications:
+            return True
+            
+        # Check if all applications are empty (no product name)
+        for app in scenario.applications:
+            if app.product_name and app.product_name.strip():
+                return False  # Found at least one application with a product
+                
+        return True  # All applications are empty
+
     def refresh_product_data(self):
         """Refresh product data when filtered products change in the main window."""
         for tab_page in self.scenario_tabs.values():

@@ -175,7 +175,7 @@ class ExcelScenarioParser:
         """Create a Scenario object from the parsed dataframe."""
         # Extract base filename for scenario name
         base_name = os.path.splitext(os.path.basename(file_path))[0]
-        scenario_name = f"Imported: {base_name}"
+        scenario_name = f"{base_name}"
         
         # Create new scenario
         scenario = Scenario(scenario_name)
