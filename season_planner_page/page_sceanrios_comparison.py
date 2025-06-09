@@ -91,10 +91,8 @@ class ScenariosComparisonPage(QWidget):
         # Create a ScenarioComparisonTable widget for each scenario
         for scenario in scenarios:
             scenario_widget = ScenarioComparisonTable(scenario)
-            self.scenarios_layout.addWidget(scenario_widget)
-        
-        # Add stretch to left-align scenarios
-        self.scenarios_layout.addStretch()
+            # Add each widget with stretch factor 1 to distribute space evenly
+            self.scenarios_layout.addWidget(scenario_widget, 1)
     
     def show_no_data_message(self, message):
         """Show a message when no data is available."""
