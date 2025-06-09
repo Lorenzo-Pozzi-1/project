@@ -5,8 +5,7 @@ A simple widget that displays a single scenario's data in a table format.
 Shows applications with their product names and EIQ values.
 """
 
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget, 
-                              QTableWidgetItem, QHeaderView)
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtCore import Qt
 from common import get_medium_font, get_subtitle_font, EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD
 from eiq_calculator_page.widgets_results_display import ColorCodedEiqItem

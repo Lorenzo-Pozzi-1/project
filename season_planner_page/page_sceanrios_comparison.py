@@ -5,12 +5,9 @@ A container page that displays multiple ScenarioComparisonTable widgets
 to compare scenarios side by side.
 """
 
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                              QScrollArea)
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea
 from PySide6.QtCore import Qt
-
-from common import (HeaderWithHomeButton, get_margin_large, get_spacing_medium,
-                   get_medium_font)
+from common import HeaderWithHomeButton, get_margin_large, get_spacing_medium, get_medium_font
 from .widgets.scenario_comparison_table import ScenarioComparisonTable
 
 

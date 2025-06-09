@@ -10,7 +10,6 @@ from PySide6.QtWidgets import (
     QFileDialog, QMessageBox, QTextEdit, QDialogButtonBox
 )
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor
 from common.styles import get_medium_font, get_subtitle_font
 from .excel_parser import ExcelScenarioParser
 
@@ -157,18 +156,19 @@ class ImportScenarioDialog(QDialog):
 Total products found: {total}
 ✓ Matched products: {matched}
 ✗ Unmatched products: {unmatched}
+
+⚠ Note: Applications with unmatched products will be imported but will show 0 EIQ.
 """
-        
-        if matched > 0:
-            validation_text += f"\n✓ MATCHED PRODUCTS ({matched}):\n"
-            for product in validation.get('matched_list', []):
-                validation_text += f"  • {product}\n"
-        
         if unmatched > 0:
             validation_text += f"\n✗ UNMATCHED PRODUCTS ({unmatched}):\n"
             for product in validation.get('unmatched_list', []):
                 validation_text += f"  • {product}\n"
-            validation_text += "\n⚠ Note: Applications with unmatched products will be imported but will show 0 EIQ."
+            
+
+        if matched > 0:
+            validation_text += f"\n✓ MATCHED PRODUCTS ({matched}):\n"
+            for product in validation.get('matched_list', []):
+                validation_text += f"  • {product}\n"
         
         # Set text color based on validation results
         if unmatched == 0:
@@ -211,11 +211,11 @@ Total products found: {total}
 
 Scenario Metadata:
 ━━━━━━━━━━━━━━━━━━━━
-- Crop Year: {preview_info.get('crop_year', 'N/A')}
-- Grower: {preview_info.get('grower_name', 'N/A')}
-- Field: {preview_info.get('field_name', 'N/A')}
-- Area: {preview_info.get('field_area', 'N/A')} {preview_info.get('field_area_uom', '')}
-- Variety: {preview_info.get('variety', 'N/A')}
+- Crop Year:\t{preview_info.get('crop_year', 'N/A')}
+- Grower:\t{preview_info.get('grower_name', 'N/A')}
+- Field:\t{preview_info.get('field_name', 'N/A')}
+- Area:\t{preview_info.get('field_area', 'N/A')} {preview_info.get('field_area_uom', '')}
+- Variety:\t{preview_info.get('variety', 'N/A')}
 
 Applications found: {preview_info['total_rows']} records
 
@@ -231,9 +231,9 @@ Sample applications:
             total = self.product_validation.get('total_products', 0)
             
             if unmatched > 0:
-                preview_text += f"\n\n📋 Import Summary: All {total} applications will be imported ({matched} with EIQ calculations, {unmatched} will show 0 EIQ)."
+                preview_text += f"\n\n📋 Import Summary: All {total} products will be imported ({matched} with EIQ calculations, {unmatched} will show 0 EIQ)."
             else:
-                preview_text += f"\n\n✓ Import Summary: All {total} applications will be imported with full EIQ calculations."
+                preview_text += f"\n\n✓ Import Summary: All {total} products will be imported with full EIQ calculations."
         
         self.preview_text.setPlainText(preview_text)
     
