@@ -90,16 +90,14 @@ class ScenariosComparisonPage(QWidget):
         if not scenarios:
             self.show_no_data_message("No scenarios available for comparison.\n\nGo back to create some scenarios first.")
             return
-        
         # Create a ScenarioComparisonTable widget for each scenario
-        for scenario in scenarios:
-            scenario_widget = ScenarioComparisonTable(scenario)
+        for index, scenario in enumerate(scenarios, 1):
+            scenario_widget = ScenarioComparisonTable(scenario, index)
             # Add each widget with stretch factor 1 to distribute space evenly
             self.scenarios_layout.addWidget(scenario_widget, 1)
-        
         # Update the scorebar with scenario data
         self.update_scorebar(scenarios)
-    
+
     def show_no_data_message(self, message):
         """Show a message when no data is available."""
         message_label = QLabel(message)
@@ -107,7 +105,7 @@ class ScenariosComparisonPage(QWidget):
         message_label.setFont(get_medium_font())
         message_label.setWordWrap(True)
         self.scenarios_layout.addWidget(message_label)
-    
+
     def update_scorebar(self, scenarios):
         """Update the scorebar with scenario data."""
         if not scenarios:
@@ -115,7 +113,7 @@ class ScenariosComparisonPage(QWidget):
         
         # Calculate total EIQ for each scenario
         scenarios_data = []
-        for scenario in scenarios:
+        for index, scenario in enumerate(scenarios, 1):
             total_eiq = 0
             if scenario.applications:
                 for app in scenario.applications:
@@ -124,7 +122,8 @@ class ScenariosComparisonPage(QWidget):
             
             scenarios_data.append({
                 'name': scenario.name or "Unnamed Scenario",
-                'value': total_eiq
+                'value': total_eiq,
+                'index': index
             })
         
         # Set scenarios data to the scorebar

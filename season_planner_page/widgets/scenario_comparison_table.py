@@ -17,11 +17,11 @@ class ScenarioComparisonTable(QWidget):
     
     Shows scenario name and applications with EIQ values.
     """
-    
-    def __init__(self, scenario, parent=None):
+    def __init__(self, scenario, index=None, parent=None):
         """Initialize the scenario comparison table."""
         super().__init__(parent)
         self.scenario = scenario
+        self.index = index
         self.setup_ui()
         self.populate_data()
     
@@ -61,9 +61,11 @@ class ScenarioComparisonTable(QWidget):
         """Populate the widget with scenario data."""
         if not self.scenario:
             return
-        
-        # Set title
-        self.title_label.setText(self.scenario.name or "Unnamed Scenario")
+          # Set title
+        if self.index is not None:
+            self.title_label.setText(f"{self.index}: {self.scenario.name or 'Unnamed Scenario'}")
+        else:
+            self.title_label.setText(self.scenario.name or "Unnamed Scenario")
         
         # Populate applications table
         applications = self.scenario.applications or []
