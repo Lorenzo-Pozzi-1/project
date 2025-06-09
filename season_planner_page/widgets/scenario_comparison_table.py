@@ -8,7 +8,8 @@ Shows applications with their product names and EIQ values.
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget, 
                               QTableWidgetItem, QHeaderView)
 from PySide6.QtCore import Qt
-from common import get_medium_font, get_subtitle_font
+from common import get_medium_font, get_subtitle_font, EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD
+from eiq_calculator_page.widgets_results_display import ColorCodedEiqItem
 
 
 class ScenarioComparisonTable(QWidget):
@@ -109,11 +110,15 @@ class ScenarioComparisonTable(QWidget):
                 app_item.setFlags(app_item.flags() & ~Qt.ItemIsEditable)
                 self.table.setItem(row, 0, app_item)
                 
-                # EIQ value
+                # EIQ value with color coding
                 eiq_value = app.field_eiq or 0
-                eiq_item = QTableWidgetItem(f"{eiq_value:.1f}")
+                eiq_item = ColorCodedEiqItem(
+                    eiq_value,
+                    low_threshold=EIQ_LOW_THRESHOLD,
+                    medium_threshold=EIQ_MEDIUM_THRESHOLD,
+                    high_threshold=EIQ_HIGH_THRESHOLD
+                )
                 eiq_item.setFlags(eiq_item.flags() & ~Qt.ItemIsEditable)
-                eiq_item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(row, 1, eiq_item)
                 
                 total_eiq += eiq_value
