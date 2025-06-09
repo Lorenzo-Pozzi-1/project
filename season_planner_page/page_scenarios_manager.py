@@ -1,8 +1,7 @@
 """
 Scenarios Manager Page for the Season Planner.
 
-Main interface for managing multiple pesticide application scenarios
-using the new table-based interface.
+Main interface for managing multiple pesticide application scenarios.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog, QDialog
@@ -17,70 +16,114 @@ from season_planner_page.import_export import ImportScenarioDialog
 from data import Scenario
 
 
+class ScenarioValidator:
+    """Handles scenario validation logic."""
+    
+    @staticmethod
+    def validate_name(name, existing_scenarios, exclude_scenario=None):
+        """
+        Validate scenario name uniqueness.
+        Returns: (is_valid: bool, error_message: str)
+        """
+        name = name.strip()
+        if not name:
+            return False, "Scenario name cannot be empty"
+        
+        # Check for name conflicts, excluding current scenario being renamed
+        for scenario in existing_scenarios:
+            if scenario.name == name and scenario != exclude_scenario:
+                return False, "Scenario name must be unique"
+        
+        return True, ""
+    
+    @staticmethod
+    def generate_unique_name(base_name, existing_scenarios):
+        """Generate unique scenario name by appending counter if needed."""
+        if not any(s.name == base_name for s in existing_scenarios):
+            return base_name
+        
+        # Find next available number suffix
+        counter = 1
+        while any(s.name == f"{base_name} ({counter})" for s in existing_scenarios):
+            counter += 1
+        
+        return f"{base_name} ({counter})"
+    
+    @staticmethod
+    def is_scenario_empty(scenario):
+        """Check if scenario has meaningful applications (non-empty product names)."""
+        if not scenario.applications:
+            return True
+        
+        return all(
+            not (app.product_name and app.product_name.strip())
+            for app in scenario.applications
+        )
+
+
 class ScenariosManagerPage(QWidget):
     """
     Container for multiple scenario tabs with management functionality.
     
-    This page serves as the main interface for the Season Planner feature,
-    using the new table-based applications interface for better performance
-    and user experience.
+    This page serves as the main interface for the Season Planner feature.
     """
     
-    scenario_changed = Signal(object)  # Emitted when any scenario changes
+    scenario_changed = Signal(object)
     
     def __init__(self, parent=None):
-        """Initialize the scenarios manager page."""
         super().__init__(parent)
         self.parent = parent
-        self._scenarios = []  # Internal list of scenarios
-        self._tab_pages = {}  # Map scenario name to tab page
-        self._ui_components = {}  # Store UI components for easy access
+        self._scenarios = []  # List of Scenario objects
+        self._tab_pages = {}  # Map scenario names to ScenarioTabPage instances
+        
+        # UI components - initialized in _setup_ui()
+        self._tab_widget = None
+        self._buttons = {}
+        self._info_title = None
+        self._score_bar = None
         
         self._setup_ui()
-        self._create_default_scenario()
+        self._create_default_scenario()  # Start with one empty scenario
         calculation_tracer.clear()
     
-    # Properties for cleaner data access
+    # === PROPERTIES ===
     @property
     def scenarios(self):
-        """Get list of all scenarios."""
+        """Return copy of scenarios list to prevent external modification."""
         return self._scenarios.copy()
     
     @property
     def current_scenario(self):
-        """Get the currently selected scenario."""
+        """Get scenario object from currently selected tab."""
         current_page = self._get_current_page()
         return current_page.get_scenario() if current_page else None
     
     @property
     def current_page(self):
-        """Get the currently selected scenario page."""
+        """Get currently active ScenarioTabPage widget."""
         return self._get_current_page()
     
+    # === UI SETUP ===
     def _setup_ui(self):
-        """Set up the UI components."""
+        """Create main layout with header, tabs, and results display."""
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(get_margin_large(), get_margin_large(), get_margin_large(), get_margin_large())
         main_layout.setSpacing(get_spacing_medium())
         
-        # Header with navigation and action buttons
         main_layout.addWidget(self._create_header())
-        
-        # Tab widget for scenarios
         main_layout.addWidget(self._create_tab_widget())
-        
-        # EIQ results display
         main_layout.addWidget(self._create_results_display())
     
     def _create_header(self):
-        """Create the header with navigation and action buttons."""
+        """Create header with title and action buttons."""
         header = HeaderWithHomeButton("Season Planner - Scenarios")
         header.back_clicked.connect(lambda: self.parent.navigate_to_page(0))
         
-        # Action buttons
+        # Container for all action buttons
         buttons_frame = ContentFrame()
         buttons_layout = QHBoxLayout()
         
+        # Define button configuration: (text, style, callback)
         button_configs = [
             ("Import Scenario", "white", self.import_scenario),
             ("New Scenario", "yellow", self.add_scenario),
@@ -91,91 +134,70 @@ class ScenariosManagerPage(QWidget):
             ("Export", "special", self.export)
         ]
         
-        self._ui_components['buttons'] = {}
+        # Create and store buttons for later state management
         for text, style, callback in button_configs:
             btn = create_button(text, style=style, callback=callback, parent=self)
             buttons_layout.addWidget(btn)
-            self._ui_components['buttons'][text] = btn
+            self._buttons[text] = btn
         
         buttons_frame.layout.addLayout(buttons_layout)
         header.layout().addWidget(buttons_frame)
-        
         return header
     
     def _create_tab_widget(self):
-        """Create the tab widget for scenarios."""
+        """Create container for scenario tabs with drag-and-drop support."""
         tabs_frame = ContentFrame()
         tabs_layout = QVBoxLayout()
         
-        self._ui_components['tab_widget'] = QTabWidget()
-        self._ui_components['tab_widget'].setMovable(True)
-        self._ui_components['tab_widget'].currentChanged.connect(self._on_tab_changed)
-        self._ui_components['tab_widget'].tabBarClicked.connect(self._on_tab_moved)
+        self._tab_widget = QTabWidget()
+        self._tab_widget.setMovable(True)  # Allow tab reordering
+        self._tab_widget.currentChanged.connect(self._on_tab_changed)
+        self._tab_widget.tabBarClicked.connect(self._on_tab_moved)
         
-        tabs_layout.addWidget(self._ui_components['tab_widget'])
+        tabs_layout.addWidget(self._tab_widget)
         tabs_frame.layout.addLayout(tabs_layout)
-        
         return tabs_frame
     
     def _create_results_display(self):
-        """Create the EIQ results display section."""
+        """Create EIQ score display at bottom of page."""
         results_frame = ContentFrame()
         results_layout = QVBoxLayout()
         
-        # Scenario info title
-        self._ui_components['info_title'] = QLabel(
+        # Summary text showing scenario name, application count, and total EIQ
+        self._info_title = QLabel(
             "New Scenario: 0 applications | Field Use EIQ: 0.00", 
             font=get_subtitle_font()
         )
-        results_layout.addWidget(self._ui_components['info_title'])
+        results_layout.addWidget(self._info_title)
         
-        # EIQ score bar
-        self._ui_components['score_bar'] = ScoreBar(preset="regen_ag")
-        self._ui_components['score_bar'].set_value(0, "No applications")
-        results_layout.addWidget(self._ui_components['score_bar'])
+        # Visual EIQ score bar
+        self._score_bar = ScoreBar(preset="regen_ag")
+        self._score_bar.set_value(0, "No applications")
+        results_layout.addWidget(self._score_bar)
         
         results_frame.layout.addLayout(results_layout)
         return results_frame
     
+    # === SCENARIO MANAGEMENT ===
     def _create_default_scenario(self):
-        """Create the initial default scenario."""
+        """Create initial empty scenario on startup."""
         scenario = Scenario("Scenario 1")
         self._add_scenario_internal(scenario)
     
-    def _generate_unique_name(self, base_name):
-        """Generate a unique scenario name."""
-        if base_name not in self._tab_pages:
-            return base_name
-        
-        counter = 1
-        while f"{base_name} ({counter})" in self._tab_pages:
-            counter += 1
-        
-        return f"{base_name} ({counter})"
-    
-    def _validate_scenario_name(self, name, exclude_current=False):
-        """Validate that a scenario name is unique."""
-        current_scenario = self.current_scenario if exclude_current else None
-        
-        for scenario in self._scenarios:
-            if scenario.name == name and scenario != current_scenario:
-                return False
-        return True
-    
     def _add_scenario_internal(self, scenario):
-        """Internal method to add a scenario without validation."""
-        # Ensure unique name
-        scenario.name = self._generate_unique_name(scenario.name)
+        """Add scenario to UI and internal data structures."""
+        # Ensure unique name to prevent conflicts
+        scenario.name = ScenarioValidator.generate_unique_name(scenario.name, self._scenarios)
         
-        # Create tab page
+        # Create corresponding tab page widget
         tab_page = ScenarioTabPage(self, scenario)
         tab_page.scenario_changed.connect(self._on_scenario_data_changed)
         
-        # Add to UI
-        tab_index = self._ui_components['tab_widget'].addTab(tab_page, scenario.name)
-        self._ui_components['tab_widget'].setCurrentIndex(tab_index)
+        # Add tab to UI and make it active
+        tab_index = self._tab_widget.addTab(tab_page, scenario.name)
+        self._tab_widget.setCurrentIndex(tab_index)
         
-        # Update internal data
+        # Update internal data structures
         self._scenarios.append(scenario)
         self._tab_pages[scenario.name] = tab_page
         
@@ -183,45 +205,61 @@ class ScenariosManagerPage(QWidget):
         return tab_page
     
     def _remove_scenario_internal(self, scenario):
-        """Internal method to remove a scenario."""
-        # Find and remove tab
-        for i in range(self._ui_components['tab_widget'].count()):
-            page = self._ui_components['tab_widget'].widget(i)
+        """Remove scenario from UI and internal data structures."""
+        # Find and remove corresponding tab
+        for i in range(self._tab_widget.count()):
+            page = self._tab_widget.widget(i)
             if page.get_scenario() is scenario:
-                self._ui_components['tab_widget'].removeTab(i)
+                self._tab_widget.removeTab(i)
                 break
         
-        # Update internal data
+        # Clean up internal data
         self._scenarios.remove(scenario)
         del self._tab_pages[scenario.name]
-        
         self._update_ui_state()
     
     def _get_current_page(self):
-        """Get the current scenario page."""
-        index = self._ui_components['tab_widget'].currentIndex()
-        if index < 0:
-            return None
-        return self._ui_components['tab_widget'].widget(index)
+        """Get currently active tab page widget."""
+        index = self._tab_widget.currentIndex()
+        return self._tab_widget.widget(index) if index >= 0 else None
     
+    def _remove_empty_placeholder_if_needed(self):
+        """Remove default empty scenario when importing/adding real scenarios."""
+        if len(self._scenarios) == 1 and ScenarioValidator.is_scenario_empty(self._scenarios[0]):
+            self._remove_scenario_internal(self._scenarios[0])
+    
+    def _sync_tab_order(self):
+        """Synchronize internal data with tab widget order after drag-and-drop."""
+        new_scenarios = []
+        new_tab_pages = {}
+        
+        # Rebuild data structures based on current tab order
+        for i in range(self._tab_widget.count()):
+            tab_page = self._tab_widget.widget(i)
+            scenario = tab_page.get_scenario()
+            new_scenarios.append(scenario)
+            new_tab_pages[scenario.name] = tab_page
+        
+        self._scenarios = new_scenarios
+        self._tab_pages = new_tab_pages
+    
+    # === UI STATE MANAGEMENT ===
     def _update_ui_state(self):
-        """Update all UI components based on current state."""
+        """Refresh button states and results display based on current state."""
         self._update_button_states()
         self._update_results_display()
     
     def _update_button_states(self):
-        """Update button enabled/disabled states."""
+        """Enable/disable buttons based on number of scenarios and current state."""
         has_scenarios = len(self._scenarios) > 0
-        buttons = self._ui_components['buttons']
-        
-        buttons["Clone Current"].setEnabled(has_scenarios)
-        buttons["Rename"].setEnabled(has_scenarios)
-        buttons["Delete"].setEnabled(has_scenarios)
-        buttons["Compare Scenarios"].setEnabled(len(self._scenarios) > 1)
-        buttons["Export"].setEnabled(has_scenarios)
+        self._buttons["Clone Current"].setEnabled(has_scenarios)
+        self._buttons["Rename"].setEnabled(has_scenarios)
+        self._buttons["Delete"].setEnabled(has_scenarios)
+        self._buttons["Compare Scenarios"].setEnabled(len(self._scenarios) > 1)  # Need 2+ scenarios
+        self._buttons["Export"].setEnabled(has_scenarios)
     
     def _update_results_display(self):
-        """Update the EIQ results display."""
+        """Update EIQ summary display with current scenario data."""
         current_page = self._get_current_page()
         
         if not current_page:
@@ -235,71 +273,44 @@ class ScenariosManagerPage(QWidget):
             applications = current_page.applications_table.get_applications()
             applications_count = len(applications)
         
-        # Update display
+        # Update summary text
         info_text = f"{scenario_name}: {applications_count} applications | Field Use EIQ: {total_eiq:.2f}"
-        self._ui_components['info_title'].setText(info_text)
+        self._info_title.setText(info_text)
         
+        # Update visual score bar
         score_text = "" if total_eiq > 0 else "No applications"
-        self._ui_components['score_bar'].set_value(max(total_eiq, 0), score_text)
+        self._score_bar.set_value(max(total_eiq, 0), score_text)
     
-    def _is_scenario_empty(self, scenario):
-        """Check if a scenario has no meaningful applications."""
-        if not scenario.applications:
-            return True
-        
-        return all(
-            not (app.product_name and app.product_name.strip())
-            for app in scenario.applications
-        )
-    
-    def _remove_empty_placeholder_if_needed(self):
-        """Remove empty placeholder scenario if it's the only one."""
-        if len(self._scenarios) == 1 and self._is_scenario_empty(self._scenarios[0]):
-            self._remove_scenario_internal(self._scenarios[0])
-    
-    def _sync_tab_order(self):
-        """Synchronize internal data with tab widget order."""
-        new_scenarios = []
-        new_tab_pages = {}
-        
-        for i in range(self._ui_components['tab_widget'].count()):
-            tab_page = self._ui_components['tab_widget'].widget(i)
-            scenario = tab_page.get_scenario()
-            new_scenarios.append(scenario)
-            new_tab_pages[scenario.name] = tab_page
-        
-        self._scenarios = new_scenarios
-        self._tab_pages = new_tab_pages
-    
-    # Event handlers
+    # === EVENT HANDLERS ===
     def _on_tab_changed(self):
-        """Handle tab selection change."""
+        """Handle tab selection change - update UI state."""
         self._update_ui_state()
     
     def _on_tab_moved(self, index):
-        """Handle tab reordering."""
+        """Handle tab drag-and-drop - synchronize internal data."""
         self._sync_tab_order()
     
     def _on_scenario_data_changed(self, scenario):
-        """Handle changes to scenario data."""
-        # Find the tab page and update tab text if name changed
-        for i in range(self._ui_components['tab_widget'].count()):
-            page = self._ui_components['tab_widget'].widget(i)
+        """Handle scenario modification - validate names and update UI."""
+        # Handle name changes with validation
+        for i in range(self._tab_widget.count()):
+            page = self._tab_widget.widget(i)
             if page.get_scenario() is scenario:
-                current_tab_text = self._ui_components['tab_widget'].tabText(i)
+                current_tab_text = self._tab_widget.tabText(i)
                 
+                # Check if scenario name was changed
                 if current_tab_text != scenario.name:
-                    # Validate name uniqueness
-                    if not self._validate_scenario_name(scenario.name, exclude_current=True):
-                        QMessageBox.warning(
-                            self, "Name Already Exists",
-                            "Scenario names must be unique. Reverting to previous name.",
-                            QMessageBox.Ok
-                        )
+                    is_valid, error_msg = ScenarioValidator.validate_name(
+                        scenario.name, self._scenarios, exclude_scenario=scenario
+                    )
+                    
+                    if not is_valid:
+                        # Revert to old name if validation fails
+                        QMessageBox.warning(self, "Name Already Exists", error_msg, QMessageBox.Ok)
                         scenario.name = current_tab_text
                     else:
-                        # Update tab and internal mapping
-                        self._ui_components['tab_widget'].setTabText(i, scenario.name)
+                        # Update tab text and internal mapping
+                        self._tab_widget.setTabText(i, scenario.name)
                         del self._tab_pages[current_tab_text]
                         self._tab_pages[scenario.name] = page
                 break
@@ -307,9 +318,9 @@ class ScenariosManagerPage(QWidget):
         self._update_ui_state()
         self.scenario_changed.emit(scenario)
     
-    # Public API methods
+    # === PUBLIC API ===
     def add_scenario(self, scenario=None):
-        """Add a new scenario."""
+        """Add new scenario or create default one."""
         if scenario is None:
             base_name = f"Scenario {len(self._scenarios) + 1}"
             scenario = Scenario(base_name)
@@ -317,7 +328,7 @@ class ScenariosManagerPage(QWidget):
         self._add_scenario_internal(scenario)
     
     def clone_scenario(self):
-        """Clone the current scenario."""
+        """Create copy of currently selected scenario."""
         current_page = self._get_current_page()
         if current_page:
             original_scenario = current_page.get_scenario()
@@ -325,7 +336,7 @@ class ScenariosManagerPage(QWidget):
             self._add_scenario_internal(cloned_scenario)
     
     def rename_scenario(self):
-        """Rename the current scenario."""
+        """Show dialog to rename current scenario with validation."""
         current_page = self._get_current_page()
         if not current_page:
             return
@@ -333,35 +344,28 @@ class ScenariosManagerPage(QWidget):
         scenario = current_page.get_scenario()
         old_name = scenario.name
         
+        # Keep asking until valid name or cancelled
         while True:
             new_name, ok = QInputDialog.getText(
-                self, "Rename Scenario", "Enter new scenario name:",
-                text=old_name
+                self, "Rename Scenario", "Enter new scenario name:", text=old_name
             )
             
             if not ok or new_name == old_name:
                 return
             
-            if not new_name.strip():
-                QMessageBox.warning(
-                    self, "Invalid Name",
-                    "Scenario name cannot be empty.",
-                    QMessageBox.Ok
-                )
+            # Validate new name
+            is_valid, error_msg = ScenarioValidator.validate_name(
+                new_name, self._scenarios, exclude_scenario=scenario
+            )
+            
+            if not is_valid:
+                QMessageBox.warning(self, "Invalid Name", error_msg, QMessageBox.Ok)
                 continue
             
-            if not self._validate_scenario_name(new_name, exclude_current=True):
-                QMessageBox.warning(
-                    self, "Name Already Exists",
-                    "Scenario names must be unique.",
-                    QMessageBox.Ok
-                )
-                continue
-            
-            # Valid name - update
+            # Apply name change
             scenario.name = new_name
-            current_index = self._ui_components['tab_widget'].currentIndex()
-            self._ui_components['tab_widget'].setTabText(current_index, new_name)
+            current_index = self._tab_widget.currentIndex()
+            self._tab_widget.setTabText(current_index, new_name)
             
             # Update internal mapping
             del self._tab_pages[old_name]
@@ -371,37 +375,38 @@ class ScenariosManagerPage(QWidget):
             break
     
     def delete_scenario(self):
-        """Delete the current scenario with confirmation."""
+        """Delete current scenario with confirmation dialog."""
         current_page = self._get_current_page()
         if not current_page:
             return
         
         scenario = current_page.get_scenario()
         
+        # Confirm deletion
         result = QMessageBox.question(
             self, "Confirm Deletion",
             f"Are you sure you want to remove scenario '{scenario.name}'?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
         
         if result == QMessageBox.Yes:
             self._remove_scenario_internal(scenario)
             
-            # Ensure we always have at least one scenario
+            # Ensure at least one scenario exists
             if len(self._scenarios) == 0:
                 self._create_default_scenario()
     
     def import_scenario(self):
-        """Import scenario from external file."""
+        """Show import dialog and add imported scenario."""
         dialog = ImportScenarioDialog(self)
         if dialog.exec() == QDialog.Accepted:
             imported_scenario = dialog.get_imported_scenario()
             if imported_scenario:
+                # Remove empty placeholder scenario if present
                 self._remove_empty_placeholder_if_needed()
                 self._add_scenario_internal(imported_scenario)
                 
-                # Force UI update before showing message
+                # Process UI events before showing success message
                 QCoreApplication.processEvents()
                 
                 QMessageBox.information(
@@ -410,18 +415,15 @@ class ScenariosManagerPage(QWidget):
                 )
     
     def export(self):
-        """Export functionality placeholder."""
-        QMessageBox.information(
-            self, "Coming Soon",
-            "Export functionality will be added here."
-        )
+        """Placeholder for export functionality."""
+        QMessageBox.information(self, "Coming Soon", "Export functionality will be added here.")
     
     def compare_scenarios(self):
-        """Navigate to scenarios comparison page."""
+        """Navigate to scenario comparison page."""
         if self.parent:
             self.parent.navigate_to_page(4)
     
     def refresh_product_data(self):
-        """Refresh product data in all scenario tabs."""
+        """Refresh product data in all scenario tabs (called when product database updates)."""
         for tab_page in self._tab_pages.values():
             tab_page.refresh_product_data()
