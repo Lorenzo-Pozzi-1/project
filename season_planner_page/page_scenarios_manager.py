@@ -94,7 +94,7 @@ class ScenariosManagerPage(QWidget):
         results_layout = QVBoxLayout()
 
         # Combined title with scenario info
-        self.scenario_info_title = QLabel("New Scenario: 0 applications, field EIQ score: 0.00", font=get_subtitle_font())
+        self.scenario_info_title = QLabel("New Scenario: 0 applications | Field Use EIQ: 0.00", font=get_subtitle_font())
         results_layout.addWidget(self.scenario_info_title)
 
         # Create score bar with custom thresholds and labels
@@ -281,7 +281,7 @@ class ScenariosManagerPage(QWidget):
         
         # Update combined title
         self.scenario_info_title.setText(
-            f"{scenario_name}: {applications_count} applications, field EIQ score: {total_eiq:.2f}"
+            f"{scenario_name}: {applications_count} applications | Field Use EIQ: {total_eiq:.2f}"
         )
         
         self.eiq_score_bar.set_value(
@@ -362,7 +362,7 @@ class ScenariosManagerPage(QWidget):
         """Export functionality placeholder."""
         QMessageBox.information(
             self, "Coming Soon", 
-            "Export functionality will be developed in a future update."
+            "Export functionality will be added here."
         )
 
     def _on_tab_moved(self, index):

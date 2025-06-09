@@ -33,15 +33,15 @@ def main() -> int:
     app.setApplicationName("Pesticides App")
     
     # Block scroll to change value for QComboBox and QDoubleSpinBox
-    scroll_filter = WheelProtectionFilter()
-    for widget_class in [QComboBox, QDoubleSpinBox]:
-        original_init = widget_class.__init__
-        def create_filtered_init(orig_init):
-            def filtered_init(self, *args, **kwargs):
-                orig_init(self, *args, **kwargs)
-                self.installEventFilter(scroll_filter)
-            return filtered_init
-        widget_class.__init__ = create_filtered_init(original_init)
+    # scroll_filter = WheelProtectionFilter()
+    # for widget_class in [QComboBox, QDoubleSpinBox]:
+    #     original_init = widget_class.__init__
+    #     def create_filtered_init(orig_init):
+    #         def filtered_init(self, *args, **kwargs):
+    #             orig_init(self, *args, **kwargs)
+    #             self.installEventFilter(scroll_filter)
+    #         return filtered_init
+    #     widget_class.__init__ = create_filtered_init(original_init)
 
     # Load application configuration
     config = load_config()

@@ -18,7 +18,6 @@ from common.styles import get_medium_font
 
 class ScoreBar(QWidget):
     """A color gradient bar for displaying scores with preset color schemes."""
-    
     def __init__(self, parent=None, preset="calculator"):
         """
         Initialize the scorebar widget with a preset configuration.
@@ -32,6 +31,10 @@ class ScoreBar(QWidget):
         self.preset = preset
         self.current_value = 0
         self.label_text = ""
+        
+        # Multi-scenario support
+        self.scenarios = []  # List of {'name': str, 'value': float, 'color': QColor}
+        self.multi_scenario_mode = False
         
         # Configure everything based on preset
         self._setup_preset_configuration()
@@ -48,7 +51,7 @@ class ScoreBar(QWidget):
     def _setup_preset_configuration(self):
         """Set up all configuration based on the selected preset."""
         if self.preset == "calculator":
-            self.title_text = "Field EIQ score:"
+            self.title_text = "Field Use EIQ:"
             self.thresholds = [EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD]
             self.labels = ["Low", "Medium", "High", "Very High"]
             self.min_value = 0
@@ -90,10 +93,9 @@ class ScoreBar(QWidget):
             
         else:
             raise ValueError(f"Unknown preset: {self.preset}")
-    
     def set_value(self, value, label_text=""):
         """
-        Set the value and optional text label for the bar.
+        Set the value and optional text label for the bar (single-value mode).
         
         Args:
             value: Value to display on the bar
@@ -101,6 +103,32 @@ class ScoreBar(QWidget):
         """
         self.current_value = value
         self.label_text = label_text
+        self.multi_scenario_mode = False
+        self.scenarios = []
+        self.update()
+    
+    def set_scenarios(self, scenarios_data):
+        """
+        Set multiple scenarios for comparison (multi-scenario mode).
+        
+        Args:
+            scenarios_data: List of dictionaries with keys:
+                - 'name': Scenario name (str)
+                - 'value': Scenario EIQ value (float)
+                - 'color': Optional color (QColor), defaults to black
+        """
+        self.scenarios = []
+        for scenario in scenarios_data:
+            scenario_info = {
+                'name': scenario.get('name', 'Unnamed'),
+                'value': float(scenario.get('value', 0)),
+                'color': scenario.get('color', QColor("#333333"))
+            }
+            self.scenarios.append(scenario_info)
+        
+        self.multi_scenario_mode = True
+        self.current_value = 0
+        self.label_text = ""
         self.update()
     
     def get_score_level(self):
@@ -173,9 +201,10 @@ class ScoreBar(QWidget):
         
         # Draw ticks and labels
         self._draw_ticks_and_labels(painter, bar_x, bar_y, bar_width, bar_height)
-        
-        # Draw marker and text if we have a valid value
-        if self.current_value > 0:
+          # Draw marker and text if we have a valid value or scenarios
+        if self.multi_scenario_mode and self.scenarios:
+            self._draw_multiple_markers_and_text(painter, bar_x, bar_y, bar_width, bar_height)
+        elif self.current_value > 0:
             self._draw_marker_and_text(painter, bar_x, bar_y, bar_width, bar_height)
 
     def _draw_ticks_and_labels(self, painter, bar_x, bar_y, bar_width, bar_height):
@@ -230,6 +259,85 @@ class ScoreBar(QWidget):
         text_width = 120
         
         text_x = max(bar_x, min(marker_x - text_width/2, bar_x + bar_width - text_width))
-        
         level_rect = QRect(text_x, text_y, text_width, 20)
         painter.drawText(level_rect, Qt.AlignCenter, score_level)
+    
+    def _draw_multiple_markers_and_text(self, painter, bar_x, bar_y, bar_width, bar_height):
+        """Draw multiple scenario markers and their labels."""
+        if not self.scenarios:
+            return
+        
+        # Sort scenarios by value for better label placement
+        sorted_scenarios = sorted(self.scenarios, key=lambda s: s['value'])
+        
+        triangle_width = 10
+        triangle_height = 8
+        label_spacing = get_spacing_medium()
+        
+        # Calculate positions for all markers
+        marker_positions = []
+        for scenario in sorted_scenarios:
+            # Cap the marker position
+            marker_value = min(max(scenario['value'], self.min_value), self.max_value)
+            relative_pos = (marker_value - self.min_value) / (self.max_value - self.min_value)
+            marker_x = bar_x + relative_pos * bar_width
+            marker_positions.append((marker_x, scenario))
+        
+        # Draw all triangle markers
+        for marker_x, scenario in marker_positions:
+            points = [
+                QPointF(marker_x, bar_y + bar_height),
+                QPointF(marker_x - triangle_width/2, bar_y + bar_height + triangle_height),
+                QPointF(marker_x + triangle_width/2, bar_y + bar_height + triangle_height)
+            ]
+            
+            painter.setBrush(QBrush(scenario['color']))
+            painter.setPen(QPen(QColor("#000000"), 1))
+            painter.drawPolygon(points)
+        
+        # Draw scenario labels with overlap prevention
+        self._draw_scenario_labels(painter, marker_positions, bar_x, bar_y, bar_width, bar_height, triangle_height)
+    
+    def _draw_scenario_labels(self, painter, marker_positions, bar_x, bar_y, bar_width, bar_height, triangle_height):
+        """Draw scenario labels with overlap prevention."""
+        if not marker_positions:
+            return
+        
+        painter.setFont(get_medium_font(size=get_medium_text_size(), bold=True))
+        painter.setPen(QPen(QColor("#333333"), 1))
+        
+        text_y = bar_y + bar_height + triangle_height + get_spacing_medium()
+        label_height = 16
+        
+        # Calculate label positions to prevent overlap
+        label_positions = []
+        min_label_width = 80
+        
+        for marker_x, scenario in marker_positions:
+            # Start with centered position
+            preferred_x = marker_x - min_label_width / 2
+            
+            # Ensure it fits within the bar bounds
+            label_x = max(bar_x, min(preferred_x, bar_x + bar_width - min_label_width))
+            
+            # Check for overlap with existing labels and adjust
+            while any(abs(label_x - existing_x) < min_label_width for existing_x, _ in label_positions):
+                label_x += min_label_width * 0.1  # Small increment to avoid overlap
+                # If we've gone too far right, try going left instead
+                if label_x + min_label_width > bar_x + bar_width:
+                    label_x = max(bar_x, preferred_x - min_label_width * 0.3)
+                    break
+            
+            label_positions.append((label_x, scenario))
+        
+        # Draw all labels
+        for label_x, scenario in label_positions:
+            # Create a rectangle for the text
+            label_rect = QRect(int(label_x), text_y, min_label_width, label_height)
+            
+            # Draw scenario name
+            painter.drawText(label_rect, Qt.AlignCenter, scenario['name'])
+            
+            # Draw value below name
+            value_rect = QRect(int(label_x), text_y + label_height, min_label_width, label_height)
+            painter.drawText(value_rect, Qt.AlignCenter, f"EIQ: {scenario['value']:.1f}")

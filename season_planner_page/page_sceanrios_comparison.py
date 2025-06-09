@@ -8,6 +8,7 @@ to compare scenarios side by side.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea
 from PySide6.QtCore import Qt
 from common import HeaderWithHomeButton, get_margin_large, get_spacing_medium, get_medium_font
+from common.widgets.scorebar import ScoreBar
 from .widgets.scenario_comparison_table import ScenarioComparisonTable
 
 
@@ -50,9 +51,12 @@ class ScenariosComparisonPage(QWidget):
         self.scenarios_container.setStyleSheet("border: 1px solid black;")
         self.scenarios_layout.setSpacing(get_spacing_medium())
         self.scenarios_layout.setContentsMargins(0, 0, 0, 0)
-        
         scroll_area.setWidget(self.scenarios_container)
         main_layout.addWidget(scroll_area)
+        
+        # Add ScoreBar at the bottom for scenarios comparison
+        self.score_bar = ScoreBar(preset="regen_ag")
+        main_layout.addWidget(self.score_bar)
     
     def showEvent(self, event):
         """Called when the page is shown. Load scenarios here."""
@@ -83,7 +87,6 @@ class ScenariosComparisonPage(QWidget):
         except Exception as e:
             self.show_no_data_message(f"Error accessing scenarios: {str(e)}")
             return
-        
         if not scenarios:
             self.show_no_data_message("No scenarios available for comparison.\n\nGo back to create some scenarios first.")
             return
@@ -93,6 +96,9 @@ class ScenariosComparisonPage(QWidget):
             scenario_widget = ScenarioComparisonTable(scenario)
             # Add each widget with stretch factor 1 to distribute space evenly
             self.scenarios_layout.addWidget(scenario_widget, 1)
+        
+        # Update the scorebar with scenario data
+        self.update_scorebar(scenarios)
     
     def show_no_data_message(self, message):
         """Show a message when no data is available."""
@@ -101,6 +107,29 @@ class ScenariosComparisonPage(QWidget):
         message_label.setFont(get_medium_font())
         message_label.setWordWrap(True)
         self.scenarios_layout.addWidget(message_label)
+    
+    def update_scorebar(self, scenarios):
+        """Update the scorebar with scenario data."""
+        if not scenarios:
+            return
+        
+        # Calculate total EIQ for each scenario
+        scenarios_data = []
+        for scenario in scenarios:
+            total_eiq = 0
+            if scenario.applications:
+                for app in scenario.applications:
+                    if app.field_eiq is not None:
+                        total_eiq += app.field_eiq
+            
+            scenarios_data.append({
+                'name': scenario.name or "Unnamed Scenario",
+                'value': total_eiq
+            })
+        
+        # Set scenarios data to the scorebar
+        if scenarios_data:
+            self.score_bar.set_scenarios(scenarios_data)
     
     def go_back(self):
         """Navigate back to the scenarios manager page."""
