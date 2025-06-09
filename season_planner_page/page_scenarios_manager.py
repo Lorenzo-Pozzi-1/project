@@ -14,7 +14,7 @@ from common import (
     LEADING, ADVANCED, ENGAGED, ONBOARDING
 )
 from season_planner_page.tab_scenario import ScenarioTabPage
-from season_planner_page.import_scenario import ImportScenarioDialog
+from season_planner_page.import_export import ImportScenarioDialog
 from data import Scenario
 
 

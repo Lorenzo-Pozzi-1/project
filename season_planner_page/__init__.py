@@ -18,7 +18,7 @@ from season_planner_page.widgets.eiq_summary import EIQSummaryWidget
 from season_planner_page.models.application_table_model import ApplicationTableModel
 
 # Import scenario functionality
-from season_planner_page.import_scenario import ImportScenarioDialog
+from season_planner_page.import_export import ImportScenarioDialog
 
 __all__ = [
     # Main page and tabs
