@@ -40,13 +40,13 @@ class ScenarioComparisonTable(QWidget):
         self.table.setColumnCount(2)
         self.table.setHorizontalHeaderLabels(["Application", "EIQ"])
         
-        # Basic table configuration
+        # Basic table configuration - remove fixed width, let it stretch
         self.table.horizontalHeader().setStyleSheet(GENERIC_TABLE_STYLE)
-        self.table.setFixedWidth(350)
-        self.table.horizontalHeader().setStretchLastSection(False)
+        # Remove setFixedWidth to allow stretching
+        self.table.horizontalHeader().setStretchLastSection(True)
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Fixed)
-        self.table.setColumnWidth(1, 80)
+        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        # Remove setColumnWidth to allow dynamic sizing
         self.table.verticalHeader().setVisible(False)
         
         layout.addWidget(self.table)
@@ -115,7 +115,7 @@ class ScenarioComparisonTable(QWidget):
             eiq_item.setTextAlignment(Qt.AlignCenter)
             self.table.setItem(0, 1, eiq_item)
             
-            self.total_label.setText("Total EIQ: 0.0")
+            self.total_label.setText("Total Field Use EIQ: 0.0")
         
         # Resize rows to content
         self.table.resizeRowsToContents()
