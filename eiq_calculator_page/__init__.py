@@ -7,10 +7,14 @@ calculations of pesticide applications.
 
 # Import the common styles and thresholds first
 from common.styles import (
-    get_eiq_color, get_eiq_rating,
     EIQ_LOW_THRESHOLD as LOW_THRESHOLD,
     EIQ_MEDIUM_THRESHOLD as MEDIUM_THRESHOLD, 
     EIQ_HIGH_THRESHOLD as HIGH_THRESHOLD
+)
+
+# Import utility functions for EIQ calculations
+from common.utils import (
+    get_eiq_color
 )
 
 # Import calculation functions

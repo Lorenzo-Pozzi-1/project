@@ -4,56 +4,6 @@ from PySide6.QtGui import QFont
 from .constants import *
 
 # ----------------------
-# EIQ UTILITY FUNCTIONS
-# ----------------------
-
-def get_eiq_color(eiq_value, low_threshold=EIQ_LOW_THRESHOLD, 
-                  medium_threshold=EIQ_MEDIUM_THRESHOLD, high_threshold=EIQ_HIGH_THRESHOLD):
-    """
-    Get appropriate color for an EIQ value based on thresholds.
-    
-    Args:
-        eiq_value (float): The EIQ value to get a color for
-        low_threshold (float): Threshold between low and medium impact
-        medium_threshold (float): Threshold between medium and high impact
-        high_threshold (float): Threshold between high and extreme impact
-        
-    Returns:
-        QColor: Color corresponding to the EIQ value's impact level
-    """
-    if eiq_value < low_threshold:
-        return EIQ_LOW_COLOR
-    elif eiq_value < medium_threshold:
-        return EIQ_MEDIUM_COLOR
-    elif eiq_value < high_threshold:
-        return EIQ_HIGH_COLOR
-    else:
-        return EIQ_EXTREME_COLOR
-
-def get_eiq_rating(eiq_value, low_threshold=EIQ_LOW_THRESHOLD, 
-                  medium_threshold=EIQ_MEDIUM_THRESHOLD, high_threshold=EIQ_HIGH_THRESHOLD):
-    """
-    Get text rating for an EIQ value based on thresholds.
-    
-    Args:
-        eiq_value (float): The EIQ value to get a rating for
-        low_threshold (float): Threshold between low and medium impact
-        medium_threshold (float): Threshold between medium and high impact
-        high_threshold (float): Threshold between high and extreme impact
-        
-    Returns:
-        str: Rating as text ("Low", "Medium", "High", or "Extreme")
-    """
-    if eiq_value < low_threshold:
-        return "Low"
-    elif eiq_value < medium_threshold:
-        return "Medium"
-    elif eiq_value < high_threshold:
-        return "High"
-    else:
-        return "Extreme"
-
-# ----------------------
 # FONT FUNCTIONS
 # ----------------------
 

@@ -47,8 +47,6 @@ class ScenariosComparisonPage(QWidget):
         # Container widget for scenarios
         self.scenarios_container = QWidget()
         self.scenarios_layout = QHBoxLayout(self.scenarios_container)
-        # Add a black border to the scenarios container for visibility
-        self.scenarios_container.setStyleSheet("border: 1px solid black;")
         self.scenarios_layout.setSpacing(get_spacing_medium())
         self.scenarios_layout.setContentsMargins(0, 0, 0, 0)
         scroll_area.setWidget(self.scenarios_container)

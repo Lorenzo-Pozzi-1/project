@@ -7,7 +7,8 @@ Shows applications with their product names and EIQ values.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtCore import Qt
-from common import get_medium_font, get_subtitle_font, EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD, GENERIC_TABLE_STYLE
+from common import (get_medium_font, get_subtitle_font, get_regen_ag_class, EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD, 
+                    GENERIC_TABLE_STYLE)
 from eiq_calculator_page.widgets_results_display import ColorCodedEiqItem
 
 
@@ -40,20 +41,18 @@ class ScenarioComparisonTable(QWidget):
         self.table.setColumnCount(2)
         self.table.setHorizontalHeaderLabels(["Application", "EIQ"])
         
-        # Basic table configuration - remove fixed width, let it stretch
+        # Basic table configuration
         self.table.horizontalHeader().setStyleSheet(GENERIC_TABLE_STYLE)
-        # Remove setFixedWidth to allow stretching
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        # Remove setColumnWidth to allow dynamic sizing
         self.table.verticalHeader().setVisible(False)
         
         layout.addWidget(self.table)
         
         # Total EIQ label
         self.total_label = QLabel()
-        self.total_label.setFont(get_medium_font())
+        self.total_label.setFont(get_medium_font(bold=True))
         self.total_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.total_label)
     
@@ -61,7 +60,8 @@ class ScenarioComparisonTable(QWidget):
         """Populate the widget with scenario data."""
         if not self.scenario:
             return
-          # Set title
+        
+        # Set title
         if self.index is not None:
             self.title_label.setText(f"{self.index}: {self.scenario.name or 'Unnamed Scenario'}")
         else:
@@ -102,8 +102,11 @@ class ScenarioComparisonTable(QWidget):
                 
                 total_eiq += eiq_value
             
-            # Set total EIQ
-            self.total_label.setText(f"Total Field Use EIQ: {total_eiq:.1f}")
+            # Get regenerative agriculture framework class
+            regen_class = get_regen_ag_class(total_eiq)
+            
+            # Set total EIQ with framework class
+            self.total_label.setText(f"Field Use EIQ: {total_eiq:.1f} → {regen_class}")
             
         else:
             # No valid applications
@@ -117,7 +120,7 @@ class ScenarioComparisonTable(QWidget):
             eiq_item.setTextAlignment(Qt.AlignCenter)
             self.table.setItem(0, 1, eiq_item)
             
-            self.total_label.setText("Total Field Use EIQ: 0.0")
+            self.total_label.setText("Total Field Use EIQ: 0.0 → Leading")
         
         # Resize rows to content
         self.table.resizeRowsToContents()

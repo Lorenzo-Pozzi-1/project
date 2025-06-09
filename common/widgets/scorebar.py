@@ -121,6 +121,7 @@ class ScoreBar(QWidget):
         self.multi_scenario_mode = False
         self.scenarios.clear()
         self.update()
+        
     def set_scenarios(self, scenarios_data: List[Dict]):
         """
         Set multiple scenarios for comparison (multi-scenario mode).

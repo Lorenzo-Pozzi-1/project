@@ -11,7 +11,9 @@ from common.utils import (
     load_config,
     save_config,
     resource_path,
-    WheelProtectionFilter
+    WheelProtectionFilter,
+    # EIQ Utility Functions
+    get_eiq_color, get_eiq_rating, get_regen_ag_class
 )
 
 # Re-export all constants
@@ -36,9 +38,7 @@ from common.constants import (
 
 # Re-export all style components and functions
 from common.styles import (
-    # EIQ Utility Functions
-    get_eiq_color, get_eiq_rating,
-    
+        
     # Font Functions
     get_font, get_title_font, get_subtitle_font, 
     get_medium_font, get_small_font, get_large_font,
@@ -92,7 +92,7 @@ __all__ = [
     'EIQ_LOW_THRESHOLD', 'EIQ_MEDIUM_THRESHOLD', 'EIQ_HIGH_THRESHOLD',
     
     # EIQ Utility Functions
-    'get_eiq_color', 'get_eiq_rating',
+    'get_eiq_color', 'get_eiq_rating', 'get_regen_ag_class',
             
     # Font Functions
     'get_font', 'get_title_font', 'get_subtitle_font', 'get_medium_font', 'get_small_font', 'get_large_font',
