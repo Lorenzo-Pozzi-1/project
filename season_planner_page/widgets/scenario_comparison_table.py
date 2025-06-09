@@ -7,7 +7,7 @@ Shows applications with their product names and EIQ values.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtCore import Qt
-from common import get_medium_font, get_subtitle_font, EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD
+from common import get_medium_font, get_subtitle_font, EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD, GENERIC_TABLE_STYLE
 from eiq_calculator_page.widgets_results_display import ColorCodedEiqItem
 
 
@@ -15,7 +15,7 @@ class ScenarioComparisonTable(QWidget):
     """
     A widget that displays a single scenario as a table.
     
-    Shows scenario name, metadata, and applications with EIQ values.
+    Shows scenario name and applications with EIQ values.
     """
     
     def __init__(self, scenario, parent=None):
@@ -35,19 +35,13 @@ class ScenarioComparisonTable(QWidget):
         self.title_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.title_label)
         
-        # Scenario metadata
-        self.metadata_label = QLabel()
-        self.metadata_label.setFont(get_medium_font())
-        self.metadata_label.setAlignment(Qt.AlignCenter)
-        self.metadata_label.setWordWrap(True)
-        layout.addWidget(self.metadata_label)
-        
         # Applications table
         self.table = QTableWidget()
         self.table.setColumnCount(2)
         self.table.setHorizontalHeaderLabels(["Application", "EIQ"])
         
         # Basic table configuration
+        self.table.horizontalHeader().setStyleSheet(GENERIC_TABLE_STYLE)
         self.table.setFixedWidth(350)
         self.table.horizontalHeader().setStretchLastSection(False)
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
@@ -71,28 +65,12 @@ class ScenarioComparisonTable(QWidget):
         # Set title
         self.title_label.setText(self.scenario.name or "Unnamed Scenario")
         
-        # Set metadata
-        metadata_parts = []
-        if self.scenario.grower_name:
-            metadata_parts.append(f"Grower: {self.scenario.grower_name}")
-        if self.scenario.field_name:
-            metadata_parts.append(f"Field: {self.scenario.field_name}")
-        if self.scenario.field_area and self.scenario.field_area_uom:
-            metadata_parts.append(f"Area: {self.scenario.field_area} {self.scenario.field_area_uom}")
-        if self.scenario.variety:
-            metadata_parts.append(f"Variety: {self.scenario.variety}")
-        
-        if metadata_parts:
-            self.metadata_label.setText(" | ".join(metadata_parts))
-        else:
-            self.metadata_label.setText("No metadata available")
-        
         # Populate applications table
         applications = self.scenario.applications or []
         
         # Filter valid applications
         valid_applications = [app for app in applications 
-                            if app.product_name and (app.field_eiq is not None and app.field_eiq > 0)]
+                            if app.product_name and (app.field_eiq is not None and app.field_eiq is not None)]
         
         if valid_applications:
             # Sort by EIQ descending (highest first)
@@ -123,7 +101,7 @@ class ScenarioComparisonTable(QWidget):
                 total_eiq += eiq_value
             
             # Set total EIQ
-            self.total_label.setText(f"Total EIQ: {total_eiq:.1f}")
+            self.total_label.setText(f"Total Field Use EIQ: {total_eiq:.1f}")
             
         else:
             # No valid applications

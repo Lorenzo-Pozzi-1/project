@@ -81,7 +81,9 @@ class ScenariosManagerPage(QWidget):
         
         # Tab widget for scenarios
         self.tab_widget = QTabWidget()
+        self.tab_widget.setMovable(True)  # Enable drag-to-reorder
         self.tab_widget.currentChanged.connect(self.update_ui_state)
+        self.tab_widget.tabBarClicked.connect(self._on_tab_moved)  # Handle reordering
         
         tabs_layout.addWidget(self.tab_widget)
         tabs_frame.layout.addLayout(tabs_layout)
@@ -324,3 +326,19 @@ class ScenariosManagerPage(QWidget):
             self, "Coming Soon", 
             "Export functionality will be developed in a future update."
         )
+
+    def _on_tab_moved(self, index):
+        """Handle tab reordering to keep internal data structures in sync."""
+        # Rebuild the scenarios list to match the new tab order
+        new_scenarios = []
+        new_scenario_tabs = {}
+        
+        for i in range(self.tab_widget.count()):
+            tab_page = self.tab_widget.widget(i)
+            scenario = tab_page.get_scenario()
+            new_scenarios.append(scenario)
+            new_scenario_tabs[scenario.name] = tab_page
+        
+        # Update our data structures
+        self.scenarios = new_scenarios
+        self.scenario_tabs = new_scenario_tabs
