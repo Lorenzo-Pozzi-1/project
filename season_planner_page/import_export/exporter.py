@@ -141,31 +141,11 @@ class ExcelScenarioExporter:
             "Field EIQ"
         ]
         
-        # Convert applications to list of dictionaries
-        data = []
-        for i, app in enumerate(applications):
-            row = {
-                "App #": i + 1,
-                "Date": getattr(app, 'application_date', '') or '',
-                "Product Type": getattr(app, 'product_type', '') or '',
-                "Product Name": getattr(app, 'product_name', '') or '',
-                "Rate": getattr(app, 'rate', 0) or 0,
-                "Rate UOM": getattr(app, 'rate_uom', '') or '',
-                "Area": getattr(app, 'area', 0) or 0,
-                "Method": getattr(app, 'application_method', '') or '',
-                "AI Groups": ', '.join(getattr(app, 'ai_groups', []) or []),
-                "Field EIQ": f"{getattr(app, 'field_eiq', 0) or 0:.2f}"
-            }
-            data.append(row)
+        # Start with metadata rows
+        all_rows = []
         
-        # Create DataFrame
-        df = pd.DataFrame(data, columns=columns)
-        
-        # Add scenario metadata as header rows
-        metadata_rows = []
-        
-        # Add scenario info
-        metadata_rows.append({
+        # Add scenario info metadata
+        all_rows.append({
             "App #": "Scenario Name:",
             "Date": scenario.name or "Unnamed Scenario",
             "Product Type": "",
@@ -178,7 +158,7 @@ class ExcelScenarioExporter:
             "Field EIQ": ""
         })
         
-        metadata_rows.append({
+        all_rows.append({
             "App #": "Crop Year:",
             "Date": str(getattr(scenario, 'crop_year', '') or ''),
             "Product Type": "Grower:",
@@ -192,13 +172,32 @@ class ExcelScenarioExporter:
         })
         
         # Add empty row separator
-        metadata_rows.append({col: "" for col in columns})
+        all_rows.append({col: "" for col in columns})
         
-        # Combine metadata and application data
-        metadata_df = pd.DataFrame(metadata_rows)
-        final_df = pd.concat([metadata_df, df], ignore_index=True)
+        # Add column headers row
+        header_row = {col: col for col in columns}
+        all_rows.append(header_row)
         
-        return final_df
+        # Add application data rows
+        for i, app in enumerate(applications):
+            row = {
+                "App #": i + 1,
+                "Date": getattr(app, 'application_date', '') or '',
+                "Product Type": getattr(app, 'product_type', '') or '',
+                "Product Name": getattr(app, 'product_name', '') or '',
+                "Rate": getattr(app, 'rate', 0) or 0,
+                "Rate UOM": getattr(app, 'rate_uom', '') or '',
+                "Area": getattr(app, 'area', 0) or 0,
+                "Method": getattr(app, 'application_method', '') or '',
+                "AI Groups": ', '.join(getattr(app, 'ai_groups', []) or []),
+                "Field EIQ": f"{getattr(app, 'field_eiq', 0) or 0:.2f}"
+            }
+            all_rows.append(row)
+        
+        # Create DataFrame without headers (header=None to avoid default column headers)
+        df = pd.DataFrame(all_rows, columns=columns)
+        
+        return df
     
     def _format_worksheet(self, worksheet, df):
         """
@@ -215,12 +214,12 @@ class ExcelScenarioExporter:
             header_font = Font(bold=True)
             header_fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
             
-            # Find the actual data header row (after metadata)
-            data_header_row = 4  # Metadata takes 3 rows + 1 for the actual header
+            # The header row is now at row 4 (metadata row 1, metadata row 2, empty row, then headers)
+            header_row_num = 4
             
-            # Format the data header row
+            # Format the header row (grey background)
             for col in range(1, len(df.columns) + 1):
-                cell = worksheet.cell(row=data_header_row, column=col)
+                cell = worksheet.cell(row=header_row_num, column=col)
                 cell.font = header_font
                 cell.fill = header_fill
                 cell.alignment = Alignment(horizontal='center')
@@ -241,14 +240,14 @@ class ExcelScenarioExporter:
                 adjusted_width = min(max_length + 2, 50)  # Cap at 50 for very long content
                 worksheet.column_dimensions[column_letter].width = adjusted_width
             
-            # Format metadata rows
+            # Format metadata rows (make labels bold)
             metadata_font = Font(bold=True)
             for row in range(1, 3):  # First two metadata rows
                 for col in range(1, len(df.columns) + 1):
                     cell = worksheet.cell(row=row, column=col)
                     if col in [1, 3, 5, 7, 9]:  # Label columns
                         cell.font = metadata_font
-            
+        
         except ImportError:
             # If openpyxl styling is not available, skip formatting
             print("Warning: Could not apply Excel formatting - openpyxl styling not available")
