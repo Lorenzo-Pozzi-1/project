@@ -124,14 +124,13 @@ class ApplicationsTableWidget(QWidget):
         """Set initial column width policies."""
         header = self.table_view.horizontalHeader()
         
-        # Fixed width for reorder buttons
-        if self.model.columnCount() > self.model.COL_REORDER:
-            header.setSectionResizeMode(self.model.COL_REORDER, QHeaderView.Fixed)
-            header.resizeSection(self.model.COL_REORDER, 80)
+        reorder_col = self.model._col_index("Reorder")
+        if self.model.columnCount() > reorder_col:
+            header.setSectionResizeMode(reorder_col, QHeaderView.Fixed)
+            header.resizeSection(reorder_col, 80)
         
-        # Stretch other columns
         for col in range(self.model.columnCount()):
-            if col != self.model.COL_REORDER:
+            if col != reorder_col:
                 header.setSectionResizeMode(col, QHeaderView.Stretch)
     
     def _create_button_layout(self) -> QHBoxLayout:
@@ -167,14 +166,14 @@ class ApplicationsTableWidget(QWidget):
         """Assign delegates to table columns."""
         try:
             assignments = {
-                self.model.COL_REORDER: self.delegates['reorder'],
-                self.model.COL_DATE: self.delegates['date'],
-                self.model.COL_RATE: self.delegates['rate'],
-                self.model.COL_AREA: self.delegates['area'],
-                self.model.COL_PRODUCT_TYPE: self.delegates['product_type'],
-                self.model.COL_METHOD: self.delegates['method'],
-                self.model.COL_PRODUCT_NAME: self.delegates['product_name'],
-                self.model.COL_RATE_UOM: self.delegates['rate_uom']
+                self.model._col_index("Reorder"): self.delegates['reorder'],
+                self.model._col_index("Date"): self.delegates['date'],
+                self.model._col_index("Rate"): self.delegates['rate'],
+                self.model._col_index("Area"): self.delegates['area'],
+                self.model._col_index("Product Type"): self.delegates['product_type'],
+                self.model._col_index("Method"): self.delegates['method'],
+                self.model._col_index("Product Name"): self.delegates['product_name'],
+                self.model._col_index("Rate UOM"): self.delegates['rate_uom']
             }
             
             for col_index, delegate in assignments.items():
@@ -242,7 +241,7 @@ class ApplicationsTableWidget(QWidget):
         row = self.model.add_application(insert_position)
         if row >= 0:
             # Scroll to new row but don't select it
-            new_index = self.model.index(row, self.model.COL_DATE)
+            new_index = self.model.index(row, self.model._col_index("Date"))
             self.table_view.scrollTo(new_index, QAbstractItemView.EnsureVisible)
         return row
     
@@ -263,7 +262,7 @@ class ApplicationsTableWidget(QWidget):
         
         # Get display name for confirmation
         product_name = self.model.data(
-            self.model.index(selected_row, self.model.COL_PRODUCT_NAME)
+            self.model.index(selected_row, self.model._col_index("Product Name"))
         )
         display_name = product_name or "Empty row"
         
@@ -350,17 +349,18 @@ class ApplicationsTableWidget(QWidget):
         
         info = {}
         columns = [
-            ("reorder", self.model.COL_REORDER),
-            ("date", self.model.COL_DATE),
-            ("rate", self.model.COL_RATE),
-            ("area", self.model.COL_AREA),
-            ("product_type", self.model.COL_PRODUCT_TYPE),
-            ("method", self.model.COL_METHOD),
-            ("product_name", self.model.COL_PRODUCT_NAME),
-            ("rate_uom", self.model.COL_RATE_UOM)
+            ("reorder", "Reorder"),
+            ("date", "Date"),
+            ("rate", "Rate"),
+            ("area", "Area"),
+            ("product_type", "Product Type"),
+            ("method", "Method"),
+            ("product_name", "Product Name"),
+            ("rate_uom", "Rate UOM")
         ]
         
-        for name, col_index in columns:
+        for name, col_name in columns:
+            col_index = self.model._col_index(col_name)
             delegate = self.table_view.itemDelegateForColumn(col_index)
             info[name] = delegate.__class__.__name__ if delegate else "No delegate assigned"
         

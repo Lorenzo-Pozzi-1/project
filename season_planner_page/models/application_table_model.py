@@ -5,12 +5,19 @@ QAbstractTableModel that manages pesticide application data with automatic
 EIQ calculations and validation.
 """
 
+from dataclasses import dataclass
 from PySide6.QtCore import QAbstractTableModel, Qt, QModelIndex, Signal
 from PySide6.QtGui import QColor
 from typing import List, Any
 from data import Application, ProductRepository
 from common import eiq_calculator, get_config
 
+@dataclass
+class ColumnDefinition:
+    """Definition for a table column."""
+    index: int
+    name: str
+    editable: bool
 
 class ApplicationTableModel(QAbstractTableModel):
     """
@@ -23,35 +30,34 @@ class ApplicationTableModel(QAbstractTableModel):
     # Signals
     eiq_changed = Signal(float)  # Emitted when total EIQ changes
     validation_changed = Signal()  # Emitted when validation state changes
-      # Column definitions
-    COLUMNS = [
-        "Reorder",
-        "App #",
-        "Date", 
-        "Product Type",
-        "Product Name",
-        "Rate",
-        "Rate UOM",
-        "Area",
-        "Method",
-        "AI Groups",
-        "Field EIQ"
+    
+    # Combined column definitions
+    _COLUMN_DEFS = [
+        ColumnDefinition(0, "Reorder", True),
+        ColumnDefinition(1, "App #", False),
+        ColumnDefinition(2, "Date", True),
+        ColumnDefinition(3, "Product Type", True),
+        ColumnDefinition(4, "Product Name", True),
+        ColumnDefinition(5, "Rate", True),
+        ColumnDefinition(6, "Rate UOM", True),
+        ColumnDefinition(7, "Area", True),
+        ColumnDefinition(8, "Method", True),
+        ColumnDefinition(9, "AI Groups", False),
+        ColumnDefinition(10, "Field EIQ", False),
     ]
     
-    # Column indices for easy reference
-    COL_REORDER = 0
-    COL_APP_NUM = 1
-    COL_DATE = 2
-    COL_PRODUCT_TYPE = 3
-    COL_PRODUCT_NAME = 4
-    COL_RATE = 5
-    COL_RATE_UOM = 6
-    COL_AREA = 7
-    COL_METHOD = 8
-    COL_AI_GROUPS = 9
-    COL_FIELD_EIQ = 10
-      # Editable columns (reorder column uses special delegate for button interaction)
-    EDITABLE_COLUMNS = {COL_REORDER, COL_DATE, COL_PRODUCT_TYPE, COL_PRODUCT_NAME, COL_RATE, COL_RATE_UOM, COL_AREA, COL_METHOD}
+    # Generate derived data
+    COLUMNS = [col.name for col in _COLUMN_DEFS]
+    EDITABLE_COLUMNS = {col.index for col in _COLUMN_DEFS if col.editable}
+    
+    # Helper methods to find column indexes by name
+    @classmethod
+    def _col_index(cls, name: str) -> int:
+        """Get column index by name."""
+        for col in cls._COLUMN_DEFS:
+            if col.name == name:
+                return col.index
+        raise ValueError(f"Column '{name}' not found")
     
     def __init__(self, parent=None):
         """Initialize the application table model."""
@@ -358,29 +364,27 @@ class ApplicationTableModel(QAbstractTableModel):
     def _get_cell_data(self, app: Application, col: int) -> Any:
         """Get data for a specific cell."""
         try:
-            if col == self.COL_REORDER:
-                # Reorder column - return empty string (buttons handled by delegate)
+            if col == self._col_index("Reorder"):
                 return ""
-            elif col == self.COL_APP_NUM:
-                # App number is the row index + 1
+            elif col == self._col_index("App #"):
                 return self._applications.index(app) + 1
-            elif col == self.COL_DATE:
+            elif col == self._col_index("Date"):
                 return app.application_date or ""
-            elif col == self.COL_PRODUCT_TYPE:
+            elif col == self._col_index("Product Type"):
                 return app.product_type or ""
-            elif col == self.COL_PRODUCT_NAME:
+            elif col == self._col_index("Product Name"):
                 return app.product_name or ""
-            elif col == self.COL_RATE:
+            elif col == self._col_index("Rate"):
                 return app.rate or 0.0
-            elif col == self.COL_RATE_UOM:
+            elif col == self._col_index("Rate UOM"):
                 return app.rate_uom or ""
-            elif col == self.COL_AREA:
+            elif col == self._col_index("Area"):
                 return app.area or 0.0
-            elif col == self.COL_METHOD:
+            elif col == self._col_index("Method"):
                 return app.application_method or ""
-            elif col == self.COL_AI_GROUPS:
+            elif col == self._col_index("AI Groups"):
                 return ", ".join(app.ai_groups) if app.ai_groups else ""
-            elif col == self.COL_FIELD_EIQ:
+            elif col == self._col_index("Field EIQ"):
                 return f"{app.field_eiq:.2f}" if app.field_eiq else "0.00"
             return None
         except Exception as e:
@@ -389,75 +393,63 @@ class ApplicationTableModel(QAbstractTableModel):
 
     def _set_cell_data(self, app: Application, col: int, value: Any, row: int) -> bool:
         """Set data for a specific cell with validation."""
-        # Clear any existing validation error for this cell
         self._validation_errors.pop((row, col), None)
         
         try:
-            if col == self.COL_REORDER:
-                # Reorder column is not directly editable
+            if col == self._col_index("Reorder"):
                 return False
-            elif col == self.COL_DATE:
+            elif col == self._col_index("Date"):
                 app.application_date = str(value) if value else ""
             
-            elif col == self.COL_PRODUCT_TYPE:
+            elif col == self._col_index("Product Type"):
                 old_type = app.product_type
                 app.product_type = str(value) if value else ""
                 
-                # If type changed and we have a product selected, validate compatibility
                 if app.product_name and old_type != app.product_type:
                     product = self._find_product(app.product_name)
                     if product and product.product_type != app.product_type:
-                        # Product doesn't match new type - add validation warning
-                        self._validation_errors[(row, self.COL_PRODUCT_NAME)] = (
+                        self._validation_errors[(row, self._col_index("Product Name"))] = (
                             f"Product '{app.product_name}' is not of type '{app.product_type}'"
                         )
             
-            elif col == self.COL_PRODUCT_NAME:
+            elif col == self._col_index("Product Name"):
                 product_name = str(value) if value else ""
                 app.product_name = product_name
                 
-                # Auto-populate product type if product is found and type not manually set
                 if product_name:
                     product = self._find_product(product_name)
                     if product:
-                        # Check if current type is compatible
                         if app.product_type and app.product_type != product.product_type:
-                            # Type mismatch - add validation warning
                             self._validation_errors[(row, col)] = (
                                 f"Product type mismatch: '{product_name}' is '{product.product_type}', "
                                 f"but row type is '{app.product_type}'"
                             )
                         else:
-                            # Only auto-set product type if it's currently empty
                             if not app.product_type:
                                 app.product_type = product.product_type
                     else:
-                        # Only auto-set to "Unknown" if type is currently empty
                         if not app.product_type:
                             app.product_type = "Unknown"
                         self._validation_errors[(row, col)] = "Product not found in database"
-                
-                # Note: Rate/UOM auto-population is handled by auto_populate_from_product()
-                # which is called from the ProductDelegate after this method completes
             
-            elif col == self.COL_RATE:
+            elif col == self._col_index("Rate"):
                 rate = float(value) if value else 0.0
                 if rate < 0:
                     self._validation_errors[(row, col)] = "Rate must be positive"
                     return False
                 app.rate = rate
             
-            elif col == self.COL_RATE_UOM:
+            elif col == self._col_index("Rate UOM"):
                 app.rate_uom = str(value) if value else ""
             
-            elif col == self.COL_AREA:
+            elif col == self._col_index("Area"):
                 area = float(value) if value else 0.0
                 if area < 0:
                     self._validation_errors[(row, col)] = "Area must be positive"
                     return False
                 app.area = area
             
-            elif col == self.COL_METHOD:
+            elif col == self._col_index("Method"):
                 app.application_method = str(value) if value else ""
             
             return True
@@ -469,45 +461,38 @@ class ApplicationTableModel(QAbstractTableModel):
     def _update_dependent_fields(self, app: Application, changed_col: int, row: int):
         """Update fields that depend on the changed column."""
         try:
-            if changed_col == self.COL_PRODUCT_TYPE:
-                # Product type changed - clear product name if it doesn't match the new type
+            if changed_col == self._col_index("Product Type"):
                 if app.product_name:
                     product = self._find_product(app.product_name)
                     if product and product.product_type != app.product_type:
-                        # Product doesn't match the new type - clear it
                         app.product_name = ""
                         app.ai_groups = []
                         app.field_eiq = 0.0
                         
-                        # Emit dataChanged for affected columns
-                        name_index = self.index(row, self.COL_PRODUCT_NAME)
-                        groups_index = self.index(row, self.COL_AI_GROUPS)
-                        eiq_index = self.index(row, self.COL_FIELD_EIQ)
+                        name_index = self.index(row, self._col_index("Product Name"))
+                        groups_index = self.index(row, self._col_index("AI Groups"))
+                        eiq_index = self.index(row, self._col_index("Field EIQ"))
                         
                         self.dataChanged.emit(name_index, name_index, [Qt.DisplayRole])
                         self.dataChanged.emit(groups_index, groups_index, [Qt.DisplayRole])
                         self.dataChanged.emit(eiq_index, eiq_index, [Qt.DisplayRole])
             
-            elif changed_col == self.COL_PRODUCT_NAME:
-                # Product changed - update AI groups and recalculate EIQ
-                # Also emit signal for product type column in case it was auto-updated
+            elif changed_col == self._col_index("Product Name"):
                 self._update_ai_groups(app, row)
                 self._calculate_field_eiq(app, row)
                 
-                # Emit dataChanged for product type in case it was auto-updated
-                type_index = self.index(row, self.COL_PRODUCT_TYPE)
+                type_index = self.index(row, self._col_index("Product Type"))
                 self.dataChanged.emit(type_index, type_index, [Qt.DisplayRole])
             
-            elif changed_col in {self.COL_RATE, self.COL_RATE_UOM}:
-                # Rate parameters changed - recalculate EIQ
+            elif changed_col in {self._col_index("Rate"), self._col_index("Rate UOM")}:
                 self._calculate_field_eiq(app, row)
             
             # Emit dataChanged for potentially affected columns
             affected_cols = []
-            if changed_col == self.COL_PRODUCT_NAME:
-                affected_cols = [self.COL_AI_GROUPS, self.COL_FIELD_EIQ]
-            elif changed_col in {self.COL_RATE, self.COL_RATE_UOM}:
-                affected_cols = [self.COL_FIELD_EIQ]
+            if changed_col == self._col_index("Product Name"):
+                affected_cols = [self._col_index("AI Groups"), self._col_index("Field EIQ")]
+            elif changed_col in {self._col_index("Rate"), self._col_index("Rate UOM")}:
+                affected_cols = [self._col_index("Field EIQ")]
             
             for col in affected_cols:
                 index = self.index(row, col)
@@ -543,13 +528,13 @@ class ApplicationTableModel(QAbstractTableModel):
             product = self._find_product(app.product_name)
             if not product:
                 app.field_eiq = 0.0
-                self._validation_errors[(row, self.COL_FIELD_EIQ)] = "Cannot calculate EIQ: product not found"
+                self._validation_errors[(row, self._col_index("Field EIQ"))] = "Cannot calculate EIQ: product not found"
                 return
             
             ai_data = product.get_ai_data()
             if not ai_data:
                 app.field_eiq = 0.0
-                self._validation_errors[(row, self.COL_FIELD_EIQ)] = "Cannot calculate EIQ: no active ingredient data"
+                self._validation_errors[(row, self._col_index("Field EIQ"))] = "Cannot calculate EIQ: no active ingredient data"
                 return
             
             field_eiq = eiq_calculator.calculate_product_field_eiq(
@@ -561,12 +546,12 @@ class ApplicationTableModel(QAbstractTableModel):
             )
             
             app.field_eiq = field_eiq
-            self._validation_errors.pop((row, self.COL_FIELD_EIQ), None)
+            self._validation_errors.pop((row, self._col_index("Field EIQ")), None)
             
         except Exception as e:
             print(f"ERROR in _calculate_field_eiq(): {e}")
             app.field_eiq = 0.0
-            self._validation_errors[(row, self.COL_FIELD_EIQ)] = f"EIQ calculation error: {e}"
+            self._validation_errors[(row, self._col_index("Field EIQ"))] = f"EIQ calculation error: {e}"
     
     def _find_product(self, product_name: str):
         """Find a product by name in the filtered products list."""
@@ -626,13 +611,7 @@ class ApplicationTableModel(QAbstractTableModel):
             print(f"ERROR in _clear_validation_errors_for_removed_rows(): {e}")
 
     def auto_populate_from_product(self, row: int, product_name: str):
-        """
-        Auto-populate application rate and UOM from product label data.
-        
-        Args:
-            row (int): Row index of the application
-            product_name (str): Name of the selected product
-        """
+        """Auto-populate application rate and UOM from product label data."""
         try:
             if row >= len(self._applications):
                 return
@@ -643,33 +622,25 @@ class ApplicationTableModel(QAbstractTableModel):
             if not product:
                 return
             
-            # Always populate rate and UOM when product changes (remove the empty check logic)
-            # Determine the best rate to use from product label data
             if product.label_maximum_rate is not None or product.label_minimum_rate is not None:
-                # Use maximum rate if available, otherwise minimum rate
                 best_rate = (product.label_maximum_rate if product.label_maximum_rate is not None 
-                           else product.label_minimum_rate)
+                        else product.label_minimum_rate)
                 
                 if best_rate and best_rate > 0:
                     app.rate = float(best_rate)
                     
-                    # Emit dataChanged for rate column
-                    rate_index = self.index(row, self.COL_RATE)
+                    rate_index = self.index(row, self._col_index("Rate"))
                     self.dataChanged.emit(rate_index, rate_index, [Qt.DisplayRole])
         
-            # Always populate UOM if available from product
             if product.rate_uom:
                 app.rate_uom = product.rate_uom
                 
-                # Emit dataChanged for UOM column
-                uom_index = self.index(row, self.COL_RATE_UOM)
+                uom_index = self.index(row, self._col_index("Rate UOM"))
                 self.dataChanged.emit(uom_index, uom_index, [Qt.DisplayRole])
         
-            # Recalculate EIQ since rate data may have changed
             self._calculate_field_eiq(app, row)
             
-            # Emit dataChanged for EIQ column
-            eiq_index = self.index(row, self.COL_FIELD_EIQ)
+            eiq_index = self.index(row, self._col_index("Field EIQ"))
             self.dataChanged.emit(eiq_index, eiq_index, [Qt.DisplayRole])
             
         except Exception as e:
