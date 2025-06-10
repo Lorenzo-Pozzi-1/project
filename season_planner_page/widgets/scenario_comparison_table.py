@@ -2,21 +2,23 @@
 Scenario Comparison Table Widget
 
 A simple widget that displays a single scenario's data in a table format.
-Shows applications with their product names and EIQ values.
+Shows applications grouped by product type and sorted by EIQ values.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont
 from common import (get_medium_font, get_subtitle_font, get_regen_ag_class, EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD, 
                     GENERIC_TABLE_STYLE)
 from eiq_calculator_page.widgets_results_display import ColorCodedEiqItem
+from collections import defaultdict
 
 
 class ScenarioComparisonTable(QWidget):
     """
     A widget that displays a single scenario as a table.
     
-    Shows scenario name and applications with EIQ values.
+    Shows scenario name and applications grouped by product type and sorted by EIQ values.
     """
     def __init__(self, scenario, index=None, parent=None):
         """Initialize the scenario comparison table."""
@@ -57,7 +59,7 @@ class ScenarioComparisonTable(QWidget):
         layout.addWidget(self.total_label)
     
     def populate_data(self):
-        """Populate the widget with scenario data."""
+        """Populate the widget with scenario data grouped by product type."""
         if not self.scenario:
             return
         
@@ -72,35 +74,37 @@ class ScenarioComparisonTable(QWidget):
         
         # Filter valid applications
         valid_applications = [app for app in applications 
-                            if app.product_name and (app.field_eiq is not None and app.field_eiq is not None)]
+                            if app.product_name and (app.field_eiq is not None)]
         
         if valid_applications:
-            # Sort by EIQ descending (highest first)
-            sorted_applications = sorted(valid_applications, 
-                                       key=lambda app: app.field_eiq or 0, 
-                                       reverse=True)
+            # Group applications by product type
+            grouped_apps = self._group_applications_by_type(valid_applications)
             
-            self.table.setRowCount(len(sorted_applications))
+            # Calculate total rows needed (applications + section headers)
+            total_rows = len(valid_applications) + len(grouped_apps)
+            self.table.setRowCount(total_rows)
             
+            current_row = 0
             total_eiq = 0
-            for row, app in enumerate(sorted_applications):
-                # Application name
-                app_item = QTableWidgetItem(app.product_name)
-                app_item.setFlags(app_item.flags() & ~Qt.ItemIsEditable)
-                self.table.setItem(row, 0, app_item)
+            
+            # Sort product types for consistent display order
+            sorted_types = sorted(grouped_apps.keys())
+            
+            for product_type in sorted_types:
+                apps_in_type = grouped_apps[product_type]
                 
-                # EIQ value with color coding
-                eiq_value = app.field_eiq or 0
-                eiq_item = ColorCodedEiqItem(
-                    eiq_value,
-                    low_threshold=EIQ_LOW_THRESHOLD,
-                    medium_threshold=EIQ_MEDIUM_THRESHOLD,
-                    high_threshold=EIQ_HIGH_THRESHOLD
-                )
-                eiq_item.setFlags(eiq_item.flags() & ~Qt.ItemIsEditable)
-                self.table.setItem(row, 1, eiq_item)
+                # Add section header row
+                self._add_section_header(current_row, product_type, len(apps_in_type))
+                current_row += 1
                 
-                total_eiq += eiq_value
+                # Sort applications within this type by EIQ (highest first)
+                sorted_apps = sorted(apps_in_type, key=lambda app: app.field_eiq or 0, reverse=True)
+                
+                # Add applications in this type
+                for app in sorted_apps:
+                    self._add_application_row(current_row, app)
+                    total_eiq += app.field_eiq or 0
+                    current_row += 1
             
             # Get regenerative agriculture framework class
             regen_class = get_regen_ag_class(total_eiq)
@@ -124,3 +128,62 @@ class ScenarioComparisonTable(QWidget):
         
         # Resize rows to content
         self.table.resizeRowsToContents()
+    
+    def _group_applications_by_type(self, applications):
+        """Group applications by their product type (using first 2 words only)."""
+        grouped = defaultdict(list)
+        
+        for app in applications:
+            # Get product type from the application
+            full_product_type = getattr(app, 'product_type', None) or "Unknown Type"
+            
+            # Extract first 2 words for grouping
+            words = full_product_type.split()
+            if len(words) >= 2:
+                product_type = f"{words[0]} {words[1]}"
+            else:
+                product_type = full_product_type
+            
+            grouped[product_type].append(app)
+        
+        return dict(grouped)
+    
+    def _add_section_header(self, row, product_type, count):
+        """Add a section header row for a product type."""
+        # Product type header with count
+        header_text = f"{product_type} ({count} app{'s' if count != 1 else ''})"
+        header_item = QTableWidgetItem(header_text)
+        
+        # Make it bold and non-editable
+        font = get_medium_font(bold=True)
+        header_item.setFont(font)
+        header_item.setFlags(header_item.flags() & ~Qt.ItemIsEditable)
+        header_item.setTextAlignment(Qt.AlignCenter)
+            
+        self.table.setItem(row, 0, header_item)
+        
+        # Add empty item to second column (required before merging)
+        empty_item = QTableWidgetItem("")
+        empty_item.setFlags(empty_item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(row, 1, empty_item)
+        
+        # Merge the cells across both columns
+        self.table.setSpan(row, 0, 1, 2)
+    
+    def _add_application_row(self, row, app):
+        """Add a regular application row."""
+        # Application name (indented slightly)
+        app_item = QTableWidgetItem(f"  {app.product_name}")
+        app_item.setFlags(app_item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(row, 0, app_item)
+        
+        # EIQ value with color coding
+        eiq_value = app.field_eiq or 0
+        eiq_item = ColorCodedEiqItem(
+            eiq_value,
+            low_threshold=EIQ_LOW_THRESHOLD,
+            medium_threshold=EIQ_MEDIUM_THRESHOLD,
+            high_threshold=EIQ_HIGH_THRESHOLD
+        )
+        eiq_item.setFlags(eiq_item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(row, 1, eiq_item)
