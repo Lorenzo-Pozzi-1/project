@@ -230,7 +230,16 @@ class ApplicationsTableWidget(QWidget):
     
     def add_application(self) -> int:
         """Add a new application row."""
-        row = self.model.add_application()
+        # Get the selected row to determine insertion position
+        selected_row = self._get_selected_row()
+        
+        # Insert after selected row, or at the end if no selection
+        if selected_row >= 0:
+            insert_position = selected_row + 1
+        else:
+            insert_position = -1  # Will be set to end by model
+        
+        row = self.model.add_application(insert_position)
         if row >= 0:
             # Scroll to new row but don't select it
             new_index = self.model.index(row, self.model.COL_DATE)

@@ -276,13 +276,19 @@ class ApplicationTableModel(QAbstractTableModel):
             # Ensure we end the reset even if there's an error
             self.endResetModel()
     
-    def add_application(self) -> int:
-        """Add a new application and return its row index."""
+    def add_application(self, position: int = -1) -> int:
+        """Add a new application and return its row index.
+        
+        Args:
+            position (int): Position to insert at. If -1, insert at end.
+        """
         try:
-            row = len(self._applications)
-            success = self.insertRows(row, 1)
+            if position < 0 or position > len(self._applications):
+                position = len(self._applications)
+            
+            success = self.insertRows(position, 1)
             if success:
-                return row
+                return position
             else:
                 print("ERROR: insertRows() returned False")
                 return -1

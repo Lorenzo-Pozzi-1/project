@@ -15,16 +15,17 @@ from common.styles import get_medium_font, BLUE
 # Predefined UOM categories based on usage patterns from the app
 UOM_CATEGORIES = {
     "application_rate": [
-        "fl oz/100kg", "fl oz/100m", "fl oz/1000ft", "fl oz/acre", "fl oz/cwt", "fl oz/ha",
-        "g/100kg",     "g/100m",     "g/1000ft",     "g/acre",     "g/cwt",     "g/ha",
-        "gal/100kg",   "gal/100m",   "gal/1000ft",   "gal/acre",   "gal/cwt",   "gal/ha",
-        "kg/100kg",    "kg/100m",    "kg/1000ft",    "kg/acre",    "kg/cwt",    "kg/ha",
-        "l/100kg",     "l/100m",     "l/1000ft",     "l/acre",     "l/cwt",     "l/ha",
-        "lb/100kg",    "lb/100m",    "lb/1000ft",    "lb/acre",    "lb/cwt",    "lb/ha",
-        "ml/100kg",    "ml/100m",    "ml/1000ft",    "ml/acre",    "ml/cwt",    "ml/ha",
-        "oz/100kg",    "oz/100m",    "oz/1000ft",    "oz/acre",    "oz/cwt",    "oz/ha",
-        "pt/100kg",    "pt/100m",    "pt/1000ft",    "pt/acre",    "pt/cwt",    "pt/ha",
-        "qt/100kg",    "qt/100m",    "qt/1000ft",    "qt/acre",    "qt/cwt",    "qt/ha"
+        "fl oz/100kg",  "fl oz/100m",  "fl oz/1000ft",  "fl oz/acre",  "fl oz/cwt",  "fl oz/ha",
+        "g/100kg",      "g/100m",      "g/1000ft",      "g/acre",      "g/cwt",      "g/ha",
+        "US gal/100kg", "US gal/100m", "US gal/1000ft", "US gal/acre", "US gal/cwt", "US gal/ha",
+        "CA gal/100kg", "CA gal/100m", "CA gal/1000ft", "CA gal/acre", "CA gal/cwt", "CA gal/ha",
+        "kg/100kg",     "kg/100m",     "kg/1000ft",     "kg/acre",     "kg/cwt",     "kg/ha",
+        "l/100kg",      "l/100m",      "l/1000ft",      "l/acre",      "l/cwt",      "l/ha",
+        "lb/100kg",     "lb/100m",     "lb/1000ft",     "lb/acre",     "lb/cwt",     "lb/ha",
+        "ml/100kg",     "ml/100m",     "ml/1000ft",     "ml/acre",     "ml/cwt",     "ml/ha",
+        "oz/100kg",     "oz/100m",     "oz/1000ft",     "oz/acre",     "oz/cwt",     "oz/ha",
+        "pt/100kg",     "pt/100m",     "pt/1000ft",     "pt/acre",     "pt/cwt",     "pt/ha",
+        "qt/100kg",     "qt/100m",     "qt/1000ft",     "qt/acre",     "qt/cwt",     "qt/ha"
     ],
     "length": [
         "ft", "inch", "m", "cm"
