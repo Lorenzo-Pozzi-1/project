@@ -53,8 +53,6 @@ class ComparisonTable(QTableWidget):
         self.verticalHeader().setVisible(False)
         self.setEditTriggers(QTableWidget.NoEditTriggers)
 
-        
-        
         # Style the horizontal header
         self.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
         self.horizontalHeader().setFont(get_medium_font(bold=True))
@@ -101,6 +99,9 @@ class ComparisonTable(QTableWidget):
             # Set the property name in the first column
             self.setItem(row, 0, self.create_table_item(display_name, bold=True))
             
+            # Check if this row is PHI (days) for bold formatting
+            is_phi_row = property_key == "PHI (d)"
+            
             # Populate data for each product
             for col, product in enumerate(products, 1):
                 if property_key == "field_eiq":
@@ -120,7 +121,7 @@ class ComparisonTable(QTableWidget):
                         display_value = "--"
                     else:
                         display_value = str(value)
-                    self.setItem(row, col, self.create_table_item(display_value))
+                    self.setItem(row, col, self.create_table_item(display_value, bold=is_phi_row))
         
         # Resize columns
         self.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)

@@ -221,6 +221,7 @@ class ScoreBar(QWidget):
         bar_x, bar_y, bar_width, bar_height = self._get_bar_geometry()
         
         self._draw_title(painter, bar_x, bar_width)
+        self._draw_section_labels(painter, bar_x, bar_y, bar_width, bar_height)
         self._draw_gradient_bar(painter, bar_x, bar_y, bar_width, bar_height)
         self._draw_ticks_and_labels(painter, bar_x, bar_y, bar_width, bar_height)
         
@@ -268,7 +269,39 @@ class ScoreBar(QWidget):
         for relative_pos, label in tick_positions:
             x_pos = bar_x + relative_pos * bar_width
             painter.drawLine(x_pos, bar_y + bar_height, x_pos, bar_y + bar_height + 3)
-            painter.drawText(QRect(x_pos - 15, bar_y + bar_height + 4, 30, 12), Qt.AlignCenter, label)
+            painter.drawText(QRect(x_pos - 15, bar_y + bar_height + 4, 30, 18), Qt.AlignCenter, label)
+    
+    def _draw_section_labels(self, painter: QPainter, bar_x: int, bar_y: int, bar_width: int, bar_height: int):
+        """Draw section labels centered above their corresponding regions for regen_ag preset."""
+        if self.config.title != "RegenAg framework class:":
+            return
+        
+        painter.setFont(get_medium_font(size=get_medium_text_size(), bold=True))
+        painter.setPen(QPen(QColor("#333333"), 1))
+        
+        # Define section ranges for regen_ag preset
+        sections = [
+            ("Leading", 0, LEADING),
+            ("Advanced", LEADING, ADVANCED),
+            ("Engaged", ADVANCED, ENGAGED),
+            ("Onboarding", ENGAGED, ONBOARDING)
+        ]
+        
+        label_y = bar_y - get_spacing_medium() - 10  # Position above the bar
+        
+        for label, start_val, end_val in sections:
+            # Calculate relative positions
+            start_pos = self._get_relative_position(start_val)
+            end_pos = self._get_relative_position(end_val)
+            
+            # Calculate center position for the label
+            center_pos = (start_pos + end_pos) / 2
+            label_x = bar_x + center_pos * bar_width
+            
+            # Draw the label centered
+            text_width = 100
+            label_rect = QRect(int(label_x - text_width/2), label_y, text_width, 20)
+            painter.drawText(label_rect, Qt.AlignCenter, label)
     
     def _draw_single_marker_and_text(self, painter: QPainter, bar_x: int, bar_y: int, bar_width: int, bar_height: int):
         """Draw the position marker and score level text for single value mode."""
@@ -288,7 +321,7 @@ class ScoreBar(QWidget):
         text_width = 120
         text_x = max(bar_x, min(marker_x - text_width/2, bar_x + bar_width - text_width))
         
-        level_rect = QRect(int(text_x), text_y, text_width, 20)
+        level_rect = QRect(int(text_x), text_y, text_width, 24)
         painter.drawText(level_rect, Qt.AlignCenter, score_level)
     
     def _draw_multiple_markers_and_text(self, painter: QPainter, bar_x: int, bar_y: int, bar_width: int, bar_height: int):
@@ -330,7 +363,7 @@ class ScoreBar(QWidget):
         painter.setPen(QPen(QColor("#333333"), 1))
         
         text_y = bar_y + bar_height + self.TRIANGLE_HEIGHT + get_spacing_medium()
-        label_height = 16
+        label_height = 20  # Increased from 16 to accommodate descenders
         
         # Calculate non-overlapping label positions
         label_positions = self._calculate_label_positions(marker_positions, bar_x, bar_width)
