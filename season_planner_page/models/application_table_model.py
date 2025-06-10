@@ -643,15 +643,9 @@ class ApplicationTableModel(QAbstractTableModel):
             if not product:
                 return
             
-            # Check if rate and UOM are currently empty/default before auto-populating
-            current_rate = app.rate or 0.0
-            current_uom = app.rate_uom or ""
-            
-            should_populate_rate = current_rate <= 0.0
-            should_populate_uom = not current_uom
-            
+            # Always populate rate and UOM when product changes (remove the empty check logic)
             # Determine the best rate to use from product label data
-            if should_populate_rate and (product.label_maximum_rate is not None or product.label_minimum_rate is not None):
+            if product.label_maximum_rate is not None or product.label_minimum_rate is not None:
                 # Use maximum rate if available, otherwise minimum rate
                 best_rate = (product.label_maximum_rate if product.label_maximum_rate is not None 
                            else product.label_minimum_rate)
@@ -662,15 +656,15 @@ class ApplicationTableModel(QAbstractTableModel):
                     # Emit dataChanged for rate column
                     rate_index = self.index(row, self.COL_RATE)
                     self.dataChanged.emit(rate_index, rate_index, [Qt.DisplayRole])
-            
-            # Auto-populate UOM if available and current UOM is empty
-            if should_populate_uom and product.rate_uom:
+        
+            # Always populate UOM if available from product
+            if product.rate_uom:
                 app.rate_uom = product.rate_uom
                 
                 # Emit dataChanged for UOM column
                 uom_index = self.index(row, self.COL_RATE_UOM)
                 self.dataChanged.emit(uom_index, uom_index, [Qt.DisplayRole])
-            
+        
             # Recalculate EIQ since rate data may have changed
             self._calculate_field_eiq(app, row)
             
