@@ -31,7 +31,7 @@ class ApplicationTableModel(QAbstractTableModel):
     eiq_changed = Signal(float)  # Emitted when total EIQ changes
     validation_changed = Signal()  # Emitted when validation state changes
     
-    # Combined column definitions
+    # Column definitions
     _COLUMN_DEFS = [
         ColumnDefinition(0, "Reorder", True),
         ColumnDefinition(1, "App #", False),
@@ -46,18 +46,16 @@ class ApplicationTableModel(QAbstractTableModel):
         ColumnDefinition(10, "Field EIQ", False),
     ]
     
-    # Generate derived data
     COLUMNS = [col.name for col in _COLUMN_DEFS]
     EDITABLE_COLUMNS = {col.index for col in _COLUMN_DEFS if col.editable}
-    
-    # Helper methods to find column indexes by name
+    _COLUMN_INDEX_MAP = {col.name: col.index for col in _COLUMN_DEFS}
+
     @classmethod
     def _col_index(cls, name: str) -> int:
-        """Get column index by name."""
-        for col in cls._COLUMN_DEFS:
-            if col.name == name:
-                return col.index
-        raise ValueError(f"Column '{name}' not found")
+        """Helper methods to find column indexes by name."""
+        if name not in cls._COLUMN_INDEX_MAP:
+            raise ValueError(f"Column '{name}' not found")
+        return cls._COLUMN_INDEX_MAP[name]
     
     def __init__(self, parent=None):
         """Initialize the application table model."""
@@ -113,16 +111,25 @@ class ApplicationTableModel(QAbstractTableModel):
                 return self._get_cell_data(app, col)
             
             elif role == Qt.BackgroundRole:
-                # Yellow background for validation errors
+                # Yellow background for estimated EIQ values
+                if col == self._col_index("Field EIQ") and self._should_use_estimated_eiq(app):
+                    return QColor(255, 255, 0, 100)  # Light yellow background
+                
+                # Existing validation error background
                 if (index.row(), col) in self._validation_errors:
-                    return QColor("#fff3cd")  # Light yellow
+                    return QColor("#fff3cd")  # Light yellow for validation errors
             
             elif role == Qt.ToolTipRole:
+                # Special tooltip for estimated EIQ
+                if col == self._col_index("Field EIQ") and self._should_use_estimated_eiq(app):
+                    avg_eiq = self._calculate_average_eiq()
+                    return f"Estimated EIQ (average of other applications): {avg_eiq:.2f}"
+                
                 # Show validation error as tooltip
                 error = self._validation_errors.get((index.row(), col))
                 if error:
                     return error
-            
+        
         except Exception as e:
             print(f"Error in data() method: {e}")
             return None
@@ -314,13 +321,58 @@ class ApplicationTableModel(QAbstractTableModel):
         self._field_area_uom = uom
     
     def get_total_field_eiq(self) -> float:
-        """Calculate total Field EIQ for all applications."""
+        """Calculate total Field EIQ for all applications, including estimated values."""
         try:
-            return sum(app.field_eiq or 0.0 for app in self._applications)
+            total_eiq = 0.0
+            for app in self._applications:
+                if self._should_use_estimated_eiq(app):
+                    # Use estimated EIQ for this application
+                    estimated_eiq = self._calculate_average_eiq()
+                    total_eiq += estimated_eiq
+                else:
+                    # Use actual EIQ
+                    total_eiq += app.field_eiq or 0.0
+            return total_eiq
         except Exception as e:
             print(f"ERROR in get_total_field_eiq(): {e}")
             return 0.0
     
+    def get_applications_with_effective_eiq(self) -> List[Application]:
+        """
+        Get all applications with effective EIQ values (including estimated).
+        
+        Returns a copy of applications where estimated EIQ values are applied
+        to the field_eiq attribute for external use (like comparison tables).
+        """
+        try:
+            applications_copy = []
+            avg_eiq = self._calculate_average_eiq()  # Calculate once for efficiency
+            
+            for app in self._applications:
+                # Create a copy of the application
+                app_copy = Application(
+                    application_date=app.application_date,
+                    product_type=app.product_type,
+                    product_name=app.product_name,
+                    rate=app.rate,
+                    rate_uom=app.rate_uom,
+                    area=app.area,
+                    application_method=app.application_method,
+                    ai_groups=app.ai_groups.copy() if app.ai_groups else [],
+                    field_eiq=app.field_eiq
+                )
+                
+                # Apply estimated EIQ if needed
+                if self._should_use_estimated_eiq(app_copy):
+                    app_copy.field_eiq = avg_eiq
+                
+                applications_copy.append(app_copy)
+            
+            return applications_copy
+        except Exception as e:
+            print(f"ERROR in get_applications_with_effective_eiq(): {e}")
+            return self._applications.copy()
+
     def move_application_up(self, row: int) -> bool:
         """Move an application up by one position."""
         if row <= 0 or row >= len(self._applications):
@@ -385,11 +437,77 @@ class ApplicationTableModel(QAbstractTableModel):
             elif col == self._col_index("AI Groups"):
                 return ", ".join(app.ai_groups) if app.ai_groups else ""
             elif col == self._col_index("Field EIQ"):
-                return f"{app.field_eiq:.2f}" if app.field_eiq else "0.00"
+                # Check if this should show estimated EIQ
+                if self._should_use_estimated_eiq(app):
+                    estimated_eiq = self._calculate_average_eiq()
+                    return f"{estimated_eiq:.2f}" if estimated_eiq > 0 else "0.00"
+                else:
+                    return f"{app.field_eiq:.2f}" if app.field_eiq else "0.00"
             return None
         except Exception as e:
             print(f"ERROR in _get_cell_data(): {e}")
             return ""
+
+    def _should_use_estimated_eiq(self, app: Application) -> bool:
+        """
+        Check if this application should use estimated EIQ.
+        
+        Returns True if:
+        - Application has rate > 0 (has product and rate data)
+        - Field EIQ is 0 (missing AI EIQ data)
+        - Product exists in database
+        """
+        try:
+            if not app.rate or app.rate <= 0:
+                return False  # No rate, EIQ should stay 0
+            
+            if app.field_eiq and app.field_eiq > 0:
+                return False  # Already has valid EIQ
+            
+            if not app.product_name:
+                return False  # No product selected
+            
+            # Check if product exists and has AI data but with 0 EIQ values
+            product = self._find_product(app.product_name)
+            if not product:
+                return False  # Product not found
+            
+            ai_data = product.get_ai_data()
+            if not ai_data:
+                return False  # No AI data at all
+            
+            # Check if all AIs have EIQ = 0 (missing EIQ data)
+            has_valid_eiq = any(ai.get('eiq', 0) > 0 for ai in ai_data)
+            return not has_valid_eiq  # Use estimated if no valid EIQ found
+            
+        except Exception as e:
+            print(f"ERROR in _should_use_estimated_eiq(): {e}")
+            return False
+
+    def _calculate_average_eiq(self) -> float:
+        """
+        Calculate average EIQ from applications with valid EIQ values.
+        
+        Returns:
+            float: Average EIQ value, or 0.0 if no valid values found
+        """
+        try:
+            valid_eiq_values = []
+            
+            for app in self._applications:
+                # Only include applications with valid EIQ (not estimated ones)
+                if (app.field_eiq and app.field_eiq > 0 and 
+                    not self._should_use_estimated_eiq(app)):
+                    valid_eiq_values.append(app.field_eiq)
+            
+            if valid_eiq_values:
+                return sum(valid_eiq_values) / len(valid_eiq_values)
+            else:
+                return 0.0
+                
+        except Exception as e:
+            print(f"ERROR in _calculate_average_eiq(): {e}")
+            return 0.0
 
     def _set_cell_data(self, app: Application, col: int, value: Any, row: int) -> bool:
         """Set data for a specific cell with validation."""

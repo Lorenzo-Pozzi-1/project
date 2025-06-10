@@ -278,6 +278,10 @@ class ApplicationsTableWidget(QWidget):
     def get_applications(self) -> List[Application]:
         """Get all current applications."""
         return self.model.get_applications()
+
+    def get_applications_with_effective_eiq(self) -> List[Application]:
+        """Get applications with effective EIQ values (including estimated)."""
+        return self.model.get_applications_with_effective_eiq()
     
     def set_applications(self, applications: List[Application]):
         """Set the applications list."""

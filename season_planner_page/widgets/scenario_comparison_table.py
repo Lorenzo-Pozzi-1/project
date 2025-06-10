@@ -52,9 +52,8 @@ class ScenarioComparisonTable(QWidget):
         self.table.horizontalHeader().setStyleSheet(GENERIC_TABLE_STYLE)
         self.table.horizontalHeader().setStretchLastSection(True)
         # Set all columns to stretch
-        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)  # Application
-        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)  # Mode of Action
-        self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)  # EIQ
+        for col in range(self.table.columnCount()):
+            self.table.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
         self.table.verticalHeader().setVisible(False)
         
         layout.addWidget(self.table)

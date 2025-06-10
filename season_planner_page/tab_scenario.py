@@ -123,8 +123,8 @@ class ScenarioTabPage(QWidget):
             metadata["field_area_uom"]
         )
         
-        # Update applications - get Application objects directly from table
-        self.scenario.applications = self.applications_table.get_applications()
+        # Update applications - use effective EIQ values for external consumption
+        self.scenario.applications = self.applications_table.get_applications_with_effective_eiq()
         
         # Emit signal
         self.scenario_changed.emit(self.scenario)
