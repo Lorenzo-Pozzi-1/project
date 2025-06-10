@@ -16,14 +16,33 @@ class ExcelScenarioParser:
         """Initialize the parser."""
         # UOM mapping from Excel format to application format
         self.uom_mapping = {
-            "GHA": "g/ha",
-            "LHA": "l/ha", 
-            "KGHA": "kg/ha",
-            "MLHA": "ml/ha",
-            "LAC": "l/acre"
-            # Add more mappings as needed
+            "Fluid Ounce per Hundred Weight": "fl oz/cwt",
+            "Ounce per Acre": "oz/acre",
+            "Pounds per Hundred Weight": "lb/cwt",
+            "Pint per Acre": "pt/acre",
+            "Pounds per Acre": "lb/acre",
+            "Fluid Ounce per Acre": "fl oz/acre",
+            "Milliliters per 100 Kilograms": "ml/100kg",
+            "Milliliter per Acre": "ml/acre",
+            "Grams per Acre": "g/acre",
+            "Kilograms per Acre": "kg/acre",
+            "Gallons per Acre": "gal/acre",
+            "Liquid Quart per Acre": "qt/acre",
+            "Ounce per Hundred Weight": "oz/cwt",
+            "Liter per Acre": "l/acre",
+            "Milliliters per Hundred Weight": "ml/cwt",
+            "Liter per Hectare": "l/acre",
+            "Liters per 100 Meter Row": "l/100m",
+            "Milliliter per Hectare": "ml/ha",
+            "Kilograms per Hectares": "kg/ha",
+            "Milliliters per 100 Meter Row": "ml/100m",
+            "Imperial Gallons per Acre": "CA gal/acre",
+            "Short Ton per Acre": "US ton/acre",
+            "Grams per Ton": "g/metric ton",
+            "Milliliters per Tonne": "ml/metric ton",
+            "Milliliters per Kilograms": "ml/kg"
         }
-        
+
         # Get product repository instance
         self.products_repo = ProductRepository.get_instance()
     
@@ -160,8 +179,8 @@ class ExcelScenarioParser:
         for i, (_, row) in enumerate(df.head(3).iterrows()):
             date = row.get('Application Date', 'N/A')
             product = row.get('Control Product', 'N/A')
-            rate = row.get('ConvertedRate', 'N/A')
-            uom = row.get('ConvertedRateUOM', 'N/A')
+            rate = row.get('Rate', 'N/A')
+            uom = row.get('Rate UOM', 'N/A')
             method = row.get('Application Method', 'N/A')
             
             sample_lines.append(f"{i+1}. {date} - {product} @ {rate} {uom} ({method})")
@@ -211,8 +230,8 @@ class ExcelScenarioParser:
                     'application_date': self._format_date_string(row.get('Application Date', '')),
                     'product_name': matched_product.product_name,  # Use the matched product name
                     'product_type': matched_product.product_type,  # Set the product type from matched product
-                    'rate': float(row.get('ConvertedRate', 0)) if pd.notna(row.get('ConvertedRate')) else 0.0,
-                    'rate_uom': self._map_uom(row.get('ConvertedRateUOM', '')),
+                    'rate': float(row.get('Rate', 0)) if pd.notna(row.get('Rate')) else 0.0,
+                    'rate_uom': self._map_uom(row.get('Rate UOM', '')),
                     'application_method': str(row.get('Application Method', 'Broadcast')),
                     'area': float(row.get('Acres', 0)) if pd.notna(row.get('Acres')) else 0.0
                 }
@@ -222,8 +241,8 @@ class ExcelScenarioParser:
                     'application_date': self._format_date_string(row.get('Application Date', '')),
                     'product_name': excel_product_name,  # Keep original Excel name
                     'product_type': '',  # Unknown product type
-                    'rate': float(row.get('ConvertedRate', 0)) if pd.notna(row.get('ConvertedRate')) else 0.0,
-                    'rate_uom': self._map_uom(row.get('ConvertedRateUOM', '')),
+                    'rate': float(row.get('Rate', 0)) if pd.notna(row.get('Rate')) else 0.0,
+                    'rate_uom': self._map_uom(row.get('Rate UOM', '')),
                     'application_method': str(row.get('Application Method', 'Broadcast')),
                     'area': float(row.get('Acres', 0)) if pd.notna(row.get('Acres')) else 0.0
                 }
@@ -246,7 +265,7 @@ class ExcelScenarioParser:
             str: Mapped UOM string for application use
         """
         # Strip whitespace and convert to uppercase for consistent lookup
-        excel_uom_clean = str(excel_uom).strip().upper()
+        excel_uom_clean = str(excel_uom).strip()
         
         # Return mapped UOM if exists, otherwise return original (cleaned)
         return self.uom_mapping.get(excel_uom_clean, excel_uom.strip())
