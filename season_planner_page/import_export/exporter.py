@@ -30,8 +30,6 @@ class ExcelScenarioExporter:
             str: Path to created file or None if failed
         """
         try:
-            
-            
             # Open file dialog to select save location and filename
             file_path, _ = QFileDialog.getSaveFileName(
                 parent_widget,
@@ -58,13 +56,13 @@ class ExcelScenarioExporter:
                     # Convert scenario applications to DataFrame
                     df = self._scenario_to_dataframe(scenario)
                     
-                    # Write to Excel sheet
-                    df.to_excel(writer, sheet_name=sheet_name, index=False)
+                    # Write to Excel sheet WITHOUT headers (header=False prevents pandas from adding column names)
+                    df.to_excel(writer, sheet_name=sheet_name, index=False, header=False)
                     
                     # Get the worksheet to apply formatting
                     worksheet = writer.sheets[sheet_name]
                     self._format_worksheet(worksheet, df)
-            
+        
             # Show success message
             if parent_widget:
                 QMessageBox.information(
