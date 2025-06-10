@@ -12,6 +12,7 @@ from common import (
     ContentFrame, HeaderWithHomeButton, calculation_tracer, create_button, 
     ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font
 )
+from season_planner_page.import_export.exporter import ExcelScenarioExporter
 from season_planner_page.tab_scenario import ScenarioTabPage
 from season_planner_page.import_export import ImportScenarioDialog
 from data import Scenario
@@ -383,11 +384,42 @@ class ScenariosManagerPage(QWidget):
             tab_page.refresh_product_data()
 
     def export(self):
-        """Export functionality placeholder."""
-        QMessageBox.information(
-            self, "Coming Soon", 
-            "Export functionality will be added here."
-        )
+        """Export all scenarios to Excel file on desktop."""
+        if not self.scenarios:
+            QMessageBox.information(
+                self, "No Scenarios", 
+                "There are no scenarios to export."
+            )
+            return
+        
+        # Filter out empty scenarios
+        scenarios_to_export = []
+        for scenario in self.scenarios:
+            if not self._is_scenario_empty(scenario):
+                scenarios_to_export.append(scenario)
+        
+        if not scenarios_to_export:
+            QMessageBox.information(
+                self, "No Data to Export", 
+                "All scenarios are empty. Add some applications before exporting."
+            )
+            return
+        
+        # Import and use the exporter
+        try:
+            exporter = ExcelScenarioExporter()
+            exporter.export_scenarios(scenarios_to_export, self)
+            
+        except ImportError as e:
+            QMessageBox.critical(
+                self, "Export Error",
+                f"Export functionality is not available. Missing required library: {e}"
+            )
+        except Exception as e:
+            QMessageBox.critical(
+                self, "Export Error", 
+                f"An unexpected error occurred during export: {e}"
+            )
 
     def _on_tab_moved(self, index):
         """Handle tab reordering to keep internal data structures in sync."""
