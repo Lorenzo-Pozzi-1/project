@@ -66,15 +66,12 @@ class ApplicationTableModel(QAbstractTableModel):
         self._field_area = 10.0
         self._field_area_uom = "acre"
         
-        # Validation tracking
-        self._validation_errors = {}  # {(row, col): error_message}
-        
         # Repository references
         self._products_repo = ProductRepository.get_instance()
         
         # User preferences for calculations
         self._user_preferences = get_config("user_preferences", {})
-    
+
     # --- QAbstractTableModel Interface ---
     
     def rowCount(self, parent=QModelIndex()) -> int:
@@ -115,9 +112,9 @@ class ApplicationTableModel(QAbstractTableModel):
                 if col == self._col_index("Field EIQ") and self._should_use_estimated_eiq(app):
                     return QColor(255, 255, 0, 100)  # Light yellow background
                 
-                # Existing validation error background
-                if (index.row(), col) in self._validation_errors:
-                    return QColor("#fff3cd")  # Light yellow for validation errors
+                # Red background for validation errors
+                if self._has_validation_error(app, col):
+                    return QColor("#ff8484")  # Light red for validation errors
             
             elif role == Qt.ToolTipRole:
                 # Special tooltip for estimated EIQ
@@ -126,16 +123,130 @@ class ApplicationTableModel(QAbstractTableModel):
                     return f"Estimated EIQ (average of other applications): {avg_eiq:.2f}"
                 
                 # Show validation error as tooltip
-                error = self._validation_errors.get((index.row(), col))
-                if error:
-                    return error
+                error_msg = self._get_validation_error_message(app, col)
+                if error_msg:
+                    return error_msg
         
         except Exception as e:
             print(f"Error in data() method: {e}")
             return None
         
         return None
-    
+
+    def _get_cell_data(self, app: Application, col: int) -> Any:
+        """Get data for a specific cell."""
+        try:
+            if col == self._col_index("Reorder"):
+                return ""
+            elif col == self._col_index("App #"):
+                return self._applications.index(app) + 1
+            elif col == self._col_index("Date"):
+                return app.application_date or ""
+            elif col == self._col_index("Product Type"):
+                return app.product_type or ""
+            elif col == self._col_index("Product Name"):
+                return app.product_name or ""
+            elif col == self._col_index("Rate"):
+                return app.rate or 0.0
+            elif col == self._col_index("Rate UOM"):
+                return app.rate_uom or ""
+            elif col == self._col_index("Area"):
+                return app.area or 0.0
+            elif col == self._col_index("Method"):
+                return app.application_method or ""
+            elif col == self._col_index("AI Groups"):
+                return ", ".join(app.ai_groups) if app.ai_groups else ""
+            elif col == self._col_index("Field EIQ"):
+                # Check if product is not found in database
+                if app.product_name and not self._find_product(app.product_name):
+                    return "n/a"
+                
+                # Check if this should show estimated EIQ
+                if self._should_use_estimated_eiq(app):
+                    estimated_eiq = self._calculate_average_eiq()
+                    return f"{estimated_eiq:.2f}" if estimated_eiq > 0 else "0.00"
+                else:
+                    return f"{app.field_eiq:.2f}" if app.field_eiq else "0.00"
+            return None
+        except Exception as e:
+            print(f"ERROR in _get_cell_data(): {e}")
+            return ""
+
+    def _has_validation_error(self, app: Application, col: int) -> bool:
+        """Check if a cell has a validation error."""
+        try:
+            if col == self._col_index("Product Name"):
+                # Product not found in database
+                if app.product_name and not self._find_product(app.product_name):
+                    return True
+                
+                # Product type mismatch
+                if app.product_name and app.product_type:
+                    product = self._find_product(app.product_name)
+                    if product and product.product_type != app.product_type:
+                        return True
+            
+            elif col == self._col_index("Rate"):
+                # Negative rate
+                if app.rate is not None and app.rate < 0:
+                    return True
+            
+            elif col == self._col_index("Area"):
+                # Negative area
+                if app.area is not None and app.area < 0:
+                    return True
+            
+            elif col == self._col_index("Field EIQ"):
+                # EIQ calculation errors (when we have product/rate but can't calculate)
+                if (app.product_name and app.rate and app.rate > 0 and 
+                    not self._should_use_estimated_eiq(app) and 
+                    (not app.field_eiq or app.field_eiq <= 0)):
+                    product = self._find_product(app.product_name)
+                    if product:  # Product exists but EIQ calculation failed
+                        return True
+            
+            return False
+            
+        except Exception as e:
+            print(f"ERROR in _has_validation_error(): {e}")
+            return False
+
+    def _get_validation_error_message(self, app: Application, col: int) -> str:
+        """Get validation error message for a cell."""
+        try:
+            if col == self._col_index("Product Name"):
+                if app.product_name and not self._find_product(app.product_name):
+                    return "Product not found in database"
+                
+                if app.product_name and app.product_type:
+                    product = self._find_product(app.product_name)
+                    if product and product.product_type != app.product_type:
+                        return f"Product type mismatch: '{app.product_name}' is '{product.product_type}', but row type is '{app.product_type}'"
+            
+            elif col == self._col_index("Rate"):
+                if app.rate is not None and app.rate < 0:
+                    return "Rate must be positive"
+            
+            elif col == self._col_index("Area"):
+                if app.area is not None and app.area < 0:
+                    return "Area must be positive"
+            
+            elif col == self._col_index("Field EIQ"):
+                if (app.product_name and app.rate and app.rate > 0 and 
+                    not self._should_use_estimated_eiq(app) and 
+                    (not app.field_eiq or app.field_eiq <= 0)):
+                    product = self._find_product(app.product_name)
+                    if not product:
+                        return "Cannot calculate EIQ: product not found"
+                    else:
+                        return "Cannot calculate EIQ: no active ingredient data or calculation error"
+            
+            return ""
+            
+        except Exception as e:
+            print(f"ERROR in _get_validation_error_message(): {e}")
+            return ""
+
     def setData(self, index: QModelIndex, value: Any, role: int = Qt.EditRole) -> bool:
         """Set data for the given index."""
         if not index.isValid() or index.row() >= len(self._applications) or index.column() >= len(self.COLUMNS):
@@ -238,7 +349,6 @@ class ApplicationTableModel(QAbstractTableModel):
                     print(f"Removed application: {removed_app.product_name} at position {position+1}")
             
             self.endRemoveRows()
-            self._clear_validation_errors_for_removed_rows(position, rows)
             self._emit_eiq_changed()
             return True
             
@@ -273,9 +383,6 @@ class ApplicationTableModel(QAbstractTableModel):
                     self._applications.append(app_obj)
                     print(f"  Model App {i+1} (converted): {app_obj.product_name} @ {app_obj.rate} {app_obj.rate_uom}")
             
-            # Clear validation errors
-            self._validation_errors.clear()
-            
             self.endResetModel()
             
             # Recalculate EIQ for all applications
@@ -288,7 +395,7 @@ class ApplicationTableModel(QAbstractTableModel):
             traceback.print_exc()
             # Ensure we end the reset even if there's an error
             self.endResetModel()
-    
+
     def add_application(self, position: int = -1) -> int:
         """Add a new application and return its row index.
         
@@ -367,7 +474,6 @@ class ApplicationTableModel(QAbstractTableModel):
                     app_copy.field_eiq = avg_eiq
                 
                 applications_copy.append(app_copy)
-            
             return applications_copy
         except Exception as e:
             print(f"ERROR in get_applications_with_effective_eiq(): {e}")
@@ -450,35 +556,32 @@ class ApplicationTableModel(QAbstractTableModel):
 
     def _should_use_estimated_eiq(self, app: Application) -> bool:
         """
-        Check if this application should use estimated EIQ.
+        Determine if this application should use estimated EIQ instead of calculated EIQ.
         
         Returns True if:
-        - Application has rate > 0 (has product and rate data)
-        - Field EIQ is 0 (missing AI EIQ data)
-        - Product exists in database
+        - Product name is empty/missing
+        - Product is found but has missing rate or rate_uom
+        - Product is found but EIQ calculation failed (field_eiq is 0 or None)
         """
         try:
-            if not app.rate or app.rate <= 0:
-                return False  # No rate, EIQ should stay 0
-            
-            if app.field_eiq and app.field_eiq > 0:
-                return False  # Already has valid EIQ
-            
+            # No product name
             if not app.product_name:
-                return False  # No product selected
+                return True
             
-            # Check if product exists and has AI data but with 0 EIQ values
+            # Product not found in database - don't use estimated, show validation error instead
             product = self._find_product(app.product_name)
             if not product:
-                return False  # Product not found
+                return False
             
-            ai_data = product.get_ai_data()
-            if not ai_data:
-                return False  # No AI data at all
+            # Missing rate or rate_uom
+            if not app.rate or not app.rate_uom or app.rate <= 0:
+                return True
             
-            # Check if all AIs have EIQ = 0 (missing EIQ data)
-            has_valid_eiq = any(ai.get('eiq', 0) > 0 for ai in ai_data)
-            return not has_valid_eiq  # Use estimated if no valid EIQ found
+            # EIQ calculation failed (product exists, rate exists, but field_eiq is 0 or None)
+            if not app.field_eiq or app.field_eiq <= 0:
+                return True
+            
+            return False
             
         except Exception as e:
             print(f"ERROR in _should_use_estimated_eiq(): {e}")
@@ -486,18 +589,25 @@ class ApplicationTableModel(QAbstractTableModel):
 
     def _calculate_average_eiq(self) -> float:
         """
-        Calculate average EIQ from applications with valid EIQ values.
+        Calculate the average EIQ from applications that have valid EIQ values.
         
-        Returns:
-            float: Average EIQ value, or 0.0 if no valid values found
+        Returns the average field EIQ of applications that have successfully calculated
+        EIQ values (excluding estimated and invalid ones).
         """
         try:
             valid_eiq_values = []
             
             for app in self._applications:
-                # Only include applications with valid EIQ (not estimated ones)
-                if (app.field_eiq and app.field_eiq > 0 and 
-                    not self._should_use_estimated_eiq(app)):
+                # Skip if this application should use estimated EIQ
+                if self._should_use_estimated_eiq(app):
+                    continue
+                
+                # Skip if product not found
+                if app.product_name and not self._find_product(app.product_name):
+                    continue
+                
+                # Include valid EIQ values
+                if app.field_eiq and app.field_eiq > 0:
                     valid_eiq_values.append(app.field_eiq)
             
             if valid_eiq_values:
@@ -511,69 +621,35 @@ class ApplicationTableModel(QAbstractTableModel):
 
     def _set_cell_data(self, app: Application, col: int, value: Any, row: int) -> bool:
         """Set data for a specific cell with validation."""
-        self._validation_errors.pop((row, col), None)
-        
         try:
             if col == self._col_index("Reorder"):
                 return False
             elif col == self._col_index("Date"):
                 app.application_date = str(value) if value else ""
-            
             elif col == self._col_index("Product Type"):
-                old_type = app.product_type
                 app.product_type = str(value) if value else ""
-                
-                if app.product_name and old_type != app.product_type:
-                    product = self._find_product(app.product_name)
-                    if product and product.product_type != app.product_type:
-                        self._validation_errors[(row, self._col_index("Product Name"))] = (
-                            f"Product '{app.product_name}' is not of type '{app.product_type}'"
-                        )
-            
             elif col == self._col_index("Product Name"):
-                product_name = str(value) if value else ""
-                app.product_name = product_name
-                
-                if product_name:
-                    product = self._find_product(product_name)
+                app.product_name = str(value) if value else ""
+                # Auto-set product type if not set
+                if app.product_name and not app.product_type:
+                    product = self._find_product(app.product_name)
                     if product:
-                        if app.product_type and app.product_type != product.product_type:
-                            self._validation_errors[(row, col)] = (
-                                f"Product type mismatch: '{product_name}' is '{product.product_type}', "
-                                f"but row type is '{app.product_type}'"
-                            )
-                        else:
-                            if not app.product_type:
-                                app.product_type = product.product_type
+                        app.product_type = product.product_type
                     else:
-                        if not app.product_type:
-                            app.product_type = "Unknown"
-                        self._validation_errors[(row, col)] = "Product not found in database"
-            
+                        app.product_type = "Unknown"
             elif col == self._col_index("Rate"):
-                rate = float(value) if value else 0.0
-                if rate < 0:
-                    self._validation_errors[(row, col)] = "Rate must be positive"
-                    return False
-                app.rate = rate
-            
+                app.rate = float(value) if value else 0.0
             elif col == self._col_index("Rate UOM"):
                 app.rate_uom = str(value) if value else ""
-            
             elif col == self._col_index("Area"):
-                area = float(value) if value else 0.0
-                if area < 0:
-                    self._validation_errors[(row, col)] = "Area must be positive"
-                    return False
-                app.area = area
-            
+                app.area = float(value) if value else 0.0
             elif col == self._col_index("Method"):
                 app.application_method = str(value) if value else ""
             
             return True
             
         except (ValueError, TypeError) as e:
-            self._validation_errors[(row, col)] = f"Invalid value: {e}"
+            print(f"Invalid value in _set_cell_data: {e}")
             return False
 
     def _update_dependent_fields(self, app: Application, changed_col: int, row: int):
@@ -646,13 +722,11 @@ class ApplicationTableModel(QAbstractTableModel):
             product = self._find_product(app.product_name)
             if not product:
                 app.field_eiq = 0.0
-                self._validation_errors[(row, self._col_index("Field EIQ"))] = "Cannot calculate EIQ: product not found"
                 return
             
             ai_data = product.get_ai_data()
             if not ai_data:
                 app.field_eiq = 0.0
-                self._validation_errors[(row, self._col_index("Field EIQ"))] = "Cannot calculate EIQ: no active ingredient data"
                 return
             
             field_eiq = eiq_calculator.calculate_product_field_eiq(
@@ -664,12 +738,10 @@ class ApplicationTableModel(QAbstractTableModel):
             )
             
             app.field_eiq = field_eiq
-            self._validation_errors.pop((row, self._col_index("Field EIQ")), None)
             
         except Exception as e:
             print(f"ERROR in _calculate_field_eiq(): {e}")
             app.field_eiq = 0.0
-            self._validation_errors[(row, self._col_index("Field EIQ"))] = f"EIQ calculation error: {e}"
     
     def _find_product(self, product_name: str):
         """Find a product by name in the filtered products list."""
@@ -703,31 +775,6 @@ class ApplicationTableModel(QAbstractTableModel):
         except Exception as e:
             print(f"ERROR in _emit_eiq_changed(): {e}")
     
-    def _clear_validation_errors_for_removed_rows(self, position: int, rows: int):
-        """Clear validation errors for removed rows and adjust indices."""
-        try:
-            # Remove errors for deleted rows
-            keys_to_remove = []
-            keys_to_update = {}
-            
-            for (row, col), error in self._validation_errors.items():
-                if position <= row < position + rows:
-                    # Row was deleted
-                    keys_to_remove.append((row, col))
-                elif row >= position + rows:
-                    # Row index needs to be adjusted
-                    keys_to_update[(row - rows, col)] = error
-                    keys_to_remove.append((row, col))
-            
-            # Apply changes
-            for key in keys_to_remove:
-                self._validation_errors.pop(key, None)
-            
-            for key, error in keys_to_update.items():
-                self._validation_errors[key] = error
-        except Exception as e:
-            print(f"ERROR in _clear_validation_errors_for_removed_rows(): {e}")
-
     def auto_populate_from_product(self, row: int, product_name: str):
         """Auto-populate application rate and UOM from product label data."""
         try:
