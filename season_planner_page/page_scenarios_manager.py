@@ -347,7 +347,7 @@ class ScenariosManagerPage(QWidget):
             
             # Add validation status
             if page.has_validation_issues():
-                validation_status = " (⚠ Check issues!)"
+                validation_status = " (⚠ There are invalid or incomplete applications!)"
             else:
                 validation_status = ""
         

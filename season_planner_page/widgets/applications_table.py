@@ -1,23 +1,21 @@
 """
-Fixed Applications Table Widget for the Season Planner.
+Applications Table Widget for the Season Planner.
 
-This version works with the improved validation state machine and provides
-better user feedback with support for multiple validation issues.
+Simplified version with validation summary functionality completely removed.
 """
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableView, QHeaderView, 
-    QAbstractItemView, QMessageBox, QLabel, QPushButton, QFrame,
-    QToolButton, QMenu
+    QAbstractItemView, QMessageBox
 )
-from PySide6.QtCore import Signal, Qt, QTimer
-from PySide6.QtGui import QShowEvent, QIcon
-from typing import List, Dict, Any
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QShowEvent
+from typing import List
 import traceback
 
-from common import create_button, GENERIC_TABLE_STYLE, get_medium_font, get_small_font
+from common import create_button, GENERIC_TABLE_STYLE, get_medium_font
 from data import Application
-from ..models.application_table_model import ApplicationTableModel, ValidationState
+from ..models.application_table_model import ApplicationTableModel
 from ..delegates.date_delegate import DateDelegate
 from ..delegates.numeric_delegate import RateDelegate, AreaDelegate
 from ..delegates.method_delegate import MethodDelegate
@@ -27,74 +25,11 @@ from ..delegates.product_type_delegate import ProductTypeDelegate
 from ..delegates.reorder_delegate import ReorderDelegate
 
 
-class ValidationSummaryWidget(QWidget):
-    """Simplified widget showing validation summary."""
-    
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setup_ui()
-    
-    def setup_ui(self):
-        """Set up the validation summary UI."""
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        
-        # Validation summary label (no frame, just text)
-        self.summary_label = QLabel("All applications valid")
-        self.summary_label.setFont(get_small_font())
-        layout.addWidget(self.summary_label)
-        
-        layout.addStretch()
-    
-    def update_validation_summary(self, summary: dict):
-        """Update the validation summary display."""
-        valid_count = summary.get(ValidationState.VALID, 0)
-        valid_estimated_count = summary.get(ValidationState.VALID_ESTIMATED, 0)
-        invalid_product_count = summary.get(ValidationState.INVALID_PRODUCT, 0)
-        invalid_data_count = summary.get(ValidationState.INVALID_DATA, 0)
-        incomplete_count = summary.get(ValidationState.INCOMPLETE, 0)
-        
-        total_issues = invalid_product_count + invalid_data_count + incomplete_count
-        total_apps = sum(summary.values())
-        total_valid = valid_count + valid_estimated_count
-        
-        if total_issues == 0:
-            if total_apps > 0:
-                if valid_estimated_count > 0:
-                    self.summary_label.setText(f"✓ All {total_apps} applications valid ({valid_estimated_count} estimated)")
-                else:
-                    self.summary_label.setText(f"✓ All {total_apps} applications valid")
-                self.summary_label.setStyleSheet("color: #28a745; font-weight: bold;")
-            else:
-                self.summary_label.setText("No applications")
-                self.summary_label.setStyleSheet("color: #6c757d;")
-        else:
-            # Order issues by priority: incomplete -> data errors -> invalid products
-            issues_text = []
-            if incomplete_count > 0:
-                issues_text.append(f"{incomplete_count} incomplete")
-            if invalid_data_count > 0:
-                issues_text.append(f"{invalid_data_count} data errors")
-            if invalid_product_count > 0:
-                issues_text.append(f"{invalid_product_count} invalid products")
-            
-            status_text = f"⚠ {total_issues} issues: " + ", ".join(issues_text)
-            if valid_estimated_count > 0:
-                status_text += f" | {valid_estimated_count} estimated"
-            
-            self.summary_label.setText(status_text)
-            self.summary_label.setStyleSheet("color: #dc3545; font-weight: bold;")
-
-
 class ApplicationsTableWidget(QWidget):
     """
-    Enhanced applications table widget with improved validation feedback.
+    Applications table widget focused purely on data management.
     
-    Features:
-    - Fixed validation state machine support
-    - Multiple issue display and handling
-    - Smart validation cache management
-    - Enhanced user feedback and actions
+    Clean, simple table interface without validation summary distractions.
     """
     
     # Signals
@@ -115,11 +50,6 @@ class ApplicationsTableWidget(QWidget):
         
         # Setup UI
         self._setup_ui()
-        
-        # Timer for validation updates (reduced frequency for better performance)
-        self._validation_timer = QTimer()
-        self._validation_timer.setSingleShot(True)
-        self._validation_timer.timeout.connect(self._update_validation_display)
     
     def _connect_model_signals(self):
         """Connect model signals to local handlers."""
@@ -127,7 +57,6 @@ class ApplicationsTableWidget(QWidget):
         self.model.dataChanged.connect(self.applications_changed)
         self.model.rowsInserted.connect(self.applications_changed)
         self.model.rowsRemoved.connect(self.applications_changed)
-        self.model.validation_changed.connect(self._schedule_validation_update)
     
     def _create_delegates(self):
         """Create all delegate instances."""
@@ -252,7 +181,6 @@ class ApplicationsTableWidget(QWidget):
         if not self._delegates_assigned:
             self._assign_delegates()
             self._delegates_assigned = True
-            self._update_validation_display()
     
     def _assign_delegates(self):
         """Assign delegates to table columns."""
@@ -275,20 +203,6 @@ class ApplicationsTableWidget(QWidget):
         except Exception as e:
             print(f"Error assigning delegates: {e}")
             traceback.print_exc()
-    
-    def _schedule_validation_update(self):
-        """Schedule a validation display update with improved timing."""
-        self._validation_timer.start(150)  # Slightly longer delay for better batching
-    
-    def _update_validation_display(self):
-        """Update the validation summary display."""
-        try:
-            summary = self.model.get_validation_summary()
-            # Update the validation summary in the parent widget instead
-            if hasattr(self.parent(), 'update_validation_status'):
-                self.parent().update_validation_status(summary)
-        except Exception as e:
-            print(f"Error updating validation display: {e}")
     
     def _move_up(self, row: int):
         """Handle move up action."""

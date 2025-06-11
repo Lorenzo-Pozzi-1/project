@@ -1,7 +1,7 @@
 """
-Updated Scenario Tab for the Season Planner.
+Scenario Tab for the Season Planner.
 
-This version works with the simplified model and import process.
+Clean version with validation summary functionality completely removed.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
@@ -10,16 +10,16 @@ from PySide6.QtCore import Signal
 from common import ContentFrame, get_margin_large, get_spacing_medium, get_subtitle_font
 from season_planner_page.widgets.metadata_widget import SeasonPlanMetadataWidget
 from season_planner_page.widgets.applications_table import ApplicationsTableWidget
-from season_planner_page.widgets.applications_table import ValidationSummaryWidget
+from season_planner_page.models.application_table_model import ValidationState
 from data import Scenario, ProductRepository, Application
 
 
 class ScenarioTabPage(QWidget):
     """
-    Updated tab page for displaying and editing a single scenario.
+    Tab page for displaying and editing a single scenario.
     
-    This provides Excel-like editing capabilities with clear validation
-    feedback and simplified data management.
+    Provides Excel-like editing capabilities with clean, simple interface
+    focused on data entry rather than validation feedback distractions.
     """
     
     scenario_changed = Signal(object)  # Emitted when scenario data changes
@@ -60,16 +60,8 @@ class ScenarioTabPage(QWidget):
         applications_frame = ContentFrame()
         applications_layout = QVBoxLayout()
 
-        # Applications header with validation status
-        header_layout = QHBoxLayout()
-        header_layout.addWidget(QLabel("Applications", font=get_subtitle_font()))
-
-        # Add validation summary widget aligned with title
-        self.validation_widget = ValidationSummaryWidget()
-        header_layout.addWidget(self.validation_widget)
-        header_layout.addStretch()
-
-        applications_layout.addLayout(header_layout)
+        # Simple applications header
+        applications_layout.addWidget(QLabel("Applications", font=get_subtitle_font()))
 
         # Applications Table Widget
         self.applications_table = ApplicationsTableWidget()
@@ -145,8 +137,7 @@ class ScenarioTabPage(QWidget):
                 metadata["field_area_uom"]
             )
             
-            # Update applications - get the actual applications from the model
-            # No need for "effective EIQ" complexity since we have clean validation
+            # Update applications
             self.scenario.applications = self.applications_table.get_applications()
             
             # Emit signal
@@ -190,7 +181,6 @@ class ScenarioTabPage(QWidget):
     def has_validation_issues(self) -> bool:
         """Check if this scenario has any validation issues."""
         try:
-            from season_planner_page.models.application_table_model import ValidationState
             summary = self.get_validation_summary()
             
             issue_count = (
@@ -211,10 +201,3 @@ class ScenarioTabPage(QWidget):
             return len(self.scenario.applications) if self.scenario.applications else 0
         except Exception:
             return 0
-        
-    def update_validation_status(self, summary):
-        """Update the validation status display."""
-        try:
-            self.validation_widget.update_validation_summary(summary)
-        except Exception as e:
-            print(f"Error updating validation status: {e}")
