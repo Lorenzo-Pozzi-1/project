@@ -108,13 +108,13 @@ class ApplicationTableModel(QAbstractTableModel):
                 return self._get_cell_data(app, col)
             
             elif role == Qt.BackgroundRole:
-                # Yellow background for estimated EIQ values
+                # Custom background for estimated EIQ values
                 if col == self._col_index("Field EIQ") and self._should_use_estimated_eiq(app):
-                    return QColor(255, 255, 0, 100)  # Light yellow background
+                    return QColor("#fdff9e")  # Light yellow background
                 
-                # Red background for validation errors
+                # Custom background for validation errors
                 if self._has_validation_error(app, col):
-                    return QColor("#ff8484")  # Light red for validation errors
+                    return QColor("#ff9e9e")  # Light red for validation errors
             
             elif role == Qt.ToolTipRole:
                 # Special tooltip for estimated EIQ
@@ -197,6 +197,10 @@ class ApplicationTableModel(QAbstractTableModel):
                     return True
             
             elif col == self._col_index("Field EIQ"):
+                # Product not found in database
+                if app.product_name and not self._find_product(app.product_name):
+                    return True
+                    
                 # EIQ calculation errors (when we have product/rate but can't calculate)
                 if (app.product_name and app.rate and app.rate > 0 and 
                     not self._should_use_estimated_eiq(app) and 
@@ -221,7 +225,7 @@ class ApplicationTableModel(QAbstractTableModel):
                 if app.product_name and app.product_type:
                     product = self._find_product(app.product_name)
                     if product and product.product_type != app.product_type:
-                        return f"Product type mismatch: '{app.product_name}' is '{product.product_type}', but row type is '{app.product_type}'"
+                        return f"Product type mismatch: '{app.product_name}' is '{product.product_type}' in the database, but here is set as '{app.product_type}'"
             
             elif col == self._col_index("Rate"):
                 if app.rate is not None and app.rate < 0:
@@ -232,6 +236,10 @@ class ApplicationTableModel(QAbstractTableModel):
                     return "Area must be positive"
             
             elif col == self._col_index("Field EIQ"):
+                # Product not found in database
+                if app.product_name and not self._find_product(app.product_name):
+                    return "Cannot calculate EIQ: product not found in database"
+                    
                 if (app.product_name and app.rate and app.rate > 0 and 
                     not self._should_use_estimated_eiq(app) and 
                     (not app.field_eiq or app.field_eiq <= 0)):
