@@ -1,8 +1,7 @@
 """
 Import Dialog with Interactive Product Mapping
 
-This replaces the existing import_dialog.py with a more robust approach that handles
-unmatched products through interactive mapping during the import process.
+Updated version with simplified interface using ProductSelectionWidget.
 """
 
 import os
@@ -10,10 +9,11 @@ from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, 
     QFileDialog, QMessageBox, QTextEdit, QDialogButtonBox,
     QTableWidget, QTableWidgetItem, QComboBox, QHeaderView,
-    QTabWidget, QWidget, QCheckBox, QFrame
+    QTabWidget, QWidget, QFrame
 )
 from PySide6.QtCore import Qt, Signal
 from common.styles import get_medium_font, get_subtitle_font
+from common.widgets.product_selection import ProductSearchField
 from .excel_parser import ExcelScenarioParser
 from data import ProductRepository
 
@@ -27,7 +27,7 @@ class ProductMappingWidget(QWidget):
         super().__init__(parent)
         self.unmatched_products = unmatched_products
         self.available_products = available_products
-        self.product_mappings = {}  # excel_name -> (db_product, action)
+        self.product_mappings = {}  # excel_name -> (action, db_product)
         self.setup_ui()
         
     def setup_ui(self):
@@ -62,24 +62,12 @@ class ProductMappingWidget(QWidget):
         self.populate_table()
         
         layout.addWidget(self.table)
-        
-        # Action buttons
-        button_layout = QHBoxLayout()
-        
-        auto_map_btn = QPushButton("Auto-map Similar Names")
-        auto_map_btn.clicked.connect(self.auto_map_similar)
-        button_layout.addWidget(auto_map_btn)
-        
-        skip_all_btn = QPushButton("Skip All Unmatched")
-        skip_all_btn.clicked.connect(self.skip_all_unmatched)
-        button_layout.addWidget(skip_all_btn)
-        
-        button_layout.addStretch()
-        layout.addLayout(button_layout)
-        
+    
     def populate_table(self):
         """Populate the mapping table with unmatched products."""
-        available_names = [""] + [p.product_name for p in self.available_products]
+        # Get available products for the search field
+        products_repo = ProductRepository.get_instance()
+        all_products = products_repo.get_filtered_products()
         
         for row, excel_product in enumerate(self.unmatched_products):
             # Excel product name (read-only)
@@ -89,39 +77,41 @@ class ProductMappingWidget(QWidget):
             
             # Action selector
             action_combo = QComboBox()
-            action_combo.addItems(["Skip", "Map to existing", "Import as-is"])
-            action_combo.setCurrentText("Skip")  # Default to skip
+            action_combo.addItems(["Import as-is", "Map to existing", "Skip"])
+            action_combo.setCurrentText("Import as-is")  # Default to Import as-is
             action_combo.currentTextChanged.connect(
                 lambda text, r=row: self.on_action_changed(r, text)
             )
             self.table.setCellWidget(row, 1, action_combo)
             
-            # Database product selector
-            product_combo = QComboBox()
-            product_combo.addItems(available_names)
-            product_combo.setEnabled(False)  # Disabled until "Map to existing" is selected
-            product_combo.currentTextChanged.connect(
-                lambda text, r=row: self.on_product_selected(r, text)
+            # Database product selector using ProductSearchField
+            product_widget = ProductSearchField()
+            product_widget.set_products(all_products)  # Set available products
+            product_widget.setEnabled(False)  # Disabled until "Map to existing" is selected
+            product_widget.product_selected.connect(
+                lambda product_name, r=row: self.on_product_selected(r, product_name)
             )
-            self.table.setCellWidget(row, 2, product_combo)
+            self.table.setCellWidget(row, 2, product_widget)
             
-            # Initialize mapping
-            self.product_mappings[excel_product] = ("skip", None)
+            # Initialize mapping with default action
+            self.product_mappings[excel_product] = ("import_unmatched", None)
     
     def on_action_changed(self, row, action):
         """Handle action selection change."""
         excel_product = self.unmatched_products[row]
-        product_combo = self.table.cellWidget(row, 2)
+        product_widget = self.table.cellWidget(row, 2)
         
         if action == "Map to existing":
-            product_combo.setEnabled(True)
+            product_widget.setEnabled(True)
             # Try to suggest a similar product
             suggestion = self.find_similar_product(excel_product)
             if suggestion:
-                product_combo.setCurrentText(suggestion.product_name)
+                # Find the proper display format for this product
+                suggestion_display = f"{suggestion.product_name} - {suggestion.application_method or 'General'}"
+                product_widget.text = suggestion_display
         else:
-            product_combo.setEnabled(False)
-            product_combo.setCurrentIndex(0)  # Clear selection
+            product_widget.setEnabled(False)
+            product_widget.clear()
         
         # Update mapping
         if action == "Skip":
@@ -129,10 +119,10 @@ class ProductMappingWidget(QWidget):
         elif action == "Import as-is":
             self.product_mappings[excel_product] = ("import_unmatched", None)
         elif action == "Map to existing":
-            selected_product = product_combo.currentText()
-            if selected_product:
-                db_product = next((p for p in self.available_products 
-                                 if p.product_name == selected_product), None)
+            display_text = product_widget.text
+            if display_text:
+                # Get the actual product object from the display text
+                db_product = product_widget.completer.get_product_from_display(display_text)
                 self.product_mappings[excel_product] = ("map", db_product)
             else:
                 self.product_mappings[excel_product] = ("map", None)
@@ -145,12 +135,15 @@ class ProductMappingWidget(QWidget):
             return
             
         excel_product = self.unmatched_products[row]
-        db_product = next((p for p in self.available_products 
-                          if p.product_name == product_name), None)
+        product_widget = self.table.cellWidget(row, 2)
         
-        if db_product:
-            self.product_mappings[excel_product] = ("map", db_product)
-            self.products_mapped.emit()
+        # Get the actual product object from the current display text
+        display_text = product_widget.text
+        if display_text:
+            db_product = product_widget.completer.get_product_from_display(display_text)
+            if db_product:
+                self.product_mappings[excel_product] = ("map", db_product)
+                self.products_mapped.emit()
     
     def find_similar_product(self, excel_name):
         """Find a similar product in the database using fuzzy matching."""
@@ -177,48 +170,6 @@ class ProductMappingWidget(QWidget):
         
         return best_match
     
-    def auto_map_similar(self):
-        """Automatically map products with similar names."""
-        mapped_count = 0
-        
-        for row, excel_product in enumerate(self.unmatched_products):
-            similar_product = self.find_similar_product(excel_product)
-            if similar_product:
-                # Update UI
-                action_combo = self.table.cellWidget(row, 1)
-                product_combo = self.table.cellWidget(row, 2)
-                
-                action_combo.setCurrentText("Map to existing")
-                product_combo.setEnabled(True)
-                product_combo.setCurrentText(similar_product.product_name)
-                
-                # Update mapping
-                self.product_mappings[excel_product] = ("map", similar_product)
-                mapped_count += 1
-        
-        if mapped_count > 0:
-            QMessageBox.information(
-                self, "Auto-mapping Complete", 
-                f"Automatically mapped {mapped_count} products based on name similarity."
-            )
-            self.products_mapped.emit()
-        else:
-            QMessageBox.information(
-                self, "No Matches Found", 
-                "No similar product names were found for automatic mapping."
-            )
-    
-    def skip_all_unmatched(self):
-        """Set all unmatched products to skip."""
-        for row in range(len(self.unmatched_products)):
-            action_combo = self.table.cellWidget(row, 1)
-            action_combo.setCurrentText("Skip")
-        
-        QMessageBox.information(
-            self, "All Products Skipped", 
-            "All unmatched products will be skipped during import."
-        )
-    
     def get_mapping_summary(self):
         """Get a summary of the current mappings."""
         summary = {
@@ -239,7 +190,7 @@ class ProductMappingWidget(QWidget):
 
 
 class ImportScenarioDialog(QDialog):
-    """import dialog with interactive product mapping."""
+    """Import dialog with interactive product mapping."""
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -275,7 +226,7 @@ class ImportScenarioDialog(QDialog):
         
         # Tab 2: Product Mapping (initially hidden)
         self.mapping_tab = QWidget()
-        self.tab_widget.addTab(self.mapping_tab, "2. Map Products")
+        self.tab_widget.addTab(self.mapping_tab, "2. Correct Issues")
         self.tab_widget.setTabEnabled(1, False)  # Disabled until file is loaded
         
         # Buttons
@@ -370,7 +321,7 @@ class ImportScenarioDialog(QDialog):
                 QMessageBox.information(
                     self, "Product Mapping Required",
                     f"Found {unmatched_count} unmatched products.\n\n"
-                    f"Please go to the 'Map Products' tab to resolve these before importing."
+                    f"Please go to the 'Correct Issues' tab to resolve these before importing."
                 )
                 self.tab_widget.setCurrentIndex(1)  # Switch to mapping tab
             else:
@@ -419,6 +370,7 @@ class ImportScenarioDialog(QDialog):
         
         # Update initial summary
         self.update_mapping_summary()
+        self.update_import_readiness()
     
     def on_products_mapped(self):
         """Handle changes in product mapping."""
@@ -450,7 +402,6 @@ class ImportScenarioDialog(QDialog):
         summary = self.mapping_widget.get_mapping_summary()
         
         # Import is ready if we have some valid action for each product
-        # (even if it's skip - user has made a conscious choice)
         total_actions = len(summary["map"]) + len(summary["import_unmatched"]) + len(summary["skip"])
         total_unmatched = len(self.product_validation.get('unmatched_list', []))
         
