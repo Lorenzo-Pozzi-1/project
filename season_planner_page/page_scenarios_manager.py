@@ -42,17 +42,8 @@ class CustomTabBar(QTabBar):
         current_text = self.tabText(index)
         base_text = current_text.replace(" ⚠", "").replace(" ✓", "")
         
-        # Add appropriate status indicator
-        if has_issues:
-            new_text = f"{base_text} ⚠"
-            # Set warning color
-            self.setTabTextColor(index, self.palette().color(self.palette().ColorRole.BrightText))
-        else:
-            new_text = f"{base_text} ✓"
-            # Set normal color
-            self.setTabTextColor(index, self.palette().color(self.palette().ColorRole.Text))
-        
-        self.setTabText(index, new_text)
+        self.setTabText(index, base_text)
+        self.setTabTextColor(index, self.palette().color(self.palette().ColorRole.Text))
 
 
 class ScenariosManagerPage(QWidget):
@@ -384,6 +375,11 @@ class ScenariosManagerPage(QWidget):
             if imported_scenario:
                 # Check if we should remove the empty placeholder scenario
                 self._remove_empty_placeholder_if_needed()
+                
+                # FIXED: Don't use clone() which adds "Copy of" prefix
+                # Just ensure the name is unique without adding "Copy of"
+                original_name = imported_scenario.name
+                imported_scenario.name = self.generate_unique_name(original_name)
                 
                 # Add the scenario
                 self.add_new_scenario(imported_scenario)
