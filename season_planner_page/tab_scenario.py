@@ -4,12 +4,13 @@ Updated Scenario Tab for the Season Planner.
 This version works with the simplified model and import process.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 from PySide6.QtCore import Signal
 
 from common import ContentFrame, get_margin_large, get_spacing_medium, get_subtitle_font
 from season_planner_page.widgets.metadata_widget import SeasonPlanMetadataWidget
 from season_planner_page.widgets.applications_table import ApplicationsTableWidget
+from season_planner_page.widgets.applications_table import ValidationSummaryWidget
 from data import Scenario, ProductRepository, Application
 
 
@@ -58,12 +59,22 @@ class ScenarioTabPage(QWidget):
         # Applications Table Frame
         applications_frame = ContentFrame()
         applications_layout = QVBoxLayout()
-        applications_layout.addWidget(QLabel("Applications", font=get_subtitle_font()))
-        
+
+        # Applications header with validation status
+        header_layout = QHBoxLayout()
+        header_layout.addWidget(QLabel("Applications", font=get_subtitle_font()))
+
+        # Add validation summary widget aligned with title
+        self.validation_widget = ValidationSummaryWidget()
+        header_layout.addWidget(self.validation_widget)
+        header_layout.addStretch()
+
+        applications_layout.addLayout(header_layout)
+
         # Applications Table Widget
         self.applications_table = ApplicationsTableWidget()
         applications_layout.addWidget(self.applications_table)
-        
+
         applications_frame.layout.addLayout(applications_layout)
         main_layout.addWidget(applications_frame)
     
@@ -200,3 +211,10 @@ class ScenarioTabPage(QWidget):
             return len(self.scenario.applications) if self.scenario.applications else 0
         except Exception:
             return 0
+        
+    def update_validation_status(self, summary):
+        """Update the validation status display."""
+        try:
+            self.validation_widget.update_validation_summary(summary)
+        except Exception as e:
+            print(f"Error updating validation status: {e}")

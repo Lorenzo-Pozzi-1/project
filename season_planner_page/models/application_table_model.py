@@ -1,8 +1,8 @@
 """
-Simplified Application Table Model for the Season Planner.
+Fixed Application Table Model for the Season Planner.
 
-This version removes the complex estimated EIQ logic and implements
-a clean validation system with clear states.
+This version fixes the validation state machine to ensure all states are reachable
+and implements proper hierarchical validation with support for multiple issues.
 """
 
 from dataclasses import dataclass
@@ -16,16 +16,38 @@ from common import eiq_calculator, get_config
 class ValidationState(Enum):
     """Clear validation states for applications."""
     VALID = "valid"
+    VALID_ESTIMATED = "valid_estimated"  # Valid but using estimated EIQ
     INVALID_PRODUCT = "invalid_product"
     INVALID_DATA = "invalid_data"
     INCOMPLETE = "incomplete"
 
 @dataclass
+class ValidationIssue:
+    """Individual validation issue."""
+    field: str
+    message: str
+    severity: str  # 'error', 'warning', 'info'
+
+@dataclass
 class ValidationResult:
-    """Result of application validation."""
+    """Result of application validation with support for multiple issues."""
     state: ValidationState
-    message: str = ""
+    issues: List[ValidationIssue]
     can_calculate_eiq: bool = False
+    
+    @property
+    def message(self) -> str:
+        """Get combined message from all issues."""
+        if not self.issues:
+            return "Application is valid"
+        return "; ".join(issue.message for issue in self.issues)
+    
+    @property
+    def primary_message(self) -> str:
+        """Get the most important message."""
+        if not self.issues:
+            return "Application is valid"
+        return self.issues[0].message
 
 @dataclass
 class ColumnDefinition:
@@ -36,13 +58,13 @@ class ColumnDefinition:
 
 class ApplicationTableModel(QAbstractTableModel):
     """
-    Simplified table model for managing pesticide applications.
+    Fixed table model for managing pesticide applications.
     
     Key improvements:
-    - No estimated EIQ calculations
-    - Clear validation states
-    - Predictable data flow
-    - Better error handling
+    - Fixed validation state machine with proper hierarchy
+    - Support for multiple simultaneous validation issues
+    - Clear validation states that are all reachable
+    - Better error handling and user feedback
     """
     
     # Signals
@@ -62,7 +84,7 @@ class ApplicationTableModel(QAbstractTableModel):
         ColumnDefinition(8, "Method", True),
         ColumnDefinition(9, "AI Groups", False),
         ColumnDefinition(10, "Field EIQ", False),
-        ColumnDefinition(11, "Status", False),  # New status column
+        ColumnDefinition(11, "Status", False),
     ]
     
     COLUMNS = [col.name for col in _COLUMN_DEFS]
@@ -152,8 +174,9 @@ class ApplicationTableModel(QAbstractTableModel):
             
             # Set the data
             if self._set_cell_data(app, col, value):
-                # Clear validation cache for this row
-                self._validation_cache.pop(row, None)
+                # Clear validation cache for this row only when it might affect validation
+                if self._affects_validation(col):
+                    self._validation_cache.pop(row, None)
                 
                 # Update dependent fields
                 self._update_dependent_fields(app, col, row)
@@ -295,6 +318,7 @@ class ApplicationTableModel(QAbstractTableModel):
         """Get a summary of validation states across all applications."""
         summary = {
             ValidationState.VALID: 0,
+            ValidationState.VALID_ESTIMATED: 0,
             ValidationState.INVALID_PRODUCT: 0,
             ValidationState.INVALID_DATA: 0,
             ValidationState.INCOMPLETE: 0
@@ -378,6 +402,16 @@ class ApplicationTableModel(QAbstractTableModel):
 
     # --- Private Methods ---
     
+    def _affects_validation(self, col: int) -> bool:
+        """Check if changing this column affects validation state."""
+        validation_affecting_columns = {
+            self._col_index("Product Name"),
+            self._col_index("Rate"),
+            self._col_index("Rate UOM"),
+            self._col_index("Area")
+        }
+        return col in validation_affecting_columns
+    
     def _get_cell_data(self, app: Application, col: int, row: int) -> Any:
         """Get data for a specific cell."""
         try:
@@ -429,6 +463,8 @@ class ApplicationTableModel(QAbstractTableModel):
             return QColor("#fff3e0")  # Light orange
         elif validation.state == ValidationState.INCOMPLETE:
             return QColor("#f3e5f5")  # Light purple
+        elif validation.state == ValidationState.VALID_ESTIMATED:
+            return QColor("#fff9c4")  # Light yellow for estimated EIQ
         
         # Special case for EIQ column - show when calculation is missing
         if col == self._col_index("Field EIQ"):
@@ -438,22 +474,36 @@ class ApplicationTableModel(QAbstractTableModel):
         return None
     
     def _get_cell_tooltip(self, app: Application, col: int, row: int) -> str:
-        """Get tooltip for a cell."""
+        """Get tooltip for a cell with detailed validation information."""
         validation = self._validate_application(app, row)
         
-        if validation.message:
-            return validation.message
+        # Special handling for estimated EIQ applications
+        if validation.state == ValidationState.VALID_ESTIMATED:
+            return ("This application uses estimated EIQ because the product lacks "
+                   "active ingredient data. EIQ is calculated as the average of other "
+                   "valid applications in this scenario.")
         
-        # Special tooltips for specific columns
+        # Show primary message for most columns
+        if validation.issues:
+            primary_message = validation.primary_message
+            
+            # For status column, show all issues
+            if col == self._col_index("Status") and len(validation.issues) > 1:
+                all_messages = [issue.message for issue in validation.issues]
+                return "\n".join(all_messages)
+            
+            return primary_message
+        
+        # Special tooltips for specific columns when valid
         if col == self._col_index("Field EIQ"):
             if validation.can_calculate_eiq:
                 return "EIQ calculated from product database"
-            elif validation.state == ValidationState.INVALID_PRODUCT:
-                return "Cannot calculate EIQ: product not found in database"
+            elif validation.state == ValidationState.VALID:
+                return "Valid application but EIQ calculation requires additional product data"
             else:
-                return "Cannot calculate EIQ: missing required data"
+                return "Cannot calculate EIQ due to validation issues"
         
-        return ""
+        return "Application is valid"
     
     def _validate_application(self, app: Application, row: int) -> ValidationResult:
         """Validate an application and return detailed result."""
@@ -470,70 +520,149 @@ class ApplicationTableModel(QAbstractTableModel):
         return result
     
     def _perform_validation(self, app: Application) -> ValidationResult:
-        """Perform actual validation logic."""
-        # Check if product exists in database
-        if not app.product_name:
+        """
+        Perform comprehensive validation with proper state hierarchy.
+        
+        Validation order:
+        1. Check for missing required fields (INCOMPLETE)
+        2. Validate data ranges and formats (INVALID_DATA)  
+        3. Check product existence (INVALID_PRODUCT)
+        4. Confirm EIQ calculation capability (VALID)
+        """
+        issues = []
+        
+        # 1. INCOMPLETE STATE: Check for missing required fields
+        missing_fields = []
+        if not app.product_name or not app.product_name.strip():
+            missing_fields.append("product name")
+        if not app.rate or app.rate <= 0:
+            missing_fields.append("application rate")
+        if not app.rate_uom or not app.rate_uom.strip():
+            missing_fields.append("rate unit")
+        
+        if missing_fields:
+            issues.append(ValidationIssue(
+                field="required_fields",
+                message=f"Missing required fields: {', '.join(missing_fields)}",
+                severity="error"
+            ))
             return ValidationResult(
                 ValidationState.INCOMPLETE,
-                "Product name is required",
+                issues,
                 False
             )
         
-        product = self._find_product(app.product_name)
-        if not product:
-            return ValidationResult(
-                ValidationState.INVALID_PRODUCT,
-                f"Product '{app.product_name}' not found in database",
-                False
-            )
-        
-        # Check for invalid data
+        # 2. INVALID_DATA STATE: Validate data ranges and formats
         if app.rate is not None and app.rate < 0:
-            return ValidationResult(
-                ValidationState.INVALID_DATA,
-                "Rate cannot be negative",
-                False
-            )
+            issues.append(ValidationIssue(
+                field="rate",
+                message="Application rate cannot be negative",
+                severity="error"
+            ))
         
         if app.area is not None and app.area < 0:
+            issues.append(ValidationIssue(
+                field="area",
+                message="Application area cannot be negative", 
+                severity="error"
+            ))
+        
+        # Check for unreasonably high values that might be data entry errors
+        if app.rate is not None and app.rate > 10000:
+            issues.append(ValidationIssue(
+                field="rate",
+                message="Application rate seems unusually high - please verify",
+                severity="warning"
+            ))
+        
+        if issues:
             return ValidationResult(
                 ValidationState.INVALID_DATA,
-                "Area cannot be negative",
+                issues,
                 False
             )
         
+        # 3. INVALID_PRODUCT STATE: Check product existence
+        product = self._find_product(app.product_name)
+        if not product:
+            issues.append(ValidationIssue(
+                field="product_name",
+                message=f"Product '{app.product_name}' not found in database",
+                severity="error"
+            ))
+            return ValidationResult(
+                ValidationState.INVALID_PRODUCT,
+                issues,
+                False
+            )
+        
+        # 4. VALID STATE: All validations passed
         # Check if we can calculate EIQ
         can_calculate_eiq = (
-            app.product_name and
+            app.product_name and app.product_name.strip() and
             app.rate and app.rate > 0 and
-            app.rate_uom and
+            app.rate_uom and app.rate_uom.strip() and
             product is not None
         )
         
-        # Check for incomplete data
-        if not app.rate or not app.rate_uom:
+        # Check if product has AI data for EIQ calculation
+        has_ai_data = False
+        if product:
+            ai_data = product.get_ai_data()
+            has_ai_data = bool(ai_data)
+        
+        if can_calculate_eiq and has_ai_data:
+            issues.append(ValidationIssue(
+                field="status",
+                message="Application is valid and EIQ can be calculated",
+                severity="info"
+            ))
             return ValidationResult(
-                ValidationState.INCOMPLETE,
-                "Rate and rate unit are required for EIQ calculation",
+                ValidationState.VALID,
+                issues,
+                True
+            )
+        elif can_calculate_eiq and not has_ai_data:
+            # Valid but will use estimated EIQ
+            issues.append(ValidationIssue(
+                field="eiq",
+                message="Application is valid but uses estimated EIQ (product lacks AI data)",
+                severity="info"
+            ))
+            return ValidationResult(
+                ValidationState.VALID_ESTIMATED,
+                issues,
+                True  # Can calculate EIQ (using estimation)
+            )
+        else:
+            issues.append(ValidationIssue(
+                field="eiq",
+                message="Application is valid but EIQ calculation requires additional data",
+                severity="warning"
+            ))
+            return ValidationResult(
+                ValidationState.VALID,
+                issues,
                 False
             )
-        
-        # All good
-        return ValidationResult(
-            ValidationState.VALID,
-            "Application is valid",
-            can_calculate_eiq
-        )
     
     def _format_validation_status(self, validation: ValidationResult) -> str:
-        """Format validation status for display."""
+        """Format validation status for display with issue count."""
         status_map = {
             ValidationState.VALID: "✓ Valid",
-            ValidationState.INVALID_PRODUCT: "✗ Invalid Product",
+            ValidationState.VALID_ESTIMATED: "✓ Valid (Est.)",
+            ValidationState.INVALID_PRODUCT: "✗ Invalid Product", 
             ValidationState.INVALID_DATA: "⚠ Invalid Data",
             ValidationState.INCOMPLETE: "◯ Incomplete"
         }
-        return status_map.get(validation.state, "Unknown")
+        
+        base_status = status_map.get(validation.state, "Unknown")
+        
+        # Add issue count for non-valid states
+        if validation.state not in [ValidationState.VALID, ValidationState.VALID_ESTIMATED] and len(validation.issues) > 1:
+            base_status += f" ({len(validation.issues)} issues)"
+        
+        return base_status
     
     def _set_cell_data(self, app: Application, col: int, value: Any) -> bool:
         """Set data for a specific cell with validation."""
@@ -620,23 +749,62 @@ class ApplicationTableModel(QAbstractTableModel):
                 return
             
             ai_data = product.get_ai_data()
-            if not ai_data:
-                return
-            
-            # Calculate EIQ
-            field_eiq = eiq_calculator.calculate_product_field_eiq(
-                active_ingredients=ai_data,
-                application_rate=app.rate,
-                application_rate_uom=app.rate_uom,
-                applications=1,
-                user_preferences=self._user_preferences
-            )
-            
-            app.field_eiq = field_eiq
+            if ai_data:
+                # Calculate EIQ from product data
+                field_eiq = eiq_calculator.calculate_product_field_eiq(
+                    active_ingredients=ai_data,
+                    application_rate=app.rate,
+                    application_rate_uom=app.rate_uom,
+                    applications=1,
+                    user_preferences=self._user_preferences
+                )
+                app.field_eiq = field_eiq
+            else:
+                # Product lacks AI data - use average EIQ of other applications
+                avg_eiq = self._calculate_average_eiq_for_estimation()
+                app.field_eiq = avg_eiq
             
         except Exception as e:
             print(f"Error in _calculate_field_eiq(): {e}")
             app.field_eiq = 0.0
+    
+    def _calculate_average_eiq_for_estimation(self) -> float:
+        """Calculate average EIQ from applications that have valid EIQ calculations."""
+        try:
+            valid_eiq_values = []
+            
+            for app in self._applications:
+                if not app.product_name or not app.rate or not app.rate_uom:
+                    continue
+                
+                product = self._find_product(app.product_name)
+                if not product:
+                    continue
+                
+                ai_data = product.get_ai_data()
+                if ai_data:  # Only include applications with real AI data
+                    try:
+                        eiq = eiq_calculator.calculate_product_field_eiq(
+                            active_ingredients=ai_data,
+                            application_rate=app.rate,
+                            application_rate_uom=app.rate_uom,
+                            applications=1,
+                            user_preferences=self._user_preferences
+                        )
+                        if eiq > 0:
+                            valid_eiq_values.append(eiq)
+                    except Exception:
+                        continue
+            
+            if valid_eiq_values:
+                return sum(valid_eiq_values) / len(valid_eiq_values)
+            else:
+                # No valid EIQ values available, return a default
+                return 50.0  # Conservative default EIQ value
+                
+        except Exception as e:
+            print(f"Error calculating average EIQ: {e}")
+            return 50.0
     
     def _find_product(self, product_name: str):
         """Find a product by name in the filtered products list."""
