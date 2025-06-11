@@ -1,17 +1,23 @@
-"""Applications Table Widget for the Season Planner."""
+"""
+Applications Table Widget for the Season Planner.
+
+This version works with the simplified model and provides better user feedback
+and actions for handling validation issues.
+"""
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableView, QHeaderView, 
-    QAbstractItemView, QMessageBox
+    QAbstractItemView, QMessageBox, QLabel, QPushButton, QFrame,
+    QToolButton, QMenu
 )
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtGui import QShowEvent
+from PySide6.QtCore import Signal, Qt, QTimer
+from PySide6.QtGui import QShowEvent, QIcon
 from typing import List, Dict, Any
 import traceback
 
-from common import create_button, GENERIC_TABLE_STYLE, get_medium_font
+from common import create_button, GENERIC_TABLE_STYLE, get_medium_font, get_small_font
 from data import Application
-from ..models.application_table_model import ApplicationTableModel
+from ..models.application_table_model import ApplicationTableModel, ValidationState
 from ..delegates.date_delegate import DateDelegate
 from ..delegates.numeric_delegate import RateDelegate, AreaDelegate
 from ..delegates.method_delegate import MethodDelegate
@@ -21,8 +27,93 @@ from ..delegates.product_type_delegate import ProductTypeDelegate
 from ..delegates.reorder_delegate import ReorderDelegate
 
 
+class ValidationSummaryWidget(QWidget):
+    """Widget showing validation summary and action buttons."""
+    
+    fix_issues_requested = Signal()
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setup_ui()
+    
+    def setup_ui(self):
+        """Set up the validation summary UI."""
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(5, 5, 5, 5)
+        
+        # Status frame
+        status_frame = QFrame()
+        status_frame.setFrameStyle(QFrame.Box)
+        status_frame.setStyleSheet("""
+            QFrame {
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                background-color: #f8f9fa;
+                padding: 2px;
+            }
+        """)
+        
+        status_layout = QHBoxLayout(status_frame)
+        status_layout.setContentsMargins(8, 4, 8, 4)
+        
+        # Validation summary label
+        self.summary_label = QLabel("All applications valid")
+        self.summary_label.setFont(get_small_font())
+        status_layout.addWidget(self.summary_label)
+        
+        status_layout.addStretch()
+        
+        # Fix issues button
+        self.fix_button = QPushButton("Fix Issues")
+        self.fix_button.setVisible(False)
+        self.fix_button.clicked.connect(self.fix_issues_requested)
+        self.fix_button.setStyleSheet("""
+            QPushButton {
+                background-color: #ff6b35;
+                color: white;
+                border: none;
+                padding: 4px 12px;
+                border-radius: 3px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #e55a2b;
+            }
+        """)
+        status_layout.addWidget(self.fix_button)
+        
+        layout.addWidget(status_frame)
+    
+    def update_validation_summary(self, summary: dict):
+        """Update the validation summary display."""
+        valid_count = summary.get(ValidationState.VALID, 0)
+        invalid_product_count = summary.get(ValidationState.INVALID_PRODUCT, 0)
+        invalid_data_count = summary.get(ValidationState.INVALID_DATA, 0)
+        incomplete_count = summary.get(ValidationState.INCOMPLETE, 0)
+        
+        total_issues = invalid_product_count + invalid_data_count + incomplete_count
+        total_apps = sum(summary.values())
+        
+        if total_issues == 0:
+            self.summary_label.setText(f"✓ All {total_apps} applications valid")
+            self.summary_label.setStyleSheet("color: #28a745;")
+            self.fix_button.setVisible(False)
+        else:
+            issues_text = []
+            if invalid_product_count > 0:
+                issues_text.append(f"{invalid_product_count} invalid products")
+            if invalid_data_count > 0:
+                issues_text.append(f"{invalid_data_count} data errors")
+            if incomplete_count > 0:
+                issues_text.append(f"{incomplete_count} incomplete")
+            
+            self.summary_label.setText(f"⚠ {total_issues} issues: " + ", ".join(issues_text))
+            self.summary_label.setStyleSheet("color: #dc3545;")
+            self.fix_button.setVisible(True)
+
+
 class ApplicationsTableWidget(QWidget):
-    """Main applications table widget with Excel-like editing capabilities."""
+    """applications table widget with validation feedback and fix actions."""
     
     # Signals
     applications_changed = Signal()
@@ -42,6 +133,11 @@ class ApplicationsTableWidget(QWidget):
         
         # Setup UI
         self._setup_ui()
+        
+        # Timer for validation updates
+        self._validation_timer = QTimer()
+        self._validation_timer.setSingleShot(True)
+        self._validation_timer.timeout.connect(self._update_validation_display)
     
     def _connect_model_signals(self):
         """Connect model signals to local handlers."""
@@ -49,6 +145,7 @@ class ApplicationsTableWidget(QWidget):
         self.model.dataChanged.connect(self.applications_changed)
         self.model.rowsInserted.connect(self.applications_changed)
         self.model.rowsRemoved.connect(self.applications_changed)
+        self.model.validation_changed.connect(self._schedule_validation_update)
     
     def _create_delegates(self):
         """Create all delegate instances."""
@@ -72,6 +169,11 @@ class ApplicationsTableWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
+        
+        # Validation summary widget
+        self.validation_widget = ValidationSummaryWidget()
+        self.validation_widget.fix_issues_requested.connect(self._fix_issues)
+        layout.addWidget(self.validation_widget)
         
         # Create and configure table
         self.table_view = QTableView()
@@ -124,19 +226,30 @@ class ApplicationsTableWidget(QWidget):
         """Set initial column width policies."""
         header = self.table_view.horizontalHeader()
         
-        reorder_col = self.model._col_index("Reorder")
-        if self.model.columnCount() > reorder_col:
-            header.setSectionResizeMode(reorder_col, QHeaderView.Fixed)
-            header.resizeSection(reorder_col, 80)
+        # Fixed width columns
+        fixed_columns = {
+            "Reorder": 80,
+            "App #": 60,
+            "Rate": 80,
+            "Area": 80,
+            "Field EIQ": 90,
+            "Status": 120
+        }
         
         for col in range(self.model.columnCount()):
-            if col != reorder_col:
+            col_name = self.model.COLUMNS[col]
+            
+            if col_name in fixed_columns:
+                header.setSectionResizeMode(col, QHeaderView.Fixed)
+                header.resizeSection(col, fixed_columns[col_name])
+            else:
                 header.setSectionResizeMode(col, QHeaderView.Stretch)
     
     def _create_button_layout(self) -> QHBoxLayout:
         """Create the button layout."""
         layout = QHBoxLayout()
         
+        # Add application button
         self.add_button = create_button(
             text="Add Application",
             style="white",
@@ -144,12 +257,27 @@ class ApplicationsTableWidget(QWidget):
         )
         layout.addWidget(self.add_button)
         
+        # Remove selected button
         self.remove_button = create_button(
             text="Remove Selected",
             style="white",
             callback=self.remove_selected_application
         )
         layout.addWidget(self.remove_button)
+        
+        # Quick actions menu
+        self.actions_button = QToolButton()
+        self.actions_button.setText("Quick Actions")
+        self.actions_button.setPopupMode(QToolButton.InstantPopup)
+        
+        actions_menu = QMenu(self.actions_button)
+        actions_menu.addAction("Fix Selected Product", self._fix_selected_product)
+        actions_menu.addAction("Clear Invalid Applications", self._clear_invalid_applications)
+        actions_menu.addSeparator()
+        actions_menu.addAction("Recalculate All EIQ", self._recalculate_all_eiq)
+        
+        self.actions_button.setMenu(actions_menu)
+        layout.addWidget(self.actions_button)
         
         layout.addStretch()
         return layout
@@ -161,6 +289,7 @@ class ApplicationsTableWidget(QWidget):
         if not self._delegates_assigned:
             self._assign_delegates()
             self._delegates_assigned = True
+            self._update_validation_display()
     
     def _assign_delegates(self):
         """Assign delegates to table columns."""
@@ -183,6 +312,18 @@ class ApplicationsTableWidget(QWidget):
         except Exception as e:
             print(f"Error assigning delegates: {e}")
             traceback.print_exc()
+    
+    def _schedule_validation_update(self):
+        """Schedule a validation display update."""
+        self._validation_timer.start(100)  # 100ms delay to batch updates
+    
+    def _update_validation_display(self):
+        """Update the validation summary display."""
+        try:
+            summary = self.model.get_validation_summary()
+            self.validation_widget.update_validation_summary(summary)
+        except Exception as e:
+            print(f"Error updating validation display: {e}")
     
     def _move_up(self, row: int):
         """Handle move up action."""
@@ -225,22 +366,120 @@ class ApplicationsTableWidget(QWidget):
         )
         return reply == QMessageBox.Yes
     
+    # Action handlers
+    
+    def _fix_issues(self):
+        """Attempt to fix validation issues automatically."""
+        fixed_count = 0
+        applications = self.model.get_applications()
+        
+        for row in range(len(applications)):
+            if self.model.fix_product_at_row(row):
+                fixed_count += 1
+        
+        if fixed_count > 0:
+            self._show_message(
+                "Issues Fixed",
+                f"Fixed {fixed_count} product issues automatically."
+            )
+        else:
+            self._show_message(
+                "No Auto-fixes Available",
+                "No issues could be fixed automatically. You may need to manually correct products.",
+                "information"
+            )
+    
+    def _fix_selected_product(self):
+        """Fix the product issue in the selected row."""
+        selected_row = self._get_selected_row()
+        if selected_row == -1:
+            self._show_message(
+                "No Selection",
+                "Please select an application to fix.",
+                "warning"
+            )
+            return
+        
+        if self.model.fix_product_at_row(selected_row):
+            self._show_message(
+                "Product Fixed",
+                "Product issue fixed successfully."
+            )
+        else:
+            self._show_message(
+                "Cannot Fix",
+                "Could not automatically fix this product issue.",
+                "warning"
+            )
+    
+    def _clear_invalid_applications(self):
+        """Remove all applications with validation issues."""
+        summary = self.model.get_validation_summary()
+        invalid_count = (
+            summary.get(ValidationState.INVALID_PRODUCT, 0) +
+            summary.get(ValidationState.INVALID_DATA, 0)
+        )
+        
+        if invalid_count == 0:
+            self._show_message(
+                "No Invalid Applications",
+                "There are no invalid applications to remove."
+            )
+            return
+        
+        if not self._confirm_action(
+            "Remove Invalid Applications",
+            f"This will remove {invalid_count} applications with validation errors.\n\n"
+            f"Are you sure you want to continue?"
+        ):
+            return
+        
+        # Remove invalid applications (iterate backwards to maintain indices)
+        applications = self.model.get_applications()
+        for row in range(len(applications) - 1, -1, -1):
+            app = applications[row]
+            # Check if this application has validation issues
+            validation = self.model._validate_application(app, row)
+            if validation.state in [ValidationState.INVALID_PRODUCT, ValidationState.INVALID_DATA]:
+                self.model.remove_application(row)
+        
+        self._show_message(
+            "Invalid Applications Removed",
+            f"Removed {invalid_count} invalid applications."
+        )
+    
+    def _recalculate_all_eiq(self):
+        """Recalculate EIQ for all applications."""
+        self.model._recalculate_all_eiq()
+        self.model._clear_validation_cache()
+        
+        # Emit full table update
+        if self.model.rowCount() > 0:
+            top_left = self.model.index(0, 0)
+            bottom_right = self.model.index(
+                self.model.rowCount() - 1,
+                self.model.columnCount() - 1
+            )
+            self.model.dataChanged.emit(top_left, bottom_right)
+        
+        self._show_message(
+            "EIQ Recalculated",
+            "EIQ values have been recalculated for all applications."
+        )
+    
     # Public Interface
     
     def add_application(self) -> int:
         """Add a new application row."""
-        # Get the selected row to determine insertion position
         selected_row = self._get_selected_row()
         
-        # Insert after selected row, or at the end if no selection
         if selected_row >= 0:
             insert_position = selected_row + 1
         else:
-            insert_position = -1  # Will be set to end by model
+            insert_position = -1
         
         row = self.model.add_application(insert_position)
         if row >= 0:
-            # Scroll to new row but don't select it
             new_index = self.model.index(row, self.model._col_index("Date"))
             self.table_view.scrollTo(new_index, QAbstractItemView.EnsureVisible)
         return row
@@ -260,13 +499,11 @@ class ApplicationsTableWidget(QWidget):
             )
             return
         
-        # Get display name for confirmation
         product_name = self.model.data(
             self.model.index(selected_row, self.model._col_index("Product Name"))
         )
         display_name = product_name or "Empty row"
         
-        # Confirm removal
         if self._confirm_action(
             "Confirm Removal",
             f"Are you sure you want to remove this application?\n\n"
@@ -278,15 +515,10 @@ class ApplicationsTableWidget(QWidget):
     def get_applications(self) -> List[Application]:
         """Get all current applications."""
         return self.model.get_applications()
-
-    def get_applications_with_effective_eiq(self) -> List[Application]:
-        """Get applications with effective EIQ values (including estimated)."""
-        return self.model.get_applications_with_effective_eiq()
     
     def set_applications(self, applications: List[Application]):
         """Set the applications list."""
         try:
-            # Ensure we have Application objects
             app_objects = []
             for app in applications:
                 if hasattr(app, 'product_name'):
@@ -329,6 +561,7 @@ class ApplicationsTableWidget(QWidget):
             
             # Recalculate EIQ and refresh display
             self.model._recalculate_all_eiq()
+            self.model._clear_validation_cache()
             
             if self.model.rowCount() > 0:
                 top_left = self.model.index(0, 0)
@@ -341,31 +574,3 @@ class ApplicationsTableWidget(QWidget):
         except Exception as e:
             print(f"Error refreshing product data: {e}")
             traceback.print_exc()
-    
-    def is_delegates_ready(self) -> bool:
-        """Check if delegates have been properly assigned."""
-        return self._delegates_assigned
-    
-    def get_delegate_info(self) -> Dict[str, str]:
-        """Get information about assigned delegates for debugging."""
-        if not self._delegates_assigned:
-            return {"status": "Delegates not yet assigned"}
-        
-        info = {}
-        columns = [
-            ("reorder", "Reorder"),
-            ("date", "Date"),
-            ("rate", "Rate"),
-            ("area", "Area"),
-            ("product_type", "Product Type"),
-            ("method", "Method"),
-            ("product_name", "Product Name"),
-            ("rate_uom", "Rate UOM")
-        ]
-        
-        for name, col_name in columns:
-            col_index = self.model._col_index(col_name)
-            delegate = self.table_view.itemDelegateForColumn(col_index)
-            info[name] = delegate.__class__.__name__ if delegate else "No delegate assigned"
-        
-        return info

@@ -2,7 +2,6 @@
 Application parameters widgets for the LORENZO POZZI Pesticide App.
 
 This module provides widgets for entering application rate, units, and other parameters.
-Enhanced with automatic rate conversion when UOM changes.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QFormLayout, QLabel, QMessageBox
@@ -191,7 +190,7 @@ class ApplicationParamsWidget(QWidget):
         # Create content frame
         content_frame = ContentFrame()
         
-        # Application rate widget - Enhanced with conversion capability
+        # Application rate widget
         self._rate_widget = ApplicationRateWidget(style_config=self._style_config)
         self._rate_widget.value_changed.connect(self.params_changed)
         self._rate_widget._rate_spin.setFont(font)

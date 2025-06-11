@@ -1,5 +1,5 @@
 """
-Enhanced Product selection widgets for the LORENZO POZZI Pesticide App.
+Product selection widgets for the LORENZO POZZI Pesticide App.
 
 This module provides improved product search with ranking and better suggestion formatting.
 """
@@ -105,14 +105,14 @@ class RankedProductCompleter(QCompleter):
 
 class ProductSearchField(QWidget):
     """
-    Enhanced search field with ranked popup suggestions for product selection.
+    Search field with ranked popup suggestions for product selection.
     Uses the new "Product Name - Method" format and ranking system.
     """
     
     product_selected = Signal(str)  # Emits the product name (without method)
     
     def __init__(self, parent=None):
-        """Initialize the enhanced product search field."""
+        """Initialize the product search field."""
         super().__init__(parent)
         self.all_products = []
         self._setup_ui()
@@ -129,7 +129,7 @@ class ProductSearchField(QWidget):
         self.search_field.setFont(get_medium_font())
         layout.addWidget(self.search_field)
         
-        # Create and configure enhanced completer
+        # Create and configure completer
         self.completer = RankedProductCompleter(self)
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)
         self.completer.setCompletionMode(QCompleter.PopupCompletion)
@@ -275,12 +275,12 @@ class ProductTypeSelector(QComboBox):
 
 
 class ProductSelectionWidget(QWidget):
-    """Enhanced widget combining product type selection and ranked product search."""
+    """Widget combining product type selection and ranked product search."""
     
     product_selected = Signal(str)
     
     def __init__(self, parent=None, orientation='vertical', style_config=None, show_labels=True):
-        """Initialize the product selection widget with enhanced search capabilities."""
+        """Initialize the product selection widget with search capabilities."""
         super().__init__(parent)
         self._orientation = orientation
         self._style_config = style_config or {}
@@ -304,7 +304,7 @@ class ProductSelectionWidget(QWidget):
         type_font = get_small_font()
         self.type_selector.setFont(type_font)
         
-        # Enhanced product search field
+        # Product search field
         self.product_search = ProductSearchField(self)
         self.product_search.product_selected.connect(self._on_product_selected)
         self.product_search.search_field.setFont(type_font)
@@ -360,7 +360,7 @@ class ProductSelectionWidget(QWidget):
             parent_layout.addLayout(vertical_layout)
     
     def _update_product_list(self):
-        """Update the product list based on selected product type with enhanced filtering."""
+        """Update the product list based on selected product type with filtering."""
         try:
             products_repo = ProductRepository.get_instance()
             all_products = products_repo.get_filtered_products() or []
@@ -428,5 +428,5 @@ class ProductSelectionWidget(QWidget):
         except Exception as e:
             print(f"Warning: Could not set product type for {product_name}: {e}")
         
-        # Set the product name (the enhanced search field will handle formatting)
+        # Set the product name (the search field will handle formatting)
         self.product_search.text = product_name

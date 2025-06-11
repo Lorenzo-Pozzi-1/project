@@ -1,7 +1,7 @@
 """
 Excel parser for scenario import.
 
-Enhanced parser that validates product names against the application's product repository.
+Parser that validates product names against the application's product repository.
 """
 
 import os

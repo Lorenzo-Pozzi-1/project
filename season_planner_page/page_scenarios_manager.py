@@ -1,45 +1,63 @@
 """
 Scenarios Manager Page for the Season Planner.
-
-Main interface for managing multiple pesticide application scenarios
-using the new table-based interface.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QMessageBox, QInputDialog, QDialog, QTabBar
+from PySide6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, 
+    QMessageBox, QInputDialog, QDialog, QTabBar
+)
 from PySide6.QtCore import QCoreApplication, Signal
+from PySide6.QtGui import QFont
 
 from common import (
     ContentFrame, HeaderWithHomeButton, calculation_tracer, create_button, 
-    ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font
+    ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font, get_small_font
 )
 from season_planner_page.import_export.exporter import ExcelScenarioExporter
 from season_planner_page.tab_scenario import ScenarioTabPage
-from season_planner_page.import_export import ImportScenarioDialog
+from season_planner_page.import_export.import_dialog import ImportScenarioDialog
 from data import Scenario
 
 
 class CustomTabBar(QTabBar):
-    """Custom tab bar that emits a signal when double-clicked."""
+    """Custom tab bar that emits a signal when double-clicked and shows validation status."""
     
     tab_double_clicked = Signal(int)  # Signal emitted with the tab index
     
     def mouseDoubleClickEvent(self, event):
         """Handle double-click events on tabs."""
-        # Find which tab was double-clicked
         for i in range(self.count()):
             if self.tabRect(i).contains(event.pos()):
                 self.tab_double_clicked.emit(i)
                 break
         
-        # Call the parent implementation
         super().mouseDoubleClickEvent(event)
+    
+    def update_tab_validation_status(self, index: int, has_issues: bool):
+        """Update the visual appearance of a tab based on validation status."""
+        if index < 0 or index >= self.count():
+            return
+        
+        # Get the base tab text (without status indicators)
+        current_text = self.tabText(index)
+        base_text = current_text.replace(" ⚠", "").replace(" ✓", "")
+        
+        # Add appropriate status indicator
+        if has_issues:
+            new_text = f"{base_text} ⚠"
+            # Set warning color
+            self.setTabTextColor(index, self.palette().color(self.palette().ColorRole.BrightText))
+        else:
+            new_text = f"{base_text} ✓"
+            # Set normal color
+            self.setTabTextColor(index, self.palette().color(self.palette().ColorRole.Text))
+        
+        self.setTabText(index, new_text)
 
 
 class ScenariosManagerPage(QWidget):
     """
-    Container for multiple scenario tabs with management functionality.
-    
-    This page serves as the main interface for the Season Planner feature.
+    container for multiple scenario tabs with management functionality.
     """
     
     def __init__(self, parent=None):
@@ -56,7 +74,10 @@ class ScenariosManagerPage(QWidget):
         """Set up the UI components."""
         # Main layout
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(get_margin_large(), get_margin_large(), get_margin_large(), get_margin_large())
+        main_layout.setContentsMargins(
+            get_margin_large(), get_margin_large(), 
+            get_margin_large(), get_margin_large()
+        )
         main_layout.setSpacing(get_spacing_medium())
         
         # Header with back button and operation buttons
@@ -67,7 +88,7 @@ class ScenariosManagerPage(QWidget):
         buttons_frame = ContentFrame()
         buttons_layout = QHBoxLayout()
         
-        # Create buttons with fixed width (removed "Rename" button)
+        # Create buttons
         buttons = {
             "Import Scenario": ("white", self.import_scenario),
             "New Scenario": ("yellow", self.add_new_scenario),
@@ -114,7 +135,10 @@ class ScenariosManagerPage(QWidget):
         results_layout = QVBoxLayout()
 
         # Combined title with scenario info
-        self.scenario_info_title = QLabel("New Scenario: 0 applications | Field Use EIQ: 0.00", font=get_subtitle_font())
+        self.scenario_info_title = QLabel(
+            "New Scenario: 0 applications | Field Use EIQ: 0.00", 
+            font=get_subtitle_font()
+        )
         results_layout.addWidget(self.scenario_info_title)
 
         # Create score bar with custom thresholds and labels
@@ -127,7 +151,6 @@ class ScenariosManagerPage(QWidget):
     
     def _on_tab_double_clicked(self, tab_index):
         """Handle double-click on a tab to trigger rename."""
-        # Set the current tab and trigger rename
         self.tab_widget.setCurrentIndex(tab_index)
         self.rename_current_scenario()
     
@@ -150,7 +173,7 @@ class ScenariosManagerPage(QWidget):
             unique_name = self.generate_unique_name(base_name)
             scenario = Scenario(unique_name)
         else:
-            # Ensure cloned scenario has a unique name
+            # Ensure cloned/imported scenario has a unique name
             scenario.name = self.generate_unique_name(scenario.name)
         
         # Create tab page
@@ -167,6 +190,7 @@ class ScenariosManagerPage(QWidget):
         
         # Update UI state
         self.update_ui_state()
+        self.update_tab_validation_status(tab_index)
     
     def get_current_scenario_page(self):
         """Get the current scenario page and its index."""
@@ -213,7 +237,17 @@ class ScenariosManagerPage(QWidget):
                 
             # Valid name - update scenario
             scenario.name = new_name
-            self.tab_widget.setTabText(index, new_name)
+            
+            # Update tab text (preserve validation indicator)
+            current_tab_text = self.tab_widget.tabText(index)
+            has_indicator = " ⚠" in current_tab_text or " ✓" in current_tab_text
+            if has_indicator:
+                indicator = " ⚠" if " ⚠" in current_tab_text else " ✓"
+                self.tab_widget.setTabText(index, new_name + indicator)
+            else:
+                self.tab_widget.setTabText(index, new_name)
+            
+            # Update dictionary
             self.scenario_tabs[new_name] = self.scenario_tabs.pop(old_name)
             self.update_ui_state()
             break
@@ -230,7 +264,7 @@ class ScenariosManagerPage(QWidget):
         # Confirm deletion
         result = QMessageBox.question(
             self, "Confirm Deletion",
-            f"Are you sure you want to remove this scenario? '{scenario.name}'",
+            f"Are you sure you want to remove this scenario?\n\n'{scenario.name}'",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )
@@ -259,7 +293,7 @@ class ScenariosManagerPage(QWidget):
         for i in range(self.tab_widget.count()):
             page = self.tab_widget.widget(i)
             if page.get_scenario() is scenario:
-                old_name = self.tab_widget.tabText(i)
+                old_name = self.tab_widget.tabText(i).replace(" ⚠", "").replace(" ✓", "")
                 
                 # Validate name uniqueness if it has changed
                 if old_name != scenario.name:
@@ -273,20 +307,36 @@ class ScenariosManagerPage(QWidget):
                         # Revert the name
                         scenario.name = old_name
                     else:
-                        # Update tab text
-                        self.tab_widget.setTabText(i, scenario.name)
-                        
                         # Update dictionary if name changed
                         self.scenario_tabs[scenario.name] = page
                         del self.scenario_tabs[old_name]
                 
+                # Update validation status for this tab
+                self.update_tab_validation_status(i)
                 break
-                
+        
         self.update_ui_state()
+    
+    def update_tab_validation_status(self, tab_index: int):
+        """Update the validation status indicator for a specific tab."""
+        if tab_index < 0 or tab_index >= self.tab_widget.count():
+            return
+        
+        try:
+            page = self.tab_widget.widget(tab_index)
+            has_issues = page.has_validation_issues()
+            self.custom_tab_bar.update_tab_validation_status(tab_index, has_issues)
+        except Exception as e:
+            print(f"Error updating tab validation status: {e}")
+    
+    def update_all_tab_validation_status(self):
+        """Update validation status for all tabs."""
+        for i in range(self.tab_widget.count()):
+            self.update_tab_validation_status(i)
     
     def update_ui_state(self):
         """Update buttons state and EIQ display based on current state."""
-        # Update buttons state (removed "Rename" button from this logic)
+        # Update buttons state
         has_tabs = self.tab_widget.count() > 0
         
         self.action_buttons["Clone Current"].setEnabled(has_tabs)
@@ -298,15 +348,22 @@ class ScenariosManagerPage(QWidget):
             scenario_name = "No scenario selected"
             total_eiq = 0.0
             applications_count = 0
+            validation_status = ""
         else:
             scenario_name = page.get_scenario().name
             total_eiq = page.get_total_field_eiq()
-            applications = page.applications_table.get_applications()
-            applications_count = len(applications)
+            applications_count = page.get_applications_count()
+            
+            # Add validation status
+            if page.has_validation_issues():
+                validation_status = " (has issues)"
+            else:
+                validation_status = ""
         
         # Update combined title
         self.scenario_info_title.setText(
-            f"{scenario_name}: {applications_count} applications | Field Use EIQ: {total_eiq:.2f}"
+            f"{scenario_name}: {applications_count} applications | "
+            f"Field Use EIQ: {total_eiq:.2f}{validation_status}"
         )
         
         self.eiq_score_bar.set_value(
@@ -320,7 +377,7 @@ class ScenariosManagerPage(QWidget):
             self.parent.navigate_to_page(4)  # Navigate to the comparison page
 
     def import_scenario(self):
-        """Import scenario from external file."""
+        """Import scenario from external file using dialog."""
         dialog = ImportScenarioDialog(self)
         if dialog.exec() == QDialog.Accepted:
             imported_scenario = dialog.get_imported_scenario()
@@ -337,10 +394,13 @@ class ScenariosManagerPage(QWidget):
                 # Process any pending events to ensure UI is fully updated
                 QCoreApplication.processEvents()
                 
-                # Now show the success message
+                # Show success message with import summary
+                apps_count = len(imported_scenario.applications) if imported_scenario.applications else 0
                 QMessageBox.information(
                     self, "Import Successful",
-                    f"Scenario '{imported_scenario.name}' has been imported successfully."
+                    f"Scenario '{imported_scenario.name}' imported successfully!\n\n"
+                    f"Applications imported: {apps_count}\n"
+                    f"Ready for review and editing."
                 )
     
     def _remove_empty_placeholder_if_needed(self):
@@ -382,9 +442,12 @@ class ScenariosManagerPage(QWidget):
         """Refresh product data when filtered products change in the main window."""
         for tab_page in self.scenario_tabs.values():
             tab_page.refresh_product_data()
+        
+        # Update all validation statuses after refresh
+        self.update_all_tab_validation_status()
 
     def export(self):
-        """Export all scenarios to Excel file on desktop."""
+        """Export all scenarios to Excel file."""
         if not self.scenarios:
             QMessageBox.information(
                 self, "No Scenarios", 
@@ -405,7 +468,7 @@ class ScenariosManagerPage(QWidget):
             )
             return
         
-        # Import and use the exporter
+        # Export using the existing exporter
         try:
             exporter = ExcelScenarioExporter()
             exporter.export_scenarios(scenarios_to_export, self)

@@ -1,4 +1,4 @@
-"""Enhanced calculation tracer for production-ready logging."""
+"""calculation tracer for production-ready logging."""
 
 from PySide6.QtWidgets import QDialog, QTextEdit, QDialogButtonBox, QVBoxLayout
 from PySide6.QtGui import QTextCursor, Qt

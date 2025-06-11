@@ -1,5 +1,5 @@
 """
-Pure EIQ Calculation Functions (Layer 3) with Enhanced Logging
+Pure EIQ Calculation Functions (Layer 3).
 Only accepts standardized inputs, performs mathematical calculations only.
 No UOM handling - all inputs must be pre-standardized.
 """

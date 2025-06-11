@@ -2,7 +2,7 @@
 UOM Repository and Composite UOM System for the LORENZO POZZI Pesticide App.
 
 This module provides a compositional approach to unit of measure handling
-with enhanced concentration conversion capabilities for EIQ calculations.
+with concentration conversion capabilities for EIQ calculations.
 """
 
 import csv
@@ -78,7 +78,7 @@ class CompositeUOM:
         return False
 
 class UOMRepository:
-    """Repository for base units and composite UOM operations with enhanced EIQ capabilities."""
+    """Repository for base units and composite UOM operations with EIQ capabilities."""
     
     _instance = None
     
