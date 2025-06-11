@@ -1,7 +1,7 @@
 """
-Import Dialog with Interactive Product Mapping
+Updated Import Dialog to use the Fixed Excel Parser
 
-Updated version with simplified interface using ProductSelectionWidget.
+Simple update to the import dialog with corrected preview format detection
 """
 
 import os
@@ -14,27 +14,26 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from common.styles import get_medium_font, get_subtitle_font
 from common.widgets.product_selection import ProductSearchField
-from .excel_parser import ExcelScenarioParser
+from .excel_parser import ExcelScenarioParser  # Use the fixed parser
 from data import ProductRepository
 
 
 class ProductMappingWidget(QWidget):
     """Widget for mapping unmatched products to database products."""
     
-    products_mapped = Signal()  # Emitted when mapping changes
+    products_mapped = Signal()
     
     def __init__(self, unmatched_products, available_products, parent=None):
         super().__init__(parent)
         self.unmatched_products = unmatched_products
         self.available_products = available_products
-        self.product_mappings = {}  # excel_name -> (action, db_product)
+        self.product_mappings = {}
         self.setup_ui()
         
     def setup_ui(self):
         """Set up the product mapping interface."""
         layout = QVBoxLayout(self)
         
-        # Instructions
         instructions = QLabel(
             "Some products from your Excel file don't match our database. "
             "Choose how to handle each unmatched product:"
@@ -43,7 +42,6 @@ class ProductMappingWidget(QWidget):
         instructions.setFont(get_medium_font())
         layout.addWidget(instructions)
         
-        # Mapping table
         self.table = QTableWidget()
         self.table.setColumnCount(3)
         self.table.setHorizontalHeaderLabels([
@@ -52,11 +50,10 @@ class ProductMappingWidget(QWidget):
             "Map to Database Product"
         ])
         
-        # Configure table
         header = self.table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.Stretch)  # Excel name
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)  # Action
-        header.setSectionResizeMode(2, QHeaderView.Stretch)  # Database product
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(2, QHeaderView.Stretch)
         
         self.table.setRowCount(len(self.unmatched_products))
         self.populate_table()
@@ -65,7 +62,6 @@ class ProductMappingWidget(QWidget):
     
     def populate_table(self):
         """Populate the mapping table with unmatched products."""
-        # Get available products for the search field
         products_repo = ProductRepository.get_instance()
         all_products = products_repo.get_filtered_products()
         
@@ -78,7 +74,7 @@ class ProductMappingWidget(QWidget):
             # Action selector
             action_combo = QComboBox()
             action_combo.addItems(["Import as-is", "Map to existing", "Skip"])
-            action_combo.setCurrentText("Import as-is")  # Default to Import as-is
+            action_combo.setCurrentText("Import as-is")
             action_combo.currentTextChanged.connect(
                 lambda text, r=row: self.on_action_changed(r, text)
             )
@@ -86,8 +82,8 @@ class ProductMappingWidget(QWidget):
             
             # Database product selector using ProductSearchField
             product_widget = ProductSearchField()
-            product_widget.set_products(all_products)  # Set available products
-            product_widget.setEnabled(False)  # Disabled until "Map to existing" is selected
+            product_widget.set_products(all_products)
+            product_widget.setEnabled(False)
             product_widget.product_selected.connect(
                 lambda product_name, r=row: self.on_product_selected(r, product_name)
             )
@@ -103,10 +99,8 @@ class ProductMappingWidget(QWidget):
         
         if action == "Map to existing":
             product_widget.setEnabled(True)
-            # Try to suggest a similar product
             suggestion = self.find_similar_product(excel_product)
             if suggestion:
-                # Find the proper display format for this product
                 suggestion_display = f"{suggestion.product_name} - {suggestion.application_method or 'General'}"
                 product_widget.text = suggestion_display
         else:
@@ -121,7 +115,6 @@ class ProductMappingWidget(QWidget):
         elif action == "Map to existing":
             display_text = product_widget.text
             if display_text:
-                # Get the actual product object from the display text
                 db_product = product_widget.completer.get_product_from_display(display_text)
                 self.product_mappings[excel_product] = ("map", db_product)
             else:
@@ -137,7 +130,6 @@ class ProductMappingWidget(QWidget):
         excel_product = self.unmatched_products[row]
         product_widget = self.table.cellWidget(row, 2)
         
-        # Get the actual product object from the current display text
         display_text = product_widget.text
         if display_text:
             db_product = product_widget.completer.get_product_from_display(display_text)
@@ -164,7 +156,7 @@ class ProductMappingWidget(QWidget):
             db_words = set(product.product_name.lower().split())
             overlap = len(excel_words.intersection(db_words))
             
-            if overlap > best_score and overlap >= 2:  # At least 2 words in common
+            if overlap > best_score and overlap >= 2:
                 best_score = overlap
                 best_match = product
         
@@ -190,15 +182,16 @@ class ProductMappingWidget(QWidget):
 
 
 class ImportScenarioDialog(QDialog):
-    """Import dialog with interactive product mapping."""
+    """Updated import dialog with enhanced Excel parser support."""
     
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
         self.imported_scenario = None
-        self.raw_scenario = None  # Scenario before product filtering
+        self.raw_scenario = None
         self.product_validation = None
         self.mapping_widget = None
+        self.detected_format = "unknown"  # Track detected format
         
         self.setWindowTitle("Import Scenario from Excel")
         self.setModal(True)
@@ -227,7 +220,7 @@ class ImportScenarioDialog(QDialog):
         # Tab 2: Product Mapping (initially hidden)
         self.mapping_tab = QWidget()
         self.tab_widget.addTab(self.mapping_tab, "2. Correct Issues")
-        self.tab_widget.setTabEnabled(1, False)  # Disabled until file is loaded
+        self.tab_widget.setTabEnabled(1, False)
         
         # Buttons
         button_box = QDialogButtonBox(
@@ -246,10 +239,12 @@ class ImportScenarioDialog(QDialog):
         """Set up the file selection tab."""
         layout = QVBoxLayout(self.file_tab)
         
-        # Instructions
+        # Instructions - updated to mention round-trip support
         instructions = QLabel(
-            "Select an Excel file (.xlsx) containing pesticide application data.\n"
-            "The file should have headers followed by application records."
+            "Select an Excel file (.xlsx) containing pesticide application data.\n\n"
+            "Supported formats:\n"
+            "• Files exported by this application (round-trip import)\n"
+            "• Excel files exported from GXCore > Pesticide report > Farm Assurance Application Report\n" 
         )
         instructions.setFont(get_medium_font())
         instructions.setWordWrap(True)
@@ -291,8 +286,9 @@ class ImportScenarioDialog(QDialog):
             self.parse_file(file_path)
     
     def parse_file(self, file_path):
-        """Parse the selected Excel file and handle product validation."""
+        """Parse the selected Excel file using the enhanced parser."""
         try:
+            # Use the enhanced parser that supports both formats
             parser = ExcelScenarioParser()
             scenario, preview_info = parser.parse_file(file_path)
             
@@ -305,6 +301,13 @@ class ImportScenarioDialog(QDialog):
             
             self.raw_scenario = scenario
             self.product_validation = preview_info.get('product_validation', {})
+            
+            # Determine format type based on headers
+            headers = preview_info.get('headers', [])
+            if "App #" in headers and "Field EIQ" in headers:
+                self.detected_format = "exported"
+            else:
+                self.detected_format = "external"
             
             # Show preview
             self.show_preview(preview_info)
@@ -323,7 +326,7 @@ class ImportScenarioDialog(QDialog):
                     f"Found {unmatched_count} unmatched products.\n\n"
                     f"Please go to the 'Correct Issues' tab to resolve these before importing."
                 )
-                self.tab_widget.setCurrentIndex(1)  # Switch to mapping tab
+                self.tab_widget.setCurrentIndex(1)
             else:
                 # All products matched - ready to import
                 self.imported_scenario = scenario
@@ -341,25 +344,21 @@ class ImportScenarioDialog(QDialog):
     
     def setup_mapping_tab(self):
         """Set up the product mapping tab."""
-        # Clear existing layout
         if self.mapping_tab.layout():
             QWidget().setLayout(self.mapping_tab.layout())
         
         layout = QVBoxLayout(self.mapping_tab)
         
-        # Get unmatched products and available products
         unmatched_products = self.product_validation.get('unmatched_list', [])
         products_repo = ProductRepository.get_instance()
         available_products = products_repo.get_filtered_products()
         
-        # Create mapping widget
         self.mapping_widget = ProductMappingWidget(
             unmatched_products, available_products, self
         )
         self.mapping_widget.products_mapped.connect(self.on_products_mapped)
         layout.addWidget(self.mapping_widget)
         
-        # Summary section
         separator = QFrame()
         separator.setFrameShape(QFrame.HLine)
         layout.addWidget(separator)
@@ -368,7 +367,6 @@ class ImportScenarioDialog(QDialog):
         self.mapping_summary_label.setFont(get_medium_font())
         layout.addWidget(self.mapping_summary_label)
         
-        # Update initial summary
         self.update_mapping_summary()
         self.update_import_readiness()
     
@@ -401,7 +399,6 @@ class ImportScenarioDialog(QDialog):
             
         summary = self.mapping_widget.get_mapping_summary()
         
-        # Import is ready if we have some valid action for each product
         total_actions = len(summary["map"]) + len(summary["import_unmatched"]) + len(summary["skip"])
         total_unmatched = len(self.product_validation.get('unmatched_list', []))
         
@@ -409,7 +406,6 @@ class ImportScenarioDialog(QDialog):
         self.ok_button.setEnabled(ready)
         
         if ready:
-            # Create the final scenario with mappings applied
             self.apply_product_mappings()
     
     def apply_product_mappings(self):
@@ -417,7 +413,6 @@ class ImportScenarioDialog(QDialog):
         if not self.raw_scenario or not self.mapping_widget:
             return
             
-        # Start with a copy of the raw scenario
         final_scenario = self.raw_scenario.clone()
         final_applications = []
         
@@ -426,14 +421,12 @@ class ImportScenarioDialog(QDialog):
         for app in self.raw_scenario.applications:
             excel_product_name = app.product_name
             
-            # Check if this product needs mapping
             mapping_action = None
             mapped_product = None
             
             for excel_name, db_product_name in mapping_summary["map"]:
                 if excel_name == excel_product_name:
                     mapping_action = "map"
-                    # Find the actual product object
                     products_repo = ProductRepository.get_instance()
                     available_products = products_repo.get_filtered_products()
                     mapped_product = next((p for p in available_products 
@@ -445,32 +438,34 @@ class ImportScenarioDialog(QDialog):
             elif excel_product_name in mapping_summary["import_unmatched"]:
                 mapping_action = "import_unmatched"
             
-            # Apply the mapping
             if mapping_action == "skip":
-                # Don't include this application
                 continue
             elif mapping_action == "map" and mapped_product:
-                # Replace with mapped product data
                 app.product_name = mapped_product.product_name
                 app.product_type = mapped_product.product_type
-                # Keep original rate/uom but let the system recalculate EIQ
                 final_applications.append(app)
             elif mapping_action == "import_unmatched":
-                # Keep as-is (will show validation errors in UI)
                 final_applications.append(app)
             else:
-                # Matched product - keep as-is
                 final_applications.append(app)
         
         final_scenario.applications = final_applications
         self.imported_scenario = final_scenario
     
     def show_preview(self, preview_info):
-        """Show preview of parsed data."""
+        """Show preview of parsed data with correct format detection."""
         matched = self.product_validation.get('matched_products', 0)
         unmatched = self.product_validation.get('unmatched_products', 0)
         
+        # Show correct format type
+        if self.detected_format == "exported":
+            format_info = "Format: Exported by this application (round-trip)"
+        else:
+            format_info = "Format: External Excel file"
+        
         preview_text = f"""File parsed successfully!
+
+{format_info}
 
 Scenario Metadata:
 ━━━━━━━━━━━━━━━━━━━━
