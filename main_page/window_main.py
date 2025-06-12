@@ -15,6 +15,8 @@ from products_page import ProductsPage
 from eiq_calculator_page import EiqCalculatorPage
 from season_planner_page import ScenariosManagerPage
 
+from main_page.help_overlay import add_help_button_to_main_window
+
 class MainWindow(QMainWindow):
     """
     Main application window that manages all pages.
@@ -116,6 +118,9 @@ class MainWindow(QMainWindow):
         self.home_page.region_changed.connect(self.on_region_changed)
         self.home_page.preferences_changed.connect(self.apply_config_preferences)
         
+        # Add help overlay system
+        self.help_button, self.help_overlay = add_help_button_to_main_window(self)
+
         # Start with the home page
         self.stacked_widget.setCurrentIndex(0)
 
