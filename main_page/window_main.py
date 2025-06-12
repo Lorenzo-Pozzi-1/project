@@ -18,7 +18,7 @@ from products_page import ProductsPage
 from eiq_calculator_page import EiqCalculatorPage
 from season_planner_page import ScenariosManagerPage
 from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage
-from help.help_overlay import create_help_dialog
+from help.user_manual_dialog import create_user_manual_dialog
 
 
 class MainWindow(QMainWindow):
@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.config = config or {}
         self.trace_dialog = None
+        self.user_manual_dialog = None  # Add user manual dialog reference
         self.updating_products = False
         self.selected_country = None
         self.selected_region = None
@@ -103,18 +104,18 @@ class MainWindow(QMainWindow):
         yellow_bar_layout = QHBoxLayout(self.yellow_bar)
         yellow_bar_layout.setContentsMargins(10, 2, 10, 2)
 
-        # Create the help dialog
-        self.help_dialog = create_help_dialog(self)
+        # Create the user manual dialog and button
+        self.user_manual_dialog = create_user_manual_dialog(self)
         
-        # Connect the button to show help for current page
-        def show_help():
-            current_page = self.stacked_widget.currentIndex()
-            self.help_dialog.show_help_for_page(current_page)
-
-        # Add help button (left corner) using common button creation
-        self.help_button = create_button(text="?",style="tiny",callback=show_help,parent=self.yellow_bar)
-        self.help_button.setToolTip("Show help")
-        yellow_bar_layout.addWidget(self.help_button)
+        # Add user manual button (left corner)
+        self.manual_button = create_button(
+            text="📖", 
+            style="tiny", 
+            callback=self.show_user_manual,
+            parent=self.yellow_bar
+        )
+        self.manual_button.setToolTip("Open User Manual")
+        yellow_bar_layout.addWidget(self.manual_button)
 
         # Add author information
         author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")
@@ -130,8 +131,15 @@ class MainWindow(QMainWindow):
         )
         feedback_label.setOpenExternalLinks(True)
         feedback_label.setAlignment(Qt.AlignCenter)
-        feedback_label.setToolTip("Click to give an answer")
+        feedback_label.setToolTip("Click to give feedback")
         yellow_bar_layout.addWidget(feedback_label)
+
+    def show_user_manual(self):
+        """Show the user manual dialog."""
+        if self.user_manual_dialog is not None:
+            self.user_manual_dialog.show()
+            self.user_manual_dialog.raise_()
+            self.user_manual_dialog.activateWindow()
 
     def connect_signals(self):
         """Connect all signals to their respective handlers."""

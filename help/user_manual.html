@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesticides App - User Manual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Century Gothic', 'Red Hat Display Black', sans-serif;
+            line-height: 1.6;
+            color: #434043; /* Dark Grey */
+            background: #D9D9E4; /* Light Grey */
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Navigation Sidebar */
+        .nav-sidebar {
+            width: 280px;
+            background: #434043; /* Dark Grey */
+            color: #ffffff; /* White */
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #fee000; /* McCain Yellow */
+        }
+
+        .nav-link {
+            display: block;
+            padding: 8px 12px;
+            color: #D9D9E4; /* Light Grey */
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+        }
+
+        .nav-link:hover {
+            background: rgba(201, 191, 176, 0.2); /* Beige with transparency */
+            color: #C9BFB0; /* Beige */
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: #C9BFB0; /* Beige */
+            color: #434043; /* Dark Grey */
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            background: #ffffff; /* White */
+            min-height: 100vh;
+        }
+
+        .section {
+            display: none; /* Hide all sections by default */
+        }
+
+        .section.active {
+            display: block; /* Show only the active section */
+        }
+
+        .section h1 {
+            color: #434043; /* Dark Grey */
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #fee000; /* McCain Yellow */
+        }
+
+        .section h1 span {
+            color: #fee000; /* McCain Yellow */
+        }
+
+        .section h2 {
+            color: #434043; /* Dark Grey */
+            font-size: 1.6em;
+            margin: 30px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #fee000; /* McCain Yellow */
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7); /* Beige tones */
+            border-left: 4px solid #fee000; /* McCain Yellow */
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box strong {
+            color: #ec3400; /* Red */
+        }
+
+        .feature-card {
+            background: #f8f9fa; /* Light Grey */
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef; /* Light Grey border */
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h4 {
+            color: #434043; /* Dark Grey */
+            margin-bottom: 10px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #fee000; /* McCain Yellow */
+            color: #434043; /* Dark Grey */
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .warning {
+            background: #fee; /* Light Red */
+            border: 1px solid #f5c6cb; /* Light Red border */
+            color: #ec3400; /* Red */
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .warning::before {
+            content: "⚠️ ";
+            font-weight: bold;
+        }
+
+        .image-placeholder {
+            background: #D9D9E4; /* Light Grey */
+            border: 2px dashed #434043; /* Dark Grey */
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #7f8c8d; /* Grey */
+            font-style: italic;
+        }
+
+        /* McCain Yellow Bar */
+        .footer-bar {
+            background: #fee000; /* McCain Yellow */
+            height: 20px;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Sidebar -->
+        <nav class="nav-sidebar">
+            <div class="nav-title">📖 User Manual</div>
+            
+            <div class="nav-section">
+                <a href="#home" class="nav-link active">Home Page</a>
+                <a href="#products" class="nav-link">Product List & Comparison</a>
+                <a href="#calculator" class="nav-link">EIQ Calculator</a>
+                <a href="#planner" class="nav-link">Season Planner</a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Home Section -->
+            <section id="home" class="section active">
+                <h1>🏠 Home Page<span>.</span></h1>
+                
+                <div class="image-placeholder">
+                    [Home Page Screenshot]
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🌍 Preferences Row</h4>
+                        <p>Set your preferences - they will be maintained between sessions and will be used to provide you the correct information for your region, and to calculate the doses of pesticides applied as seed treatments or as amount/length of row.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>🧭 Navigation Buttons</h4>
+                        <p>Use them to navigate to the main features!</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>📊 EIQ Info Material</h4>
+                        <p>A concise explanation of EIQ scores, and a link to Cornell's website to find out more about them.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>📖 Help button</h4>
+                        <p>Open the user manual, but I guess you already found this out :)</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>🔗 Give Feedback or Report Problems</h4>
+                        <p>Access the forms to give feedback or report problems that you might encounter.</p>
+                    </div>
+                </div>
+                
+                <div class="highlight-box">
+                    <strong>Note:</strong> Depending on your screen size, the aspect may differ slightly, but all the elements remain the same. This application is meant to aide in selecting control products and drafting plans. It does not replace nor exempt from consultation with a professional.
+                </div>
+            </section>
+
+            <!-- Products Section -->
+            <section id="products" class="section">
+                <h1>📦 Product List and Comparison<span>.</span></h1>
+                
+                <div class="image-placeholder">
+                    [Products Page Screenshot - shows product table with search and comparison features]
+                </div>
+                
+                <h2>Products List Tab</h2>
+                <p>The Products List provides a comprehensive view of all pesticides available in your region. Key features include:</p>
+                
+                <ul>
+                    <li><strong>Search functionality:</strong> Filter products by name or active ingredient</li>
+                    <li><strong>Sortable columns:</strong> Click any column header to sort data</li>
+                    <li><strong>Detailed information:</strong> Double-click any row for complete product details</li>
+                    <li><strong>Regional filtering:</strong> Products automatically filtered based on your location settings</li>
+                </ul>
+                
+                <h2>Products Comparison Tab</h2>
+                <p>Compare multiple products side-by-side to make informed decisions:</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🔍 Selection Tools</h4>
+                        <p>Easily select multiple products for direct comparison of key characteristics.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>📊 EIQ Comparison</h4>
+                        <p>Compare environmental impact scores across selected products.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>💰 Cost Analysis</h4>
+                        <p>Evaluate cost-effectiveness of different treatment options.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>📋 Application Rates</h4>
+                        <p>Compare recommended application rates and timing requirements.</p>
+                    </div>
+                </div>
+                
+                <div class="highlight-box">
+                    <strong>Navigation Tip:</strong> Use the search box to quickly find specific products or active ingredients. Double-clicking a product row opens detailed fact sheets with comprehensive application information.
+                </div>
+            </section>
+
+            <!-- Calculator Section -->
+            <section id="calculator" class="section">
+                <h1>🧮 EIQ Calculator<span>.</span></h1>
+                
+                <div class="image-placeholder">
+                    [EIQ Calculator Screenshot - shows single and multiple product calculation interfaces]
+                </div>
+                
+                <h2>Single Product Calculator</h2>
+                <p>Calculate detailed Environmental Impact Quotients for individual applications:</p>
+                
+                <ol>
+                    <li><strong>Product Selection:</strong> Choose a pesticide from the filtered dropdown menu</li>
+                    <li><strong>Application Rate:</strong> Enter your planned application rate</li>
+                    <li><strong>Application Area:</strong> Specify the treatment area</li>
+                    <li><strong>Results Analysis:</strong> Review calculated Field Use EIQ and impact breakdown</li>
+                </ol>
+                
+                <h3>Understanding EIQ Results</h3>
+                <p>The calculator provides three key risk categories:</p>
+                
+                <ul>
+                    <li><strong>Farm Worker Risk:</strong> Potential exposure risks for applicators and field workers</li>
+                    <li><strong>Consumer Risk:</strong> Food safety considerations for end consumers</li>
+                    <li><strong>Ecological Risk:</strong> Environmental impact on beneficial organisms and ecosystems</li>
+                </ul>
+                
+                <h2>Multiple Products Calculator</h2>
+                <p>Compare EIQ values across multiple products with simplified interface for quick comparisons. This tool is ideal for:</p>
+                
+                <ul>
+                    <li>Rapid comparison of treatment alternatives</li>
+                    <li>Identifying lower-impact options</li>
+                    <li>Supporting sustainable pest management decisions</li>
+                </ul>
+                
+                <div class="highlight-box">
+                    <strong>Remember:</strong> Field Use EIQ = Active Ingredient EIQ × AI Concentration × Application Rate. Higher scores indicate greater environmental impact.
+                </div>
+            </section>
+
+            <!-- Season Planner Section -->
+            <section id="planner" class="section">
+                <h1>📅 Season Planner<span>.</span></h1>
+                
+                <div class="image-placeholder">
+                    [Season Planner Screenshot - shows scenario management and application planning interface]
+                </div>
+                
+                <h2>Creating Treatment Scenarios</h2>
+                <p>The Season Planner allows you to create comprehensive treatment plans for entire growing seasons:</p>
+                
+                <h3><span class="step-number">1</span>Scenario Management</h3>
+                <ul>
+                    <li>Create new scenarios for different fields or treatment strategies</li>
+                    <li>Load and modify existing scenarios from previous seasons</li>
+                    <li>Save scenarios with descriptive names for easy identification</li>
+                </ul>
+                
+                <h3><span class="step-number">2</span>Adding Applications</h3>
+                <ol>
+                    <li>Click "Add Row" to add a new pesticide application</li>
+                    <li>Select the product from the dropdown menu</li>
+                    <li>Enter application rate and timing</li>
+                    <li>Specify target area and application method</li>
+                </ol>
+                
+                <h3><span class="step-number">3</span>EIQ Analysis</h3>
+                <p>View cumulative environmental impact across all planned applications:</p>
+                <ul>
+                    <li>Total seasonal EIQ scores</li>
+                    <li>Individual application contributions</li>
+                    <li>Risk category breakdowns</li>
+                </ul>
+                
+                <h2>Importing Scenarios</h2>
+                <div class="image-placeholder">
+                    [Import Scenario Screenshots - shows step-by-step import process]
+                </div>
+                
+                <p>Import scenarios from previous years or external sources:</p>
+                
+                <ol>
+                    <li>Navigate to the import function</li>
+                    <li>Select your source file or scenario</li>
+                    <li>Review and modify imported data as needed</li>
+                    <li>Save the imported scenario with a new name</li>
+                </ol>
+                
+                <div class="highlight-box">
+                    <strong>Best Practice:</strong> Create multiple scenarios to compare different treatment strategies. This helps optimize both pest control effectiveness and environmental impact.
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- McCain Yellow Bar -->
+    <div class="footer-bar"></div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links and sections
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
