@@ -154,21 +154,7 @@ def add_help_button_to_main_window(main_window):
     
     # Create help button
     help_button = QPushButton("?")
-    help_button.setStyleSheet("""
-        QPushButton {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 15px;
-            width: 30px;
-            height: 30px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        QPushButton:hover {
-            background-color: #2980b9;
-        }
-    """)
+    help_button.setStyleSheet(get_help_button_style())
     help_button.setToolTip("Show help for this page")
     
     # Create the dialog (but don't show it yet)
@@ -186,3 +172,25 @@ def add_help_button_to_main_window(main_window):
     yellow_bar_layout.insertWidget(0, help_button)
     
     return help_button, help_dialog
+
+def create_help_dialog(main_window):
+    """Create and return a help dialog for the main window."""
+    return HelpDialog(main_window)
+
+def get_help_button_style():
+    """Return the CSS style for the help button."""
+    return """
+        QPushButton {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            width: 30px;
+            height: 30px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        QPushButton:hover {
+            background-color: #2980b9;
+        }
+    """

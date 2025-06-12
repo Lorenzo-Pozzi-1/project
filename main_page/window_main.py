@@ -5,17 +5,21 @@ This module defines the MainWindow class which serves as the container
 for all pages in the application.
 """
 
-import os, shutil
+import os
+import shutil
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QFrame, QWidget, QLabel
 from PySide6.QtCore import Signal, Qt
+
 from common import CalculationTraceDialog, load_config, YELLOW_BAR_STYLE
+from common.widgets import create_button
 from data import ProductRepository
 from main_page.page_home import HomePage
 from products_page import ProductsPage
 from eiq_calculator_page import EiqCalculatorPage
 from season_planner_page import ScenariosManagerPage
+from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage
+from help.help_overlay import create_help_dialog
 
-from main_page.help_overlay import add_help_button_to_main_window
 
 class MainWindow(QMainWindow):
     """
@@ -25,21 +29,24 @@ class MainWindow(QMainWindow):
     of the application.
     """
 
-    filters_changed = Signal() # Signal to notify when filters change
+    filters_changed = Signal()  # Signal to notify when filters change
 
     def __init__(self, config=None):
         """Initialize the main window and configuration."""
-        
         super().__init__()
-        self.config = config or {}        
+        self.config = config or {}
+        self.trace_dialog = None
+        self.updating_products = False
+        self.selected_country = None
+        self.selected_region = None
+        
         self.setup_window()
         self.init_ui()
+        self.connect_signals()
         self.apply_config_preferences()
-        self.trace_dialog = None
         
     def setup_window(self):
         """Set up the window properties."""
-        
         self.setWindowTitle("Pesticide App - Internship project of Lorenzo Pozzi")
         self.setMinimumSize(900, 700)
         self.showMaximized()
@@ -59,6 +66,16 @@ class MainWindow(QMainWindow):
         self.stacked_widget = QStackedWidget()
         main_layout.addWidget(self.stacked_widget)
         
+        self._create_pages()
+        self._create_yellow_bar()
+        
+        main_layout.addWidget(self.yellow_bar)
+        
+        # Start with the home page
+        self.stacked_widget.setCurrentIndex(0)
+
+    def _create_pages(self):
+        """Create and add all pages to the stacked widget."""
         # Create and add the home page (index 0)
         self.home_page = HomePage(self)
         self.stacked_widget.addWidget(self.home_page)
@@ -75,24 +92,29 @@ class MainWindow(QMainWindow):
         self.eiq_calculator_page = EiqCalculatorPage(self)
         self.stacked_widget.addWidget(self.eiq_calculator_page)
 
-        # Create and add the scenarios comparison picture placeholder (index 4) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage # ~~~~~~~~~~~~~~~~~
-        self.scenarios_comparison_page = ScenariosComparisonPage(self) # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.stacked_widget.addWidget(self.scenarios_comparison_page) # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
-        # Add yellow bar at the bottom with tracer button and author info
-        self.yellow_bar = QFrame()  # Bar
+        # Create and add the scenarios comparison page (index 4)
+        self.scenarios_comparison_page = ScenariosComparisonPage(self)
+        self.stacked_widget.addWidget(self.scenarios_comparison_page)
+
+    def _create_yellow_bar(self):
+        """Create the yellow bar at the bottom with author info and feedback link."""
+        self.yellow_bar = QFrame()
         self.yellow_bar.setStyleSheet(YELLOW_BAR_STYLE)
         yellow_bar_layout = QHBoxLayout(self.yellow_bar)
         yellow_bar_layout.setContentsMargins(10, 2, 10, 2)
 
-        # # Add tracer button (left corner)
-        # self.trace_button = create_button(text="</>", style="tiny", callback=self.show_calculation_trace)
-        # self.trace_button.setToolTip("Show calculation trace")
-        # self.trace_button.clicked.connect(self.show_calculation_trace)
-        # yellow_bar_layout.addWidget(self.trace_button)
+        # Create the help dialog
+        self.help_dialog = create_help_dialog(self)
+        
+        # Connect the button to show help for current page
+        def show_help():
+            current_page = self.stacked_widget.currentIndex()
+            self.help_dialog.show_help_for_page(current_page)
 
-        # yellow_bar_layout.addStretch()
+        # Add help button (left corner) using common button creation
+        self.help_button = create_button(text="?",style="tiny",callback=show_help,parent=self.yellow_bar)
+        self.help_button.setToolTip("Show help")
+        yellow_bar_layout.addWidget(self.help_button)
 
         # Add author information
         author_label = QLabel("Developed by: lorenzo.pozzi@mccain.ca")
@@ -102,14 +124,17 @@ class MainWindow(QMainWindow):
         yellow_bar_layout.addStretch()
 
         # Add feedback link
-        feedback_label = QLabel('<a href="https://forms.office.com/Pages/ResponsePage.aspx?id=l3f6WeyrBUWB5ozgkmQhkLYcF0biYxVBtOqFfBkqK7JUMERBRDZaNVNaNVpDVlg4UVJCVUNJQUFQMy4u" style="color: #0066cc;">GIVE FEEDBACK - REPORT A PROBLEM</a>')
+        feedback_label = QLabel(
+            '<a href="https://forms.office.com/Pages/ResponsePage.aspx?id=l3f6WeyrBUWB5ozgkmQhkLYcF0biYxVBtOqFfBkqK7JUMERBRDZaNVNaNVpDVlg4UVJCVUNJQUFQMy4u" '
+            'style="color: #0066cc;">GIVE FEEDBACK - REPORT A PROBLEM</a>'
+        )
         feedback_label.setOpenExternalLinks(True)
         feedback_label.setAlignment(Qt.AlignCenter)
         feedback_label.setToolTip("Click to give an answer")
         yellow_bar_layout.addWidget(feedback_label)
-        
-        main_layout.addWidget(self.yellow_bar)
-        
+
+    def connect_signals(self):
+        """Connect all signals to their respective handlers."""
         # Connect signal to page refresh methods
         self.filters_changed.connect(self.refresh_pages)
         
@@ -117,12 +142,10 @@ class MainWindow(QMainWindow):
         self.home_page.country_changed.connect(self.on_country_changed)
         self.home_page.region_changed.connect(self.on_region_changed)
         self.home_page.preferences_changed.connect(self.apply_config_preferences)
-        
-        # Add help overlay system
-        self.help_button, self.help_overlay = add_help_button_to_main_window(self)
 
-        # Start with the home page
-        self.stacked_widget.setCurrentIndex(0)
+    def navigate_to_page(self, page_index):
+        """Navigate to a specific page in the stacked widget."""  
+        self.stacked_widget.setCurrentIndex(page_index)
 
     def apply_filters(self, country, region):
         """Centralized method to apply filters to products."""
@@ -155,10 +178,6 @@ class MainWindow(QMainWindow):
         self.products_page.refresh_product_data()
         self.scenarios_manager_page.refresh_product_data()
         # in the future add any new page that needs to be refreshed
-
-    def navigate_to_page(self, page_index):
-        """Navigate to a specific page in the stacked widget."""  
-        self.stacked_widget.setCurrentIndex(page_index)
 
     def apply_config_preferences(self):
         """Apply user preferences from config."""
@@ -194,12 +213,12 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         """Handle the close event, clean up __pycache__ directories."""
-
         # If we're on the home page, check for unsaved preferences
         if self.stacked_widget.currentIndex() == 0 and self.home_page.preferences_row.has_unsaved_changes:
             if not self.home_page.check_unsaved_preferences():
                 event.ignore()  # Cancel closing if the user cancelled
                 return
+        
         try:
             # Find and remove all __pycache__ directories 
             app_dir = os.path.dirname(os.path.abspath(__file__))
@@ -212,7 +231,6 @@ class MainWindow(QMainWindow):
                             shutil.rmtree(cache_path)
                         except Exception:
                             pass
-                
         except Exception as e:
             print(f"Error during cache cleanup: {e}")
         

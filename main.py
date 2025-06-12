@@ -32,7 +32,7 @@ def main() -> int:
     app.setStyle("Fusion")
     app.setApplicationName("Pesticides App")
     
-    # Block scroll to change value for QComboBox and QDoubleSpinBox
+    # # Block scroll to change value for QComboBox and QDoubleSpinBox
     # scroll_filter = WheelProtectionFilter()
     # for widget_class in [QComboBox, QDoubleSpinBox]:
     #     original_init = widget_class.__init__

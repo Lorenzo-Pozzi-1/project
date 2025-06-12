@@ -103,14 +103,14 @@ class HomePage(QWidget):
             "page_index": 1
             },
             {
-            "title": "EIQ Calculator",
-            "description": "Calculate Environmental Impact Quotients\nCompare EIQ of different applications",
-            "page_index": 3
-            },
-            {
             "title": "EIQ Season Planner",
             "description": "Plan applications, Compare scenarios\nImport and work from previous years plans",
             "page_index": 2
+            },
+            {
+            "title": "EIQ Calculator",
+            "description": "Calculate Environmental Impact Quotients\nCompare EIQ of different applications",
+            "page_index": 3
             }
         ]
         
@@ -123,26 +123,6 @@ class HomePage(QWidget):
         
         # Add a spacer before the info frames for better proportions
         main_layout.addStretch(1)
-        # # User Message Frame - This can be edited as needed
-        # user_message_frame = ContentFrame()
-        # user_message_frame.setStyleSheet("""
-        #     ContentFrame {
-        #         background-color: #f0f8ff; 
-        #         border: 2px solid #4682b4;
-        #         border-radius: 10px;
-        #     }
-        # """)
-        # user_message = QLabel(
-        #     "🚧 <b><span style='color: #2c5282;'>Lorenzo Pozzi's internship project - Development Preview</span></b> 🚧<br>"
-        #     "🐜🐞🦗🦟 Demo  version: bugs included free of charge! 🐝🦂🕷️🐛<br>"
-        #     "Got suggestions? Let me know! <b>lorenzo.pozzi@mccain.ca</b>"
-        # )
-        # user_message.setWordWrap(True)
-        # user_message.setFont(get_large_font())
-        # user_message.setAlignment(Qt.AlignCenter)
-        # user_message.setStyleSheet("padding: 10px;")
-        # user_message_frame.layout.addWidget(user_message)
-        # main_layout.addWidget(user_message_frame)
         
         # Info frame
         info_frame = ContentFrame()

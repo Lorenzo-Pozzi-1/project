@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from common.styles import get_medium_font, get_subtitle_font
 from common.widgets.product_selection import ProductSearchField
-from .excel_parser import ExcelScenarioParser  # Use the fixed parser
+from .excel_parser import ExcelScenarioParser
 from data import ProductRepository
 
 
@@ -239,11 +239,11 @@ class ImportScenarioDialog(QDialog):
         """Set up the file selection tab."""
         layout = QVBoxLayout(self.file_tab)
         
-        # Instructions - updated to mention round-trip support
+        # Instructions
         instructions = QLabel(
             "Select an Excel file (.xlsx) containing pesticide application data.\n\n"
             "Supported formats:\n"
-            "• Files exported by this application (round-trip import)\n"
+            "• Files exported by this application\n"
             "• Excel files exported from GXCore > Pesticide report > Farm Assurance Application Report\n" 
         )
         instructions.setFont(get_medium_font())
@@ -324,7 +324,7 @@ class ImportScenarioDialog(QDialog):
                 QMessageBox.information(
                     self, "Product Mapping Required",
                     f"Found {unmatched_count} unmatched products.\n\n"
-                    f"Please go to the 'Correct Issues' tab to resolve these before importing."
+                    f"Please decide how to resolve these before importing."
                 )
                 self.tab_widget.setCurrentIndex(1)
             else:
