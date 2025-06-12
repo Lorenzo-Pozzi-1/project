@@ -22,10 +22,9 @@ class UserManualDialog(QDialog):
     def setup_ui(self):
         """Set up the dialog UI."""
         self.setWindowTitle("Pesticides App - User Manual")
-        self.setModal(True)
+        self.setModal(False) 
         
         # Set a large default size instead of maximizing
-        # This allows normal window controls while still being large
         self.resize(1000, 500)
         
         # Enable maximize and close window buttons

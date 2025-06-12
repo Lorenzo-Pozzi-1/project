@@ -14,7 +14,7 @@
         body {
             font-family: 'Century Gothic', 'Red Hat Display Black', sans-serif;
             line-height: 1.6;
-            color: #434043; /* Dark Grey */
+            color: #000000; /* Black */
             background: #D9D9E4; /* Light Grey */
         }
 
@@ -26,7 +26,7 @@
         /* Navigation Sidebar */
         .nav-sidebar {
             width: 280px;
-            background: #434043; /* Dark Grey */
+            background: #000000; /* Black */
             color: #ffffff; /* White */
             padding: 20px;
             position: fixed;
@@ -36,17 +36,22 @@
         }
 
         .nav-title {
-            font-size: 1.4em;
+            font-size: 1.5em;
             font-weight: bold;
             margin-bottom: 30px;
             text-align: center;
+            color: #ffffff; /* White */
+        }
+
+        .nav-title span {
             color: #fee000; /* McCain Yellow */
         }
 
         .nav-link {
             display: block;
             padding: 8px 12px;
-            color: #D9D9E4; /* Light Grey */
+            color: #ffffff; /* White */
+            font-weight: bold;
             text-decoration: none;
             border-radius: 6px;
             margin-bottom: 4px;
@@ -83,7 +88,7 @@
         }
 
         .section h1 {
-            color: #434043; /* Dark Grey */
+            color: #000000; /* Black */
             font-size: 2.2em;
             margin-bottom: 20px;
             padding-bottom: 10px;
@@ -95,7 +100,7 @@
         }
 
         .section h2 {
-            color: #434043; /* Dark Grey */
+            color: #000000; /* Black */
             font-size: 1.6em;
             margin: 30px 0 15px 0;
             padding-left: 15px;
@@ -129,14 +134,14 @@
         }
 
         .feature-card h4 {
-            color: #434043; /* Dark Grey */
+            color: #000000; /* Black */
             margin-bottom: 10px;
         }
 
         .step-number {
             display: inline-block;
             background: #fee000; /* McCain Yellow */
-            color: #434043; /* Dark Grey */
+            color: #000000; /* Black */
             width: 25px;
             height: 25px;
             border-radius: 50%;
@@ -204,7 +209,7 @@
     <div class="container">
         <!-- Navigation Sidebar -->
         <nav class="nav-sidebar">
-            <div class="nav-title">📖 User Manual</div>
+            <div class="nav-title">📖 User Manual<span>.</span></div>
             
             <div class="nav-section">
                 <a href="#home" class="nav-link active">Home Page</a>
@@ -219,15 +224,17 @@
             <!-- Home Section -->
             <section id="home" class="section active">
                 <h1>🏠 Home Page<span>.</span></h1>
-                
-                <div class="image-placeholder">
-                    [Home Page Screenshot]
+
+                <div class="highlight-box">
+                    <strong>Note:</strong> Depending on your screen size, the aspect may differ slightly, but all the elements remain the same. 
                 </div>
-                
+
+                <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\help\home_page.png" alt="Home Page Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+
                 <div class="feature-grid">
                     <div class="feature-card">
                         <h4>🌍 Preferences Row</h4>
-                        <p>Set your preferences - they will be maintained between sessions and will be used to provide you the correct information for your region, and to calculate the doses of pesticides applied as seed treatments or as amount/length of row.</p>
+                        <p>Set your preferences, they will be maintained between sessions and will be used to provide you the correct information for your region, and to calculate the doses of pesticides applied as seed treatments or as amount/length of row.</p>
                     </div>
                     
                     <div class="feature-card">
@@ -250,72 +257,52 @@
                         <p>Access the forms to give feedback or report problems that you might encounter.</p>
                     </div>
                 </div>
-                
-                <div class="highlight-box">
-                    <strong>Note:</strong> Depending on your screen size, the aspect may differ slightly, but all the elements remain the same. This application is meant to aide in selecting control products and drafting plans. It does not replace nor exempt from consultation with a professional.
-                </div>
             </section>
 
             <!-- Products Section -->
             <section id="products" class="section">
-                <h1>📦 Product List and Comparison<span>.</span></h1>
+                <h1>🗃️ Products List and Comparison<span>.</span></h1>
                 
-                <div class="image-placeholder">
-                    [Products Page Screenshot - shows product table with search and comparison features]
+                <div class="highlight-box">
+                    <strong>Note:</strong> Depending on your screen size, the aspect may differ slightly, but all the elements remain the same. 
                 </div>
                 
                 <h2>Products List Tab</h2>
-                <p>The Products List provides a comprehensive view of all pesticides available in your region. Key features include:</p>
+
+                <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\help\products_list_tab.png" alt="products list tab Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+
+                <p>The Products List provides a view of all pesticides approved by McCain available in your region. Key features include:</p>
                 
-                <ul>
-                    <li><strong>Search functionality:</strong> Filter products by name or active ingredient</li>
+                <ul style="padding-left: 30px;">
+                    <li><strong>Filters:</strong> Filter products by any attribute, up to four filters</li>
                     <li><strong>Sortable columns:</strong> Click any column header to sort data</li>
-                    <li><strong>Detailed information:</strong> Double-click any row for complete product details</li>
-                    <li><strong>Regional filtering:</strong> Products automatically filtered based on your location settings</li>
+                    <li><strong>Selectable rows:</strong> Check a product's box to select it, you can view the fact sheet of this one product or select more for comparison</li>
+                    <li><strong>Compare/View button:</strong> Click it to switch view to the Products Comparison tab, or to view the fact sheet of the selected product</li>
+                    <li><strong>Reset button:</strong> Reset all filters and sorting to default, go back to the products list tab if you're in the comparison view</li>
                 </ul>
                 
                 <h2>Products Comparison Tab</h2>
-                <p>Compare multiple products side-by-side to make informed decisions:</p>
-                
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <h4>🔍 Selection Tools</h4>
-                        <p>Easily select multiple products for direct comparison of key characteristics.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h4>📊 EIQ Comparison</h4>
-                        <p>Compare environmental impact scores across selected products.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h4>💰 Cost Analysis</h4>
-                        <p>Evaluate cost-effectiveness of different treatment options.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h4>📋 Application Rates</h4>
-                        <p>Compare recommended application rates and timing requirements.</p>
-                    </div>
-                </div>
-                
-                <div class="highlight-box">
-                    <strong>Navigation Tip:</strong> Use the search box to quickly find specific products or active ingredients. Double-clicking a product row opens detailed fact sheets with comprehensive application information.
-                </div>
+
+                <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\help\products_comparison_tab.png" alt="products comparison tab Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+
+                <p>View quick fact sheets, with more detailed information, for the selected product(s). Compare multiple products side-by-side to make informed decisions. </p>
             </section>
 
             <!-- Calculator Section -->
             <section id="calculator" class="section">
                 <h1>🧮 EIQ Calculator<span>.</span></h1>
                 
-                <div class="image-placeholder">
-                    [EIQ Calculator Screenshot - shows single and multiple product calculation interfaces]
+                <div class="highlight-box">
+                    <strong>Note:</strong> Depending on your screen size, the aspect may differ slightly, but all the elements remain the same. 
                 </div>
                 
-                <h2>Single Product Calculator</h2>
+                <h2>Single Product Calculator (CORRECT TEXT!)</h2>
+
+                <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\help\calculator_1.png" alt="single calculator Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+
                 <p>Calculate detailed Environmental Impact Quotients for individual applications:</p>
                 
-                <ol>
+                <ol style="padding-left: 30px;">
                     <li><strong>Product Selection:</strong> Choose a pesticide from the filtered dropdown menu</li>
                     <li><strong>Application Rate:</strong> Enter your planned application rate</li>
                     <li><strong>Application Area:</strong> Specify the treatment area</li>
@@ -325,16 +312,19 @@
                 <h3>Understanding EIQ Results</h3>
                 <p>The calculator provides three key risk categories:</p>
                 
-                <ul>
+                <ul style="padding-left: 30px;">
                     <li><strong>Farm Worker Risk:</strong> Potential exposure risks for applicators and field workers</li>
                     <li><strong>Consumer Risk:</strong> Food safety considerations for end consumers</li>
                     <li><strong>Ecological Risk:</strong> Environmental impact on beneficial organisms and ecosystems</li>
                 </ul>
                 
                 <h2>Multiple Products Calculator</h2>
+
+                <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\help\calculator_2.png" alt="multi calculator Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                
                 <p>Compare EIQ values across multiple products with simplified interface for quick comparisons. This tool is ideal for:</p>
                 
-                <ul>
+                <ul style="padding-left: 30px;">
                     <li>Rapid comparison of treatment alternatives</li>
                     <li>Identifying lower-impact options</li>
                     <li>Supporting sustainable pest management decisions</li>
@@ -349,22 +339,26 @@
             <section id="planner" class="section">
                 <h1>📅 Season Planner<span>.</span></h1>
                 
+                <div class="highlight-box">
+                    <strong>Note:</strong> Depending on your screen size, the aspect may differ slightly, but all the elements remain the same. 
+                </div>
+
                 <div class="image-placeholder">
-                    [Season Planner Screenshot - shows scenario management and application planning interface]
+                    [Season Planner Screenshots]
                 </div>
                 
                 <h2>Creating Treatment Scenarios</h2>
                 <p>The Season Planner allows you to create comprehensive treatment plans for entire growing seasons:</p>
                 
                 <h3><span class="step-number">1</span>Scenario Management</h3>
-                <ul>
+                <ul style="padding-left: 50px;">
                     <li>Create new scenarios for different fields or treatment strategies</li>
                     <li>Load and modify existing scenarios from previous seasons</li>
                     <li>Save scenarios with descriptive names for easy identification</li>
                 </ul>
                 
                 <h3><span class="step-number">2</span>Adding Applications</h3>
-                <ol>
+                <ol style="padding-left: 50px;">
                     <li>Click "Add Row" to add a new pesticide application</li>
                     <li>Select the product from the dropdown menu</li>
                     <li>Enter application rate and timing</li>
@@ -373,7 +367,7 @@
                 
                 <h3><span class="step-number">3</span>EIQ Analysis</h3>
                 <p>View cumulative environmental impact across all planned applications:</p>
-                <ul>
+                <ul style="padding-left: 50px;">
                     <li>Total seasonal EIQ scores</li>
                     <li>Individual application contributions</li>
                     <li>Risk category breakdowns</li>
@@ -381,21 +375,18 @@
                 
                 <h2>Importing Scenarios</h2>
                 <div class="image-placeholder">
-                    [Import Scenario Screenshots - shows step-by-step import process]
+                    [Import Scenario Screenshots]
                 </div>
                 
                 <p>Import scenarios from previous years or external sources:</p>
                 
-                <ol>
+                <ol style="padding-left: 50px;">
                     <li>Navigate to the import function</li>
                     <li>Select your source file or scenario</li>
                     <li>Review and modify imported data as needed</li>
                     <li>Save the imported scenario with a new name</li>
                 </ol>
                 
-                <div class="highlight-box">
-                    <strong>Best Practice:</strong> Create multiple scenarios to compare different treatment strategies. This helps optimize both pest control effectiveness and environmental impact.
-                </div>
             </section>
         </main>
     </div>

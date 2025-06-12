@@ -169,6 +169,27 @@ UOM_BUTTON_STYLE = f"""
     }}
 """
 
+TINY_BUTTON_STYLE = f"""
+    QPushButton {{
+        background-color: transparent;
+        color: {BLACK};
+        padding-bottom: 3px;
+        border-radius: 10px;
+        border: transparent;
+        font-weight: bold;
+        text-align: center;
+    }}
+    QPushButton:hover {{
+        background-color: {BLACK};
+        color: {WHITE};
+        padding-bottom: 3px;
+        border-radius: 10px;
+        border: transparent;
+        font-weight: bold;
+        text-align: center;
+    }}
+"""
+
 # Tables style
 GENERIC_TABLE_STYLE = f"""
     /* Main table styling */
@@ -307,27 +328,6 @@ FILTER_CHIP_STYLE = f"""
 
 
 # Calculation Trace Dialog Styles
-TINY_BUTTON_STYLE = f"""
-    QPushButton {{
-        background-color: transparent;
-        color: {BLACK};
-        padding-bottom: 3px;
-        border-radius: 5px;
-        border: 1px solid {BLACK};
-        font-weight: bold;
-        text-align: center;
-    }}
-    QPushButton:hover {{
-        background-color: {BLACK};
-        color: {WHITE};
-        padding-bottom: 3px;
-        border-radius: 5px;
-        border: 1px solid {BLACK};
-        font-weight: bold;
-        text-align: center;
-    }}
-"""
-
 CALCULATION_TRACE_DIALOG_STYLE = f"""
 QDialog {{
     background-color: {WHITE};

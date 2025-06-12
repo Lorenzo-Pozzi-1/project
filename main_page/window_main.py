@@ -109,7 +109,7 @@ class MainWindow(QMainWindow):
         
         # Add user manual button (left corner)
         self.manual_button = create_button(
-            text="📖", 
+            text="?", 
             style="tiny", 
             callback=self.show_user_manual,
             parent=self.yellow_bar
