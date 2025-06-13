@@ -18,7 +18,7 @@ class BaseUnit:
     """Represents a fundamental unit of measure."""
     uom: str       # e.g., kg, l, ha
     category: str  # weight, volume, area, length
-    state: str     # dry, wet, no
+    state: str     # dry, liquid, no
     factor: float  # conversion factor to standard unit
     standard: str  # standard unit for this category
 
@@ -366,14 +366,14 @@ class UOMRepository:
         if not from_num_unit or not to_num_unit:
             return  # Can't validate unknown units
         
-        # Check if trying to convert between dry and wet
-        if from_num_unit.state == 'dry' and to_num_unit.state == 'wet':
+        # Check if trying to convert between dry and liquid
+        if from_num_unit.state == 'dry' and to_num_unit.state == 'liquid':
             raise ValueError(
                 f"Cannot convert dry weight unit '{from_uom.numerator}' to liquid volume unit '{to_uom.numerator}'. "
                 f"These represent different physical states and cannot be directly converted."
             )
         
-        if from_num_unit.state == 'wet' and to_num_unit.state == 'dry':
+        if from_num_unit.state == 'liquid' and to_num_unit.state == 'dry':
             raise ValueError(
                 f"Cannot convert liquid volume unit '{from_uom.numerator}' to dry weight unit '{to_uom.numerator}'. "
                 f"These represent different physical states and cannot be directly converted."
@@ -556,13 +556,13 @@ class UOMRepository:
         calculation_tracer.log_substep(f"Step 1: Seeding rate {seeding_rate} {seeding_rate_unit} = {seeding_rate_kg_per_ha:.1f} kg/ha", level=5)
         
         # Step 2: Standardize application rate to standard units per kg of seed
-        # Determine if application rate numerator is wet or dry
+        # Determine if application rate numerator is liquid or dry
         app_num_unit = self.get_base_unit(from_uom.numerator)
         if not app_num_unit:
             raise ValueError(f"Unknown application rate unit: {from_uom.numerator}")
         
         # Convert application rate numerator to standard units
-        if app_num_unit.state == 'wet' or app_num_unit.category == 'volume':
+        if app_num_unit.state == 'liquid' or app_num_unit.category == 'volume':
             # Convert to liters per kg of seed (l/kg)
             target_app_numerator = 'l'
             standard_app_rate = self.convert_base_unit(value, from_uom.numerator, 'l')

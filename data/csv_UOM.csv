@@ -9,15 +9,15 @@ US ton,weight,dry,907.185,kg
 metric ton,weight,dry,1000,kg
 ha,area,no,1,ha
 acre,area,no,0.404686,ha
-fl oz,volume,wet,0.0295735,l
-pt,volume,wet,0.473176,l
-qt,volume,wet,0.946353,l
-gal,volume,wet,3.78541,l
-US gal,volume,wet,3.78541,l
-CA gal,volume,wet,4.54609,l
-l,volume,wet,1,l
-ml,volume,wet,0.001,l
-100gal,volume,wet,378.541,l
+fl oz,volume,liquid,0.0295735,l
+pt,volume,liquid,0.473176,l
+qt,volume,liquid,0.946353,l
+gal,volume,liquid,3.78541,l
+US gal,volume,liquid,3.78541,l
+CA gal,volume,liquid,4.54609,l
+l,volume,liquid,1,l
+ml,volume,liquid,0.001,l
+100gal,volume,liquid,378.541,l
 m,length,no,1,m
 100m,length,no,100,m
 ft,length,no,0.3048,m

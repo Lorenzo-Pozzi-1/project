@@ -277,7 +277,7 @@ class EIQUOMStandardizer:
         else:
             raise ValueError(f"Invalid rate type: {target_rate_type}")
         
-        # Check if the conversion is physically possible (wet vs dry, can't mix them)
+        # Check if the conversion is physically possible (liquid vs dry, can't mix them)
         if from_uom.is_concentration:
             # Check if source and target are compatible
             from_is_weight_per_volume = self._is_weight_per_volume(from_uom)
