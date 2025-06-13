@@ -1,7 +1,5 @@
 """
 Applications Table Widget for the Season Planner.
-
-Simplified version with validation summary functionality completely removed.
 """
 
 from PySide6.QtWidgets import (

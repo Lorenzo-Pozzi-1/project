@@ -8,7 +8,7 @@ for all pages in the application.
 import os
 import shutil
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QFrame, QWidget, QLabel
-from PySide6.QtCore import Signal, Qt, QTimer
+from PySide6.QtCore import Signal, Qt
 
 from common import CalculationTraceDialog, load_config, YELLOW_BAR_STYLE
 from common.widgets import create_button
@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.scenarios_comparison_page)
 
     def _create_yellow_bar(self):
-        """Create the yellow bar at the bottom with version info and feedback link."""
+        """Create the yellow bar at the bottom with user manual and links."""
         self.yellow_bar = QFrame()
         self.yellow_bar.setStyleSheet(YELLOW_BAR_STYLE)
         yellow_bar_layout = QHBoxLayout(self.yellow_bar)
@@ -116,15 +116,6 @@ class MainWindow(QMainWindow):
         )
         self.manual_button.setToolTip("Open User Manual")
         yellow_bar_layout.addWidget(self.manual_button)
-
-        # Add version info (clickable for manual check)
-        from version_checker import APP_VERSION
-        self.version_label = QLabel(f"v{APP_VERSION} - Checking for updates...")
-        self.version_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        self.version_label.setStyleSheet("color: #000000; text-decoration: underline; cursor: pointer;")
-        self.version_label.mousePressEvent = lambda event: self.check_for_updates_manually()
-        self.version_label.setToolTip("Click to check for updates")
-        yellow_bar_layout.addWidget(self.version_label)
         
         yellow_bar_layout.addStretch()
 
@@ -264,52 +255,3 @@ class MainWindow(QMainWindow):
         
         # Accept the close event
         event.accept()
-
-    #region Version Checking
-
-    def setup_version_manager(self):
-        """Set up the version manager and start automatic checking."""
-        from version_checker import VersionManager
-        self.version_manager = VersionManager(self)
-        
-        # Connect version manager signals to update the UI
-        self.version_manager.checker_created.connect(self.on_version_check_started)
-        self.version_manager.version_result.connect(self.on_version_check_result)
-        self.version_manager.check_error.connect(self.on_version_check_error)
-        
-        # Start automatic check
-        QTimer.singleShot(2000, lambda: self.version_manager.check_for_updates(silent=True))
-    
-    def on_version_check_started(self):
-        """Update UI when version check starts."""
-        self.version_label.setText(f"v{self.get_app_version()} - Checking for updates...")
-        self.version_label.setStyleSheet("color: #666666;")
-    
-    def on_version_check_result(self, has_update, remote_version):
-        """Update UI based on version check result."""
-        from version_checker import APP_VERSION
-        if has_update:
-            self.version_label.setText(f"v{APP_VERSION} - Update available: v{remote_version}")
-            self.version_label.setStyleSheet("color: #ff6600; font-weight: bold; text-decoration: underline; cursor: pointer;")
-            self.version_label.setToolTip("Click to download update")
-        else:
-            self.version_label.setText(f"v{APP_VERSION} - Up to date")
-            self.version_label.setStyleSheet("color: #0066cc; text-decoration: underline; cursor: pointer;")
-            self.version_label.setToolTip("Click to check for updates")
-    
-    def on_version_check_error(self, error_message):
-        """Update UI when version check fails."""
-        from version_checker import APP_VERSION
-        self.version_label.setText(f"v{APP_VERSION} - Update check failed")
-        self.version_label.setStyleSheet("color: #cc0000; text-decoration: underline; cursor: pointer;")
-        self.version_label.setToolTip(f"Click to retry. Error: {error_message}")
-    
-    def check_for_updates_manually(self):
-        """Handle manual version check when user clicks version label."""
-        if hasattr(self, 'version_manager'):
-            self.version_manager.check_for_updates(silent=False)
-    
-    def get_app_version(self):
-        """Get the current app version."""
-        from version_checker import APP_VERSION
-        return APP_VERSION

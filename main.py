@@ -12,7 +12,6 @@ from PySide6.QtWidgets import QApplication, QComboBox, QDoubleSpinBox
 from common import load_config, WheelProtectionFilter
 from data import ProductRepository, AIRepository
 from main_page import MainWindow
-from version_checker import VersionManager
 
 # Silence messages when resizing the window
 os.environ['QT_LOGGING_RULES'] = '*=false' 
@@ -57,9 +56,6 @@ def main() -> int:
     window = MainWindow(config)
     window.show()
 
-    # Set up version checking
-    window.setup_version_manager()
-    
     # Start the application event loop
     return sys.exit(app.exec())
 

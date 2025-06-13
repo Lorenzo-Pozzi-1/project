@@ -7,7 +7,10 @@ This module provides reusable custom widgets used throughout the application.
 from math import floor
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QWidget, QSpacerItem
-from common.styles import *
+
+from common.constants import get_button_min_height, get_button_min_width, get_feature_button_size, get_margin_medium, get_margin_small, get_spacing_medium, get_spacing_small
+from common.styles import FEATURE_BUTTON_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE, TINY_BUTTON_STYLE, UOM_BUTTON_STYLE, get_large_font, get_small_font, get_subtitle_font, get_title_font
+
 
 class HeaderWithHomeButton(QWidget):
     """

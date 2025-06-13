@@ -1,7 +1,7 @@
 """Style functions and stylesheets for the LORENZO POZZI Pesticide App"""
 
 from PySide6.QtGui import QFont
-from .constants import *
+from common.constants import BEIGE, BLACK, BLUE, BLUE_HOVER, LIGHT_GRAY, RED, RED_HOVER, RED_PRESSED, WHITE, YELLOW, YELLOW_HOVER, get_large_text_size, get_margin_small, get_medium_text_size, get_small_text_size, get_subtitle_text_size, get_title_text_size
 
 # ----------------------
 # FONT FUNCTIONS

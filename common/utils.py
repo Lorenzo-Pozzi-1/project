@@ -7,7 +7,9 @@ This module handles mostly application configuration, plus resources paths gener
 import json, os, sys
 from pathlib import Path
 from PySide6.QtCore import QObject, QEvent
-from common.constants import *
+from common.constants import (ADVANCED, EIQ_EXTREME_COLOR, EIQ_HIGH_COLOR, EIQ_HIGH_THRESHOLD, 
+                              EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, ENGAGED, LEADING, ONBOARDING, 
+                              EIQ_MEDIUM_THRESHOLD, EIQ_LOW_THRESHOLD)
 
 # Default configuration
 DEFAULT_CONFIG = {
