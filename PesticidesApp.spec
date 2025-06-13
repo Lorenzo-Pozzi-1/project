@@ -17,8 +17,8 @@ data_files = [
     ('data/csv_products.csv', 'data'),
     ('data/csv_UOM.csv', 'data'),
     
-    # Help files (include all files in help directory)
-    ('help/*', 'help'),
+    # User manual files
+    ('user_manual/*', 'user_manual'),
 ]
 
 # Hidden imports - modules that PyInstaller might miss
@@ -27,20 +27,24 @@ hidden_imports = [
     'PySide6.QtCore',
     'PySide6.QtWidgets',
     'PySide6.QtGui',
+    'PySide6.QtPrintSupport',
     
-    # Your application modules
+    # Common modules
     'common',
     'common.constants',
     'common.styles',
     'common.utils',
     'common.calculations',
+    'common.calculations.layer_1_interface',
     'common.widgets',
     'common.widgets.header_frame_buttons',
     'common.widgets.product_selection',
     'common.widgets.application_params',
     'common.widgets.scorebar',
     'common.widgets.UOM_selector',
+    'common.widgets.tracer',
     
+    # Data modules
     'data',
     'data.model_AI',
     'data.model_application',
@@ -50,11 +54,13 @@ hidden_imports = [
     'data.repository_product',
     'data.repository_UOM',
     
+    # Main page modules
     'main_page',
     'main_page.window_main',
     'main_page.page_home',
     'main_page.widget_preferences_row',
     
+    # Products page modules
     'products_page',
     'products_page.page_products',
     'products_page.tab_products_list',
@@ -63,6 +69,7 @@ hidden_imports = [
     'products_page.widget_products_table',
     'products_page.widget_comparison_table',
     
+    # EIQ Calculator page modules
     'eiq_calculator_page',
     'eiq_calculator_page.page_eiq_calculator',
     'eiq_calculator_page.tab_single_calculator',
@@ -70,6 +77,7 @@ hidden_imports = [
     'eiq_calculator_page.widget_product_card',
     'eiq_calculator_page.widgets_results_display',
     
+    # Season planner page modules
     'season_planner_page',
     'season_planner_page.page_scenarios_manager',
     'season_planner_page.page_sceanrios_comparison',
@@ -96,34 +104,55 @@ hidden_imports = [
     'season_planner_page.import_export.import_dialog',
     'season_planner_page.import_export.exporter',
     
-    'help',
-    'help.user_manual_dialog',
+    # User manual module
+    'user_manual',
+    'user_manual.user_manual_dialog',
         
     # Standard library modules that might be needed
     'pandas',
     'openpyxl',
-    'requests',
-    'urllib3',
     'json',
     'datetime',
     'typing',
     'dataclasses',
     'collections',
     'traceback',
+    'pathlib',
 ]
 
-# Exclude PySide5 and other unwanted modules
+# Exclude unwanted modules and test data
 excludes = [
+    # Exclude Qt5 completely as requested
     'PySide5',
     'PyQt5',
-    'PyQt6',
+    'shiboken5',
+    
+    # Other GUI frameworks
     'tkinter',
+    'wx',
+    'gi',
+    
+    # Heavy libraries not needed
     'matplotlib',
-    'numpy',  # Only exclude if you're not using it
+    'numpy',
     'scipy',
     'PIL',
     'cv2',
-    'common.widgets.tracer',  # Exclude tracer module
+    'sklearn',
+    'tensorflow',
+    'torch',
+    
+    # Development/testing modules
+    'pytest',
+    'unittest',
+    'doctest',
+    'pdb',
+    'cProfile',
+    'profile',
+    
+    # IDE specific
+    'IPython',
+    'jupyter',
 ]
 
 # Analysis configuration
@@ -142,6 +171,21 @@ a = Analysis(
     cipher=None,
     noarchive=False,
 )
+
+# Filter out test_data and other unwanted directories
+def filter_data(data_list):
+    """Filter out unwanted data files and directories."""
+    filtered = []
+    for item in data_list:
+        if isinstance(item, tuple) and len(item) >= 2:
+            source_path = item[0]
+            # Exclude test_data directory and its contents
+            if 'test_data' not in source_path and '__pycache__' not in source_path:
+                filtered.append(item)
+    return filtered
+
+# Apply filtering
+a.datas = filter_data(a.datas)
 
 # Remove duplicate entries
 pyz = PYZ(a.pure, a.zipped_data, cipher=None)

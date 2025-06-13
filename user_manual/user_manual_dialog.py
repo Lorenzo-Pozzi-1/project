@@ -1,8 +1,7 @@
 """
 User Manual Dialog for the Pesticides App.
 
-This module provides a comprehensive HTML-based user manual that replaces
-the current help overlay system.
+This module provides a comprehensive HTML-based user manual.
 """
 
 import os
@@ -40,7 +39,7 @@ class UserManualDialog(QDialog):
         
     def load_manual_content(self):
         """Load the HTML manual content."""
-        manual_path = resource_path("help/user_manual.html")
+        manual_path = resource_path("user_manual/user_manual.html")
         if os.path.exists(manual_path):
             self.web_view.load(QUrl.fromLocalFile(manual_path))
 
