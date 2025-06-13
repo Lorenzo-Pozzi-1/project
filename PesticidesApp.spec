@@ -4,6 +4,9 @@ import os
 import sys
 from pathlib import Path
 
+# Increase the recursion limit
+sys.setrecursionlimit(sys.getrecursionlimit() * 5)
+
 # Get the current directory (where main.py is located)
 project_root = os.path.dirname(os.path.abspath('main.py'))
 
