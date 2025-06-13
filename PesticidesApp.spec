@@ -24,15 +24,15 @@ data_files = [
     ('user_manual/*', 'user_manual'),
 ]
 
-# Hidden imports - modules that PyInstaller might miss
+# Hidden imports - optimized for openpyxl only
 hidden_imports = [
-    # PySide6 modules
+    # PySide6 modules - only what you use
     'PySide6.QtCore',
     'PySide6.QtWidgets',
     'PySide6.QtGui',
     'PySide6.QtPrintSupport',
     
-    # Common modules
+    # Your app modules only
     'common',
     'common.constants',
     'common.styles',
@@ -47,7 +47,6 @@ hidden_imports = [
     'common.widgets.UOM_selector',
     'common.widgets.tracer',
     
-    # Data modules
     'data',
     'data.model_AI',
     'data.model_application',
@@ -57,13 +56,11 @@ hidden_imports = [
     'data.repository_product',
     'data.repository_UOM',
     
-    # Main page modules
     'main_page',
     'main_page.window_main',
     'main_page.page_home',
     'main_page.widget_preferences_row',
     
-    # Products page modules
     'products_page',
     'products_page.page_products',
     'products_page.tab_products_list',
@@ -72,7 +69,6 @@ hidden_imports = [
     'products_page.widget_products_table',
     'products_page.widget_comparison_table',
     
-    # EIQ Calculator page modules
     'eiq_calculator_page',
     'eiq_calculator_page.page_eiq_calculator',
     'eiq_calculator_page.tab_single_calculator',
@@ -80,7 +76,6 @@ hidden_imports = [
     'eiq_calculator_page.widget_product_card',
     'eiq_calculator_page.widgets_results_display',
     
-    # Season planner page modules
     'season_planner_page',
     'season_planner_page.page_scenarios_manager',
     'season_planner_page.page_sceanrios_comparison',
@@ -107,55 +102,200 @@ hidden_imports = [
     'season_planner_page.import_export.import_dialog',
     'season_planner_page.import_export.exporter',
     
-    # User manual module
     'user_manual',
     'user_manual.user_manual_dialog',
-        
-    # Standard library modules that might be needed
-    'pandas',
+    
+    # Essential dependencies - openpyxl focused
     'openpyxl',
+    'openpyxl.workbook',
+    'openpyxl.worksheet',
+    'openpyxl.cell',
+    'openpyxl.styles',
+    'openpyxl.utils',
+    'openpyxl.reader',
+    'openpyxl.writer',
     'json',
+    'csv',
     'datetime',
     'typing',
     'dataclasses',
     'collections',
     'traceback',
     'pathlib',
+    'os',
+    'sys',
+    'io',
+    'itertools',
+    'functools',
+    'operator',
+    're',
 ]
 
-# Exclude unwanted modules and test data
+# Comprehensive excludes - now including pandas and its entire ecosystem
 excludes = [
-    # Exclude Qt5 completely as requested
-    'PySide5',
-    'PyQt5',
-    'shiboken5',
+    # Pandas and all its dependencies
+    'pandas',
+    'numpy',
+    'scipy',
+    'pytz',
+    'dateutil',
+    'xlrd',
+    'xlwt',
+    'xlsxwriter',
+    
+    # Data science ecosystem
+    'matplotlib',
+    'seaborn',
+    'plotly',
+    'bokeh',
+    'altair',
+    'statsmodels',
+    'sklearn',
+    'skimage',
+    'patsy',
+    'scipy.stats',
+    'scipy.optimize',
+    'scipy.sparse',
+    'scipy.linalg',
+    
+    # Scientific computing
+    'sympy',
+    'astropy',
+    'numba',
+    'llvmlite',
+    'h5py',
+    'tables',
+    'pyarrow',
+    'xarray',
+    'dask',
+    'distributed',
+    'fastparquet',
+    
+    # ML/AI frameworks
+    'tensorflow',
+    'torch',
+    'transformers',
+    'cv2',
+    'PIL',
+    'Pillow',
+    'opencv',
+    
+    # Web frameworks and networking
+    'flask',
+    'django',
+    'fastapi',
+    'tornado',
+    'selenium',
+    'requests',
+    'urllib3',
+    'aiohttp',
+    'httpx',
+    
+    # Jupyter ecosystem
+    'IPython',
+    'jupyter',
+    'jupyterlab',
+    'notebook',
+    'nbconvert',
+    'nbformat',
+    'ipywidgets',
+    'ipykernel',
+    'traitlets',
+    
+    # Documentation/dev tools
+    'sphinx',
+    'docutils',
+    'babel',
+    'jinja2',
+    'markdown',
+    'mistune',
+    'pygments',
+    'mako',
     
     # Other GUI frameworks
+    'PySide5',
+    'PyQt5',
+    'PyQt6',
+    'shiboken5',
     'tkinter',
     'wx',
     'gi',
+    'kivy',
     
-    # Heavy libraries not needed
-    'matplotlib',
-    'numpy',
-    'scipy',
-    'PIL',
-    'cv2',
-    'sklearn',
-    'tensorflow',
-    'torch',
+    # Database drivers
+    'sqlalchemy',
+    'psycopg2',
+    'MySQLdb',
+    'sqlite3',
+    'botocore',
+    'pymongo',
+    'redis',
     
-    # Development/testing modules
+    # Development/testing
     'pytest',
     'unittest',
     'doctest',
     'pdb',
     'cProfile',
     'profile',
+    'coverage',
+    'mock',
     
-    # IDE specific
-    'IPython',
-    'jupyter',
+    # Cloud/networking/crypto
+    'paramiko',
+    'cryptography',
+    'bcrypt',
+    'nacl',
+    'zmq',
+    'certifi',
+    'charset_normalizer',
+    'idna',
+    'urllib3',
+    
+    # Heavy utility packages
+    'lxml',
+    'beautifulsoup4',
+    'html5lib',
+    'wheel',
+    'setuptools',
+    'pkg_resources',
+    'platformdirs',
+    'zipp',
+    'importlib_metadata',
+    'ruamel',
+    'cloudpickle',
+    'fsspec',
+    'intake',
+    'panel',
+    'pyviz_comms',
+    'anyio',
+    'jsonschema',
+    'jsonschema_specifications',
+    'pywt',
+    'imageio',
+    'tifffile',
+    'psutil',
+    'py',
+    'more_itertools',
+    'jaraco',
+    'backports',
+    'typing_extensions',
+    'importlib_resources',
+    'tomli',
+    'zoneinfo',
+    'packaging',
+    'distutils',
+    
+    # Pandas-specific modules that might be auto-imported
+    'pandas.core',
+    'pandas.io',
+    'pandas.plotting',
+    'pandas.api',
+    'pandas.arrays',
+    'pandas.compat',
+    'pandas.errors',
+    'pandas.tseries',
+    'pandas.util',
 ]
 
 # Analysis configuration
@@ -182,8 +322,14 @@ def filter_data(data_list):
     for item in data_list:
         if isinstance(item, tuple) and len(item) >= 2:
             source_path = item[0]
-            # Exclude test_data directory and its contents
-            if 'test_data' not in source_path and '__pycache__' not in source_path:
+            # Exclude test_data directory, pandas remnants, and cache
+            if (
+                'test_data' not in source_path and 
+                '__pycache__' not in source_path and
+                'pandas' not in source_path.lower() and
+                'numpy' not in source_path.lower() and
+                'scipy' not in source_path.lower()
+            ):
                 filtered.append(item)
     return filtered
 

@@ -5,7 +5,7 @@ This module defines the ComparisonTable widget which provides a
 side-by-side comparison of product properties.
 """
 
-from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout, QSizePolicy
+from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
 

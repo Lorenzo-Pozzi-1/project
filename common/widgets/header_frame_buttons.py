@@ -4,12 +4,19 @@ Common custom widgets for the LORENZO POZZI Pesticide App
 This module provides reusable custom widgets used throughout the application.
 """
 
-from math import floor
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QWidget, QSpacerItem
-
-from common.constants import get_button_min_height, get_button_min_width, get_feature_button_size, get_margin_medium, get_margin_small, get_spacing_medium, get_spacing_small
-from common.styles import FEATURE_BUTTON_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE, TINY_BUTTON_STYLE, UOM_BUTTON_STYLE, get_large_font, get_small_font, get_subtitle_font, get_title_font
+from PySide6.QtWidgets import (
+    QPushButton, QLabel, QFrame, QVBoxLayout, QHBoxLayout, QWidget, QSpacerItem
+)
+from common.constants import (
+    get_button_min_height, get_button_min_width, get_feature_button_size,
+    get_margin_medium, get_margin_small, get_spacing_medium, get_spacing_small
+)
+from common.styles import (
+    YELLOW_BUTTON_STYLE, WHITE_BUTTON_STYLE, SPECIAL_BUTTON_STYLE,
+    FEATURE_BUTTON_STYLE, FRAME_STYLE, REMOVE_BUTTON_STYLE, TINY_BUTTON_STYLE,
+    UOM_BUTTON_STYLE, get_large_font, get_small_font, get_subtitle_font, get_title_font
+)
 
 
 class HeaderWithHomeButton(QWidget):
@@ -69,7 +76,7 @@ def create_button(text=None, description=None, style='yellow', callback=None, pa
     Args:
         text (str): Button text
         description (str): Optional description for feature buttons
-        style (str): Button style ('yellow', 'white', 'special', 'feature', 'remove', 'tiny', 'UOM)
+        style (str): Button style ('yellow', 'white', 'special', 'feature', 'remove', 'tiny', 'UOM')
         callback (callable): Function to call when button is clicked
         parent (QWidget): Parent widget
         
@@ -80,9 +87,20 @@ def create_button(text=None, description=None, style='yellow', callback=None, pa
     button.setCursor(Qt.PointingHandCursor)
     
     # Apply style and content based on button type
-    if style in ('yellow', 'white', 'special'):
-        # Standard buttons share the same structure
-        button.setStyleSheet(globals().get(f"{style.upper()}_BUTTON_STYLE"))
+    if style == 'yellow':
+        button.setStyleSheet(YELLOW_BUTTON_STYLE)
+        button.setText(text)
+        button.setFont(get_small_font())
+        button.setMinimumSize(get_button_min_width(), get_button_min_height())
+    
+    elif style == 'white':
+        button.setStyleSheet(WHITE_BUTTON_STYLE)
+        button.setText(text)
+        button.setFont(get_small_font())
+        button.setMinimumSize(get_button_min_width(), get_button_min_height())
+    
+    elif style == 'special':
+        button.setStyleSheet(SPECIAL_BUTTON_STYLE)
         button.setText(text)
         button.setFont(get_small_font())
         button.setMinimumSize(get_button_min_width(), get_button_min_height())
@@ -123,7 +141,7 @@ def create_button(text=None, description=None, style='yellow', callback=None, pa
         button.setFixedSize(30, 20)
     
     elif style == 'UOM':
-        # Tiny button for the terminal
+        # UOM button style
         button.setStyleSheet(UOM_BUTTON_STYLE)
         button.setText(text)
         button.setFont(get_small_font())

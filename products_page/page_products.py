@@ -5,7 +5,7 @@ This module defines the ProductsPage class which acts as a container for the
 product listing and comparison tabs, coordinating between them.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
 from common.constants import get_margin_large, get_spacing_medium
 from common.styles import get_medium_font
 from common.widgets.header_frame_buttons import HeaderWithHomeButton, create_button

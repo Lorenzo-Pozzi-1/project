@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QListWidget, QListWidgetItem, QLineEdit
 )
 from PySide6.QtCore import Signal
-from common.styles import get_medium_font, BLUE
+from common.styles import get_medium_font
 
 # Predefined UOM categories based on usage patterns from the app
 UOM_CATEGORIES = {

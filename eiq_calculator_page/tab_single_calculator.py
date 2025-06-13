@@ -14,7 +14,6 @@ from common.widgets.header_frame_buttons import ContentFrame
 from data.repository_product import ProductRepository
 from common.widgets.product_selection import ProductSelectionWidget
 from common.widgets.application_params import ApplicationParamsWidget
-from common.widgets.UOM_selector import SmartUOMSelector
 from common.calculations.layer_1_interface import eiq_calculator
 from common.widgets.tracer import calculation_tracer
 from eiq_calculator_page.widgets_results_display import EiqResultDisplay

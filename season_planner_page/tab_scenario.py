@@ -1,6 +1,6 @@
 """Scenario Tab for the Season Planner."""
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PySide6.QtCore import Signal
 
 from common.constants import get_margin_large, get_spacing_medium

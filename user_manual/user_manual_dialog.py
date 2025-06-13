@@ -5,7 +5,7 @@ This module provides a comprehensive HTML-based user manual.
 """
 
 import os
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton
+from PySide6.QtWidgets import QDialog, QVBoxLayout
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from common.utils import resource_path

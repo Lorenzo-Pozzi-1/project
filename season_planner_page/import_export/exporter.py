@@ -4,7 +4,8 @@ Excel exporter for scenario export.
 Exports scenarios to Excel format with each scenario as a separate worksheet.
 """
 
-import pandas as pd
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
 from PySide6.QtWidgets import QMessageBox, QFileDialog
 
 
@@ -43,23 +44,29 @@ class ExcelScenarioExporter:
             if not file_path.lower().endswith('.xlsx'):
                 file_path = file_path + '.xlsx'
             
-            # Create Excel writer
-            with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+            # Create workbook
+            workbook = Workbook()
+            
+            # Remove default sheet
+            if workbook.worksheets:
+                workbook.remove(workbook.active)
+            
+            for scenario in scenarios:
+                # Create worksheet name (Excel limits to 31 chars)
+                sheet_name = self._sanitize_sheet_name(scenario.name)
                 
-                for scenario in scenarios:
-                    # Create worksheet name (Excel limits to 31 chars)
-                    sheet_name = self._sanitize_sheet_name(scenario.name)
-                    
-                    # Convert scenario applications to DataFrame
-                    df = self._scenario_to_dataframe(scenario)
-                    
-                    # Write to Excel sheet WITHOUT headers (header=False prevents pandas from adding column names)
-                    df.to_excel(writer, sheet_name=sheet_name, index=False, header=False)
-                    
-                    # Get the worksheet to apply formatting
-                    worksheet = writer.sheets[sheet_name]
-                    self._format_worksheet(worksheet, df)
-        
+                # Create worksheet
+                worksheet = workbook.create_sheet(title=sheet_name)
+                
+                # Write scenario data to worksheet
+                self._write_scenario_to_worksheet(worksheet, scenario)
+                
+                # Apply formatting
+                self._format_worksheet(worksheet)
+            
+            # Save workbook
+            workbook.save(file_path)
+            
             # Show success message
             if parent_widget:
                 QMessageBox.information(
@@ -110,15 +117,13 @@ class ExcelScenarioExporter:
         
         return sanitized
     
-    def _scenario_to_dataframe(self, scenario):
+    def _write_scenario_to_worksheet(self, worksheet, scenario):
         """
-        Convert scenario applications to pandas DataFrame.
+        Write scenario data to worksheet.
         
         Args:
+            worksheet: openpyxl worksheet object
             scenario: Scenario object
-            
-        Returns:
-            pd.DataFrame: DataFrame with application data
         """
         applications = scenario.applications or []
         
@@ -136,98 +141,81 @@ class ExcelScenarioExporter:
             "Field EIQ"
         ]
         
-        # Start with metadata rows
-        all_rows = []
+        current_row = 1
         
         # Add scenario info metadata
-        all_rows.append({
-            "App #": "Scenario Name:",
-            "Date": scenario.name or "Unnamed Scenario",
-            "Product Type": "",
-            "Product Name": "",
-            "Rate": "",
-            "Rate UOM": "",
-            "Area": "",
-            "Method": "",
-            "AI Groups": "",
-            "Field EIQ": ""
-        })
+        worksheet.cell(row=current_row, column=1, value="Scenario Name:")
+        worksheet.cell(row=current_row, column=2, value=scenario.name or "Unnamed Scenario")
+        current_row += 1
         
-        all_rows.append({
-            "App #": "Crop Year:",
-            "Date": str(getattr(scenario, 'crop_year', '') or ''),
-            "Product Type": "Grower:",
-            "Product Name": str(getattr(scenario, 'grower_name', '') or ''),
-            "Rate": "Field:",
-            "Rate UOM": str(getattr(scenario, 'field_name', '') or ''),
-            "Area": "Field Area:",
-            "Method": f"{getattr(scenario, 'field_area', 0) or 0} {getattr(scenario, 'field_area_uom', 'acre') or 'acre'}",
-            "AI Groups": "Variety:",
-            "Field EIQ": str(getattr(scenario, 'variety', '') or '')
-        })
+        # Add metadata row
+        worksheet.cell(row=current_row, column=1, value="Crop Year:")
+        worksheet.cell(row=current_row, column=2, value=str(getattr(scenario, 'crop_year', '') or ''))
+        worksheet.cell(row=current_row, column=3, value="Grower:")
+        worksheet.cell(row=current_row, column=4, value=str(getattr(scenario, 'grower_name', '') or ''))
+        worksheet.cell(row=current_row, column=5, value="Field:")
+        worksheet.cell(row=current_row, column=6, value=str(getattr(scenario, 'field_name', '') or ''))
+        worksheet.cell(row=current_row, column=7, value="Field Area:")
+        worksheet.cell(row=current_row, column=8, value=f"{getattr(scenario, 'field_area', 0) or 0} {getattr(scenario, 'field_area_uom', 'acre') or 'acre'}")
+        worksheet.cell(row=current_row, column=9, value="Variety:")
+        worksheet.cell(row=current_row, column=10, value=str(getattr(scenario, 'variety', '') or ''))
+        current_row += 1
         
         # Add empty row separator
-        all_rows.append({col: "" for col in columns})
+        current_row += 1
         
         # Add column headers row
-        header_row = {col: col for col in columns}
-        all_rows.append(header_row)
+        for col_idx, header in enumerate(columns, 1):
+            worksheet.cell(row=current_row, column=col_idx, value=header)
+        
+        self.header_row_num = current_row  # Store for formatting
+        current_row += 1
         
         # Add application data rows
         for i, app in enumerate(applications):
-            row = {
-                "App #": i + 1,
-                "Date": getattr(app, 'application_date', '') or '',
-                "Product Type": getattr(app, 'product_type', '') or '',
-                "Product Name": getattr(app, 'product_name', '') or '',
-                "Rate": getattr(app, 'rate', 0) or 0,
-                "Rate UOM": getattr(app, 'rate_uom', '') or '',
-                "Area": getattr(app, 'area', 0) or 0,
-                "Method": getattr(app, 'application_method', '') or '',
-                "AI Groups": ', '.join(getattr(app, 'ai_groups', []) or []),
-                "Field EIQ": f"{getattr(app, 'field_eiq', 0) or 0:.2f}"
-            }
-            all_rows.append(row)
-        
-        # Create DataFrame without headers (header=None to avoid default column headers)
-        df = pd.DataFrame(all_rows, columns=columns)
-        
-        return df
+            worksheet.cell(row=current_row, column=1, value=i + 1)  # App #
+            worksheet.cell(row=current_row, column=2, value=getattr(app, 'application_date', '') or '')  # Date
+            worksheet.cell(row=current_row, column=3, value=getattr(app, 'product_type', '') or '')  # Product Type
+            worksheet.cell(row=current_row, column=4, value=getattr(app, 'product_name', '') or '')  # Product Name
+            worksheet.cell(row=current_row, column=5, value=getattr(app, 'rate', 0) or 0)  # Rate
+            worksheet.cell(row=current_row, column=6, value=getattr(app, 'rate_uom', '') or '')  # Rate UOM
+            worksheet.cell(row=current_row, column=7, value=getattr(app, 'area', 0) or 0)  # Area
+            worksheet.cell(row=current_row, column=8, value=getattr(app, 'application_method', '') or '')  # Method
+            worksheet.cell(row=current_row, column=9, value=', '.join(getattr(app, 'ai_groups', []) or []))  # AI Groups
+            worksheet.cell(row=current_row, column=10, value=f"{getattr(app, 'field_eiq', 0) or 0:.2f}")  # Field EIQ
+            current_row += 1
     
-    def _format_worksheet(self, worksheet, df):
+    def _format_worksheet(self, worksheet):
         """
         Apply formatting to the Excel worksheet.
         
         Args:
             worksheet: openpyxl worksheet object
-            df: pandas DataFrame with the data
         """
         try:
-            from openpyxl.styles import Font, PatternFill, Alignment
-            
             # Header formatting
             header_font = Font(bold=True)
             header_fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
             
-            # The header row is now at row 4 (metadata row 1, metadata row 2, empty row, then headers)
-            header_row_num = 4
-            
             # Format the header row (grey background)
-            for col in range(1, len(df.columns) + 1):
+            header_row_num = self.header_row_num
+            
+            for col in range(1, 11):  # 10 columns
                 cell = worksheet.cell(row=header_row_num, column=col)
                 cell.font = header_font
                 cell.fill = header_fill
                 cell.alignment = Alignment(horizontal='center')
             
             # Auto-adjust column widths
-            for column in worksheet.columns:
+            for column_cells in worksheet.columns:
                 max_length = 0
-                column_letter = column[0].column_letter
+                column_letter = column_cells[0].column_letter
                 
-                for cell in column:
+                for cell in column_cells:
                     try:
-                        if len(str(cell.value)) > max_length:
-                            max_length = len(str(cell.value))
+                        cell_value = str(cell.value) if cell.value is not None else ""
+                        if len(cell_value) > max_length:
+                            max_length = len(cell_value)
                     except:
                         pass
                 
@@ -238,13 +226,10 @@ class ExcelScenarioExporter:
             # Format metadata rows (make labels bold)
             metadata_font = Font(bold=True)
             for row in range(1, 3):  # First two metadata rows
-                for col in range(1, len(df.columns) + 1):
+                for col in range(1, 11):
                     cell = worksheet.cell(row=row, column=col)
                     if col in [1, 3, 5, 7, 9]:  # Label columns
                         cell.font = metadata_font
         
-        except ImportError:
-            # If openpyxl styling is not available, skip formatting
-            print("Warning: Could not apply Excel formatting - openpyxl styling not available")
         except Exception as e:
             print(f"Warning: Could not apply Excel formatting: {e}")
