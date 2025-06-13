@@ -127,12 +127,28 @@ class MainWindow(QMainWindow):
         # Add feedback link
         feedback_label = QLabel(
             '<a href="https://forms.office.com/Pages/ResponsePage.aspx?id=l3f6WeyrBUWB5ozgkmQhkLYcF0biYxVBtOqFfBkqK7JUMERBRDZaNVNaNVpDVlg4UVJCVUNJQUFQMy4u" '
-            'style="color: #0066cc;">GIVE FEEDBACK - REPORT A PROBLEM</a>'
+            'style="color: #0066cc;">GIVE FEEDBACK</a>'
         )
         feedback_label.setOpenExternalLinks(True)
         feedback_label.setAlignment(Qt.AlignCenter)
         feedback_label.setToolTip("Click to give feedback")
         yellow_bar_layout.addWidget(feedback_label)
+
+        # format text nicely
+        decor_label = QLabel(" or ")
+        decor_label.setAlignment(Qt.AlignCenter)
+        decor_label.setStyleSheet("color: #000000; font-weight: bold;")
+        yellow_bar_layout.addWidget(decor_label)
+
+        # Add report issue link
+        report_label = QLabel(
+            '<a href="https://forms.office.com/Pages/ResponsePage.aspx?id=l3f6WeyrBUWB5ozgkmQhkLYcF0biYxVBtOqFfBkqK7JURDk0TDNDVExESEdCRFlLMTNOOEE0RVBESC4u" '
+            'style="color: #0066cc;">REPORT A PROBLEM</a>'
+        )
+        report_label.setOpenExternalLinks(True)
+        report_label.setAlignment(Qt.AlignCenter)
+        report_label.setToolTip("Click to report a problem")
+        yellow_bar_layout.addWidget(report_label)
 
     def show_user_manual(self):
         """Show the user manual dialog."""

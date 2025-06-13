@@ -32,7 +32,7 @@ class UserManualDialog(QDialog):
         
         # Main layout
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 10)
+        layout.setContentsMargins(0, 0, 0, 0)
         
         # Web view for HTML content
         self.web_view = QWebEngineView()
