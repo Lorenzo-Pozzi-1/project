@@ -7,11 +7,12 @@ It initializes the application, sets up the main window, and starts the event lo
 """
 
 import os, sys
-from PySide6.QtCore import QDir
+from PySide6.QtCore import QDir, QTimer
 from PySide6.QtWidgets import QApplication, QComboBox, QDoubleSpinBox
 from common import load_config, WheelProtectionFilter
 from data import ProductRepository, AIRepository
 from main_page import MainWindow
+from version_checker import VersionManager
 
 # Silence messages when resizing the window
 os.environ['QT_LOGGING_RULES'] = '*=false' 
@@ -51,10 +52,13 @@ def main() -> int:
     product_repo.get_all_products()
     ai_repo = AIRepository.get_instance()
     ai_repo.get_all_ingredients()
-    
+
     # Create and show the main window
     window = MainWindow(config)
     window.show()
+
+    # Set up version checking
+    window.setup_version_manager()
     
     # Start the application event loop
     return sys.exit(app.exec())
