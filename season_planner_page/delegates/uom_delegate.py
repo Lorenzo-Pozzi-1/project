@@ -109,13 +109,11 @@ class UOMDelegate(QStyledItemDelegate):
             if current_uom == new_uom:
                 return True
             
-            # Find the rate column - use model's column constants for safety
-            rate_col = None
-            if hasattr(model, 'COL_RATE') and hasattr(model, 'COL_RATE_UOM'):
-                if uom_index.column() == model.COL_RATE_UOM:
-                    rate_col = model.COL_RATE
-            
-            if rate_col is None:
+            # Use _COLUMN_INDEX_MAP to determine the rate column
+            rate_col = model._COLUMN_INDEX_MAP.get("Rate")
+            rate_uom_col = model._COLUMN_INDEX_MAP.get("Rate UOM")
+
+            if rate_col is None or rate_uom_col is None or uom_index.column() != rate_uom_col:
                 print("Could not determine rate column for UOM conversion")
                 # Don't change UOM if we can't find rate column
                 return False
