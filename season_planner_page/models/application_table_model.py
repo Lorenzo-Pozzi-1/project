@@ -383,13 +383,15 @@ class ApplicationTableModel(QAbstractTableModel):
         """Get tooltip for a cell with detailed validation information."""
         validation = self._get_validation(app, row)
         
+        # Only show tooltips for invalid states - valid applications don't need tips
+        if validation.state == ValidationState.VALID:
+            return ""  # No tooltip for valid applications
+        
         # Special handling for estimated EIQ applications
         if validation.state == ValidationState.VALID_ESTIMATED:
-            return ("This application uses estimated EIQ because the product lacks "
-                   "active ingredient data. EIQ is calculated as the average of other "
-                   "valid applications in this scenario.")
+            return ("Cornell has no EIQ for this product's active ingredient. Field EIQ is averaged from other applications.")
         
-        # Show primary message for most columns
+        # Show primary message for invalid states only
         if validation.issues:
             primary_message = validation.primary_message
             
@@ -400,16 +402,7 @@ class ApplicationTableModel(QAbstractTableModel):
             
             return primary_message
         
-        # Special tooltips for specific columns when valid
-        if col == self._col_index("Field EIQ"):
-            if validation.can_calculate_eiq:
-                return "EIQ calculated from product database"
-            elif validation.state == ValidationState.VALID:
-                return "Valid application but EIQ calculation requires additional product data"
-            else:
-                return "Cannot calculate EIQ due to validation issues"
-        
-        return "Application is valid"
+        return ""  # No tooltip for states without issues
     
     def _set_cell_data(self, app: Application, col: int, value: Any) -> bool:
         """Set data for a specific cell with validation."""
