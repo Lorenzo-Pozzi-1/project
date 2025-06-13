@@ -119,6 +119,9 @@ class SmartUOMSelector(QWidget):
     
     currentTextChanged = Signal(str)  # Emitted when UOM selection changes
     
+    # Base state constant
+    BASE_UOM_TEXT = "- Select unit -"
+    
     def __init__(self, parent=None, uom_type=None):
         """
         Initialize the contextual UOM selector.
@@ -129,7 +132,7 @@ class SmartUOMSelector(QWidget):
         """
         super().__init__(parent)
         self.uom_type = uom_type or "application_rate"
-        self.current_uom = ""
+        self.current_uom = self.BASE_UOM_TEXT  # Start in base state
         self.uom_list = UOM_CATEGORIES.get(self.uom_type, [])
         self.setup_ui()
     
@@ -140,7 +143,7 @@ class SmartUOMSelector(QWidget):
         layout.setSpacing(0)
         
         # Main button showing current selection
-        self.button = QPushButton("- Select unit -")
+        self.button = QPushButton(self.BASE_UOM_TEXT)
         self.button.setFont(get_medium_font())
         self.button.clicked.connect(self.open_dialog)
         self.button.setStyleSheet("UOM")
@@ -166,10 +169,28 @@ class SmartUOMSelector(QWidget):
     def setCurrentText(self, text):
         """Set the current UOM text."""
         if text != self.current_uom:
-            self.current_uom = text
-            self.button.setText(text if text else "- Select unit -")
-            if text:  # Only emit if not empty
-                self.currentTextChanged.emit(text)
+            old_uom = self.current_uom
+            self.current_uom = text if text else self.BASE_UOM_TEXT
+            self.button.setText(self.current_uom)
+            
+            # Only emit signal if changing from a real UOM (not from/to base state)
+            # This prevents validation when transitioning through base state
+            if (old_uom != self.BASE_UOM_TEXT and 
+                self.current_uom != self.BASE_UOM_TEXT):
+                self.currentTextChanged.emit(self.current_uom)
+            elif (old_uom == self.BASE_UOM_TEXT and 
+                  self.current_uom != self.BASE_UOM_TEXT):
+                # Transitioning from base to real UOM - emit signal
+                self.currentTextChanged.emit(self.current_uom)
+    
+    def isBaseState(self):
+        """Check if the selector is in base state."""
+        return self.current_uom == self.BASE_UOM_TEXT
+    
+    def resetToBase(self):
+        """Reset the selector to base state without emitting signals."""
+        self.current_uom = self.BASE_UOM_TEXT
+        self.button.setText(self.BASE_UOM_TEXT)
     
     def addItem(self, text):
         """Add an item (for compatibility with QComboBox interface)."""
@@ -183,8 +204,10 @@ class SmartUOMSelector(QWidget):
     
     def clear(self):
         """Clear selection (for compatibility with QComboBox interface)."""
-        self.setCurrentText("")
+        self.resetToBase()
     
     def findText(self, text):
         """Find text in available options (for compatibility with QComboBox interface)."""
+        if text == self.BASE_UOM_TEXT:
+            return 0
         return 0 if text in self.uom_list else -1

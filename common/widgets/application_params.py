@@ -23,7 +23,7 @@ class ApplicationRateWidget(QWidget):
         """Initialize the application rate widget."""
         super().__init__(parent)
         self._style_config = style_config or {}
-        self._previous_uom = None  # Track previous UOM for conversion
+        self._previous_uom = SmartUOMSelector.BASE_UOM_TEXT  # Start with base state
         self._setup_ui()
 
     def _setup_ui(self):
@@ -50,8 +50,11 @@ class ApplicationRateWidget(QWidget):
     
     def _on_uom_changed(self, new_uom):
         """Handle UOM change and convert the rate value accordingly."""
-        if not new_uom or not self._previous_uom:
-            # First time setting UOM or empty UOM, just store it
+        # Skip conversion if transitioning from/to base state
+        if (self._previous_uom == SmartUOMSelector.BASE_UOM_TEXT or 
+            new_uom == SmartUOMSelector.BASE_UOM_TEXT or
+            not new_uom or not self._previous_uom):
+            # Just update previous UOM and emit signal
             self._previous_uom = new_uom
             self.value_changed.emit()
             return
@@ -148,14 +151,22 @@ class ApplicationRateWidget(QWidget):
     
     # Property-based API for unit
     def _get_unit(self):
-        return self._unit_combo.currentText()
+        current_text = self._unit_combo.currentText()
+        # Return None if in base state to maintain backward compatibility
+        return None if current_text == SmartUOMSelector.BASE_UOM_TEXT else current_text
     
     def _set_unit(self, unit):
-        # Store previous UOM before setting new one
-        self._previous_uom = self._unit_combo.currentText()
-        self._unit_combo.setCurrentText(unit)
-        # Update previous UOM to the new unit after setting
-        self._previous_uom = unit
+        # Set unit using two-step process to avoid validation
+        if unit is None or unit == "":
+            # Reset to base state
+            self._unit_combo.resetToBase()
+            self._previous_uom = SmartUOMSelector.BASE_UOM_TEXT
+        else:
+            # Two-step change: base -> target to avoid validation
+            self._unit_combo.resetToBase()  # Step 1: to base (no signal)
+            self._previous_uom = SmartUOMSelector.BASE_UOM_TEXT
+            self._unit_combo.setCurrentText(unit)  # Step 2: base -> target
+            self._previous_uom = unit
     
     unit = Property(str, _get_unit, _set_unit)
 

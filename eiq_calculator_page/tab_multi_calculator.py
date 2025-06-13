@@ -170,6 +170,10 @@ class ProductComparisonCalculatorTab(QWidget):
         if not product_data:
             return None, 0.0
         
+        # Check if unit is in base state (None means base state now)
+        if product_data["unit"] is None:
+            return product_data, 0.0
+        
         try:
             # Get user preferences for UOM conversions
             user_preferences = get_config("user_preferences", {})

@@ -12,6 +12,7 @@ from common.constants import get_medium_text_size
 from data import ProductRepository
 from common.widgets.product_selection import ProductSelectionWidget
 from common.widgets.application_params import ApplicationParamsWidget
+from common.widgets.UOM_selector import SmartUOMSelector
 from common.calculations import eiq_calculator
 from eiq_calculator_page.widgets_results_display import EiqResultDisplay
 
@@ -121,7 +122,7 @@ class SingleProductCalculatorTab(QWidget):
         # Clear tables
         self.clear_tables()
         
-        # Reset application parameters
+        # Reset application parameters to base state
         self.app_params.set_params(0.0, None, 1)
         
         # Clear EIQ result
@@ -249,7 +250,7 @@ class SingleProductCalculatorTab(QWidget):
         self.label_info_table.setItem(0, 6, min_days_item)
     
     def update_application_params(self):
-        """Update application parameters based on current product data."""
+        """Update application parameters based on current product data using two-step UOM change."""
         if not self.current_product:  # If no product selected
             self.app_params.set_params(0.0, None, 1)
             return
@@ -261,13 +262,13 @@ class SingleProductCalculatorTab(QWidget):
         elif self.current_product.label_minimum_rate is not None:
             rate = self.current_product.label_minimum_rate
         
-        # Set unit to product's UOM
+        # Set unit to product's UOM (this will use the two-step process internally)
         unit = self.current_product.rate_uom
         
         # Default to 1 application
         applications = 1
 
-        # Update application parameters widget
+        # Update application parameters widget - the two-step UOM change is handled in set_params
         self.app_params.set_params(rate, unit, applications)
     
     def clear_product_selection(self):
@@ -279,7 +280,7 @@ class SingleProductCalculatorTab(QWidget):
         # Clear tables
         self.clear_tables()
         
-        # Reset application parameters
+        # Reset application parameters to base state
         self.app_params.set_params(0.0, None, 1)
         
         # Clear EIQ result
@@ -294,6 +295,11 @@ class SingleProductCalculatorTab(QWidget):
         try:
             # Get application parameters
             params = self.app_params.get_params()
+            
+            # Skip calculation if no unit is selected (base state)
+            if params["unit"] is None:
+                self.eiq_results.update_result(0.0)
+                return
             
             # Get user preferences for UOM conversions
             user_preferences = get_config("user_preferences", {})

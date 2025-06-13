@@ -4,6 +4,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout
 from common import FRAME_STYLE, PRODUCT_CARD_STYLE, get_subtitle_font, create_button, ApplicationParamsWidget, ProductSelectionWidget
 from common.constants import get_margin_medium, get_medium_text_size, get_spacing_medium
+from common.widgets.UOM_selector import SmartUOMSelector
 from data import ProductRepository
 
 
@@ -146,7 +147,7 @@ class ProductCard(QFrame):
             ai_display = ", ".join(self.product.active_ingredients) if self.product.active_ingredients else "None"
             self.ai_label.setText(ai_display)
             
-            # Update application parameters - simplified rate selection
+            # Update application parameters
             rate = self.product.label_maximum_rate or self.product.label_minimum_rate or 0.0
             
             # Set unit to product's UOM if available
@@ -170,6 +171,7 @@ class ProductCard(QFrame):
         self.product = None
         self.active_ingredients = []
         self.ai_label.setText("None")
+        # Reset to base state (None unit)
         self.app_params.set_params(0.0, None, 1)
         
         # Emit signal that data has changed
@@ -193,7 +195,7 @@ class ProductCard(QFrame):
             "product_name": self.product.product_name,
             "active_ingredients": self.active_ingredients,
             "rate": params["rate"],
-            "unit": params["unit"],
+            "unit": params["unit"],  # This will be None if in base state
             "applications": params["applications"]
         }
     
