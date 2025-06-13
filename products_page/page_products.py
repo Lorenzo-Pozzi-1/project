@@ -6,11 +6,12 @@ product listing and comparison tabs, coordinating between them.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget
-from common import HeaderWithHomeButton, create_button, get_medium_font
 from common.constants import get_margin_large, get_spacing_medium
+from common.styles import get_medium_font
+from common.widgets.header_frame_buttons import HeaderWithHomeButton, create_button
 from products_page.tab_products_list import ProductsListTab
 from products_page.tab_products_comparison import ProductsComparisonTab
-from data import ProductRepository
+from data.repository_product import ProductRepository
 
 class ProductsPage(QWidget):
     """

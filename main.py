@@ -9,8 +9,9 @@ It initializes the application, sets up the main window, and starts the event lo
 import os, sys
 from PySide6.QtCore import QDir, QTimer
 from PySide6.QtWidgets import QApplication, QComboBox, QDoubleSpinBox
-from common import load_config, WheelProtectionFilter
-from data import ProductRepository, AIRepository
+from common.utils import load_config
+from data.repository_AI import AIRepository
+from data.repository_product import ProductRepository
 from main_page import MainWindow
 
 # Silence messages when resizing the window

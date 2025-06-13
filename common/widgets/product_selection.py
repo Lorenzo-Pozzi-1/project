@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 )
 from common.styles import get_medium_font, get_small_font
 from common.widgets.header_frame_buttons import ContentFrame
-from data import ProductRepository
+from data.repository_product import ProductRepository
 
 
 class RankedProductCompleter(QCompleter):

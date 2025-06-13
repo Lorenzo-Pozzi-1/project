@@ -8,7 +8,7 @@ product data, with CSV loading and caching for performance optimization.
 import csv
 from typing import List, Optional
 from data.model_product import Product
-from common import resource_path
+from common.utils import resource_path
 
 products_csv = resource_path("data/csv_products.csv")
 

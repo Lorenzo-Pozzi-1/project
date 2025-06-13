@@ -7,7 +7,9 @@ to compare scenarios side by side.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QScrollArea
 from PySide6.QtCore import Qt
-from common import HeaderWithHomeButton, get_margin_large, get_spacing_medium, get_medium_font
+from common.constants import get_margin_large, get_spacing_medium
+from common.styles import get_medium_font
+from common.widgets.header_frame_buttons import HeaderWithHomeButton
 from common.widgets.scorebar import ScoreBar
 from .widgets.scenario_comparison_table import ScenarioComparisonTable
 

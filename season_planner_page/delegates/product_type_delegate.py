@@ -6,7 +6,7 @@ QStyledItemDelegate that provides product type selection with common pesticide t
 
 from PySide6.QtWidgets import QStyledItemDelegate, QComboBox
 from PySide6.QtCore import Qt
-from data import ProductRepository
+from data.repository_product import ProductRepository
 
 
 class ProductTypeDelegate(QStyledItemDelegate):

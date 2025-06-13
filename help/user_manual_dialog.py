@@ -9,7 +9,7 @@ import os
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtWebEngineWidgets import QWebEngineView
-from common import resource_path
+from common.utils import resource_path
 
 class UserManualDialog(QDialog):
     """Comprehensive user manual dialog with HTML content and navigation."""

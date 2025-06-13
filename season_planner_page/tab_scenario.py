@@ -3,11 +3,15 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 from PySide6.QtCore import Signal
 
-from common import ContentFrame, get_margin_large, get_spacing_medium, get_subtitle_font
+from common.constants import get_margin_large, get_spacing_medium
+from common.styles import get_subtitle_font
+from common.widgets.header_frame_buttons import ContentFrame
+from data.model_application import Application
+from data.model_scenario import Scenario
+from data.repository_product import ProductRepository
 from season_planner_page.widgets.metadata_widget import SeasonPlanMetadataWidget
 from season_planner_page.widgets.applications_table import ApplicationsTableWidget
 from season_planner_page.models.application_table_model import ValidationState
-from data import Scenario, ProductRepository, Application
 
 
 class ScenarioTabPage(QWidget):

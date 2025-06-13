@@ -7,7 +7,8 @@ view of products with selection, filtering, and sorting capabilities.
 
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QCheckBox, QWidget, QHBoxLayout
 from PySide6.QtCore import Qt, Signal
-from common import GENERIC_TABLE_STYLE, get_medium_font
+
+from common.styles import GENERIC_TABLE_STYLE, get_medium_font
 
 
 class NumericTableWidgetItem(QTableWidgetItem):

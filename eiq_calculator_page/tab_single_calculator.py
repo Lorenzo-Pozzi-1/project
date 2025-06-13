@@ -7,13 +7,16 @@ for calculating EIQ of a single pesticide product.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem
 from PySide6.QtCore import Qt
-from common import GENERIC_TABLE_STYLE, ContentFrame, get_config, calculation_tracer
 from common.constants import get_medium_text_size
-from data import ProductRepository
+from common.styles import GENERIC_TABLE_STYLE
+from common.utils import get_config
+from common.widgets.header_frame_buttons import ContentFrame
+from data.repository_product import ProductRepository
 from common.widgets.product_selection import ProductSelectionWidget
 from common.widgets.application_params import ApplicationParamsWidget
 from common.widgets.UOM_selector import SmartUOMSelector
-from common.calculations import eiq_calculator
+from common.calculations.layer_1_interface import eiq_calculator
+from common.widgets.tracer import calculation_tracer
 from eiq_calculator_page.widgets_results_display import EiqResultDisplay
 
 class SingleProductCalculatorTab(QWidget):

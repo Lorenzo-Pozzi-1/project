@@ -8,7 +8,7 @@ Now displays suggestions in "Name - Method" format.
 
 from PySide6.QtWidgets import QStyledItemDelegate, QComboBox, QCompleter
 from PySide6.QtCore import Qt
-from data import ProductRepository
+from data.repository_product import ProductRepository
 
 
 class ProductNameDelegate(QStyledItemDelegate):

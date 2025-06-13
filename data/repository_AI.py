@@ -8,7 +8,7 @@ classification data.
 import csv, os
 from typing import Dict, Optional, Tuple
 from data.model_AI import ActiveIngredient
-from common import resource_path
+from common.utils import resource_path
 
 ai_csv = resource_path("data/csv_AI.csv")
 

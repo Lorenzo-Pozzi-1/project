@@ -8,8 +8,10 @@ Shows applications grouped by product type and sorted by EIQ values.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
-from common import (get_medium_font, get_subtitle_font, get_regen_ag_class, EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD, EIQ_HIGH_THRESHOLD, 
-                    GENERIC_TABLE_STYLE)
+
+from common.constants import EIQ_HIGH_THRESHOLD, EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD
+from common.styles import GENERIC_TABLE_STYLE, get_medium_font, get_subtitle_font
+from common.utils import get_regen_ag_class
 from eiq_calculator_page.widgets_results_display import ColorCodedEiqItem
 from collections import defaultdict
 from data.repository_AI import AIRepository  # Add this import

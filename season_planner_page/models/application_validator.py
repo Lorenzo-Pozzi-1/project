@@ -6,8 +6,9 @@ Handles all validation logic for pesticide applications with clear state managem
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional
-from data import Application, ProductRepository
+from typing import List
+from data.model_application import Application
+from data.repository_product import ProductRepository
 from data.repository_AI import AIRepository
 
 

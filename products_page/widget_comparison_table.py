@@ -8,8 +8,12 @@ side-by-side comparison of product properties.
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout, QSizePolicy
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
-from common import GENERIC_TABLE_STYLE, get_eiq_color, get_medium_font, get_config, calculation_tracer, eiq_calculator, get_spacing_xlarge
 
+from common.constants import get_spacing_xlarge
+from common.styles import GENERIC_TABLE_STYLE, get_medium_font
+from common.utils import get_config, get_eiq_color
+from common.calculations.layer_1_interface import eiq_calculator
+from common.widgets.tracer import calculation_tracer
 
 class ComparisonTable(QTableWidget):
     """

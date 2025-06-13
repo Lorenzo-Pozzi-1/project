@@ -7,16 +7,16 @@ from PySide6.QtWidgets import (
     QMessageBox, QInputDialog, QDialog, QTabBar
 )
 from PySide6.QtCore import QCoreApplication, Signal
-from PySide6.QtGui import QFont
 
-from common import (
-    ContentFrame, HeaderWithHomeButton, calculation_tracer, create_button, 
-    ScoreBar, get_margin_large, get_spacing_medium, get_subtitle_font, get_small_font
-)
+from common.constants import get_margin_large, get_spacing_medium
+from common.styles import get_subtitle_font
+from common.widgets.header_frame_buttons import ContentFrame, HeaderWithHomeButton, create_button
+from common.widgets.scorebar import ScoreBar
+from common.widgets.tracer import calculation_tracer
 from season_planner_page.import_export.exporter import ExcelScenarioExporter
 from season_planner_page.tab_scenario import ScenarioTabPage
 from season_planner_page.import_export.import_dialog import ImportScenarioDialog
-from data import Scenario
+from data.model_scenario import Scenario
 
 
 class CustomTabBar(QTabBar):

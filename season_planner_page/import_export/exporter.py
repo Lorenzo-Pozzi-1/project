@@ -4,11 +4,8 @@ Excel exporter for scenario export.
 Exports scenarios to Excel format with each scenario as a separate worksheet.
 """
 
-import os
 import pandas as pd
-from datetime import datetime
 from PySide6.QtWidgets import QMessageBox, QFileDialog
-from data import Application
 
 
 class ExcelScenarioExporter:

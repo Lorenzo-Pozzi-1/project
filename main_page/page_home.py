@@ -8,8 +8,10 @@ screen for the application.
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMessageBox
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
-from common import INFO_TEXT_STYLE, resource_path, get_title_font, get_large_font, get_subtitle_font, get_medium_font, create_button, ContentFrame
 from common.constants import get_margin_large, get_picture_size, get_spacing_large, get_spacing_medium
+from common.styles import INFO_TEXT_STYLE, get_large_font, get_medium_font, get_subtitle_font, get_title_font
+from common.utils import resource_path
+from common.widgets.header_frame_buttons import ContentFrame, create_button
 from main_page.widget_preferences_row import PreferencesRow
 
 class HomePage(QWidget):

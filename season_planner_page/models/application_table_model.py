@@ -8,8 +8,9 @@ from dataclasses import dataclass
 from PySide6.QtCore import QAbstractTableModel, Qt, QModelIndex, Signal
 from PySide6.QtGui import QColor
 from typing import List, Any, Optional
-from data import Application, ProductRepository
-from common import get_config
+from data.model_application import Application
+from data.repository_product import ProductRepository
+from common.utils import get_config
 from .application_validator import ApplicationValidator, ValidationState
 from .application_eiq_calculator import ApplicationEIQCalculator
 

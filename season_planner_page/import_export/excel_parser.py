@@ -8,7 +8,10 @@ Supports both:
 
 import os
 import pandas as pd
-from data import Scenario, Application, ProductRepository
+
+from data.model_application import Application
+from data.model_scenario import Scenario
+from data.repository_product import ProductRepository
 
 
 class ExcelScenarioParser:

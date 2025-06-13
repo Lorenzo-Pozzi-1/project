@@ -6,7 +6,10 @@ Widget for displaying EIQ calculation results and environmental impact scoring.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
-from common import ContentFrame, ScoreBar, get_subtitle_font
+from common.styles import get_subtitle_font
+from common.widgets.header_frame_buttons import ContentFrame
+from common.widgets.scorebar import ScoreBar
+
 
 
 class EIQSummaryWidget(QWidget):

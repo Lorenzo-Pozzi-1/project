@@ -11,8 +11,9 @@ from PySide6.QtGui import QShowEvent
 from typing import List
 import traceback
 
-from common import create_button, GENERIC_TABLE_STYLE, get_medium_font
-from data import Application
+from common.styles import GENERIC_TABLE_STYLE, get_medium_font
+from common.widgets.header_frame_buttons import create_button
+from data.model_application import Application
 from ..models.application_table_model import ApplicationTableModel
 from ..delegates.date_delegate import DateDelegate
 from ..delegates.numeric_delegate import RateDelegate, AreaDelegate

@@ -10,12 +10,14 @@ import shutil
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QFrame, QWidget, QLabel
 from PySide6.QtCore import Signal, Qt
 
-from common import CalculationTraceDialog, load_config, YELLOW_BAR_STYLE
-from common.widgets import create_button
-from data import ProductRepository
+from common.styles import YELLOW_BAR_STYLE
+from common.utils import load_config
+from common.widgets.header_frame_buttons import create_button
+from common.widgets.tracer import CalculationTraceDialog
+from data.repository_product import ProductRepository
 from main_page.page_home import HomePage
 from products_page import ProductsPage
-from eiq_calculator_page import EiqCalculatorPage
+from eiq_calculator_page.page_eiq_calculator import EiqCalculatorPage
 from season_planner_page import ScenariosManagerPage
 from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage
 from help.user_manual_dialog import create_user_manual_dialog

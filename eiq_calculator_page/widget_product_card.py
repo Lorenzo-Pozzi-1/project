@@ -2,10 +2,12 @@
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout
-from common import FRAME_STYLE, PRODUCT_CARD_STYLE, get_subtitle_font, create_button, ApplicationParamsWidget, ProductSelectionWidget
 from common.constants import get_margin_medium, get_medium_text_size, get_spacing_medium
-from common.widgets.UOM_selector import SmartUOMSelector
-from data import ProductRepository
+from common.styles import FRAME_STYLE, PRODUCT_CARD_STYLE, get_subtitle_font
+from common.widgets.application_params import ApplicationParamsWidget
+from common.widgets.header_frame_buttons import create_button
+from common.widgets.product_selection import ProductSelectionWidget
+from data.repository_product import ProductRepository
 
 
 class ProductCard(QFrame):

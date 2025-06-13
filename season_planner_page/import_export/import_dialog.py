@@ -15,7 +15,7 @@ from PySide6.QtCore import Qt, Signal
 from common.styles import get_medium_font, get_subtitle_font
 from common.widgets.product_selection import ProductSearchField
 from .excel_parser import ExcelScenarioParser
-from data import ProductRepository
+from data.repository_product import ProductRepository
 
 
 class ProductMappingWidget(QWidget):

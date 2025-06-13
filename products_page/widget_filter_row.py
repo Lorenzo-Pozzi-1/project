@@ -8,7 +8,9 @@ and compact filtering interface.
 from PySide6.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout, QComboBox, 
                                QLabel, QLineEdit, QPushButton, QFrame)
 from PySide6.QtCore import Signal, Qt
-from common import get_medium_font, get_subtitle_font, create_button, FILTER_CHIP_STYLE
+
+from common.styles import FILTER_CHIP_STYLE, get_medium_font, get_subtitle_font
+from common.widgets.header_frame_buttons import create_button
 
 
 class FilterChip(QFrame):

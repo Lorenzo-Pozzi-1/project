@@ -6,7 +6,7 @@ comparison of selected products using the ComparisonTable widget.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout
-from common import ContentFrame
+from common.widgets.header_frame_buttons import ContentFrame
 from products_page.widget_comparison_table import ComparisonView
 
 

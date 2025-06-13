@@ -5,8 +5,9 @@ Handles EIQ calculations including estimation for applications with missing AI d
 """
 
 from typing import List
-from data import Application, ProductRepository
-from common import eiq_calculator
+from data.model_application import Application
+from data.repository_product import ProductRepository
+from common.calculations.layer_1_interface import eiq_calculator
 from .application_validator import ApplicationValidator, ValidationState
 
 

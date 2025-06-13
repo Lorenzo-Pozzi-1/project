@@ -8,7 +8,7 @@ with concentration conversion capabilities for EIQ calculations.
 import csv
 from typing import Optional, Dict
 from dataclasses import dataclass
-from common import resource_path
+from common.utils import resource_path
 from common.widgets.tracer import calculation_tracer
 
 UOM_CSV = resource_path("data/csv_UOM.csv")
