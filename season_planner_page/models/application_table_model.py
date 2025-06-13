@@ -441,24 +441,32 @@ class ApplicationTableModel(QAbstractTableModel):
         """Update fields that depend on the changed column."""
         try:
             if changed_col == self._col_index("Product Name"):
-                # Auto-set product type if not set and product is found
-                if app.product_name and not app.product_type:
+                # Clear specific fields in the row
+                app.product_type = ""
+                app.rate = 0.0
+                app.rate_uom = ""
+                app.application_method = ""  # Ensure application method is reset
+                app.ai_groups = []
+                app.field_eiq = None
+                app.status = ""
+
+                # Update product type and application method if the new product is found
+                if app.product_name:
                     product = self._find_product(app.product_name)
                     if product:
                         app.product_type = product.product_type
-                
-                self._update_ai_groups(app, row)
-                
+                        app.application_method = product.application_method  # Update application method
+
                 # Clear validation cache and recalculate all EIQs
                 self._validation_cache.clear()
                 self._recalculate_all_eiq()
-                
+
                 # Emit changes for the entire table since averages may have changed
                 if self.rowCount() > 0:
                     top_left = self.index(0, 0)
                     bottom_right = self.index(self.rowCount() - 1, self.columnCount() - 1)
                     self.dataChanged.emit(top_left, bottom_right, [Qt.DisplayRole, Qt.BackgroundRole, Qt.ToolTipRole])
-            
+
             elif changed_col in {self._col_index("Rate"), self._col_index("Rate UOM")}:
                 # Rate or UOM changed - recalculate all EIQs to update averages
                 self._validation_cache.clear()
