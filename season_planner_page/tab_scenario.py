@@ -1,8 +1,4 @@
-"""
-Scenario Tab for the Season Planner.
-
-Clean version with validation summary functionality completely removed.
-"""
+"""Scenario Tab for the Season Planner."""
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 from PySide6.QtCore import Signal
@@ -18,8 +14,7 @@ class ScenarioTabPage(QWidget):
     """
     Tab page for displaying and editing a single scenario.
     
-    Provides Excel-like editing capabilities with clean, simple interface
-    focused on data entry rather than validation feedback distractions.
+    Provides Excel-like editing capabilities with clean, simple interface.
     """
     
     scenario_changed = Signal(object)  # Emitted when scenario data changes

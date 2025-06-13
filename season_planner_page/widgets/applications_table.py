@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableView, QHeaderView, 
     QAbstractItemView, QMessageBox
 )
-from PySide6.QtCore import Signal, Qt
+from PySide6.QtCore import Signal
 from PySide6.QtGui import QShowEvent
 from typing import List
 import traceback
@@ -26,11 +26,7 @@ from ..delegates.reorder_delegate import ReorderDelegate
 
 
 class ApplicationsTableWidget(QWidget):
-    """
-    Applications table widget focused purely on data management.
-    
-    Clean, simple table interface without validation summary distractions.
-    """
+    """Applications table widget focused purely on data management."""
     
     # Signals
     applications_changed = Signal()

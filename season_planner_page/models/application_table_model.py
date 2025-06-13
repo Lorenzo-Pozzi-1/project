@@ -389,7 +389,8 @@ class ApplicationTableModel(QAbstractTableModel):
         
         # Special handling for estimated EIQ applications
         if validation.state == ValidationState.VALID_ESTIMATED:
-            return ("Cornell has no EIQ for this product's active ingredient. Field EIQ is averaged from other applications.")
+            return ("Cornell has no EIQ for this product's active ingredient. "
+                    "Field EIQ is averaged from other applications.")
         
         # Show primary message for invalid states only
         if validation.issues:
