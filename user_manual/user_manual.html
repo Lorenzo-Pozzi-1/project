@@ -153,17 +153,10 @@
             border-left: 4px solid #fee000; /* McCain Yellow */
         }
 
-        .highlight-box {
-            background: linear-gradient(135deg, #fff3cd, #ffeaa7); /* Beige tones */
-            border-left: 4px solid #fee000; /* McCain Yellow */
-            padding: 20px;
+        .feature-grid {
+            display: grid;
+            gap: 0px;
             margin: 20px 0;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .highlight-box strong {
-            color: #ec3400; /* Red */
         }
 
         .feature-card {
@@ -184,42 +177,13 @@
             margin-bottom: 10px;
         }
 
-        .step-number {
-            display: inline-block;
-            background: #fee000; /* McCain Yellow */
-            color: #000000; /* Black */
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 25px;
-            margin-right: 10px;
-            font-weight: bold;
-        }
-
-        .warning {
-            background: #fee; /* Light Red */
-            border: 1px solid #f5c6cb; /* Light Red border */
-            color: #ec3400; /* Red */
-            padding: 15px;
-            border-radius: 6px;
-            margin: 20px 0;
-        }
-
-        .warning::before {
-            content: "⚠️ ";
-            font-weight: bold;
-        }
-
-        .image-placeholder {
-            background: #D9D9E4; /* Light Grey */
-            border: 2px dashed #434043; /* Dark Grey */
-            padding: 40px;
-            text-align: center;
-            margin: 20px 0;
+        .screenshot {
+            max-width: 80%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #e9ecef;
             border-radius: 8px;
-            color: #7f8c8d; /* Grey */
-            font-style: italic;
         }
 
         /* McCain Yellow Bar */
@@ -260,13 +224,17 @@
             .notification-popup.show {
                 transform: translateY(0);
             }
+
+            .screenshot {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Dismissible Notification Popup -->
     <div id="notification-popup" class="notification-popup">
-        <button class="close-btn" onclick="closeNotification()">&times;</button>
+        <button class="close-btn" onclick="closeNotification()" aria-label="Close notification">&times;</button>
         <div class="message">
             <strong>Note:</strong> Appearance may vary slightly depending on your screen size.
         </div>
@@ -287,13 +255,13 @@
 
         <!-- Main Content -->
         <main class="main-content">
-        <!-- Home Page -->
+            <!-- Home Page -->
             <section id="home" class="section active">
                 <h1>🏠 Home Page<span>.</span></h1>
                 <p>This is the home page and entry point to the app.</p>
 
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\home_1.png" 
-                alt="Home Page Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Home Page Screenshot" class="screenshot">
 
                 <div class="feature-grid">
                     <div class="feature-card">
@@ -325,7 +293,7 @@
                 </div>
             </section>
 
-        <!-- Products Page -->
+            <!-- Products Page -->
             <section id="products" class="section">
                 <h1>🗃️ Products List and Comparison<span>.</span></h1>
                 
@@ -333,11 +301,11 @@
                 <p>This page provides a view of all pesticides approved by McCain available in your region. Key features include:</p>
 
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\products_1.png" 
-                alt="products list tab Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Products list tab Screenshot" class="screenshot">
                 
                 <div class="feature-grid">
                     <div class="feature-card">
-                        <h4>1. 🏠  Home button</h4>
+                        <h4>1. 🏠 Home button</h4>
                         <p>Go back to the home page.</p>
                     </div>
                     
@@ -384,11 +352,11 @@
                 </p>
                 
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\products_2.png" 
-                alt="products comparison tab Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Products comparison tab Screenshot" class="screenshot">
 
             </section>
 
-        <!-- Calculator Page -->
+            <!-- Calculator Page -->
             <section id="calculator" class="section">
                 <h1>🧮 EIQ Calculator<span>.</span></h1>
                 
@@ -397,33 +365,33 @@
                     (with more detail than the multiple products calculator).</p>
 
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\calculator_1.png" 
-                alt="single calculator Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Single calculator Screenshot" class="screenshot">
 
                 <div class="feature-grid">
                     <div class="feature-card">
-                        <h4>1. 🔍 Optional pre-filtering </h4>
+                        <h4>1. 🔍 Optional pre-filtering</h4>
                         <p>You can opt to pre-filter the products by type.</p>
                     </div>
                     <div class="feature-card">
-                        <h4>2. 🔎 Search by name </h4>
+                        <h4>2. 🔎 Search by name</h4>
                         <p>Search a product by name.</p>
                     </div>
                     <div class="feature-card">
-                        <h4>3. 🧪 Active ingredients info </h4>
+                        <h4>3. 🧪 Active ingredients info</h4>
                         <p>See some information about the active ingredients from the product label.</p>
                     </div>
                     <div class="feature-card">
-                        <h4>4. 🌱 Agronomical info </h4>
+                        <h4>4. 🌱 Agronomical info</h4>
                         <p>See some "how to use" info from the label.</p>
                     </div>
                     <div class="feature-card">
-                        <h4>5. ⚙️ Set application parameters </h4>
+                        <h4>5. ⚙️ Set application parameters</h4>
                         <p>Set the application rate, rate UOM, and number of applications. These fields are precompiled 
                             for you using the maximum allowable rate (with the UOM from the label), and one application. 
                             When you change UOM, the rate will be automatically converted to match the new one.</p>
                     </div>
                     <div class="feature-card">
-                        <h4>6. 📊 Results </h4>
+                        <h4>6. 📊 Results</h4>
                         <p>View the calculated field use EIQ score with a graphic representation.</p>
                     </div>
                 </div>
@@ -434,7 +402,7 @@
                 </p>
 
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\calculator_2.png" 
-                alt="multi calculator Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Multi calculator Screenshot" class="screenshot">
                 
                 <div class="feature-grid">
                     <div class="feature-card">
@@ -454,22 +422,21 @@
                 </div>
             </section>
 
-        <!-- Season Planner -->
+            <!-- Season Planner -->
             <section id="planner" class="section">
                 <h1>📅 Season Planner Page<span>.</span></h1>
                 <p>The Season Planner allows you to create spray plans from scratch, or starting from the plan of a previous year. 
-                    It is a bit more complex than the rest of the program, but also more powerful. The season planner is divided into two main pages:
-                    <ul style="padding-left: 30px;">
+                    It is a bit more complex than the rest of the program, but also more powerful. The season planner is divided into two main pages:</p>
+                    <ul style="padding-left: 30px; margin: 15px 0;">
                         <li><strong>Scenarios Tabs Page:</strong> where you can create and manage your scenarios.</li>
                         <li><strong>Scenarios Comparison Page:</strong> where you can compare the scenarios you imported/modified/created.</li>
                     </ul>
-                </p>
 
-
-            <!-- Scenarios Tabs Page -->
+                <!-- Scenarios Tabs Page -->
                 <h2>Scenarios Tabs Page</h2>
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\season_1.png" 
-                alt="season planner Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Season planner Screenshot" class="screenshot">
+                
                 <div class="feature-grid">
                     <div class="feature-card">
                         <h4>1. 🗂️ Scenarios tabs</h4>
@@ -498,8 +465,7 @@
                         <p>This is the container for all the applications: each row represents one and carries its information.
                            The rows are smart: they will automatically detect if something's wrong and let you know by lighting 
                            up of a different colour, and calculate the EIQ score for you. If you're not sure why a row is lit up, 
-                           just hover on it with the mouse and a little text will pop up telling you what's going on!
-                        </p>
+                           just hover on it with the mouse and a little text will pop up telling you what's going on!</p>
                     </div>
                     <div class="feature-card">
                         <h4>5. 🎮 Applications Actions Buttons</h4>
@@ -511,55 +477,57 @@
                     </div>
                 </div>
 
-            <!-- Scenarios Comparison Page -->
+                <!-- Scenarios Comparison Page -->
                 <h2>Scenarios Comparison Page</h2>
                 <p>Here you can compare the scenarios you created/imported/modified in the Scenarios Tabs Page. 
                     The Scenarios will be displayed in a table format, with the applications grouped by type, 
-                    and ordered by contribution to the overall field use EIQ score. 
+                    and ordered by contribution to the overall field-use EIQ score. 
                     Bounce between this and the tabs page to see what products you can switch or what rates you can 
-                    change to improve your EIQ score. 
-                </p>
+                    change to improve your EIQ score.</p>
+                
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\season_2.png" 
-                alt="Scenarios comparison Screenshot" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Scenarios comparison Screenshot" class="screenshot">
 
-            <!-- Import Scenarios -->
+                <!-- Import Scenarios -->
                 <h2>Importing Scenarios</h2>
                 <p>To import a scenario, start by clicking the "Import scenario" button. A pop-up will appear, 
                     prompting you to pick a file from your computer, remember: the file should either be one 
                     auto-generated by [GXCore > Pesticide report > Farm Assurance Application Report > filter by crop-year, 
                     country, plant, grower, McCain field name] or one coming from this same app. 
                     For now, this app can only read these two formats.</p>
+                
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\import_1.png" 
-                alt="Scenario import 1" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Scenario import 1" class="screenshot">
 
                 <p>Once selected, the file will be parsed, and you'll see a little summary, plus a pop-up if any product 
                     was not recognised in the database. If you see a lot of problems, chances are you 
                     selected a region in your preferences, and imported an application report for a different region, 
-                    so many products could not be matched. </p>
+                    so many products could not be matched.</p>
+                
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\import_2.png" 
-                alt="Scenario import 2" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Scenario import 2" class="screenshot">
 
                 <p>You'll be automatically brought to a second tab where you can fix the matching issues by either skipping them 
                     (e.g. adjuvants that do not contribute to EIQ), importing them as-is (you'll see the text, but the 
                     row will be excluded from the EIQ calculation), or map it to an existing product searching it by name.
-                    The row at the bottom of the pop-up will tell you what's going to happen when you give the "OK".  
-                </p>
+                    The row at the bottom of the pop-up will tell you what's going to happen when you give the "OK".</p>
+                
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\import_3.png" 
-                alt="Scenario import 3" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Scenario import 3" class="screenshot">
 
                 <p>Once you solved all the product-matching issues, you'll see your applications. If any mistake filtered through 
                     when the applications were registered, now you'll see the row light up and be marked as "Incomplete" or
-                    "Invalid". If you're not sure why, just hover on the row with the mouse and a little text will pop up telling you what's wrong.
-                </p>
+                    "Invalid". If you're not sure why, just hover on the row with the mouse and a little text will pop up telling you what's wrong.</p>
+                
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\import_4.png" 
-                alt="Scenario import 4" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">
+                alt="Scenario import 4" class="screenshot">
 
                 <p>Once all the applications are rectified, you can rename the imported scenario by double clicking the tab name, 
-                    and then clone it to create a new scenario based on it. Using the "Compare scenarios" button,you can bounce 
-                    back and forth between views to see what you can do to reduce the EIQ score, or improve/adapt the plan to your grower's needs.
-                </p>
+                    and then clone it to create a new scenario based on it. Using the "Compare scenarios" button, you can bounce 
+                    back and forth between views to see what you can do to reduce the EIQ score, or improve/adapt the plan to your grower's needs.</p>
+                
                 <img src="C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\project\user_manual\import_5.png" 
-                alt="Scenario import 5" class="screenshot" style="max-width: 80%; height: auto; display: block; margin: 0 auto;">                
+                alt="Scenario import 5" class="screenshot">
             </section>
         </main>
     </div>
@@ -606,7 +574,7 @@
                 const popup = document.getElementById('notification-popup');
                 setTimeout(() => {
                     popup.classList.add('show');
-                }, 7500); // Small delay for better UX
+                }, 2000); // Reduced delay for better UX
             }
         }
 
