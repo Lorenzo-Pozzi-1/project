@@ -145,7 +145,7 @@ hidden_imports = [
 # Comprehensive excludes - now including pandas and its entire ecosystem
 excludes = [
     
-    # PySide6 modules you don't use
+    # PySide6 modules not used
     'PySide6.QtNetwork',
     'PySide6.QtOpenGL',
     'PySide6.QtSql',
