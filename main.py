@@ -22,7 +22,7 @@ def main() -> int:
     
     # Clear the terminal screen
     print("\033c", end="")
-
+    
     # Set the current directory as working directory 
     app_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(app_dir)

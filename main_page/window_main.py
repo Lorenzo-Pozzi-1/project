@@ -20,8 +20,7 @@ from products_page import ProductsPage
 from eiq_calculator_page.page_eiq_calculator import EiqCalculatorPage
 from season_planner_page import ScenariosManagerPage
 from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage
-from user_manual.user_manual_dialog import create_user_manual_dialog
-
+from user_manual.user_manual_dialog import open_user_manual
 
 class MainWindow(QMainWindow):
     """
@@ -37,8 +36,7 @@ class MainWindow(QMainWindow):
         """Initialize the main window and configuration."""
         super().__init__()
         self.config = config or {}
-        self.trace_dialog = None
-        self.user_manual_dialog = None  # Add user manual dialog reference
+        # self.trace_dialog = None # Dialog for calculation trace, removed after negative feedback for now
         self.updating_products = False
         self.selected_country = None
         self.selected_region = None
@@ -107,9 +105,6 @@ class MainWindow(QMainWindow):
         yellow_bar_layout.setContentsMargins(10, 2, 10, 2)
 
         # Create the user manual dialog and button
-        self.user_manual_dialog = create_user_manual_dialog(self)
-        
-        # Add user manual button (left corner)
         self.manual_button = create_button(
             text="?", 
             style="tiny", 
@@ -148,11 +143,8 @@ class MainWindow(QMainWindow):
         yellow_bar_layout.addWidget(report_label)
 
     def show_user_manual(self):
-        """Show the user manual dialog."""
-        if self.user_manual_dialog is not None:
-            self.user_manual_dialog.show()
-            self.user_manual_dialog.raise_()
-            self.user_manual_dialog.activateWindow()
+        """Open the user manual in the system browser."""
+        open_user_manual(self)
 
     def connect_signals(self):
         """Connect all signals to their respective handlers."""
