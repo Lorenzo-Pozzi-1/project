@@ -32,7 +32,9 @@ hidden_imports = [
     'PySide6.QtGui',
     'PySide6.QtPrintSupport',
     'PySide6.QtWebEngine',
+    'PySide6.QtWebEngineCore',
     'PySide6.QtWebEngineWidgets',
+    'PySide6.QtNetwork',
     
     # Your app modules only
     'common',
@@ -146,7 +148,6 @@ hidden_imports = [
 excludes = [
     
     # PySide6 modules not used
-    'PySide6.QtNetwork',
     'PySide6.QtOpenGL',
     'PySide6.QtSql',
     'PySide6.QtTest',
