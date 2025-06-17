@@ -66,9 +66,9 @@ def calculate_field_eiq_product(standardized_ais: List[Dict],
     total_field_eiq = 0.0
     breakdown = {}
     
-    # Calculate for each AI and log the formula
+    # Calculate for each AI and log the formula with proper tree structure
     for i, ai in enumerate(standardized_ais):
-        is_last = (i == len(standardized_ais) - 1)
+        is_last_ai = (i == len(standardized_ais) - 1)
         
         ai_field_eiq = calculate_field_eiq_single_ai(
             ai_concentration_per_unit=ai['concentration_per_unit'],
@@ -77,9 +77,11 @@ def calculate_field_eiq_product(standardized_ais: List[Dict],
             applications=applications
         )
         
-        # Log the formula with substituted values
-        formula = f"{ai['name']}: {rate_per_ha:.1f} × {ai['concentration_per_unit']:.3f} × {ai['eiq_per_kg']:.1f} × {applications} = {ai_field_eiq:.1f} eiq/ha"
-        calculation_tracer.log_substep(formula, level=2, is_last=is_last)
+        # Log the formula with better structure
+        ai_name = ai['name']
+        formula_parts = f"{rate_per_ha:.1f} × {ai['concentration_per_unit']:.4f} × {ai['eiq_per_kg']:.1f} × {applications}"
+        calculation_tracer.log_substep(f"{ai_name}:", level=2, is_last=False)
+        calculation_tracer.log_substep(f"Formula: {formula_parts} = {ai_field_eiq:.1f} eiq/ha", level=3, is_last=is_last_ai)
         
         total_field_eiq += ai_field_eiq
         breakdown[ai.get('name', 'Unknown')] = ai_field_eiq

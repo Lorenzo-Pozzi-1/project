@@ -67,17 +67,23 @@ class EIQCalculator:
             )
             calculation_tracer.add_blank_line()
             
+            calculation_tracer.log_separator()
+
             # Step 3: Field EIQ Calculation
             calculation_tracer.log_step("Field EIQ Calculation")
             calculation_tracer.log_substep("Formula: Rate × Concentration × EIQ × Applications", level=1)
             
+            calculation_tracer.log_separator()
+
             result = calculate_field_eiq_product(
                 standardized_ais=standardized.active_ingredients,
                 rate_per_ha=standardized.rate_per_ha,
                 applications=standardized.applications
             )
 
-            calculation_tracer.log_result("Field EIQ", f"{result.field_eiq_per_ha:.1f}", "eiq/ha")
+            calculation_tracer.add_blank_line()
+            calculation_tracer.log_result("TOTAL FIELD EIQ", f"{result.field_eiq_per_ha:.1f}", "eiq/ha")
+            calculation_tracer.log_separator("=", 30)
             calculation_tracer.calculation_complete()
             return result.field_eiq_per_ha
             

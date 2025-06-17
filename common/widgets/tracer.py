@@ -72,7 +72,7 @@ class CalculationTracer:
             self.log_substep("No active ingredients found", level, True)
             return
             
-        self.log_substep(f"Active Ingredients: {len(ai_data)} found", level)
+        self.log_substep(f"Active Ingredients: {len(ai_data)} found", level, False)
         for i, ai in enumerate(ai_data):
             is_last = (i == len(ai_data) - 1)
             eiq_text = f"EIQ: {ai['eiq']}" if ai.get('eiq') is not None else "EIQ: --"
@@ -91,11 +91,16 @@ class CalculationTracer:
         elif level == 1:
             return "└─" if is_last else "├─"
         else:
-            base = "│  " * (level - 2)
-            if level == 2:
-                return f"│  └─" if is_last else f"│  ├─"
-            else:
-                return f"{base}   └─" if is_last else f"{base}   ├─"
+            # Build proper nested tree structure
+            prefix = ""
+            for i in range(1, level):
+                if i == level - 1:
+                    # Last level gets the actual branch
+                    prefix += "└─" if is_last else "├─"
+                else:
+                    # Intermediate levels get continuation or space
+                    prefix += "│  "
+            return prefix
     
     def add_blank_line(self):
         """Add a blank line for spacing."""
@@ -121,6 +126,10 @@ class CalculationTracer:
     def _update_ui(self):
         if self.ui_dialog and self.ui_dialog.isVisible():
             self.ui_dialog.update_content()
+
+    def log_separator(self, char="─", length=50):
+        """Add a visual separator line."""
+        self.messages.append(char * length)
 
 # Global instance
 calculation_tracer = CalculationTracer.get_instance()
