@@ -15,7 +15,7 @@ from common.constants import (ADVANCED, EIQ_EXTREME_COLOR, EIQ_HIGH_COLOR, EIQ_H
 DEFAULT_CONFIG = {
     "user_preferences": {
         "default_country": "Canada",
-        "default_region": "None of these",
+        "default_region": "New Brunswick",
         "default_row_spacing": 34.0,
         "default_row_spacing_unit": "inch",
         "default_seeding_rate": 20,
@@ -35,7 +35,7 @@ def get_config_file_path():
         # Running as compiled executable
         # Get the directory where the executable is located
         exe_dir = os.path.dirname(sys.executable)
-        config_path = os.path.join(exe_dir, "config.json")
+        config_path = os.path.join(exe_dir, "user_preferences.json")
         
         # Test if we can write to the exe directory
         try:
@@ -49,10 +49,10 @@ def get_config_file_path():
             home_dir = os.path.expanduser("~")
             app_config_dir = os.path.join(home_dir, ".project")
             os.makedirs(app_config_dir, exist_ok=True)
-            return os.path.join(app_config_dir, "config.json")
+            return os.path.join(app_config_dir, "user_preferences.json")
     else:
         # Running in development - use current directory
-        return "config.json"
+        return "user_preferences.json"
 
 def load_config():
     """

@@ -3,8 +3,8 @@
         "default_country": "Canada",
         "default_region": "New Brunswick",
         "default_row_spacing": 34.0,
-        "default_seeding_rate": 20.0,
         "default_row_spacing_unit": "inch",
+        "default_seeding_rate": 20.0,
         "default_seeding_rate_unit": "cwt/acre"
     }
 }

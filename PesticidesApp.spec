@@ -13,15 +13,15 @@ project_root = os.path.dirname(os.path.abspath('main.py'))
 # Define data files to include
 data_files = [
     # Config file
-    ('config.json', '.'),
+    ('user_preferences.json', '.'),
     
     # Data CSV files
     ('data/csv_AI.csv', 'data'),
     ('data/csv_products.csv', 'data'),
     ('data/csv_UOM.csv', 'data'),
     
-    # User manual files
-    ('user_manual/*', 'user_manual'),
+    # User manual files - include entire directory for CSS/JS/images
+    ('user_manual', 'user_manual'),
 ]
 
 # Hidden imports - optimized for openpyxl only
@@ -105,6 +105,11 @@ hidden_imports = [
     'user_manual',
     'user_manual.user_manual_dialog',
     
+    # Browser launching dependencies
+    'webbrowser',
+    'tempfile',
+    'shutil',
+    
     # Essential dependencies - openpyxl focused
     'openpyxl',
     'openpyxl.workbook',
@@ -143,7 +148,7 @@ hidden_imports = [
 # Comprehensive excludes - now including pandas and its entire ecosystem
 excludes = [
     
-    # PySide6 modules not used
+    # PySide6 modules not used - QtWebEngine explicitly excluded
     'PySide6.QtWebEngine',
     'PySide6.QtWebEngineCore',
     'PySide6.QtWebEngineWidgets',
@@ -384,6 +389,16 @@ def filter_data(data_list):
 # Apply filtering
 a.datas = filter_data(a.datas)
 
+# Remove Qt translation files - this saves ~2-3MB
+a.datas = [x for x in a.datas if not (x[0].startswith('PySide6/translations/') and x[0].endswith('.qm'))]
+
+# Remove some unnecessary Qt plugins (keeping minimal set for functionality)
+qt_plugins_to_remove = [
+    'PySide6/plugins/generic/qtuiotouchplugin.dll',
+    'PySide6/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll',
+]
+a.datas = [x for x in a.datas if x[0] not in qt_plugins_to_remove]
+
 # Remove duplicate entries
 pyz = PYZ(a.pure, a.zipped_data, cipher=None)
 
@@ -400,7 +415,12 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    upx_exclude=[],
+    upx_exclude=[
+        'PySide6/Qt6Core.dll',
+        'PySide6/Qt6Gui.dll', 
+        'PySide6/Qt6Widgets.dll',
+        'PySide6/Qt6PrintSupport.dll',
+    ],
     runtime_tmpdir=None,
     console=False,  # Set to True if you want console window for debugging
     disable_windowed_traceback=False,
