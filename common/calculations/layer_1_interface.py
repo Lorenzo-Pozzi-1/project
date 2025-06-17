@@ -52,12 +52,12 @@ class EIQCalculator:
             
             # Step 1: Product Information
             calculation_tracer.log_step("Product Information")
-            calculation_tracer.log_ai_list(active_ingredients, level=1)
-            calculation_tracer.log_application_info(application_rate, application_rate_uom, applications, level=1)
-            calculation_tracer.add_blank_line()
+            calculation_tracer.log_ai_list(active_ingredients)
+            calculation_tracer.log_application_info(application_rate, application_rate_uom, applications)
             
             # Step 2: Unit Standardization
             calculation_tracer.log_step("Unit Standardization")
+            calculation_tracer.set_suppress_redundant(True)
             standardized = self.standardizer.standardize_product_inputs(
                 active_ingredients=active_ingredients,
                 application_rate=application_rate,
@@ -65,25 +65,20 @@ class EIQCalculator:
                 applications=applications,
                 user_preferences=user_preferences
             )
-            calculation_tracer.add_blank_line()
+            calculation_tracer.set_suppress_redundant(False)
             
             calculation_tracer.log_separator()
 
             # Step 3: Field EIQ Calculation
             calculation_tracer.log_step("Field EIQ Calculation")
-            calculation_tracer.log_substep("Formula: Rate × Concentration × EIQ × Applications", level=1)
             
-            calculation_tracer.log_separator()
-
             result = calculate_field_eiq_product(
                 standardized_ais=standardized.active_ingredients,
                 rate_per_ha=standardized.rate_per_ha,
                 applications=standardized.applications
             )
 
-            calculation_tracer.add_blank_line()
             calculation_tracer.log_result("TOTAL FIELD EIQ", f"{result.field_eiq_per_ha:.1f}", "eiq/ha")
-            calculation_tracer.log_separator("=", 30)
             calculation_tracer.calculation_complete()
             return result.field_eiq_per_ha
             

@@ -196,9 +196,7 @@ class SingleProductCalculatorTab(QWidget):
             
             # Pre-compile application parameters based on product data
             self.update_application_params()
-            
-            # Calculate EIQ with new values
-            self.calculate_eiq()
+            # NB the signal trigger EIQ calculation. so no need to repeat it!
             
         except Exception as e:
             print(f"Error loading product info for '{product_name}': {e}")

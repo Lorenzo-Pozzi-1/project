@@ -62,10 +62,7 @@ class EIQUOMStandardizer:
         Returns:
             StandardizedEIQInputs with all values in standard units
         """
-        
-        ai_name = "AI"  # We don't have AI name in this context, use generic
-        calculation_tracer.log_substep(f"Standardizing {ai_name} (EIQ={ai_eiq}, Conc={ai_concentration} {ai_concentration_uom})", level=2)
-        
+                
         # Step 1: Handle application rate - use pre-standardized if available
         if pre_standardized_rate is not None and pre_standardized_rate_type is not None:
             calculation_tracer.log_substep(f"Using pre-standardized rate: {pre_standardized_rate} {'kg/ha' if pre_standardized_rate_type == 'weight' else 'l/ha'}", level=3)
@@ -122,22 +119,16 @@ class EIQUOMStandardizer:
             ProductStandardizedInputs with all AIs standardized consistently
         """
         
-        calculation_tracer.log_substep(f"Standardizing product inputs ({applications} applications with {len(active_ingredients)} AIs at {application_rate} {application_rate_uom})", level=1)
-        
         # Step 1: Standardize application rate ONCE at product level
-        calculation_tracer.log_substep("Standardizing product application rate", level=2)
         rate_per_ha, rate_unit_type = self._standardize_application_rate(
             application_rate, application_rate_uom, user_preferences
         )
         
         # Step 2: Standardize all active ingredients using the pre-standardized rate
-        calculation_tracer.log_substep("Standardizing all active ingredients", level=2)
         standardized_ais = []
         for i, ai in enumerate(active_ingredients):
-            calculation_tracer.log_substep(f"Processing AI {i+1}/{len(active_ingredients)}: {ai.get('name', 'Unknown')}", level=3)
             
             if not ai or ai.get('eiq') in [None, "--"] or ai.get('concentration') in [None, "--"]:
-                calculation_tracer.log_substep(f"Skipping {ai.get('name', 'Unknown')} due to missing data", level=4)
                 continue
                 
             try:
@@ -160,7 +151,6 @@ class EIQUOMStandardizer:
                     'eiq_per_kg': standardized_ai.ai_eiq_per_kg
                 }
                 standardized_ais.append(ai_data)
-                calculation_tracer.log_substep(f"Successfully standardized {ai.get('name', 'Unknown')}", level=4)
                 
             except Exception as e:
                 calculation_tracer.log_substep(f"Error standardizing {ai.get('name', 'unknown')}: {e}", level=4)
@@ -172,7 +162,6 @@ class EIQUOMStandardizer:
             active_ingredients=standardized_ais,
             applications=applications
         )
-        calculation_tracer.log_substep(f"Product standardization complete ({len(standardized_ais)} AIs processed)", level=2)
         return result
     
     def _standardize_application_rate(self, 
@@ -206,9 +195,12 @@ class EIQUOMStandardizer:
             raise ValueError(f"Application rate must be weight/area or volume/area, got: {rate_uom}")
         
         # Convert to standard rate
-        calculation_tracer.log_substep(f"Converting application rate: {rate} {from_uom.original_string} → {target_uom.original_string}", level=4)
         standardized_rate = self.uom_repo.convert_composite_uom(
             rate, from_uom, target_uom, user_preferences
+        )
+        calculation_tracer.log_conversion_simple(
+            "Application rate", rate, rate_uom, 
+            f"{standardized_rate:.1f}", target_uom.original_string
         )
         
         return standardized_rate, unit_type
@@ -267,9 +259,12 @@ class EIQUOMStandardizer:
         
         # Convert concentration
         try:
-            calculation_tracer.log_substep(f"Converting concentration: {concentration} {from_uom.original_string} → {target_uom.original_string}", level=5)
             standardized_concentration = self.uom_repo.convert_composite_uom(
                 concentration, from_uom, target_uom
+            )
+            calculation_tracer.log_conversion_simple(
+                "AI concentration", concentration, concentration_uom,
+                f"{standardized_concentration:.4f}", target_uom.original_string
             )
             return standardized_concentration
         except Exception as e:
@@ -288,20 +283,19 @@ class EIQUOMStandardizer:
         Returns:
             EIQ in standard units (eiq/kg)
         """
-        calculation_tracer.log_substep(f"Standardizing AI EIQ: {ai_eiq:.2f} (eiq/lb) → (eiq/kg)", level=4)
-        
         if ai_eiq is None:
-            calculation_tracer.log_substep("Missing AI EIQ value, calculating assuming it is 0", level=5)
-            return 0.0
+            return None
         
         if ai_eiq == 0:
-            calculation_tracer.log_substep("AI EIQ is 0, returning 0.0", level=5)
             return 0.0
-        
+
         # Cornell EIQ is per pound, convert to per kg
         conversion_factor = self.uom_repo.convert_base_unit(1,'lb','kg')
         result = ai_eiq / conversion_factor
-        calculation_tracer.log_substep(f"Conversion complete: {result:.2f} eiq/kg", level=5)
+        calculation_tracer.log_conversion_simple(
+            "AI EIQ", f"{ai_eiq:.2f}", "eiq/lb",
+            f"{result:.2f}", "eiq/kg"
+        )
         return result
     
     def _validate_dimensional_analysis(self, rate_unit_type: str, ai_concentration: float):

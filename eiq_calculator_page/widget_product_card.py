@@ -109,10 +109,10 @@ class ProductCard(QFrame):
         # This is the missing method that properly initializes the product search
         self.product_selection.refresh_data()
     
-    def refresh_product_types(self):
-        """Refresh the product types in the selection widget."""
-        # Keep this method for backward compatibility
-        self.refresh_product_data()
+    # def refresh_product_types(self):
+    #     """Refresh the product types in the selection widget."""
+    #     # Keep this method for backward compatibility
+    #     self.refresh_product_data()
     
     def update_product_info(self, product_name):
         """
@@ -160,9 +160,9 @@ class ProductCard(QFrame):
             
             # Update application parameters widget
             self.app_params.set_params(rate, unit, applications)
-            
+            # This automatically triggers data_changed signal
             # Emit signal that data has changed
-            self.data_changed.emit(self.index)
+            # self.data_changed.emit(self.index)
             
         except Exception as e:
             print(f"Error loading product info for '{product_name}': {e}")
@@ -175,9 +175,9 @@ class ProductCard(QFrame):
         self.ai_label.setText("None")
         # Reset to base state (None unit)
         self.app_params.set_params(0.0, None, 1)
-        
+        # This automatically triggers data_changed signal
         # Emit signal that data has changed
-        self.data_changed.emit(self.index)
+        # self.data_changed.emit(self.index)
     
     def get_product_data(self):
         """
