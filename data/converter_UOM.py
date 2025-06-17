@@ -433,7 +433,6 @@ class UOMConverter:
             amount_per_ha *= area_factor
             calculation_tracer.log_substep(f"Step 6: Area conversion ha → {to_uom.denominator} (×{area_factor:.3f})", level=5)
         
-        calculation_tracer.log_conversion(value, from_uom.original_string, to_uom.original_string, f"{amount_per_ha:.3f}", level=4, is_last=True)
         return amount_per_ha
     
     def _convert_area_to_linear(self, value: float, from_uom, to_uom,
@@ -485,7 +484,6 @@ class UOMConverter:
             meter_factor = self.convert_base_unit(1.0, 'm', to_uom.denominator)
             final_result = final_amount_per_m / meter_factor  # Inverse because it's in denominator
         
-        calculation_tracer.log_conversion(value, from_uom.original_string, to_uom.original_string, f"{final_result:.3f}", level=4, is_last=True)
         return final_result
     
     def _convert_seed_treatment_to_area(self, value: float, from_uom, to_uom, user_preferences: dict) -> float:
@@ -572,7 +570,6 @@ class UOMConverter:
             final_result *= den_factor
             calculation_tracer.log_substep(f"Step 4b: Area conversion ha → {to_uom.denominator} (×{den_factor:.3f})", level=5)
         
-        calculation_tracer.log_conversion(value, from_uom.original_string, to_uom.original_string, f"{final_result:.3f}", level=4, is_last=True)
         return final_result
     
     def _convert_area_to_seed_treatment(self, value: float, from_uom, to_uom, 
@@ -650,5 +647,4 @@ class UOMConverter:
             final_amount_per_seed_unit *= seed_weight_factor
             calculation_tracer.log_substep(f"Step 4b: Seed weight conversion kg → {to_uom.denominator} (×{seed_weight_factor:.3f})", level=5)
         
-        calculation_tracer.log_conversion(value, from_uom.original_string, to_uom.original_string, f"{final_amount_per_seed_unit:.3f}", level=4, is_last=True)
         return final_amount_per_seed_unit

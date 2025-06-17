@@ -67,8 +67,6 @@ class EIQCalculator:
             )
             calculation_tracer.set_suppress_redundant(False)
             
-            calculation_tracer.log_separator()
-
             # Step 3: Field EIQ Calculation
             calculation_tracer.log_step("Field EIQ Calculation")
             

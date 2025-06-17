@@ -49,7 +49,6 @@ class CalculationTracer:
         if self._current_step > 1:
             self.messages.append("")  # Add spacing between steps
         self.messages.append(f"{self._current_step}: {description}")
-        self.messages.append("─" * 40)
     
     def log_substep(self, description, level=1, is_last=False):
         """Log a substep with clean tree structure - avoid redundant calls."""
@@ -94,7 +93,6 @@ class CalculationTracer:
         unit_str = f" {unit}" if unit else ""
         if level == 0:
             self.messages.append("")
-            self.messages.append("─" * 40)
             self.messages.append(f"RESULT: {value}{unit_str}")
             self.messages.append("=" * 60)
         else:
@@ -138,10 +136,6 @@ class CalculationTracer:
     def _update_ui(self):
         if self.ui_dialog and self.ui_dialog.isVisible():
             self.ui_dialog.update_content()
-
-    def log_separator(self, char="─", length=40):
-        """Add visual separator."""
-        self.messages.append(char * length)
 
 # Global instance
 calculation_tracer = CalculationTracer.get_instance()

@@ -138,14 +138,6 @@ class UOMDelegate(QStyledItemDelegate):
                 
                 calculation_tracer.log_header(f"UOM Conversion - Application Rate")
                 calculation_tracer.log_step("Rate Unit Conversion")
-                calculation_tracer.log_conversion(
-                    value=current_rate,
-                    from_unit=current_uom, 
-                    to_unit=new_uom,
-                    result=converted_rate,
-                    level=1,
-                    is_last=True
-                )
                 calculation_tracer.log_result("Converted Rate", f"{converted_rate:.2f}", new_uom)
                 calculation_tracer.calculation_complete()
                 return True
