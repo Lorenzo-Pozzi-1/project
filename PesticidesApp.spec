@@ -428,5 +428,5 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     # Add icon if you have one
-    # icon='icon.ico',
+    icon='icon.ico',
 )
