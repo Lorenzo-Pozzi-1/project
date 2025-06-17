@@ -132,6 +132,14 @@ class CalculationTraceDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Calculation Trace - STILL IN DEVELOPMENT: needs some visual touch-ups")
         self.setModal(False)
+        
+        # Set window flags to include maximize button and make resizable
+        self.setWindowFlags(Qt.Window | Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint)
+        
+        # Set minimum size
+        self.setMinimumSize(1000, 500)
+        
+        # Start maximized (optional - you can remove this line if you prefer default size)
         self.setWindowState(self.windowState() | Qt.WindowMaximized)
         
         # Import here to avoid circular imports

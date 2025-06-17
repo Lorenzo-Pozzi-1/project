@@ -14,6 +14,17 @@ from common.widgets.tracer import calculation_tracer
 from data.repository_UOM import UOMRepository, CompositeUOM
 
 
+class FormattedDoubleSpinBox(QDoubleSpinBox):
+    """Custom QDoubleSpinBox that displays up to 2 decimals but handles up to 10 decimals internally."""
+    
+    def textFromValue(self, value):
+        """Override to control display format - max 2 decimals, remove trailing zeros."""
+        # Format to 2 decimals, then remove trailing zeros
+        formatted = f"{value:.2f}".rstrip('0').rstrip('.')
+        # If no decimal point remains, ensure we show at least the integer
+        return formatted if '.' in formatted else f"{value:.0f}"
+
+
 class ApplicationRateWidget(QWidget):
     """Widget for entering application rate with unit selection and automatic conversion."""
     
@@ -34,11 +45,11 @@ class ApplicationRateWidget(QWidget):
         
         font = get_small_font()
         
-        # Rate spinbox
-        self._rate_spin = QDoubleSpinBox()
+        # Rate spinbox with custom formatting
+        self._rate_spin = FormattedDoubleSpinBox()
         self._rate_spin.setRange(0.0, 999999.99)
         self._rate_spin.setValue(0.0)
-        self._rate_spin.setDecimals(2)
+        self._rate_spin.setDecimals(10)  # Allow conversions between large and small UOMs (e.g. gal/acre <-> ml/ha)
         self._rate_spin.setFont(font)
         self._rate_spin.valueChanged.connect(self.value_changed)
         layout.addWidget(self._rate_spin)

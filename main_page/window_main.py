@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         """Initialize the main window and configuration."""
         super().__init__()
         self.config = config or {}
-        # self.trace_dialog = None # Dialog for calculation trace, removed after negative feedback for now
+        self.trace_dialog = None # Dialog for calculation trace, removed after negative feedback for now
         self.updating_products = False
         self.selected_country = None
         self.selected_region = None
@@ -114,6 +114,17 @@ class MainWindow(QMainWindow):
         self.manual_button.setToolTip("Open User Manual")
         yellow_bar_layout.addWidget(self.manual_button)
         
+        
+        # Create the tracer button
+        self.tracer_button = create_button(
+            text="</>", 
+            style="tiny", 
+            callback=self.show_calculation_trace,
+            parent=self.yellow_bar
+        )
+        self.tracer_button.setToolTip("Open Tracer")
+        yellow_bar_layout.addWidget(self.tracer_button)
+
         yellow_bar_layout.addStretch()
 
         # Add feedback link
