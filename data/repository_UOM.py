@@ -347,18 +347,30 @@ class UOMRepository:
         """Check if rate conversion requires user preferences."""
         rate_composite = CompositeUOM(rate_uom)
         
+        if not rate_composite.denominator:
+            return False
+        
+        denominator_unit = self.get_base_unit(rate_composite.denominator)
+        if not denominator_unit:
+            return False
+        
         # Linear rates need row spacing
-        if rate_composite.denominator and rate_composite.denominator in ['100 m', '1000 ft', 'm', 'ft']:
+        if denominator_unit.category == 'length':
             return True
         
         # Seed treatments need seeding rate
-        if rate_composite.denominator == 'cwt':
+        if denominator_unit.category == 'weight':
             return True
         
         return False
     
     def _validate_physical_state_compatibility(self, from_uom: CompositeUOM, to_uom: CompositeUOM):
         """Validate that we're not converting between incompatible physical states."""
+        
+        # SPECIAL CASE: Allow seed treatment conversions (bidirectional)
+        if self._needs_user_preferences(from_uom, to_uom):
+            return  # Skip physical state validation for preference-based conversions
+        
         # Get the numerator units (the "amount" part)
         from_num_unit = self.get_base_unit(from_uom.numerator)
         to_num_unit = self.get_base_unit(to_uom.numerator)
@@ -435,13 +447,22 @@ class UOMRepository:
     
     def _needs_user_preferences(self, from_uom: CompositeUOM, to_uom: CompositeUOM) -> bool:
         """Check if conversion needs user preferences (row spacing, seeding rate)."""
-        # Linear rates like ml/100m need row spacing to convert to area rates
-        if from_uom.denominator in ['100m', '1000ft', 'm', 'ft'] and \
-           to_uom.denominator in ['ha', 'acre']:
+        
+        # Get denominator units
+        from_denom_unit = self.get_base_unit(from_uom.denominator) if from_uom.denominator else None
+        to_denom_unit = self.get_base_unit(to_uom.denominator) if to_uom.denominator else None
+        
+        if not from_denom_unit or not to_denom_unit:
+            return False
+        
+        # Linear ↔ Area conversions need row spacing (bidirectional)
+        if ((from_denom_unit.category == 'length' and to_denom_unit.category == 'area') or
+            (from_denom_unit.category == 'area' and to_denom_unit.category == 'length')):
             return True
         
-        # Seed treatments like kg/cwt need seeding rate
-        if from_uom.denominator in ['cwt', '100kg'] and to_uom.denominator in ['ha', 'acre']:
+        # Seed weight ↔ Area conversions need seeding rate (bidirectional)
+        if ((from_denom_unit.category == 'weight' and to_denom_unit.category == 'area') or
+            (from_denom_unit.category == 'area' and to_denom_unit.category == 'weight')):
             return True
         
         return False
@@ -452,13 +473,32 @@ class UOMRepository:
         if not user_preferences:
             raise ValueError("User preferences required for this conversion")
         
-        # Linear to area conversion (amount/length → amount/ha)
-        if from_uom.denominator in ['100m', '1000ft', 'm', 'ft']:
-            return self._convert_linear_to_area(value, from_uom, to_uom, user_preferences)
+        # Determine conversion type based on denominator categories
+        from_denom_unit = self.get_base_unit(from_uom.denominator) if from_uom.denominator else None
+        to_denom_unit = self.get_base_unit(to_uom.denominator) if to_uom.denominator else None
         
-        # Seed treatment conversion (amount/cwt → amount/ha)
-        elif from_uom.denominator in ['cwt', '100kg']:
-            return self._convert_seed_treatment_to_area(value, from_uom, to_uom, user_preferences)
+        if not from_denom_unit or not to_denom_unit:
+            raise ValueError(f"Unknown denominator units in conversion: {from_uom.original_string} to {to_uom.original_string}")
+        
+        # Linear to/from area conversion
+        if ((from_denom_unit.category == 'length' and to_denom_unit.category == 'area') or
+            (from_denom_unit.category == 'area' and to_denom_unit.category == 'length')):
+            
+            # Determine direction and call appropriate method
+            if from_denom_unit.category == 'length':
+                return self._convert_linear_to_area(value, from_uom, to_uom, user_preferences)
+            else:
+                return self._convert_area_to_linear(value, from_uom, to_uom, user_preferences)
+        
+        # Seed treatment to/from area conversion  
+        elif ((from_denom_unit.category == 'weight' and to_denom_unit.category == 'area') or
+              (from_denom_unit.category == 'area' and to_denom_unit.category == 'weight')):
+            
+            # Determine direction and call appropriate method
+            if from_denom_unit.category == 'weight':
+                return self._convert_seed_treatment_to_area(value, from_uom, to_uom, user_preferences)
+            else:
+                return self._convert_area_to_seed_treatment(value, from_uom, to_uom, user_preferences)
         
         raise ValueError(f"No preference-based conversion available for {from_uom.original_string} to {to_uom.original_string}")
     
@@ -513,6 +553,58 @@ class UOMRepository:
         
         calculation_tracer.log_conversion(value, from_uom.original_string, to_uom.original_string, f"{amount_per_ha:.3f}", level=4, is_last=True)
         return amount_per_ha
+    
+    def _convert_area_to_linear(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM,
+                               user_preferences: dict) -> float:
+        """
+        Convert area rates to linear rates using row spacing.
+        Reverse of _convert_linear_to_area.
+        """
+        calculation_tracer.log_substep("Converting area rate to linear rate", level=4)
+        
+        # Step 1: Get row spacing and convert to meters
+        row_spacing = user_preferences.get('default_row_spacing', 34.0)
+        row_spacing_unit = user_preferences.get('default_row_spacing_unit', 'inch')
+        row_spacing_m = self.convert_base_unit(row_spacing, row_spacing_unit, 'm')
+        calculation_tracer.log_substep(f"Step 1: Row spacing {row_spacing} {row_spacing_unit} = {row_spacing_m:.3f} m", level=5)
+        
+        # Step 2: Calculate meters of rows per hectare
+        m_of_rows_per_ha = 10000.0 / row_spacing_m
+        calculation_tracer.log_substep(f"Step 2: Meters of rows per hectare: {m_of_rows_per_ha:.1f} m/ha", level=5)
+        
+        # Step 3: Convert from area unit to ha if needed
+        amount_per_ha = value
+        if from_uom.denominator != 'ha':
+            ha_factor = self.convert_base_unit(1.0, from_uom.denominator, 'ha')
+            amount_per_ha *= ha_factor
+            calculation_tracer.log_substep(f"Step 3: Area conversion {from_uom.denominator} → ha (×{ha_factor:.3f})", level=5)
+        
+        # Step 4: Convert amount/ha to amount/m
+        amount_per_m = amount_per_ha / m_of_rows_per_ha
+        calculation_tracer.log_substep(f"Step 4: {amount_per_ha:.3f} {from_uom.numerator}/ha = {amount_per_m:.3f} {from_uom.numerator}/m", level=5)
+        
+        # Step 5: Convert numerator unit if needed
+        final_amount_per_m = amount_per_m
+        if from_uom.numerator != to_uom.numerator:
+            num_factor = self.convert_base_unit(1.0, from_uom.numerator, to_uom.numerator)
+            final_amount_per_m *= num_factor
+            calculation_tracer.log_substep(f"Step 5: Unit conversion {from_uom.numerator} → {to_uom.numerator} (×{num_factor:.3f})", level=5)
+        
+        # Step 6: Convert from standard linear rate (amount/m) to target linear unit
+        if to_uom.denominator in ['100m', '1000ft']:
+            # Handle special cases where denominator is not just a unit but a quantity
+            if to_uom.denominator == '100m':
+                final_result = final_amount_per_m * 100.0  # Convert from amount/m to amount/100m
+            elif to_uom.denominator == '1000ft':
+                feet_per_meter = self.convert_base_unit(1.0, 'm', 'ft')
+                final_result = final_amount_per_m * (1000.0 * feet_per_meter)  # Convert from amount/m to amount/1000ft
+        else:
+            # Standard conversion for simple units
+            meter_factor = self.convert_base_unit(1.0, 'm', to_uom.denominator)
+            final_result = final_amount_per_m / meter_factor  # Inverse because it's in denominator
+        
+        calculation_tracer.log_conversion(value, from_uom.original_string, to_uom.original_string, f"{final_result:.3f}", level=4, is_last=True)
+        return final_result
     
     def _convert_seed_treatment_to_area(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM, user_preferences: dict) -> float:
         """
@@ -599,3 +691,80 @@ class UOMRepository:
         
         calculation_tracer.log_conversion(value, from_uom.original_string, to_uom.original_string, f"{final_result:.3f}", level=4, is_last=True)
         return final_result
+    
+    def _convert_area_to_seed_treatment(self, value: float, from_uom: CompositeUOM, to_uom: CompositeUOM, 
+                                       user_preferences: dict) -> float:
+        """
+        Convert area rates to seed treatment rates using seeding rate.
+        Reverse of _convert_seed_treatment_to_area.
+        
+        Args:
+            value: Application rate value (e.g., 5.0 for "5 ml/ha")
+            from_uom: Source UOM (e.g., "ml/ha", "kg/ha") 
+            to_uom: Target UOM (e.g., "ml/cwt", "fl oz/100kg")
+            user_preferences: User preferences containing seeding rate info
+            
+        Returns:
+            Converted rate in target seed treatment units
+            
+        Formula:
+            [amount/area] ÷ [seed_weight/area] = [amount/seed_weight]
+            e.g., [ml/ha] ÷ [cwt/ha] = [ml/cwt]
+        """
+        calculation_tracer.log_substep("Converting area rate to seed treatment rate", level=4)
+        
+        # Step 1: Parse and standardize seeding rate to kg/ha
+        seeding_rate = user_preferences.get('default_seeding_rate', 20)
+        seeding_rate_unit = user_preferences.get('default_seeding_rate_unit', 'cwt/acre')
+                
+        # Parse seeding rate UOM
+        seeding_uom = CompositeUOM(seeding_rate_unit)
+        
+        # Convert seeding rate to kg/ha
+        seeding_rate_kg_per_ha = seeding_rate
+        
+        # Convert numerator to kg
+        if seeding_uom.numerator != 'kg':
+            kg_factor = self.convert_base_unit(1.0, seeding_uom.numerator, 'kg')
+            seeding_rate_kg_per_ha *= kg_factor
+        
+        # Convert denominator to ha  
+        if seeding_uom.denominator != 'ha':
+            ha_factor = self.convert_base_unit(1.0, seeding_uom.denominator, 'ha')
+            seeding_rate_kg_per_ha /= ha_factor
+        
+        calculation_tracer.log_substep(f"Step 1: Seeding rate {seeding_rate} {seeding_rate_unit} = {seeding_rate_kg_per_ha:.1f} kg/ha", level=5)
+        
+        # Step 2: Convert from area unit to ha if needed
+        amount_per_ha = value
+        if from_uom.denominator != 'ha':
+            ha_factor = self.convert_base_unit(1.0, from_uom.denominator, 'ha')
+            amount_per_ha *= ha_factor
+            calculation_tracer.log_substep(f"Step 2: Area conversion {from_uom.denominator} → ha (×{ha_factor:.3f})", level=5)
+        
+        # Step 3: Apply reverse conversion formula
+        # [amount/ha] ÷ [kg_seed/ha] = [amount/kg_seed]
+        amount_per_kg_seed = amount_per_ha / seeding_rate_kg_per_ha
+        calculation_tracer.log_substep(f"Step 3: {amount_per_ha:.3f} {from_uom.numerator}/ha ÷ {seeding_rate_kg_per_ha:.1f} kg/ha = {amount_per_kg_seed:.3f} {from_uom.numerator}/kg", level=5)
+        
+        # Step 4: Determine target application rate units
+        # Check if target numerator is liquid or dry to maintain consistency
+        target_num_unit = self.get_base_unit(to_uom.numerator)
+        if not target_num_unit:
+            raise ValueError(f"Unknown target application rate unit: {to_uom.numerator}")
+        
+        # Convert numerator if needed (e.g., ml to fl oz, kg to g)
+        final_amount_per_seed_unit = amount_per_kg_seed
+        if from_uom.numerator != to_uom.numerator:
+            num_factor = self.convert_base_unit(1.0, from_uom.numerator, to_uom.numerator)
+            final_amount_per_seed_unit *= num_factor
+            calculation_tracer.log_substep(f"Step 4a: Unit conversion {from_uom.numerator} → {to_uom.numerator} (×{num_factor:.3f})", level=5)
+        
+        # Step 5: Convert from kg seed weight to target seed weight unit
+        if to_uom.denominator != 'kg':
+            seed_weight_factor = self.convert_base_unit(1.0, 'kg', to_uom.denominator)
+            final_amount_per_seed_unit *= seed_weight_factor
+            calculation_tracer.log_substep(f"Step 4b: Seed weight conversion kg → {to_uom.denominator} (×{seed_weight_factor:.3f})", level=5)
+        
+        calculation_tracer.log_conversion(value, from_uom.original_string, to_uom.original_string, f"{final_amount_per_seed_unit:.3f}", level=4, is_last=True)
+        return final_amount_per_seed_unit
