@@ -13,7 +13,7 @@ from PySide6.QtCore import Signal, Qt
 from common.styles import YELLOW_BAR_STYLE
 from common.utils import load_config
 from common.widgets.header_frame_buttons import create_button
-from common.widgets.tracer import CalculationTraceDialog
+#region from common.widgets.tracer import CalculationTraceDialog 
 from data.repository_product import ProductRepository
 from main_page.page_home import HomePage
 from products_page import ProductsPage
@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         """Initialize the main window and configuration."""
         super().__init__()
         self.config = config or {}
-        self.trace_dialog = None # Dialog for calculation trace, removed after negative feedback for now
+        # self.trace_dialog = None # Dialog for calculation trace, removed after negative feedback for now
         self.updating_products = False
         self.selected_country = None
         self.selected_region = None
@@ -114,16 +114,15 @@ class MainWindow(QMainWindow):
         self.manual_button.setToolTip("Open User Manual")
         yellow_bar_layout.addWidget(self.manual_button)
         
-        
-        # Create the tracer button
-        self.tracer_button = create_button(
-            text="</>", 
-            style="tiny", 
-            callback=self.show_calculation_trace,
-            parent=self.yellow_bar
-        )
-        self.tracer_button.setToolTip("Open Tracer")
-        yellow_bar_layout.addWidget(self.tracer_button)
+#region        # Create the tracer button
+        # self.tracer_button = create_button(
+        #     text="</>", 
+        #     style="tiny", 
+        #     callback=self.show_calculation_trace,
+        #     parent=self.yellow_bar
+        # )
+        # self.tracer_button.setToolTip("Open Tracer")
+        # yellow_bar_layout.addWidget(self.tracer_button)
 
         yellow_bar_layout.addStretch()
 
@@ -168,7 +167,12 @@ class MainWindow(QMainWindow):
         self.home_page.preferences_changed.connect(self.apply_config_preferences)
 
     def navigate_to_page(self, page_index):
-        """Navigate to a specific page in the stacked widget."""  
+        """Navigate to a specific page in the stacked widget."""
+        # If we're currently on the home page (index 0), check for unsaved preferences
+        if self.stacked_widget.currentIndex() == 0 and self.home_page.preferences_row.has_unsaved_changes:
+            if not self.home_page.check_unsaved_preferences():
+                return  # Don't navigate if the user cancelled
+        
         self.stacked_widget.setCurrentIndex(page_index)
 
     def apply_filters(self, country, region):
@@ -222,18 +226,18 @@ class MainWindow(QMainWindow):
         # Apply filters
         self.apply_filters(default_country, default_region)
 
-    def show_calculation_trace(self):
-        """Show the calculation trace dialog."""
-        # Check if dialog already exists and is visible
-        if self.trace_dialog is not None and self.trace_dialog.isVisible():
-            # Just bring it to front and focus it
-            self.trace_dialog.raise_()
-            self.trace_dialog.activateWindow()
-            return
+#region    # def show_calculation_trace(self):
+    #     """Show the calculation trace dialog."""
+    #     # Check if dialog already exists and is visible
+    #     if self.trace_dialog is not None and self.trace_dialog.isVisible():
+    #         # Just bring it to front and focus it
+    #         self.trace_dialog.raise_()
+    #         self.trace_dialog.activateWindow()
+    #         return
         
-        # Create new dialog if none exists or previous one was closed
-        self.trace_dialog = CalculationTraceDialog(self)
-        self.trace_dialog.show()
+    #     # Create new dialog if none exists or previous one was closed
+    #     self.trace_dialog = CalculationTraceDialog(self)
+    #     self.trace_dialog.show()
 
     def closeEvent(self, event):
         """Handle the close event, clean up __pycache__ directories."""

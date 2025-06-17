@@ -122,10 +122,12 @@ class PreferencesRow(QWidget):
         preferences_layout.addWidget(self.save_preferences_button)
 
         # Monitor all controls for changes - Updated signal connections
+        self.country_combo.currentTextChanged.connect(self.mark_as_changed)
+        self.region_combo.currentTextChanged.connect(self.mark_as_changed)
         self.row_spacing_spin.valueChanged.connect(self.mark_as_changed)
-        self.row_spacing_unit.currentTextChanged.connect(self.mark_as_changed)  # Changed from currentIndexChanged
+        self.row_spacing_unit.currentTextChanged.connect(self.mark_as_changed)
         self.seeding_rate_spin.valueChanged.connect(self.mark_as_changed)
-        self.seeding_rate_unit.currentTextChanged.connect(self.mark_as_changed)  # Changed from currentIndexChanged
+        self.seeding_rate_unit.currentTextChanged.connect(self.mark_as_changed)
 
     def get_regions_for_country(self, country):
         """Get region options for a specific country."""
