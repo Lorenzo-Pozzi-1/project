@@ -61,12 +61,16 @@ class SingleProductCalculatorTab(QWidget):
 
         # Configure table columns
         header = self.ai_table.horizontalHeader()
-        for i in range(0,header.count()): header.setSectionResizeMode(i, QHeaderView.Stretch)
-        
+        for i in range(0, header.count()):
+            header.setSectionResizeMode(i, QHeaderView.Stretch)
+
+        # Prevent row height resizing
+        self.ai_table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+
         # Set a reasonable height for the table
         self.ai_table.setMinimumHeight(120)
         self.ai_table.setMaximumHeight(150)
-        
+
         # Form layout for better label alignment
         form_layout = QFormLayout()
         form_layout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
