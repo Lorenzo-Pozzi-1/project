@@ -48,7 +48,7 @@ class EIQCalculator:
                     product_name = f"Product with {first_ai} + {len(active_ingredients)-1} others"
             
             # Start structured logging
-            calculation_tracer.log_header(f"EIQ CALCULATION FOR {product_name}")
+            # calculation_tracer.log_header(f"EIQ CALCULATION FOR {product_name}")
             
             # Step 1: Product Information
             calculation_tracer.log_step("Product Information")

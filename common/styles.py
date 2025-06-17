@@ -335,33 +335,35 @@ FILTER_CHIP_STYLE = f"""
 # Calculation Trace Dialog Styles
 CALCULATION_TRACE_DIALOG_STYLE = f"""
 QDialog {{
-    background-color: {WHITE};
-    border: 1px solid {LIGHT_GRAY};
-    border-radius: 4px;
+    background-color: {LIGHT_GRAY};
+    border: 1px solid #dcdcdc;
+    border-radius: 12px;
+    padding: 16px;
 }}
 
 QDialog QLabel {{
     color: {BLACK};
-    font-weight: bold;
+    font-weight: 500;
+    font-size: {get_medium_text_size()}pt;
 }}
 """
 
 CALCULATION_TRACE_TEXT_AREA_STYLE = f"""
 QTextEdit {{
-    background-color: {BLACK};
-    color: {WHITE};
-    border: 1px solid {LIGHT_GRAY};
-    border-radius: 4px;
-    padding: 8px;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    background-color: {WHITE};
+    color: {BLACK};
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    padding: 12px;
     font-size: {get_medium_text_size()}pt;
-    line-height: 1.4;
-    selection-background-color: {BLUE};
-    selection-color: {WHITE};
+    line-height: 1.5;
+    selection-background-color: #eaf6ff;
+    selection-color: #1565c0;
 }}
 
 QTextEdit:focus {{
-    border: 2px solid {BLUE};
+    border: 1px solid #1565c0;
+    outline: none;
 }}
 """
 

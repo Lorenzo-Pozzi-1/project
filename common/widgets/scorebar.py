@@ -45,7 +45,7 @@ class ScoreBar(QWidget):
     """A color gradient bar for displaying scores with preset color schemes."""
     
     # Class constants
-    MINIMUM_SIZE = (200, 140)
+    MINIMUM_SIZE = (200, 120)
     BAR_HEIGHT = 20
     TRIANGLE_WIDTH = 10
     TRIANGLE_HEIGHT = 8

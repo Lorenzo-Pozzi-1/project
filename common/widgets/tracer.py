@@ -153,10 +153,7 @@ class CalculationTraceDialog(QDialog):
         
         # Set minimum size
         self.setMinimumSize(1000, 500)
-        
-        # Start maximized (optional - you can remove this line if you prefer default size)
-        self.setWindowState(self.windowState() | Qt.WindowMaximized)
-        
+                
         # Import here to avoid circular imports
         self.tracer = calculation_tracer
         
