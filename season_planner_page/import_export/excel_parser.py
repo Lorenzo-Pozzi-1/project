@@ -290,11 +290,11 @@ class ExcelScenarioParser:
         """Extract metadata from exported format row 2."""
         try:
             metadata = {
-                'crop_year': 2024,
+                'crop_year': '',
                 'grower_name': '',
                 'field_name': '',
-                'field_area': 0.0,
-                'field_area_uom': 'acre',
+                'field_area': '',
+                'field_area_uom': '',
                 'variety': ''
             }
             
@@ -326,10 +326,10 @@ class ExcelScenarioParser:
         except Exception as e:
             print(f"Error extracting exported metadata: {e}")
             return {
-                'crop_year': 2024,
+                'crop_year': '',
                 'grower_name': '',
                 'field_name': '',
-                'field_area': 0.0,
+                'field_area': '',
                 'field_area_uom': 'acre',
                 'variety': ''
             }
@@ -340,10 +340,10 @@ class ExcelScenarioParser:
             year_str = str(year_str).strip()
             if year_str and year_str != "None" and year_str != "":
                 year = int(float(year_str))
-                return year if year > 1900 else 2024
+                return year if year > 1900 else datetime.now().year
         except Exception:
             pass
-        return 2024
+        return datetime.now().year
     
     def _parse_area_exported(self, area_str):
         """Parse field area and UOM from exported format."""
@@ -620,7 +620,7 @@ class ExcelScenarioParser:
             first_row = applications_dict_list[0]
             
             scenario.crop_year = self._extract_crop_year(first_row.get('Crop Year', ''))
-            scenario.grower_name = str(first_row.get(' Grower Name', '')).strip()
+            scenario.grower_name = str(first_row.get('Grower Name', '')).strip()
             scenario.field_name = str(first_row.get('GrowerFieldName', ''))
             scenario.field_area = self._safe_float(first_row.get('Acres', 0))
             scenario.field_area_uom = 'acre'
