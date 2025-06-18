@@ -20,7 +20,7 @@ from data.model_scenario import Scenario
 
 
 class CustomTabBar(QTabBar):
-    """Custom tab bar that emits a signal when double-clicked and shows validation status."""
+    """Custom tab bar that emits a signal to be renamed when double-clicked."""
     
     tab_double_clicked = Signal(int)  # Signal emitted with the tab index
     
@@ -33,17 +33,6 @@ class CustomTabBar(QTabBar):
         
         super().mouseDoubleClickEvent(event)
     
-    def update_tab_validation_status(self, index: int, has_issues: bool):
-        """Update the visual appearance of a tab based on validation status."""
-        if index < 0 or index >= self.count():
-            return
-        
-        # Get the base tab text (without status indicators)
-        current_text = self.tabText(index)
-        base_text = current_text.replace(" ⚠", "").replace(" ✓", "")
-        
-        self.setTabText(index, base_text)
-        self.setTabTextColor(index, self.palette().color(self.palette().ColorRole.Text))
 
 
 class ScenariosManagerPage(QWidget):
@@ -181,7 +170,6 @@ class ScenariosManagerPage(QWidget):
         
         # Update UI state
         self.update_ui_state()
-        self.update_tab_validation_status(tab_index)
     
     def get_current_scenario_page(self):
         """Get the current scenario page and its index."""
@@ -229,14 +217,8 @@ class ScenariosManagerPage(QWidget):
             # Valid name - update scenario
             scenario.name = new_name
             
-            # Update tab text (preserve validation indicator)
-            current_tab_text = self.tab_widget.tabText(index)
-            has_indicator = " ⚠" in current_tab_text or " ✓" in current_tab_text
-            if has_indicator:
-                indicator = " ⚠" if " ⚠" in current_tab_text else " ✓"
-                self.tab_widget.setTabText(index, new_name + indicator)
-            else:
-                self.tab_widget.setTabText(index, new_name)
+            # update tab text
+            self.tab_widget.setTabText(index, new_name)
             
             # Update dictionary
             self.scenario_tabs[new_name] = self.scenario_tabs.pop(old_name)
@@ -284,7 +266,7 @@ class ScenariosManagerPage(QWidget):
         for i in range(self.tab_widget.count()):
             page = self.tab_widget.widget(i)
             if page.get_scenario() is scenario:
-                old_name = self.tab_widget.tabText(i).replace(" ⚠", "").replace(" ✓", "")
+                old_name = self.tab_widget.tabText(i)
                 
                 # Validate name uniqueness if it has changed
                 if old_name != scenario.name:
@@ -301,29 +283,10 @@ class ScenariosManagerPage(QWidget):
                         # Update dictionary if name changed
                         self.scenario_tabs[scenario.name] = page
                         del self.scenario_tabs[old_name]
-                
-                # Update validation status for this tab
-                self.update_tab_validation_status(i)
+
                 break
         
         self.update_ui_state()
-    
-    def update_tab_validation_status(self, tab_index: int):
-        """Update the validation status indicator for a specific tab."""
-        if tab_index < 0 or tab_index >= self.tab_widget.count():
-            return
-        
-        try:
-            page = self.tab_widget.widget(tab_index)
-            has_issues = page.has_validation_issues()
-            self.custom_tab_bar.update_tab_validation_status(tab_index, has_issues)
-        except Exception as e:
-            print(f"Error updating tab validation status: {e}")
-    
-    def update_all_tab_validation_status(self):
-        """Update validation status for all tabs."""
-        for i in range(self.tab_widget.count()):
-            self.update_tab_validation_status(i)
     
     def update_ui_state(self):
         """Update buttons state and EIQ display based on current state."""
