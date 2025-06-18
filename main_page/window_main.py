@@ -20,7 +20,7 @@ from products_page import ProductsPage
 from eiq_calculator_page.page_eiq_calculator import EiqCalculatorPage
 from season_planner_page import ScenariosManagerPage
 from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage
-from user_manual.user_manual_dialog import open_user_manual
+from user_manual.open_user_manual import open_user_manual
 
 class MainWindow(QMainWindow):
     """
