@@ -401,9 +401,6 @@ class ScenariosManagerPage(QWidget):
         """Refresh product data when filtered products change in the main window."""
         for tab_page in self.scenario_tabs.values():
             tab_page.refresh_product_data()
-        
-        # Update all validation statuses after refresh
-        self.update_all_tab_validation_status()
 
     def export(self):
         """Export all scenarios to Excel file."""
