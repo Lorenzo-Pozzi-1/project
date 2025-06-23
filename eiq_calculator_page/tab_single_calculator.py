@@ -56,8 +56,8 @@ class SingleProductCalculatorTab(QWidget):
         self.ai_table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.ai_table.setStyleSheet(GENERIC_TABLE_STYLE)
         self.ai_table.setRowCount(0)  # Start empty
-        self.ai_table.setColumnCount(4)  # 4 columns including UOM
-        self.ai_table.setHorizontalHeaderLabels(["Active Ingredient", "EIQ", "Concentration", "UOM"])
+        self.ai_table.setColumnCount(3)  # 3 columns including UOM
+        self.ai_table.setHorizontalHeaderLabels(["Active Ingredient", "Concentration", "UOM"])
 
         # Configure table columns
         header = self.ai_table.horizontalHeader()
@@ -177,23 +177,23 @@ class SingleProductCalculatorTab(QWidget):
                 name_item.setTextAlignment(Qt.AlignCenter)
                 self.ai_table.setItem(i, 0, name_item)
                 
-                # EIQ
-                eiq_value = ai["eiq"] if ai["eiq"] is not None else "--"
-                eiq_item = QTableWidgetItem(str(eiq_value))
-                eiq_item.setTextAlignment(Qt.AlignCenter)
-                self.ai_table.setItem(i, 1, eiq_item)
+                # # EIQ
+                # eiq_value = ai["eiq"] if ai["eiq"] is not None else "--"
+                # eiq_item = QTableWidgetItem(str(eiq_value))
+                # eiq_item.setTextAlignment(Qt.AlignCenter)
+                # self.ai_table.setItem(i, 1, eiq_item)
                 
                 # Concentration amount
                 concentration_value = ai["concentration"] if ai["concentration"] is not None else "--"
                 concentration_item = QTableWidgetItem(str(concentration_value))
                 concentration_item.setTextAlignment(Qt.AlignCenter)
-                self.ai_table.setItem(i, 2, concentration_item)
+                self.ai_table.setItem(i, 1, concentration_item)
                 
                 # Concentration UOM
                 uom_value = ai["uom"] if ai["uom"] is not None else "--"
                 uom_item = QTableWidgetItem(str(uom_value))
                 uom_item.setTextAlignment(Qt.AlignCenter)
-                self.ai_table.setItem(i, 3, uom_item)
+                self.ai_table.setItem(i, 2, uom_item)
             
             # Update label information table
             self.update_label_info()
