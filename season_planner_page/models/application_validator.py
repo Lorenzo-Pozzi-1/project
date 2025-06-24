@@ -126,7 +126,7 @@ class ApplicationValidator:
         
         # Validate application rate against label limits using confirmed product
         if app.rate is not None:
-            label_issue = self._validate_rate_against_label(app.rate, product)
+            label_issue = self._validate_rate_against_label(app.rate, app.rate_uom, product)
             if label_issue:
                 issues.append(label_issue)
         
@@ -187,12 +187,13 @@ class ApplicationValidator:
         ))
         return ValidationResult(ValidationState.VALID, issues, True)
     
-    def _validate_rate_against_label(self, app_rate: float, product) -> ValidationIssue:
+    def _validate_rate_against_label(self, app_rate: float, app_rate_uom: str, product) -> ValidationIssue:
         """
         Validate application rate against product label limits.
         
         Args:
             app_rate: Application rate from the application
+            app_rate_uom: Application rate UOM
             product: Product object with label_minimum_rate and label_maximum_rate
             
         Returns:
@@ -201,27 +202,61 @@ class ApplicationValidator:
         min_rate = product.label_minimum_rate
         max_rate = product.label_maximum_rate
         
+        # Skip validation if no label rates are available
+        if min_rate is None and max_rate is None:
+            return None
+        
+        label_rate_uom = getattr(product, 'rate_uom', None)
+        if not label_rate_uom or not app_rate_uom:
+            # Can't validate without knowing both UOMs
+            return None
+        
+        # Convert application rate to label UOM for comparison
+        try:
+            from data.repository_UOM import UOMRepository, CompositeUOM
+            from common.utils import get_config
+            
+            uom_repo = UOMRepository.get_instance()
+            user_preferences = get_config("user_preferences", {})
+            
+            # Only convert if UOMs are different
+            if app_rate_uom != label_rate_uom:
+                from_composite = CompositeUOM(app_rate_uom)
+                to_composite = CompositeUOM(label_rate_uom)
+                
+                converted_app_rate = uom_repo.convert_composite_uom(
+                    app_rate, from_composite, to_composite, user_preferences
+                )
+            else:
+                converted_app_rate = app_rate
+                
+        except Exception as e:
+            # If conversion fails, we can't validate - log the issue but don't block
+            print(f"Warning: Could not convert rate units for validation: {app_rate_uom} -> {label_rate_uom}: {e}")
+            return None
+        
+        # Now compare converted rate with label rates (rest of the logic remains the same)
         # Condition 1: Max rate exists and app.rate >= max * 1.1
-        if max_rate is not None and app_rate >= max_rate * 1.1:
+        if max_rate is not None and converted_app_rate >= max_rate * 1.1:
             return ValidationIssue(
                 field="rate",
-                message=f"Application rate ({app_rate}) exceeds label maximum ({max_rate}) by >10%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
+                message=f"Application rate ({converted_app_rate}) exceeds label maximum ({max_rate}) by >10%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
                 severity="error"
             )
         
         # Condition 2: Min rate exists and app.rate <= min * 0.8
-        if min_rate is not None and app_rate <= min_rate * 0.8:
+        if min_rate is not None and converted_app_rate <= min_rate * 0.8:
             return ValidationIssue(
                 field="rate",
-                message=f"Application rate ({app_rate}) is below label minimum ({min_rate}) by >20%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
+                message=f"Application rate ({converted_app_rate}) is below label minimum ({min_rate}) by >20%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
                 severity="error"
             )
         
         # Condition 3: Min rate doesn't exist and app.rate <= max * 0.25
-        if min_rate is None and max_rate is not None and app_rate <= max_rate * 0.25:
+        if min_rate is None and max_rate is not None and converted_app_rate <= max_rate * 0.25:
             return ValidationIssue(
                 field="rate",
-                message=f"Application min rate is not available from the label and \n({app_rate}) is much lower (less than 1/4th) than the label maximum ({max_rate})",
+                message=f"Application min rate is not available from the label and \n({converted_app_rate}) is much lower (less than 1/4th) than the label maximum ({max_rate})",
                 severity="error"
             )
         
