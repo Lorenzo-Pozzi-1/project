@@ -68,17 +68,34 @@ class ApplicationValidator:
         Perform comprehensive validation with proper state hierarchy.
         
         Validation order:
-        1. Check for missing required fields (INCOMPLETE)
-        2. Validate data ranges and formats (INVALID_DATA)  
-        3. Check product existence (INVALID_PRODUCT)
+        1. Check product existence (INVALID_PRODUCT)
+        2. Check for missing required fields (INCOMPLETE)
+        3. Validate data ranges and rate against label limits (INVALID_DATA)
         4. Check EIQ calculation capability and AI data completeness (VALID/VALID_ESTIMATED)
         """
         issues = []
         
-        # 1. INCOMPLETE STATE: Check for missing required fields
+        # 1. INVALID_PRODUCT STATE: Check product existence
+        # if name is missing, mark as INCOMPLETE
+        if not app.product_name or not app.product_name.strip(): 
+            issues.append(ValidationIssue(
+                field="product_name",
+                message="Product name is required",
+                severity="error"
+            ))
+            return ValidationResult(ValidationState.INCOMPLETE, issues, False)
+        
+        product = self._find_product(app.product_name)
+        if not product:
+            issues.append(ValidationIssue(
+                field="product_name",
+                message=f"Product '{app.product_name}' not found in database",
+                severity="error"
+            ))
+            return ValidationResult(ValidationState.INVALID_PRODUCT, issues, False)
+
+        # 2. INCOMPLETE STATE: Check for missing required fields
         missing_fields = []
-        if not app.product_name or not app.product_name.strip():
-            missing_fields.append("product name")
         if not app.rate or app.rate <= 0:
             missing_fields.append("application rate")
         if not app.rate_uom or not app.rate_uom.strip():
@@ -92,7 +109,7 @@ class ApplicationValidator:
             ))
             return ValidationResult(ValidationState.INCOMPLETE, issues, False)
         
-        # 2. INVALID_DATA STATE: Validate data ranges and formats
+        # 3. INVALID_DATA STATE: Validate data ranges and rate against label limits
         if app.rate is not None and app.rate < 0:
             issues.append(ValidationIssue(
                 field="rate",
@@ -107,26 +124,14 @@ class ApplicationValidator:
                 severity="error"
             ))
         
-        # Check for unreasonably high values
-        if app.rate is not None and app.rate > 10000:
-            issues.append(ValidationIssue(
-                field="rate",
-                message="Application rate seems unusually high - please verify",
-                severity="warning"
-            ))
+        # Validate application rate against label limits using confirmed product
+        if app.rate is not None:
+            label_issue = self._validate_rate_against_label(app.rate, product)
+            if label_issue:
+                issues.append(label_issue)
         
         if issues:
             return ValidationResult(ValidationState.INVALID_DATA, issues, False)
-        
-        # 3. INVALID_PRODUCT STATE: Check product existence
-        product = self._find_product(app.product_name)
-        if not product:
-            issues.append(ValidationIssue(
-                field="product_name",
-                message=f"Product '{app.product_name}' not found in database",
-                severity="error"
-            ))
-            return ValidationResult(ValidationState.INVALID_PRODUCT, issues, False)
         
         # 4. VALID/VALID_ESTIMATED STATE: Check EIQ calculation capability
         can_calculate_eiq = (
@@ -181,6 +186,46 @@ class ApplicationValidator:
             severity="info"
         ))
         return ValidationResult(ValidationState.VALID, issues, True)
+    
+    def _validate_rate_against_label(self, app_rate: float, product) -> ValidationIssue:
+        """
+        Validate application rate against product label limits.
+        
+        Args:
+            app_rate: Application rate from the application
+            product: Product object with label_minimum_rate and label_maximum_rate
+            
+        Returns:
+            ValidationIssue or None if validation passes
+        """
+        min_rate = product.label_minimum_rate
+        max_rate = product.label_maximum_rate
+        
+        # Condition 1: Max rate exists and app.rate >= max * 1.1
+        if max_rate is not None and app_rate >= max_rate * 1.1:
+            return ValidationIssue(
+                field="rate",
+                message=f"Application rate ({app_rate}) exceeds label maximum ({max_rate}) by >10%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
+                severity="error"
+            )
+        
+        # Condition 2: Min rate exists and app.rate <= min * 0.8
+        if min_rate is not None and app_rate <= min_rate * 0.8:
+            return ValidationIssue(
+                field="rate",
+                message=f"Application rate ({app_rate}) is below label minimum ({min_rate}) by >20%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
+                severity="error"
+            )
+        
+        # Condition 3: Min rate doesn't exist and app.rate <= max * 0.25
+        if min_rate is None and max_rate is not None and app_rate <= max_rate * 0.25:
+            return ValidationIssue(
+                field="rate",
+                message=f"Application min rate is not available from the label and \n({app_rate}) is much lower (less than 1/4th) than the label maximum ({max_rate})",
+                severity="error"
+            )
+        
+        return None
     
     def get_validation_summary(self, applications: List[Application]) -> dict:
         """Get a summary of validation states across all applications."""

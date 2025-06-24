@@ -350,7 +350,10 @@ class ApplicationTableModel(QAbstractTableModel):
                 return ", ".join(app.ai_groups) if app.ai_groups else ""
             elif col == self._col_index("Field EIQ"):
                 validation = self._get_validation(app, row)
-                if validation.can_calculate_eiq and app.field_eiq:
+                # Show calculated EIQ if it exists, regardless of validation state (except INVALID_PRODUCT)
+                # This way products with rate out of label range still show EIQ, 
+                # but they are clearly visible to the user due to tips and highlighting and warning messages
+                if app.field_eiq and app.field_eiq > 0:
                     return f"{app.field_eiq:.2f}"
                 elif validation.state == ValidationState.INVALID_PRODUCT:
                     return "n/a"
@@ -390,8 +393,7 @@ class ApplicationTableModel(QAbstractTableModel):
         
         # Special handling for estimated EIQ applications
         if validation.state == ValidationState.VALID_ESTIMATED:
-            return ("Cornell has no EIQ for this product's active ingredient. "
-                    "Field EIQ is averaged from other applications.")
+            return ("Cornell has no EIQ for this product's active ingredient.\nField EIQ is averaged from other applications.")
         
         # Show primary message for invalid states only
         if validation.issues:

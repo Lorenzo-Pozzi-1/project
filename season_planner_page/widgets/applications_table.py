@@ -88,12 +88,7 @@ class ApplicationsTableWidget(QWidget):
     def _configure_table(self):
         """Configure table appearance and behavior."""
         # Styling
-        self.table_view.setStyleSheet(GENERIC_TABLE_STYLE + """
-            QTableView::item:selected {
-                background-color: #0078d4;
-                color: white;
-            }
-        """)
+        self.table_view.setStyleSheet(GENERIC_TABLE_STYLE)
         self.table_view.setFont(get_medium_font())
         self.table_view.setAlternatingRowColors(True)
         

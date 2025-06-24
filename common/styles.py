@@ -226,8 +226,8 @@ GENERIC_TABLE_STYLE = f"""
         border-bottom: 1px solid {LIGHT_GRAY};
     }}
     
-    QTableWidget::item:selected {{
-        background-color: #E0E8F0;
+    QTableView::item:selected {{
+        background-color: #D9DAE4;
         color: {BLACK};
     }}
     

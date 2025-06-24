@@ -48,8 +48,8 @@ class ApplicationEIQCalculator:
             # Get validation state to determine calculation method
             validation = self._validator.validate_application(app)
             
-            if validation.state == ValidationState.VALID:
-                # Standard EIQ calculation with complete AI data
+            if validation.state in [ValidationState.VALID, ValidationState.INVALID_DATA]:
+                # Standard EIQ calculation with complete AI data (include INVALID_DATA)
                 ai_data = product.get_ai_data()
                 if ai_data:
                     return eiq_calculator.calculate_product_field_eiq(
@@ -77,14 +77,14 @@ class ApplicationEIQCalculator:
         """
         Calculate EIQ for all applications using a two-pass approach.
         
-        Pass 1: Calculate EIQ for VALID applications (complete AI data)
+        Pass 1: Calculate EIQ for VALID and INVALID_DATA applications (complete AI data)
         Pass 2: Calculate estimated EIQ for VALID_ESTIMATED applications
         """
         try:
-            # Pass 1: Calculate EIQ for VALID applications
+            # Pass 1: Calculate EIQ for VALID and INVALID_DATA applications
             for app in applications:
                 validation = self._validator.validate_application(app)
-                if validation.state == ValidationState.VALID:
+                if validation.state in [ValidationState.VALID, ValidationState.INVALID_DATA]:
                     app.field_eiq = self.calculate_application_eiq(app)
                 else:
                     app.field_eiq = 0.0
@@ -113,7 +113,7 @@ class ApplicationEIQCalculator:
     def _calculate_average_eiq_for_estimation(self, applications: List[Application]) -> float:
         """
         Calculate average EIQ from applications that have valid EIQ calculations.
-        Only includes applications with ValidationState.VALID (complete AI data).
+        Includes applications with ValidationState.VALID and ValidationState.INVALID_DATA.
         """
         try:
             valid_eiq_values = []
@@ -129,8 +129,8 @@ class ApplicationEIQCalculator:
                 # Get validation state to determine if this should be included in average
                 validation = self._validator.validate_application(app)
                 
-                # Only include VALID applications (with complete AI data) in the average
-                if validation.state == ValidationState.VALID:
+                # Include VALID and INVALID_DATA applications in the average
+                if validation.state in [ValidationState.VALID, ValidationState.INVALID_DATA]:
                     ai_data = product.get_ai_data()
                     if ai_data:
                         try:
@@ -149,12 +149,12 @@ class ApplicationEIQCalculator:
             if valid_eiq_values:
                 return sum(valid_eiq_values) / len(valid_eiq_values)
             else:
-                # No valid EIQ values available, return a conservative default
-                return 50.0  # Conservative default EIQ value
+                # No valid EIQ values available, return a default
+                return 30.0  # Default EIQ value
                 
         except Exception as e:
             print(f"Error calculating average EIQ: {e}")
-            return 50.0
+            return 30.0
     
     def _find_product(self, product_name: str):
         """Find a product by name in the filtered products list."""

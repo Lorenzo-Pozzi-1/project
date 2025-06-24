@@ -6,7 +6,8 @@ Provides up/down arrow buttons to reorder application rows.
 
 from PySide6.QtWidgets import QStyledItemDelegate, QWidget, QHBoxLayout, QPushButton, QStyle
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPalette
+from PySide6.QtGui import QPalette, QColor
+from common.constants import LIGHT_GRAY
 
 
 class ReorderButtonWidget(QWidget):
@@ -26,37 +27,19 @@ class ReorderButtonWidget(QWidget):
         layout.setContentsMargins(2, 2, 2, 2)
         layout.setSpacing(1)
         
-        # Up button
-        self.up_button = QPushButton("▲")
-        self.up_button.setMaximumSize(20, 20)
-        self.up_button.setMinimumSize(20, 20)
-        self.up_button.setStyleSheet("""
-            QPushButton {
-                background-color: #f0f0f0;
-                border: 1px solid #ccc;
-                border-radius: 3px;
-                font-size: 8px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #e0e0e0;
-            }
-            QPushButton:pressed {
-                background-color: #d0d0d0;
-            }
-            QPushButton:disabled {
-                background-color: #f8f8f8;
-                color: #ccc;
-            }
-        """)
-        self.up_button.clicked.connect(lambda: self.move_up.emit(self.row))
-        layout.addWidget(self.up_button)
+        # Create buttons
+        self.up_button = self._create_reorder_button("▲", lambda: self.move_up.emit(self.row))
+        self.down_button = self._create_reorder_button("▼", lambda: self.move_down.emit(self.row))
         
-        # Down button
-        self.down_button = QPushButton("▼")
-        self.down_button.setMaximumSize(20, 20)
-        self.down_button.setMinimumSize(20, 20)
-        self.down_button.setStyleSheet("""
+        layout.addWidget(self.up_button)
+        layout.addWidget(self.down_button)
+
+    def _create_reorder_button(self, text: str, click_handler):
+        """Create a styled button with the given text and click handler."""
+        button = QPushButton(text)
+        button.setMaximumSize(20, 20)
+        button.setMinimumSize(20, 20)
+        button.setStyleSheet("""
             QPushButton {
                 background-color: #f0f0f0;
                 border: 1px solid #ccc;
@@ -75,8 +58,8 @@ class ReorderButtonWidget(QWidget):
                 color: #ccc;
             }
         """)
-        self.down_button.clicked.connect(lambda: self.move_down.emit(self.row))
-        layout.addWidget(self.down_button)
+        button.clicked.connect(click_handler)
+        return button
     
     def update_buttons(self, is_first: bool, is_last: bool):
         """Update button enabled state based on position."""
@@ -95,6 +78,11 @@ class ReorderDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._button_widgets = {}  # Cache button widgets by row
+    
+    def initStyleOption(self, option, index):
+        """Initialize style option with center alignment."""
+        super().initStyleOption(option, index)
+        option.displayAlignment = Qt.AlignCenter
     
     def createEditor(self, parent, option, index):
         """Create the editor widget (button container)."""
@@ -131,20 +119,9 @@ class ReorderDelegate(QStyledItemDelegate):
         """Set model data - not needed for buttons."""
         pass
     
-    def paint(self, painter, option, index):
-        """Paint the cell - just show placeholder text."""
-        painter.save()
-          # Draw background
-        if option.state & QStyle.State_Selected:
-            painter.fillRect(option.rect, option.palette.highlight())
-        else:
-            painter.fillRect(option.rect, option.palette.base())
-        
-        # Draw centered text indicating this is the reorder column
-        painter.setPen(option.palette.color(QPalette.Text))
-        painter.drawText(option.rect, Qt.AlignCenter, "↕")
-        
-        painter.restore()
+    def displayText(self, value, locale):
+        """Show placeholder text when not editing."""
+        return "↕"
     
     def sizeHint(self, option, index):
         """Return size hint for the reorder column."""
