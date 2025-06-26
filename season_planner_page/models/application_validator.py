@@ -235,12 +235,12 @@ class ApplicationValidator:
             print(f"Warning: Could not convert rate units for validation: {app_rate_uom} -> {label_rate_uom}: {e}")
             return None
         
-        # Now compare converted rate with label rates (rest of the logic remains the same)
+        # Now compare converted rate with label rates
         # Condition 1: Max rate exists and app.rate >= max * 1.1
         if max_rate is not None and converted_app_rate >= max_rate * 1.1:
             return ValidationIssue(
                 field="rate",
-                message=f"Application rate ({converted_app_rate}) exceeds label maximum ({max_rate}) by >10%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
+                message=f"Application rate ({converted_app_rate:.2f} {label_rate_uom}) exceeds label maximum ({max_rate} {label_rate_uom}) by >10%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
                 severity="error"
             )
         
@@ -248,7 +248,7 @@ class ApplicationValidator:
         if min_rate is not None and converted_app_rate <= min_rate * 0.8:
             return ValidationIssue(
                 field="rate",
-                message=f"Application rate ({converted_app_rate}) is below label minimum ({min_rate}) by >20%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
+                message=f"Application rate ({converted_app_rate:.2f} {label_rate_uom}) is below label minimum ({min_rate} {label_rate_uom}) by >20%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
                 severity="error"
             )
         
@@ -256,7 +256,7 @@ class ApplicationValidator:
         if min_rate is None and max_rate is not None and converted_app_rate <= max_rate * 0.25:
             return ValidationIssue(
                 field="rate",
-                message=f"Application min rate is not available from the label and \n({converted_app_rate}) is much lower (less than 1/4th) than the label maximum ({max_rate})",
+                message=f"Application min rate is not available from the label and \n({converted_app_rate:.2f} {label_rate_uom}) is much lower (less than 1/4th) than the label maximum ({max_rate} {label_rate_uom})",
                 severity="error"
             )
         

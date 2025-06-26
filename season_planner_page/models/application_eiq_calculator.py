@@ -114,6 +114,7 @@ class ApplicationEIQCalculator:
         """
         Calculate average EIQ from applications that have valid EIQ calculations.
         Includes applications with ValidationState.VALID and ValidationState.INVALID_DATA.
+        Excludes fumigations (applications with EIQ >= 1000) from the average calculation.
         """
         try:
             valid_eiq_values = []
@@ -141,7 +142,8 @@ class ApplicationEIQCalculator:
                                 applications=1,
                                 user_preferences=self._user_preferences
                             )
-                            if eiq > 0:
+                            # Exclude EIQ values >= 1000 (fumigations) from average calculation
+                            if eiq > 0 and eiq < 1000:
                                 valid_eiq_values.append(eiq)
                         except Exception:
                             continue

@@ -375,11 +375,9 @@ class ApplicationTableModel(QAbstractTableModel):
         if validation.state == ValidationState.INVALID_PRODUCT:
             return QColor("#ffebee")  # Light red
         elif validation.state == ValidationState.INVALID_DATA:
-            return QColor("#fff3e0")  # Light orange
+            return QColor("#fff9c4")  # Light yellow
         elif validation.state == ValidationState.INCOMPLETE:
             return QColor("#f3e5f5")  # Light purple
-        elif validation.state == ValidationState.VALID_ESTIMATED:
-            return QColor("#fff9c4")  # Light yellow for estimated EIQ
         
         return None
     
@@ -393,7 +391,7 @@ class ApplicationTableModel(QAbstractTableModel):
         
         # Special handling for estimated EIQ applications
         if validation.state == ValidationState.VALID_ESTIMATED:
-            return ("Cornell has no EIQ for this product's active ingredient.\nField EIQ is averaged from other applications.")
+            return ("Cornell has no EIQ for this product's active ingredient.\nField EIQ is averaged from other applications (excluding fumigants).")
         
         # Show primary message for invalid states only
         if validation.issues:
