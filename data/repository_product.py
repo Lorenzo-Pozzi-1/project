@@ -1,5 +1,5 @@
 """
-Product Repository for the LORENZO POZZI Pesticide App.
+Product Repository for the LORENZO POZZI Pesticides App.
 
 This module provides a centralized repository for accessing and filtering 
 product data, with CSV loading and caching for performance optimization.
