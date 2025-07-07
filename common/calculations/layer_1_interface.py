@@ -1,6 +1,6 @@
 """
 Unified EIQ Calculation Interface
-Combines both layers into clean, easy-to-use functions for the UI.
+Combines both layers into clean, easy-to-use functions for the other modules to call.
 Handles UOM standardization internally, exposes simple interfaces.
 """
 

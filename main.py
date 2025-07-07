@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QApplication, QComboBox, QDoubleSpinBox
 from common.utils import WheelProtectionFilter, load_config
 from data.repository_AI import AIRepository
 from data.repository_product import ProductRepository
-from main_page import MainWindow
+from main_page.window_main import MainWindow
 
 # Silence messages when resizing the window
 os.environ['QT_LOGGING_RULES'] = '*=false' 

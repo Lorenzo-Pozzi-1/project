@@ -60,6 +60,14 @@ FRAME_STYLE = f"""
     }}
 """
 
+PREFERENCES_FRAME_STYLE = f"""
+    QFrame {{
+        background-color: {WHITE};
+        border: 2px solid {YELLOW};
+        border-radius: 10px;
+    }}
+"""
+
 YELLOW_BAR_STYLE = f"""
     QFrame {{
         background-color: {YELLOW};

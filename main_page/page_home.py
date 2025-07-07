@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMessag
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
 from common.constants import get_margin_large, get_picture_size, get_spacing_large, get_spacing_medium
-from common.styles import INFO_TEXT_STYLE, get_large_font, get_medium_font, get_subtitle_font, get_title_font
+from common.styles import INFO_TEXT_STYLE, PREFERENCES_FRAME_STYLE, get_large_font, get_medium_font, get_subtitle_font, get_title_font
 from common.utils import resource_path
 from common.widgets.header_frame_buttons import ContentFrame, create_button
 from main_page.widget_preferences_row import PreferencesRow
@@ -78,7 +78,7 @@ class HomePage(QWidget):
         
         # Preferences row in its own ContentFrame
         preferences_frame = ContentFrame()
-        preferences_frame.setStyleSheet("""ContentFrame {background-color: white;border: 2px solid #FFD700;border-radius: 10px;}""")
+        preferences_frame.setStyleSheet(PREFERENCES_FRAME_STYLE)
         # Create the preferences row
         self.preferences_row = PreferencesRow(self)
         

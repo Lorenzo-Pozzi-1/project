@@ -10,7 +10,7 @@ from data.repository_UOM import UOMRepository, CompositeUOM
 
 @dataclass
 class StandardizedEIQInputs:
-    """Container for standardized EIQ calculation inputs"""
+    """Container for standardized EIQ calculation inputs for an active ingredient"""
     rate_per_ha: float                    # [kg/ha]  or [l/ha] 
     rate_unit_type: str                   # "weight" or "volume"
     ai_concentration_per_unit: float      # [kg/kg]  or [kg/l]
@@ -19,7 +19,7 @@ class StandardizedEIQInputs:
 
 @dataclass
 class ProductStandardizedInputs:
-    """Container for standardized product-level inputs"""
+    """Container for standardized product-level inputs (multiple active ingredients)"""
     rate_per_ha: float              # [kg/ha]  or [l/ha]
     rate_unit_type: str             # "weight" or "volume" 
     active_ingredients: List[Dict]  # List of standardized AI data
