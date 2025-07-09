@@ -8,7 +8,7 @@ two EIQ calculator components:
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
-from common.widgets.header_frame_buttons import HeaderWithHomeButton
+from common.widgets.header_frame_buttons import HeaderWithHomeButton, create_button
 from common.constants import get_margin_large, get_spacing_medium
 from eiq_calculator_page.tab_single_calculator import SingleProductCalculatorTab
 from eiq_calculator_page.tab_multi_calculator import ProductComparisonCalculatorTab
@@ -36,6 +36,15 @@ class EiqCalculatorPage(QWidget):
         # Header with back button
         header = HeaderWithHomeButton("EIQ Calculator")
         header.back_clicked.connect(lambda: self.parent.navigate_to_page(0))
+        
+        # Add Reset button directly to the header
+        reset_button = create_button(text="Reset", callback=self.reset, style="white")
+        reset_button.setMaximumWidth(150)
+        
+        # Add the Reset button to the header's layout (right side)
+        header.layout().addWidget(reset_button)
+        
+        # Add the full header to the main layout
         main_layout.addWidget(header)
         
         # Create tabs for different EIQ calculation methods
@@ -59,3 +68,14 @@ class EiqCalculatorPage(QWidget):
         # Update both calculator tabs with the current filtered data
         self.single_product_calculator.refresh_product_data()
         self.product_comparison_calculator.refresh_product_data()
+    
+    def reset(self):
+        """Reset both calculator tabs to their initial state."""
+        # Reset single product calculator
+        self.single_product_calculator.refresh_product_data()
+        
+        # Reset product comparison calculator
+        self.product_comparison_calculator.refresh_product_data()
+        
+        # Switch back to the first tab
+        self.tabs.setCurrentIndex(0)
