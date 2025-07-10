@@ -16,11 +16,11 @@ from common.widgets.header_frame_buttons import create_button
 #region from common.widgets.tracer import CalculationTraceDialog 
 from data.repository_product import ProductRepository
 from main_page.page_home import HomePage
-from products_page import ProductsPage
+from products_page.page_products import ProductsPage
 from eiq_calculator_page.page_eiq_calculator import EiqCalculatorPage
-from season_planner_page import ScenariosManagerPage
+from season_planner_page.page_scenarios_manager import ScenariosManagerPage
 from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage
-from user_manual.open_user_manual import open_user_manual
+from user_manual.service_open_user_manual import open_user_manual
 
 class MainWindow(QMainWindow):
     """

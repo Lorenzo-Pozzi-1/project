@@ -1,7 +1,7 @@
 """
-User Manual Dialog for the Pesticides App.
+User Manual opener for the Pesticides App.
 
-This module provides a comprehensive HTML-based user manual via system browser.
+This module opens a comprehensive HTML-based user manual via system browser.
 """
 
 import os

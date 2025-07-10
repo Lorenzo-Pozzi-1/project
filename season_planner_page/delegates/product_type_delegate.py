@@ -1,7 +1,7 @@
 """
 Product Type Delegate for the Season Planner.
 
-QStyledItemDelegate that provides product type selection with common pesticide types.
+QStyledItemDelegate that provides product type selection.
 """
 
 from PySide6.QtWidgets import QStyledItemDelegate, QComboBox

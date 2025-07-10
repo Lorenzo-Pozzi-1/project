@@ -9,7 +9,7 @@ from common.widgets.header_frame_buttons import ContentFrame
 from data.model_application import Application
 from data.model_scenario import Scenario
 from data.repository_product import ProductRepository
-from season_planner_page.widgets.metadata_widget import SeasonPlanMetadataWidget
+from season_planner_page.widgets.metadata_row import SeasonPlanMetadataWidget
 from season_planner_page.widgets.applications_table import ApplicationsTableWidget
 from season_planner_page.models.application_table_model import ValidationState
 

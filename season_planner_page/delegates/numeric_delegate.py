@@ -9,11 +9,6 @@ from PySide6.QtCore import Qt
 class NumericDelegate(QStyledItemDelegate):
     """
     Numeric delegate that plays nicely with other delegates.
-    
-    Key fixes:
-    - Simplified editor creation
-    - No complex signal handling
-    - Proper focus management
     """
     
     def __init__(self, parent=None, min_value=0.0, max_value=9999.99, decimals=2, suffix=""):
