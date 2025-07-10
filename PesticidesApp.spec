@@ -44,7 +44,7 @@ hidden_imports = [
     'common.widgets.product_selection',
     'common.widgets.application_params',
     'common.widgets.scorebar',
-    'common.widgets.UOM_selector',
+    'common.widgets.uom_selector',
     'common.widgets.tracer',
     
     'data',

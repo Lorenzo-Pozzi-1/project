@@ -11,7 +11,7 @@ from typing import Dict, Optional, Any
 
 from common.constants import get_spacing_small
 from common.styles import get_medium_font
-from common.widgets.UOM_selector import SmartUOMSelector
+from common.widgets.uom_selector import SmartUOMSelector
 from common.widgets.header_frame_buttons import ContentFrame
 
 

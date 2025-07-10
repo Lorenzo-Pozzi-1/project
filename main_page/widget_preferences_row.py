@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt, Signal
 from common.constants import get_spacing_xlarge
 from common.styles import get_medium_font
 from common.utils import get_config, save_config
-from common.widgets.UOM_selector import SmartUOMSelector
+from common.widgets.uom_selector import SmartUOMSelector
 from common.widgets.header_frame_buttons import create_button
 
 class PreferencesRow(QWidget):
