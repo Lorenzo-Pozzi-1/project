@@ -12,7 +12,7 @@ from data.model_application import Application
 from data.repository_product import ProductRepository
 from common.utils import get_config
 from .application_validator import ApplicationValidator, ValidationState
-from .application_eiq_calculator import ApplicationEIQCalculator
+from .applications_eiq_calculator import ApplicationEIQCalculator
 
 
 @dataclass
