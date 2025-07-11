@@ -50,7 +50,7 @@ class PreferencesRow(QWidget):
         
         self.country_combo = QComboBox()
         self.country_combo.setFont(get_medium_font())
-        self.country_combo.addItems(["Canada", "United States"])
+        self.country_combo.addItems(["Canada", "United States", "United Kingdom", "Europe"])
         self.country_combo.currentIndexChanged.connect(self.on_country_changed)
         preferences_layout.addWidget(self.country_combo)
         
@@ -65,7 +65,7 @@ class PreferencesRow(QWidget):
         
         self.region_combo = QComboBox()
         self.region_combo.setFont(get_medium_font())
-        self.region_combo.addItem("None of these")
+        self.region_combo.addItem("- Select Region -")
         self.region_combo.currentIndexChanged.connect(self.on_region_changed)
         preferences_layout.addWidget(self.region_combo)
         
@@ -133,7 +133,9 @@ class PreferencesRow(QWidget):
         """Get region options for a specific country."""
         regions = {
             "United States": ["Washington", "Idaho", "Wisconsin", "Maine"],
-            "Canada": ["New Brunswick", "Prince Edward Island", "Alberta", "Manitoba", "Quebec", "Saskatchewan"]
+            "Canada": ["New Brunswick", "Prince Edward Island", "Alberta", "Manitoba", "Quebec", "Saskatchewan"],
+            "United Kingdom": ["United Kingdom"],
+            "Europe" : ["France", "Germany", "Netherlands", "Belgium", "Luxemburg"]
         }
         return regions.get(country, [])
 
@@ -144,14 +146,14 @@ class PreferencesRow(QWidget):
         
         # Clear and add default option
         self.region_combo.clear()
-        self.region_combo.addItem("None of these")
+        self.region_combo.addItem("- Select Region -")
         
         # Add country-specific regions
         self.region_combo.addItems(self.get_regions_for_country(country))
         
         # Try to restore previous selection if available
         index = self.region_combo.findText(current_region)
-        self.region_combo.setCurrentIndex(max(0, index))  # Default to "None of these" if not found
+        self.region_combo.setCurrentIndex(max(0, index))  # Default to "- Select Region -" if not found
     
     def on_country_changed(self, _):
         """Handle country selection change."""
