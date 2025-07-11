@@ -50,7 +50,7 @@ class PreferencesRow(QWidget):
         
         self.country_combo = QComboBox()
         self.country_combo.setFont(get_medium_font())
-        self.country_combo.addItems(["Canada", "United States", "United Kingdom", "Europe"])
+        self.country_combo.addItems(["Canada", "United States"])
         self.country_combo.currentIndexChanged.connect(self.on_country_changed)
         preferences_layout.addWidget(self.country_combo)
         
@@ -133,9 +133,7 @@ class PreferencesRow(QWidget):
         """Get region options for a specific country."""
         regions = {
             "United States": ["Washington", "Idaho", "Wisconsin", "Maine"],
-            "Canada": ["New Brunswick", "Prince Edward Island", "Alberta", "Manitoba", "Quebec", "Saskatchewan"],
-            "United Kingdom": ["United Kingdom"],
-            "Europe" : ["France", "Germany", "Netherlands", "Belgium", "Luxemburg"]
+            "Canada": ["New Brunswick", "Prince Edward Island", "Alberta", "Manitoba", "Quebec", "Saskatchewan"]
         }
         return regions.get(country, [])
 

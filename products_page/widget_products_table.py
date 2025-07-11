@@ -159,6 +159,9 @@ class ProductTable(QTableWidget):
                         self.setItem(row, col_index, QTableWidgetItem(str(value)))
                     else:
                         self.setItem(row, col_index, QTableWidgetItem(""))
+        
+        # Sort by product name initially
+        self.sortByColumn(2, Qt.AscendingOrder)
     
     def _format_groups(self, ai_groups):
         """Format mode of action groups for display."""
