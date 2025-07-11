@@ -25,7 +25,7 @@ def calculate_field_eiq_single_ai(ai_concentration_per_unit: float,
     - ai_concentration_per_unit: [kg AI/kg product] or [kg AI/l product]
     - ai_eiq_per_kg: [eiq/kg AI]
     - rate_per_ha: [kg product/ha] or [l product/ha] 
-    - applications: dimensionless
+    - applications: dimensionless number of applications
     
     Formula: [kg/ha] x [kg/kg] x [eiq/kg] x applications = [eiq/ha]
           or [l/ha]  x [kg/l]  x [eiq/kg] x applications = [eiq/ha]
@@ -55,7 +55,7 @@ def calculate_field_eiq_product(standardized_ais: List[Dict],
             - 'eiq_per_kg': [eiq/kg AI]
             - 'name': AI name (for breakdown)
         rate_per_ha: [kg product/ha] or [l product/ha]
-        applications: dimensionless
+        applications: dimensionless number of applications
         
     Returns:
         EIQResult with total field EIQ and breakdown
