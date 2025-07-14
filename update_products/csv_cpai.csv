@@ -1,0 +1,2336 @@
+﻿CP ID,Name,Concentration_Amount__c,UOM Master.Short_Name__c,Formulation__c
+a1Y4W000002ldhLUAQ,,,%,Dry
+a1Y4W000002lgbhUAA,polymeric terpene coating agent,,g/L,Liquid
+a1Y4W000002lgbTUAQ,Modified Heptamethyl Trisiloxane,,%,Liquid
+a1Y4W000002lgcZUAQ,Valifenalate,,%,Dry
+a1YOF00000028BB2AY,Clomazone,,%,Liquid
+a1YOF000000bjm92AA,Verimcompost,,%,Liquid
+a1YOF000000bjz32AA,Worm Cast,,%,Dry
+a1YOF000000ig5B2AQ,Calcium Oxide,,%,Dry
+a1YOF000000Lfxp2AC,Bacillus Mix,,CFUnitml,Liquid
+a1YOF0000002rg92AA,Gibberellic acid,0.0026,%,Liquid
+a1YOF0000002rg92AA,3-Indolebutyric acid,0.0042,%,Liquid
+a1YOF000000M52f2AC,3-Indolebutyric acid,0.005,%,Liquid
+a1YOF000000M52f2AC,Gibberellic acid,0.005,%,Liquid
+a1YOF000000M52f2AC,Indole acetic acid,0.005,%,Liquid
+a1YOF0000002rg92AA,Kinetin,0.0084,%,Liquid
+a1YOF000000M52f2AC,Cytokinin,0.009,%,Liquid
+a1Y4W000002lTaLUAU,Gibberellic acid,0.01,lb/gal,Liquid
+a1Y4W000002lTaLUAU,Indole acetic acid,0.01,lb/gal,Liquid
+a1Y4W000002lTaLUAU,Indole butyric acid,0.01,lb/gal,Liquid
+a1Y4W000002lTaLUAU,Kinetin,0.01,lb/gal,Liquid
+a1Y4W000002lTTqUAM,Abamectin,0.011,%,Dry
+a1Y4W000002lTYlUAM,Chlorine dioxide,0.02,%,Liquid
+a1Y4W000002lTSVUA2,Chlorine dioxide,0.05,%,Liquid
+a1Y4W000002lTXtUAM,Oxathiapiprolin,0.05,lb/gal,Liquid
+a1Y4W000002lTZcUAM,Peroxyacetic acid,0.055,lb/gal,Liquid
+a1Y4W000002lTVSUA2,Nuclear polyhedrosis virus,0.06,lb/gal,Liquid
+a1YOF000000EQ5t2AG,Ledprona,0.067,lb/gal,Liquid
+a1Y4W000002lTYXUA2,Sodium Tetraborohydrate Decahydrate,0.084,lb/gal,Liquid
+a1Y4W000002lTSkUAM,Azadirachtin,0.0987,lb/gal,Liquid
+a1Y4W000002lp0CUAQ,Polyvinyl alcohol,0.1,%,Liquid
+a1YOF0000001yyD2AQ,Silicon dioxide and humic acid,0.1,%,Liquid
+a1Y4W000002lTSeUAM,Abamectin,0.11,lb/gal,Liquid
+a1Y4W000002lTYnUAM,Pyrethrin,0.11,lb/gal,Liquid
+a1Y4W000002lTWSUA2,Sodium hypochlorite,0.125,%,Liquid
+a1YOF000000g6fJ2AQ,Bacillus amyloliquefaciens strain ENV503,0.149,%,Dry
+a1Y4W000002lTRzUAM,Abamectin,0.15,lb/gal,Liquid
+a1Y4W000002lTS1UAM,Abamectin,0.15,lb/gal,Liquid
+a1Y4W000002lTS2UAM,Abamectin,0.15,lb/gal,Liquid
+a1Y4W000002lTS3UAM,Abamectin,0.15,lb/gal,Liquid
+a1Y4W000002lTSIUA2,Abamectin,0.15,lb/gal,Liquid
+a1Y4W000002lTUpUAM,Benzovindiflupyr,0.15,lb/gal,Dry
+a1Y4W000002lTUsUAM,Prothioconazole,0.15,lb/gal,Liquid
+a1Y4W000002lTUxUAM,Abamectin,0.15,lb/gal,Liquid
+a1Y4W000002lTYxUAM,Abamectin,0.15,lb/gal,Liquid
+a1Y4W000002lTYyUAM,Abamectin,0.15,lb/gal,Liquid
+a1Y4W000004CxHXUA0,Cytokinin,0.15,%,Liquid
+a1YOF0000000zEn2AI,Abamectin,0.15,lb/gal,Liquid
+a1Y4W000002lTaMUAU,Peroxyacetic acid,0.18,lb/gal,Liquid
+a1Y4W000002lTRaUAM,Peroxyacetic acid,0.18,lb/gal,Liquid
+a1Y4W000003eUGfUAM,polymeric polyhydroxy acids,0.18,%,Liquid
+a1Y4W000002lTVtUAM,Capsaicin,0.2,lb/gal,Liquid
+a1Y4W000002lTbYUAU,Pyraflufen ethyl,0.208,lb/gal,Liquid
+a1Y4W000002lTV4UAM,Pyraflufen ethyl,0.208,lb/gal,Liquid
+a1Y4W000002lTWeUAM,Copper sulfate pentahydrate,0.214,%,Liquid
+a1Y4W000002lTZcUAM,Hydrogen peroxide,0.23,lb/gal,Liquid
+a1Y4W000002lTX4UAM,Abamectin,0.24,lb/gal,Liquid
+a1Y4W000002lsY2UAI,Oxathiapiprolin,0.25,lb/gal,Liquid
+a1YOF000000dfZZ2AY,Humic Acids,0.25,%,Liquid
+a1YOF000000fRc92AE,Carfentrazone,0.267,lb/gal,Liquid
+a1Y4W000002lgeRUAQ,Gibberellic acid,0.27,lb/gal,Liquid
+a1Y4W000002lTV8UAM,Gibberellic acid,0.27,lb/gal,Liquid
+a1Y4W000002lgeSUAQ,Gibberellic acid,0.28,lb/gal,Liquid
+a1Y4W000002lTVVUA2,Gibberellic acid,0.28,lb/gal,Liquid
+a1Y4W000004CvzuUAC,Oxathiapiprolin,0.29,lb/gal,Liquid
+a1Y4W000002lTS4UAM,Abamectin,0.3,lb/gal,Liquid
+a1YOF000000fOXp2AM,Indoxacarb,0.3,lb/gal,Dry
+a1Y4W000002lTVrUAM,Zeta-cypermethrin,0.31,lb/gal,Liquid
+a1YOF000000SalJ2AS,Sulfoxaflor,0.31,lb/gal,Liquid
+a1Y4W000002lTU7UAM,Fludioxonil,0.32,lb/gal,Liquid
+a1Y4W000002lTU8UAM,Fludioxonil,0.32,lb/gal,Liquid
+a1Y4W000002lTZHUA2,Mefenoxam (soil),0.33,lb/gal,Liquid
+a1Y4W000002lTXOUA2,Azadirachtin,0.39,lb/gal,Liquid
+a1Y4W000002lTRuUAM,Lambda-cyhalothrin,0.417,lb/gal,Liquid
+a1Y4W000002lTSzUAM,Lambda-cyhalothrin,0.417,lb/gal,Liquid
+a1Y4W000002lTVpUAM,Cyantraniliprole,0.42,lb/gal,Liquid
+a1Y4W000002lTZnUAM,Afidopyropen,0.42,lb/gal,Liquid
+a1Y4W000002lTT6UAM,Clove Oil,0.435,%,Liquid
+a1Y4W000002lTZ4UAM,1-Naphthaleneacetic acid,0.44,lb/gal,Liquid
+a1YOF0000000uWr2AI,1-Naphthaleneacetic acid,0.44,lb/gal,Liquid
+a1Y4W000002lTW2UAM,Peroxyacetic acid,0.467,lb/gal,Liquid
+a1Y4W000002lTS0UAM,Abamectin,0.47,lb/gal,Liquid
+a1Y4W000002lTjPUAU,Fludioxonil,0.5,%,Dry
+a1Y4W000002lTSiUAM,Bifenthrin,0.5,lb/gal,Liquid
+a1Y4W000002lTSiUAM,Imidacloprid,0.5,lb/gal,Liquid
+a1Y4W000002lTWiUAM,Fludioxonil,0.5,%,Dry
+a1Y4W000002lTWjUAM,Fludioxonil,0.5,%,Dry
+a1Y4W000002lTYoUAM,Azoxystrobin,0.5,lb/gal,Liquid
+a1Y4W000003eUOZUA2,Bacillus amyloliquefaciens subspecies plantarum strain FZB42,0.5,%,Liquid
+a1Y4W000002lTiBUAU,Endothall,0.52,lb/gal,Liquid
+a1Y4W000002lTRKUA2,Fludioxonil,0.52,lb/gal,Liquid
+a1Y4W000002lgahUAA,Pseudomonas sp. Strain DSMZ 13134,0.54,%,Dry
+a1Y4W000002lTRtUAM,Difenoconazole,0.64,lb/gal,Liquid
+a1Y4W000002lTRtUAM,Sedaxane,0.64,lb/gal,Liquid
+a1Y4W000002lTU7UAM,Difenoconazole,0.64,lb/gal,Liquid
+a1Y4W000002lTU7UAM,Sedaxane,0.64,lb/gal,Liquid
+a1Y4W000002lTU8UAM,Difenoconazole,0.64,lb/gal,Liquid
+a1Y4W000002lTU8UAM,Sedaxane,0.64,lb/gal,Liquid
+a1Y4W000002lTSbUAM,Esfenvalerate,0.66,lb/gal,Liquid
+a1Y4W000002lTZxUAM,Esfenvalerate,0.66,lb/gal,Liquid
+a1Y4W000002lTRJUA2,Acetamiprid,0.67,lb/gal,Liquid
+a1Y4W000002lTSJUA2,Abamectin,0.7,lb/gal,Liquid
+a1Y4W000004CyRAUA0,Abamectin,0.7,lb/gal,Liquid
+a1YOF000000g54v2AA,Abamectin,0.7,lb/gal,Liquid
+a1Y4W000002lTbtUAE,Zoxamide,0.71,lb/gal,Liquid
+a1Y4W000002lTU6UAM,Fludioxonil,0.73,lb/gal,Liquid
+a1Y4W000002lTSjUAM,Abamectin,0.75,lb/gal,Liquid
+a1Y4W000002lTSeUAM,Bifenthrin,0.76,lb/gal,Liquid
+a1Y4W000002lTTyUAM,Copper,0.78,lb/gal,Liquid
+a1Y4W000002ltvAUAQ,Zeta-cypermethrin,0.8,lb/gal,Liquid
+a1YOF0000002sif2AA,Zeta-cypermethrin,0.8,lb/gal,Liquid
+a1Y4W000002lTRRUA2,Cyantraniliprole,0.83,lb/gal,Liquid
+a1Y4W000002lTRYUA2,Oxathiapiprolin,0.83,lb/gal,Liquid
+a1Y4W000002lTUjUAM,Azoxystrobin,0.83,lb/gal,Liquid
+a1Y4W000002lTUsUAM,Penflufen,0.83,lb/gal,Liquid
+a1Y4W000002lTVAUA2,alpha-cypermethrin,0.83,lb/gal,Liquid
+a1Y4W000002lTXuUAM,Oxathiapiprolin,0.83,lb/gal,Liquid
+a1Y4W000002lTZNUA2,Novaluron,0.83,lb/gal,Liquid
+a1YOF000000R97F2AS,Mefentrifluconazole,0.833,lb/gal,Liquid
+a1Y4W000002lTRuUAM,Chlorantraniliprole,0.835,lb/gal,Liquid
+a1Y4W000002lTSzUAM,Chlorantraniliprole,0.835,lb/gal,Liquid
+a1Y4W000002lTRJUA2,Novaluron,0.84,lb/gal,Liquid
+a1Y4W000004CxHXUA0,3-Indolebutyric acid,0.85,%,Liquid
+a1Y4W000002lTUuUAM,Lambda-cyhalothrin,0.88,lb/gal,Liquid
+a1Y4W000004CvzuUAC,Mefenoxam,0.88,lb/gal,Liquid
+a1Y4W000004Cz4HUAS,Penflufen,0.88,lb/gal,Liquid
+a1Y4W000002ls7BUAQ,Chlorantraniliprole,0.89,lb/gal,Liquid
+a1Y4W000002lt1wUAA,Metribuzin,0.91,lb/gal,Liquid
+a1YOF0000002SeX2AU,Difenoconazole,0.92,lb/gal,Liquid
+a1Y4W000002lTVrUAM,Bifenthrin,0.93,lb/gal,Liquid
+a1YOF000000SalJ2AS,Bifenthrin,0.93,lb/gal,Liquid
+a1Y4W000002lU40UAE,Polyacrylamide,0.95,%,Liquid
+a1Y4W000002lTafUAE,Clethodim,0.97,lb/gal,Liquid
+a1Y4W000002lTVyUAM,Clethodim,0.97,lb/gal,Liquid
+a1Y4W000002lTZpUAM,Clethodim,0.97,lb/gal,Liquid
+a1Y4W000002lge6UAA,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000002lgeGUAQ,Hexythiazox,1,lb/gal,Liquid
+a1Y4W000002lgeHUAQ,Hexythiazox,1,lb/gal,Liquid
+a1Y4W000002lgeTUAQ,Hexythiazox,1,lb/gal,Liquid
+a1Y4W000002lgYbUAI,polyoxyethylene-alpha-methyl-alpha-propylether,1,%,Liquid
+a1Y4W000002lgYmUAI,polyoxyethylene-alpha-methyl-alpha-propylether,1,%,Liquid
+a1Y4W000002lTa0UAE,Imidacloprid,1,lb/gal,Liquid
+a1Y4W000002lTakUAE,Bifenthrin,1,lb/gal,Liquid
+a1Y4W000002lTakUAE,Imidacloprid,1,lb/gal,Liquid
+a1Y4W000002lTbkUAE,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000002lTblUAE,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000002lTRvUAM,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000002lTSuUAM,Cyfluthrin,1,lb/gal,Liquid
+a1Y4W000002lTTNUA2,Bifenthrin,1,lb/gal,Liquid
+a1Y4W000002lTTNUA2,Imidacloprid,1,lb/gal,Liquid
+a1Y4W000002lTUtUAM,Harpin protein,1,%,Dry
+a1Y4W000002ltvtUAA,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000002lTWFUA2,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000002lTWGUA2,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000002lTWHUA2,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000002lTWIUA2,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000002lTWPUA2,Cyfluthrin,1,lb/gal,Liquid
+a1Y4W000002lTXmUAM,Hexythiazox,1,lb/gal,Liquid
+a1Y4W000002lTXXUA2,Copper hydroxide,1,lb/gal,Liquid
+a1Y4W000002lTYeUAM,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000002lTYsUAM,Spinetoram,1,lb/gal,Liquid
+a1Y4W000002lTZzUAM,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1Y4W000003eUGaUAM,Beta-cyfluthrin,1,lb/gal,Liquid
+a1Y4W000004CutVUAS,Reynoutria sachalinensis,1,lb/gal,Liquid
+a1Y4W000004CwtuUAC,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1YOF000000alej2AA,Lambda-cyhalothrin,1,lb/gal,Liquid
+a1YOF000000bjkX2AQ,Clove Oil,1,%,Liquid
+a1YOF000000bjxR2AQ,Beauveria bassiana,1,%,Dry
+a1YOF000000cvoT2AQ,Potash,1,%,Dry
+a1YOF000000OooT2AS,Mefenoxam (soil),1,lb/gal,
+a1YOF000000WHov2AG,Beauveria bassiana,1,%,Liquid
+a1YOF000000XQuz2AG,Spearmint oil,1,g/L,Liquid
+a1YOF000000ZNEf2AO,Beta-cyfluthrin,1,lb/gal,Liquid
+a1Y4W000002lTRKUA2,Difenoconazole,1.03,lb/gal,Liquid
+a1Y4W000002lTbOUAU,Hydrogen peroxide,1.04,lb/gal,Liquid
+a1Y4W000002lTWUUA2,Fluopyram,1.04,lb/gal,Liquid
+a1Y4W000002lTRfUAM,Difenoconazole,1.05,lb/gal,Liquid
+a1Y4W000002lTSTUA2,Difenoconazole,1.05,lb/gal,Liquid
+a1Y4W000002lTbMUAU,Metribuzin,1.1,lb/gal,Liquid
+a1Y4W000002lTWOUA2,Imidacloprid,1.1,lb/gal,Liquid
+a1Y4W000002lTX9UAM,Metribuzin,1.116,lb/gal,Liquid
+a1YOF0000005zFl2AI,Sulfentrazone,1.12,lb/gal,Liquid
+a1Y4W000002lTX4UAM,Cyantraniliprole,1.13,lb/gal,Liquid
+a1Y4W000002lTUuUAM,Thiamethoxam (foliar),1.18,lb/gal,Liquid
+a1Y4W000002lTSEUA2,Sodium hypochlorite,1.2,lb/gal,Liquid
+a1Y4W000002lgdsUAA,Metribuzin,1.25,lb/gal,Liquid
+a1Y4W000002lTadUAE,Metribuzin,1.25,lb/gal,Liquid
+a1Y4W000002lTTDUA2,Metribuzin,1.25,lb/gal,Liquid
+a1Y4W000002lTUAUA2,Cyhalothrin,1.25,lb/gal,Liquid
+a1Y4W000002lTWLUA2,Metribuzin,1.25,lb/gal,Liquid
+a1Y4W000002lTX6UAM,Pydiflumetofen,1.25,lb/gal,Liquid
+a1Y4W000002lTYWUA2,Metribuzin,1.25,lb/gal,Liquid
+a1YOF000000M61x2AC,Indoxacarb,1.25,lb/gal,Liquid
+a1YOF000000OpJ72AK,Trifloxystrobin,1.27,lb/gal,Liquid
+a1Y4W000002lTRtUAM,Mandipropamid,1.28,lb/gal,Liquid
+a1Y4W000002lTU7UAM,Thiamethoxam,1.28,lb/gal,Liquid
+a1Y4W000002lTU8UAM,Thiamethoxam,1.28,lb/gal,Liquid
+a1Y4W000002lTaxUAE,Tolfenpyrad,1.29,lb/gal,Liquid
+a1Y4W000002lTkjUAE,Bacillus subtilis strain QST 713,1.3,%,Liquid
+a1Y4W000002lTekUAE,Bacillus subtilis strain QST 713,1.31,%,Dry
+a1Y4W000002ls7BUAQ,Bifenthrin,1.33,lb/gal,Liquid
+a1YOF000000S8HB2A0,Difenoconazole,1.33,lb/gal,Liquid
+a1Y4W000002lgfFUAQ,Bacillus subtilis strain QST 713,1.34,%,Liquid
+a1YOF000000if2f2AA,Bacillus subtillis strain QST 713,1.34,%,Liquid
+a1Y4W000002lTYZUA2,Fluxapyroxad,1.39,lb/gal,Liquid
+a1Y4W000002lTbOUAU,Peroxyacetic acid,1.41,lb/gal,Liquid
+a1Y4W000004Cx60UAC,Fluoxastrobin,1.42,lb/gal,Liquid
+a1YOF000000OpJ72AK,Prothioconazole,1.49,lb/gal,Liquid
+a1Y4W000002lTTVUA2,Bifenthrin,1.5,lb/gal,Liquid
+a1Y4W000002lTUDUA2,Deltamethrin,1.5,lb/gal,Liquid
+a1Y4W000002lTXAUA2,Flutolanil,1.5,%,Dry
+a1Y4W000002lTYMUA2,Sethoxydim,1.5,lb/gal,Liquid
+a1Y4W000002lTZYUA2,Maleic hydrazide,1.5,lb/gal,Liquid
+a1Y4W000002lU3IUAU,Metaldehyde,1.5,%,Dry
+a1Y4W000002lU3MUAU,Metaldehyde,1.5,%,Dry
+a1Y4W000002lU3OUAU,Metaldehyde,1.5,%,Dry
+a1Y4W000002lU4EUAU,Metaldehyde,1.5,%,Dry
+a1Y4W000002lU6lUAE,Metaldehyde,1.5,g/L,Dry
+a1Y4W000002lU6wUAE,Metaldehyde,1.5,%,Dry
+a1Y4W000004CwmZUAS,Bifenthrin,1.5,lb/gal,Liquid
+a1YOF000000fOb32AE,Bifenthrin,1.5,lb/gal,Dry
+a1YOF000000gAPZ2A2,Bifenthrin,1.5,lb/gal,Liquid
+a1YOF000000OooT2AS,Mefenoxam,1.54,lb/gal,
+a1Y4W000002lTWOUA2,Cyfluthrin,1.6,lb/gal,Liquid
+a1Y4W000002lTYcUAM,Imidacloprid,1.6,lb/gal,Liquid
+a1Y4W000002lTZyUAM,Imidacloprid,1.6,lb/gal,Liquid
+a1Y4W000002lgeZUAQ,Difenoconazole,1.67,lb/gal,Liquid
+a1Y4W000002lTbWUAU,Mefentrifluconazole,1.67,lb/gal,Liquid
+a1Y4W000002lTbWUAU,Pyraclostrobin,1.67,lb/gal,Liquid
+a1Y4W000002ltFRUAY,Penthiopyrad,1.67,lb/gal,Liquid
+a1Y4W000002lTRfUAM,Azoxystrobin,1.67,lb/gal,Liquid
+a1Y4W000002lTRnUAM,Flupyradifurone,1.67,lb/gal,Liquid
+a1Y4W000002lTRsUAM,Penthiopyrad,1.67,lb/gal,Liquid
+a1Y4W000002lTSTUA2,Azoxystrobin,1.67,lb/gal,Liquid
+a1Y4W000002lTTzUAM,Chlorantraniliprole,1.67,lb/gal,Liquid
+a1Y4W000002lTXrUAM,Oxathiapiprolin,1.67,lb/gal,Liquid
+a1Y4W000004Cz4CUAS,Fluopyram,1.67,lb/gal,Liquid
+a1Y4W000004Cz4CUAS,Prothioconazole,1.67,lb/gal,Liquid
+a1YOF000000g8Qz2AI,Cyantraniliprole,1.67,lb/gal,Liquid
+a1YOF000000R97F2AS,Boscalid,1.67,lb/gal,Liquid
+a1Y4W000002ls4WUAQ,Imidacloprid,1.7,lb/gal,Liquid
+a1Y4W000004CutVUAS,Azoxystrobin,1.74,lb/gal,Liquid
+a1Y4W000002lTT1UAM,Bifenthrin,1.75,lb/gal,Liquid
+a1Y4W000002lU6xUAE,Benthiavalicarb-isopropyl,1.75,%,Dry
+a1YOF0000002IYj2AM,Benthiavalicarb-isopropyl,1.75,%,Liquid
+a1YOF000000hOv72AE,Benthiavalicarb-isopropyl,1.75,%,Dry
+a1Y4W000002lTYTUA2,Pyrifluquinazon,1.87,lb/gal,Liquid
+a1Y4W000002lTbqUAE,Dimethomorph,1.88,lb/gal,Liquid
+a1Y4W000002lgd1UAA,Carfentrazone,1.9,lb/gal,Liquid
+a1Y4W000002lTXxUAM,Phosphorous Acid,1.93,lb/gal,Liquid
+a1Y4W000002lriSUAQ,Azoxystrobin,1.99,lb/gal,Liquid
+a1Y4W000002lriSUAQ,Fludioxonil,1.99,lb/gal,Liquid
+a1Y4W000002lgaCUAQ,Phosphate,2,%,Liquid
+a1Y4W000002lgchUAA,Benzethonium Chloride,2,%,Liquid
+a1Y4W000002lgd4UAA,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lgf0UAA,Mefenoxam,2,lb/gal,Liquid
+a1Y4W000002lgXQUAY,Penflufen,2,%,Dry
+a1Y4W000002lTa0UAE,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTa2UAE,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTa8UAE,Spinosad,2,lb/gal,Liquid
+a1Y4W000002lTasUAE,Cyfluthrin,2,lb/gal,Liquid
+a1Y4W000002lTbbUAE,Clethodim,2,lb/gal,Liquid
+a1Y4W000002lTbgUAE,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTbPUAU,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTbRUAU,Mefenoxam,2,lb/gal,Liquid
+a1Y4W000002lTbvUAE,Zinc Phosphide,2,%,Dry
+a1Y4W000002lTbVUAU,Clethodim,2,lb/gal,Liquid
+a1Y4W000002lTbXUAU,Diquat,2,lb/gal,Liquid
+a1Y4W000002ltOyUAI,Cyfluthrin,2,lb/gal,Liquid
+a1Y4W000002lTRhUAM,Diquat,2,lb/gal,Liquid
+a1Y4W000002lTRpUAM,Spinosad,2,lb/gal,Liquid
+a1Y4W000002lTS9UAM,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTSaUAM,Clethodim,2,lb/gal,Liquid
+a1Y4W000002lTSBUA2,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTSLUA2,Carfentrazone,2,lb/gal,Liquid
+a1Y4W000002lTSRUA2,Permethrin,2,lb/gal,Liquid
+a1Y4W000002lTStUAM,Cyfluthrin,2,lb/gal,Liquid
+a1Y4W000002lTSUUA2,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTT0UAM,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTT2UAM,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTT3UAM,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTTMUA2,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTTpUAM,Clethodim,2,lb/gal,Liquid
+a1Y4W000002lTTUUA2,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTU2UAM,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTUwUAM,Spinosad,2,lb/gal,Liquid
+a1Y4W000002lTUXUA2,Diquat,2,lb/gal,Liquid
+a1Y4W000002lTUZUA2,Diquat,2,lb/gal,Liquid
+a1Y4W000002lTV9UAM,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTVgUAM,Oxyfluoren,2,lb/gal,Liquid
+a1Y4W000002lTVIUA2,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTVNUA2,Oxyfluoren,2,lb/gal,Liquid
+a1Y4W000002lTVxUAM,Clethodim,2,lb/gal,Liquid
+a1Y4W000002lTWPUA2,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTWpUAM,Metalaxyl,2,lb/gal,Liquid
+a1Y4W000002lTWsUAM,Metalaxyl,2,lb/gal,Liquid
+a1Y4W000002lTWVUA2,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTXcUAM,Spiromesifen,2,lb/gal,Liquid
+a1Y4W000002lTXHUA2,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTXiUAM,Clethodim,2,lb/gal,Liquid
+a1Y4W000002lTXJUA2,Spirotetramat,2,lb/gal,Liquid
+a1Y4W000002lTXjUAM,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTXYUA2,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTXZUA2,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTYJUA2,Thiamethoxam,2,lb/gal,Liquid
+a1Y4W000002lTYjUAM,Zinc Phosphide,2,%,Dry
+a1Y4W000002lTZCUA2,Bifenthrin,2,lb/gal,Liquid
+a1Y4W000002lTZlUAM,Clethodim,2,lb/gal,Liquid
+a1Y4W000002lTZoUAM,Clethodim,2,lb/gal,Liquid
+a1Y4W000002luDYUAY,Clethodim,2,lb/gal,Liquid
+a1Y4W000004CumKUAS,Clethodim,2,lb/gal,Liquid
+a1Y4W000004CvMCUA0,Clethodim,2,lb/gal,Liquid
+a1YOF0000007lVF2AY,1-methylcyclopropene,2,%,Dry
+a1YOF000000g53J2AQ,Bifenthrin,2,lb/gal,Liquid
+a1YOF000000g6iX2AQ,Chitosan,2,%,Liquid
+a1YOF000000h5xJ2AQ,1-methylcyclopropene,2,%,Dry
+a1YOF000000Qeuf2AC,Diquat,2,lb/gal,Liquid
+a1YOF000000WBmj2AG,Diquat,2,lb/gal,Liquid
+a1YOF000000ZNEf2AO,Imidacloprid,2,lb/gal,Liquid
+a1Y4W000002lTW2UAM,Hydrogen peroxide,2.05,lb/gal,Liquid
+a1Y4W000002lge5UAA,Lambda-cyhalothrin,2.08,lb/gal,Liquid
+a1Y4W000002lsXiUAI,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000002lsY2UAI,Mandipropamid,2.08,lb/gal,Liquid
+a1Y4W000002lTaoUAE,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000002lTatUAE,Difenoconazole,2.08,lb/gal,Liquid
+a1Y4W000002lTbeUAE,Lambda-cyhalothrin,2.08,lb/gal,Liquid
+a1Y4W000002lTReUAM,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000002lTRiUAM,Mandipropamid,2.08,lb/gal,Liquid
+a1Y4W000002lTRKUA2,Thiamethoxam (seed),2.08,lb/gal,Liquid
+a1Y4W000002lTRZUA2,Mandipropamid,2.08,lb/gal,Liquid
+a1Y4W000002lTSDUA2,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000002lTSmUAM,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000002lTSnUAM,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000002ltu2UAA,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000002lTVnUAM,Lambda-cyhalothrin,2.08,lb/gal,Liquid
+a1Y4W000002lTWkUAM,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000002lTYdUAM,Lambda-cyhalothrin,2.08,lb/gal,Liquid
+a1Y4W000002lTYqUAM,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000002lTZEUA2,Difenoconazole,2.08,lb/gal,Liquid
+a1Y4W000002lTZEUA2,Mandipropamid,2.08,lb/gal,Liquid
+a1Y4W000002lTZeUAM,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000004CwtpUAC,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000004Cx2XUAS,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000004CxHIUA0,Lambda-cyhalothrin,2.08,lb/gal,Liquid
+a1Y4W000004CxHmUAK,Pyraclostrobin,2.08,lb/gal,Liquid
+a1Y4W000004Cz4HUAS,Fluopyram,2.08,lb/gal,Liquid
+a1YOF000000BbM12AK,Azoxystrobin,2.08,lb/gal,Liquid
+a1Y4W000002lTVqUAM,Pyraclostrobin,2.09,lb/gal,Liquid
+a1Y4W000002lTX6UAM,Fludioxonil,2.09,lb/gal,Liquid
+a1Y4W000002lgd7UAA,Azoxystrobin,2.1,lb/gal,Liquid
+a1Y4W000002lgavUAA,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lgbeUAA,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lgbVUAQ,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lgW8UAI,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lgX2UAI,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lgXNUAY,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lgZbUAI,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lgZLUAY,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lgZvUAI,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lU4DUAU,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lU4wUAE,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lU4xUAE,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lU5RUAU,Ferric phosphate,2.11,%,Dry
+a1Y4W000002lU6SUAU,Ferric phosphate,2.11,%,Dry
+a1YOF0000002SeX2AU,Fluazinam,2.11,lb/gal,Liquid
+a1YOF000000S8HB2A0,Azoxystrobin,2.12,lb/gal,Liquid
+a1Y4W000002lTSxUAM,Clothianidin,2.13,lb/gal,Liquid
+a1YOF000000PI092AG,Lambda-cyhalothrin,2.19,lb/gal,Liquid
+a1YOF0000005zFl2AI,Metribuzin,2.23,lb/gal,Liquid
+a1Y4W000002lgejUAA,Maleic hydrazide,2.25,lb/gal,Liquid
+a1Y4W000002lTRkUAM,Maleic hydrazide,2.25,lb/gal,Liquid
+a1YOF000000DXML2A4,Maleic hydrazide,2.25,lb/gal,Liquid
+a1Y4W000004Cx60UAC,Bifenthrin,2.26,lb/gal,Liquid
+a1Y4W000002lTSpUAM,Copper,2.27,lb/gal,Liquid
+a1Y4W000002lsmkUAA,Methomyl,2.4,lb/gal,Liquid
+a1Y4W000002lTWJUA2,Methomyl,2.4,lb/gal,Liquid
+a1Y4W000002lgbMUAQ,Ferric phosphate,2.42,%,Dry
+a1Y4W000002lgckUAA,Ferric phosphate,2.42,%,Dry
+a1Y4W000002lgXaUAI,Ferric phosphate,2.42,%,Dry
+a1Y4W000002lgXcUAI,Ferric phosphate,2.42,%,Dry
+a1Y4W000002lgZ0UAI,Ferric phosphate,2.42,%,Dry
+a1Y4W000002lU4WUAU,Ferric phosphate,2.42,%,Dry
+a1Y4W000002lTaMUAU,Hydrogen dioxide,2.48,lb/gal,Liquid
+a1Y4W000002lTRaUAM,Hydrogen dioxide,2.49,lb/gal,Liquid
+a1Y4W000002lTaPUAU,"1,3-dichloropropene",2.5,lb/gal,Liquid
+a1Y4W000002lTbqUAE,Ametoctradin,2.5,lb/gal,Liquid
+a1Y4W000002ltEsUAI,Glyphosate,2.5,lb/gal,Liquid
+a1YOF0000002IP32AM,Esfenvalerate,2.5,%,Liquid
+a1YOF0000002RAb2AM,Esfenvalerate,2.5,%,Liquid
+a1YOF0000002T5x2AE,Esfenvalerate,2.5,%,Liquid
+a1YOF0000002TKT2A2,Esfenvalerate,2.5,%,Liquid
+a1YOF000000bjkX2AQ,Thyme Oil,2.5,%,Liquid
+a1YOF000000gAPZ2A2,Bacillus subtilis strain QST 713,2.5,%,Liquid
+a1YOF000000gAPZ2A2,Bacillus velezensis,2.5,%,Liquid
+a1YOF000000hOVJ2A2,Esfenvalerate,2.5,%,Liquid
+a1YOF000000QJob2AG,Glyphosate,2.5,lb/gal,Liquid
+a1YOF00000027ob2AA,Pyraflufen-ethyl,2.65,%,Liquid
+a1YOF00000032DN2AY,Pyraflufen-ethyl,2.65,%,Liquid
+a1YOF000000hPJJ2A2,Pyraflufen-ethyl,2.65,%,Liquid
+a1YOF000000hvmD2AQ,Pyraflufen-ethyl,2.65,%,Liquid
+a1YOF000000if4H2AQ,Pyraflufen-ethyl,2.65,%,Liquid
+a1Y4W000002lgdcUAA,Dimethoate,2.67,lb/gal,Liquid
+a1Y4W000002lTYZUA2,Pyraclostrobin,2.78,lb/gal,Liquid
+a1Y4W000002lTbpUAE,Metalaxyl,2.8,lb/gal,Liquid
+a1Y4W000002lTUWUA2,Bacillus thuringiensis,2.8,lb/gal,Liquid
+a1Y4W000002lTU6UAM,Thiamethoxam,2.85,lb/gal,Liquid
+a1Y4W000002lgYzUAI,Ferric phosphate,2.9,%,Dry
+a1Y4W000002lTbMUAU,Pendimethalin,2.9,lb/gal,Liquid
+a1YOF0000002SoD2AU,Ferric phosphate,2.9,%,Dry
+a1YOF0000002St32AE,Ferric phosphate,2.9,%,Liquid
+a1YOF000000hPCr2AM,Ferric phosphate,2.9,%,Dry
+a1YOF000000huJt2AI,Ferric phosphate,2.9,%,Dry
+a1Y4W000002lgVwUAI,Ferric phosphate,2.94,%,Dry
+a1Y4W000002lgXMUAY,Ferric phosphate,2.94,%,Dry
+a1Y4W000002lgYEUAY,Ferric phosphate,2.94,%,Dry
+a1Y4W000002lgbUUAQ,Metaldehyde,3,%,Dry
+a1Y4W000002lgbwUAA,Metaldehyde,3,%,Dry
+a1Y4W000002lgVzUAI,Metaldehyde,3,%,Dry
+a1Y4W000002lgWkUAI,Metaldehyde,3,%,Dry
+a1Y4W000002lgX8UAI,Metaldehyde,3,%,Dry
+a1Y4W000002lTa5UAE,Ethalfluralin,3,lb/gal,Liquid
+a1Y4W000002lTaGUAU,Chlorpropham,3,lb/gal,Liquid
+a1Y4W000002lTUGUA2,Paraquat,3,lb/gal,Liquid
+a1Y4W000002lTUpUAM,Azoxystrobin,3,lb/gal,Dry
+a1Y4W000002lTUUUA2,Metribuzin,3,lb/gal,Liquid
+a1Y4W000002lTVBUA2,Paraquat,3,lb/gal,Liquid
+a1Y4W000002lTXUUA2,Copper hydroxide,3,lb/gal,Liquid
+a1Y4W000002lU3cUAE,Metaldehyde,3,%,Dry
+a1Y4W000002lU3fUAE,Metaldehyde,3,%,Dry
+a1Y4W000002lU4lUAE,Metaldehyde,3,%,Liquid
+a1Y4W000002lU4RUAU,Metaldehyde,3,%,Dry
+a1Y4W000002lU4SUAU,Metaldehyde,3,%,Dry
+a1Y4W000002lU5eUAE,Metaldehyde,3,%,Liquid
+a1Y4W000002lU5JUAU,Metaldehyde,3,%,Dry
+a1Y4W000002lU5qUAE,Metaldehyde,3,%,Liquid
+a1Y4W000002lU6uUAE,Metaldehyde,3,%,Dry
+a1Y4W000004Cw3hUAC,Clethodim,3,lb/gal,Liquid
+a1Y4W000004Cx4dUAC,Clethodim,3,lb/gal,Liquid
+a1YOF0000000yvR2AQ,Paraquat,3,lb/gal,Liquid
+a1YOF0000001zav2AA,Paraquat,3,lb/gal,Liquid
+a1YOF00000028Ph2AI,Oxathiapiprolin,3,%,Liquid
+a1YOF000000hOez2AE,Glyphosate,3,%,Liquid
+a1Y4W000002lTWUUA2,Pyrimethanil,3.12,lb/gal,Liquid
+a1Y4W000002lTSXUA2,Permethrin,3.2,lb/gal,Liquid
+a1Y4W000002lTYBUA2,Permethrin,3.2,lb/gal,Liquid
+a1Y4W000002lTYDUA2,Permethrin,3.2,lb/gal,Liquid
+a1Y4W000002lTYQUA2,Permethrin,3.2,lb/gal,Liquid
+a1Y4W000002lTZhUAM,Dinotefuran,3.24,lb/gal,Liquid
+a1Y4W000002lgeIUAQ,Pendimethalin,3.3,lb/gal,Liquid
+a1Y4W000002lqdfUAA,Glyphosate,3.3,lb/gal,Liquid
+a1Y4W000002lt05UAA,Azoxystrobin,3.3,lb/gal,Liquid
+a1Y4W000002lTaKUAU,Pendimethalin,3.3,lb/gal,Liquid
+a1Y4W000002lTS7UAM,Pendimethalin,3.3,lb/gal,Liquid
+a1Y4W000002lTVHUA2,Pendimethalin,3.3,lb/gal,Liquid
+a1Y4W000002lTY3UAM,Pendimethalin,3.3,lb/gal,Liquid
+a1Y4W000002lTY6UAM,Pendimethalin,3.3,lb/gal,Liquid
+a1Y4W000002lTYhUAM,Pendimethalin,3.3,lb/gal,Liquid
+a1Y4W000003eUSMUA2,Pendimethalin,3.3,lb/gal,Liquid
+a1YOF000000QJob2AG,Glyphosate,3.3,lb/gal,Liquid
+a1Y4W000002lTXtUAM,Chlorothalonil,3.32,lb/gal,Liquid
+a1Y4W000002ltEsUAI,Glyphosate,3.33,lb/gal,Liquid
+a1Y4W000002lTYtUAM,Cyazofamid,3.33,lb/gal,Liquid
+a1YOF000000XVg92AG,Bacillus chitinosporus,3.33,%,Liquid
+a1Y4W000002lTYgUAM,Mefentrifluconazole,3.34,lb/gal,Liquid
+a1Y4W000002lTZHUA2,Chlorothalonil,3.34,lb/gal,Liquid
+a1Y4W000002lTX9UAM,S-metolachlor,3.35,lb/gal,Liquid
+a1YOF000000YJ6f2AG,Thyme Oil,3.5,%,Liquid
+a1YOF000000bjuD2AQ,Trichoderma harzianum Rifai strain T-22*..,3.65,%,Dry
+a1Y4W000002lTUYUA2,Diquat,3.73,lb/gal,Liquid
+a1Y4W000002lTVwUAM,Chloropicrin,3.73,lb/gal,Liquid
+a1YOF000000fRc92AE,Pyroxasulfone,3.733,lb/gal,Liquid
+a1Y4W000002lTbcUAE,Oxamyl,3.77,lb/gal,Liquid
+a1Y4W000002lTbdUAE,Oxamyl,3.77,lb/gal,Liquid
+a1Y4W000002lTZBUA2,Oxamyl,3.77,lb/gal,Liquid
+a1Y4W000002lgdRUAQ,Metribuzin,3.8,lb/gal,Liquid
+a1Y4W000002lTSFUA2,Bacillus thuringiensis,3.8,%,Dry
+a1Y4W000002lTVXUA2,Metribuzin,3.8,lb/gal,Liquid
+a1Y4W000002lTXBUA2,Flutolanil,3.8,lb/gal,Liquid
+a1Y4W000002lTXEUA2,Flutolanil,3.8,lb/gal,Liquid
+a1Y4W000002lTXLUA2,Potassium salts of fatty acids,3.8,lb/gal,Liquid
+a1Y4W000002lTYiUAM,Pendimethalin,3.8,lb/gal,Liquid
+a1Y4W000002lTZdUAM,Pendimethalin,3.8,lb/gal,Liquid
+a1Y4W000004CwKsUAK,Metribuzin,3.8,lb/gal,Liquid
+a1Y4W000002lt1wUAA,S-metolachlor,3.83,lb/gal,Liquid
+a1Y4W000002lgWLUAY,Metalaxyl-M,3.88,%,Dry
+a1Y4W000002lgXKUAY,Metalaxyl-M,3.88,%,Dry
+a1Y4W000002lU4aUAE,Metalaxyl-M,3.88,%,Dry
+a1Y4W000002lTahUAE,Chloropicrin,3.89,lb/gal,Liquid
+a1Y4W000002lgeuUAA,Phosphorous Acid,3.9,lb/gal,Liquid
+a1Y4W000002lTRgUAM,Phosphorous Acid,3.9,lb/gal,Liquid
+a1Y4W000002lTVGUA2,Phosphorous Acid,3.9,lb/gal,Liquid
+a1Y4W000002lgaCUAQ,Potassium,4,%,Liquid
+a1Y4W000002lgddUAA,Dimethoate,4,lb/gal,Liquid
+a1Y4W000002lgeAUAQ,Mancozeb,4,lb/gal,Liquid
+a1Y4W000002lgeyUAA,Trifluralin,4,lb/gal,Liquid
+a1Y4W000002lgVrUAI,Alkylphenyl Hydroxypolyoxyethylene,4,g/L,Liquid
+a1Y4W000002lqeOUAQ,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lsDOUAY,Dimethoate,4,lb/gal,Liquid
+a1Y4W000002lTa9UAE,Fludioxonil,4,lb/gal,Liquid
+a1Y4W000002lTaXUAU,Triphenyltin hydroxide,4,lb/gal,Liquid
+a1Y4W000002lTb3UAE,Trifluralin,4,lb/gal,Liquid
+a1Y4W000002lTb8UAE,Metribuzin,4,lb/gal,Liquid
+a1Y4W000002lTbDUAU,Trifluralin,4,lb/gal,Liquid
+a1Y4W000002lTbFUAU,Trifluralin,4,lb/gal,Liquid
+a1Y4W000002lTbGUAU,Trifluralin,4,lb/gal,Liquid
+a1Y4W000002lTbiUAE,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTbjUAE,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTbmUAE,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTkFUAU,Metalaxyl,4,%,Dry
+a1Y4W000002lTkUUAU,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTRjUAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTRMUA2,Mancozeb,4,lb/gal,Liquid
+a1Y4W000002lTRmUAM,Carbaryl,4,lb/gal,Liquid
+a1Y4W000002lTRWUA2,Mancozeb,4,lb/gal,Liquid
+a1Y4W000002lTS5UAM,Bifenazate,4,lb/gal,Liquid
+a1Y4W000002lTSCUA2,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTSHUA2,Triphenyltin hydroxide,4,lb/gal,Liquid
+a1Y4W000002lTSNUA2,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTTAUA2,Pentachloronitrobenzene,4,lb/gal,Liquid
+a1Y4W000002lTTPUA2,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTTQUA2,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTTuUAM,Phosphorous Acid,4,lb/gal,Liquid
+a1Y4W000002lTTXUA2,Carbaryl,4,lb/gal,Liquid
+a1Y4W000002lTU0UAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTU3UAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTU4UAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTUbUAM,Mancozeb,4,lb/gal,Liquid
+a1Y4W000002lTUKUA2,Dimethoate,4,lb/gal,Liquid
+a1Y4W000002lTUMUA2,Dimethoate,4,lb/gal,Liquid
+a1Y4W000002lTUrUAM,Ethaboxam,4,lb/gal,Liquid
+a1Y4W000002lTV5UAM,Fluoxastrobin,4,lb/gal,Liquid
+a1Y4W000002lTVaUAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTVbUAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTVcUAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTVdUAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTVsUAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTVZUA2,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTW0UAM,Iprodione,4,lb/gal,Liquid
+a1Y4W000002lTWaUAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTWhUAM,Fludioxonil,4,lb/gal,Liquid
+a1Y4W000002lTWRUA2,Linuron,4,lb/gal,Liquid
+a1Y4W000002lTWtUAM,Metalaxyl,4,lb/gal,Liquid
+a1Y4W000002lTWuUAM,Iprodione,4,lb/gal,Liquid
+a1Y4W000002lTWWUA2,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTWXUA2,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTWYUA2,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTWzUAM,Metribuzin,4,lb/gal,Liquid
+a1Y4W000002lTX1UAM,Metribuzin,4,lb/gal,Liquid
+a1Y4W000002lTX5UAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTXbUAM,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTXdUAM,Spiromesifen,4,lb/gal,Liquid
+a1Y4W000002lTXIUA2,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTXKUA2,Spirotetramat,4,lb/gal,Liquid
+a1Y4W000002lTXkUAM,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTXQUA2,Iprodione,4,lb/gal,Liquid
+a1Y4W000002lTXsUAM,Mefenoxam,4,lb/gal,Liquid
+a1Y4W000002lTY8UAM,Mancozeb,4,lb/gal,Liquid
+a1Y4W000002lTYfUAM,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTYqUAM,Mefenoxam (soil),4,lb/gal,Liquid
+a1Y4W000002lTYuUAM,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTZ1UAM,Metalaxyl,4,lb/gal,Liquid
+a1Y4W000002lTZ3UAM,Fipronil,4,lb/gal,Liquid
+a1Y4W000002lTZgUAM,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTZJUA2,Mefenoxam (foliar),4,%,Dry
+a1Y4W000002lTZKUA2,Mefenoxam (foliar),4,%,Dry
+a1Y4W000002lTZLUA2,Mefenoxam,4,lb/gal,Liquid
+a1Y4W000002lTZQUA2,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTZTUA2,Glyphosate,4,lb/gal,Liquid
+a1Y4W000002lTZtUAM,Carbaryl,4,lb/gal,Liquid
+a1Y4W000002lTZWUA2,Iprodione,4,lb/gal,Liquid
+a1Y4W000002lU6jUAE,Metaldehyde,4,%,Liquid
+a1Y4W000002lU6kUAE,Metaldehyde,4,%,Dry
+a1Y4W000002w8OuUAI,Mancozeb,4,lb/gal,Liquid
+a1Y4W000003unhDUAQ,Dimethoate,4,lb/gal,Liquid
+a1Y4W000004Cw0EUAS,Bifenazate,4,lb/gal,Liquid
+a1Y4W000004CwS9UAK,Dimethoate,4,lb/gal,Liquid
+a1Y4W000004Cx4xUAC,Fludioxonil,4,lb/gal,Liquid
+a1Y4W000004Cx6tUAC,Glyphosate,4,lb/gal,Liquid
+a1Y4W000004CxXVUA0,Metalaxyl,4,lb/gal,Liquid
+a1Y4W000004CyEpUAK,Bifenazate,4,lb/gal,Liquid
+a1YOF0000000z1t2AA,Mefenoxam,4,lb/gal,Liquid
+a1YOF0000002fBx2AI,Quizalofop-P-tefuryl,4,%,Liquid
+a1YOF000000g51h2AA,Imidacloprid,4,lb/gal,Liquid
+a1YOF000000MpAL2A0,Glyphosate,4,lb/gal,Liquid
+a1YOF000000Y5DN2A0,Mefenoxam (foliar),4,lb/gal,Liquid
+a1YOF000000ZMor2AG,Imidacloprid,4,lb/gal,Liquid
+a1YOF000000ZMs52AG,Imidacloprid,4,lb/gal,Liquid
+a1Y4W000002lTabUAE,Phosphorous Acid,4.1,lb/gal,Liquid
+a1Y4W000002lTWnUAM,Thiabendazole,4.1,lb/gal,Liquid
+a1Y4W000002lgeYUAQ,Fenamidone,4.13,lb/gal,Liquid
+a1Y4W000002lTYzUAM,Fenamidone,4.13,lb/gal,Liquid
+a1Y4W000002lgezUAA,Phosphorous Acid,4.16,lb/gal,Liquid
+a1Y4W000002lTRrUAM,Fluopyram,4.16,lb/gal,Liquid
+a1Y4W000002lTZAUA2,Phosphorous Acid,4.16,lb/gal,Liquid
+a1Y4W000002lgeFUAQ,Fluazinam,4.17,lb/gal,Liquid
+a1Y4W000002lTanUAE,Chlorothalonil,4.17,lb/gal,Liquid
+a1Y4W000002lTb1UAE,Glyphosate,4.17,lb/gal,Liquid
+a1Y4W000002lTbrUAE,Pyroxasulfone,4.17,lb/gal,Liquid
+a1Y4W000002lTRIUA2,Chlorothalonil,4.17,lb/gal,Liquid
+a1Y4W000002lTTIUA2,Chlorothalonil,4.17,lb/gal,Liquid
+a1Y4W000002lTUnUAM,Chlorothalonil,4.17,lb/gal,Liquid
+a1Y4W000002lTV0UAM,Chlorothalonil,4.17,lb/gal,Liquid
+a1Y4W000002lTVQUA2,Trifloxystrobin,4.17,lb/gal,Liquid
+a1Y4W000002lTXeUAM,Fluazinam,4.17,lb/gal,Liquid
+a1Y4W000002lTXfUAM,Fluazinam,4.17,lb/gal,Liquid
+a1Y4W000002lTZ5UAM,Phosphorous Acid,4.17,lb/gal,Liquid
+a1Y4W000002lTVFUA2,Dimethomorph,4.18,lb/gal,Liquid
+a1Y4W000002lTbtUAE,Chlorothalonil,4.19,lb/gal,Liquid
+a1Y4W000002lTYbUAM,Phosphorous Acid,4.2,lb/gal,Liquid
+a1Y4W000002lTZDUA2,Potassium phosphite,4.2,lb/gal,Liquid
+a1Y4W000002lTZiUAM,Pelargonic acid,4.2,lb/gal,Liquid
+a1Y4W000002lTZjUAM,Metam-sodium,4.22,lb/gal,Liquid
+a1Y4W000003eUSIUA2,Chlorothalonil,4.24,lb/gal,Liquid
+a1Y4W000002lTSOUA2,Garlic,4.25,lb/gal,Liquid
+a1Y4W000002lTWqUAM,Metam-sodium,4.25,lb/gal,Liquid
+a1Y4W000002lTbUUAU,Metam-sodium,4.26,lb/gal,Liquid
+a1Y4W000002lTRdUAM,Phosphorous Acid,4.32,lb/gal,Liquid
+a1Y4W000002lTYEUA2,Phosphorous Acid,4.32,lb/gal,Liquid
+a1Y4W000002lTWCUA2,Phosphorous Acid,4.41,lb/gal,Liquid
+a1Y4W000002lU44UAE,Cymoxanil,4.5,%,Dry
+a1Y4W000002lU45UAE,Cymoxanil,4.5,%,Liquid
+a1Y4W000002lU48UAE,Cymoxanil,4.5,%,Dry
+a1Y4W000002lU5hUAE,Cymoxanil,4.5,%,Liquid
+a1Y4W000002lU5pUAE,Cymoxanil,4.5,%,Dry
+a1Y4W000002lU5zUAE,Cymoxanil,4.5,%,Liquid
+a1Y4W000002lU77UAE,Cymoxanil,4.5,%,Dry
+a1Y4W000004Cx5bUAC,Thiophanate-methyl,4.5,lb/gal,Liquid
+a1Y4W000002lU6VUAU,Cymoxanil,4.59,%,Dry
+a1Y4W000002lTSAUA2,Imidacloprid,4.6,lb/gal,Liquid
+a1Y4W000002lTTbUAM,Copper hydroxide,4.6,lb/gal,Liquid
+a1Y4W000002lTXaUAM,Imidacloprid,4.6,lb/gal,Liquid
+a1Y4W000002lTZMUA2,Mefenoxam (soil),4.8,%,Dry
+a1YOF000000Ohjl2AC,Glyphosate,4.8,lb/gal,Liquid
+a1Y4W000002lgbYUAQ,Cymoxanil,5,%,Dry
+a1Y4W000002lgWwUAI,Cymoxanil,5,%,Dry
+a1Y4W000002lTbTUAU,Chlorantraniliprole,5,lb/gal,Liquid
+a1Y4W000002lTTBUA2,"2,6-Dichloro-4-nitroaniline",5,lb/gal,Liquid
+a1Y4W000002lTU5UAM,Thiamethoxam,5,lb/gal,Liquid
+a1Y4W000002lTUBUA2,Sodium chlorate,5,lb/gal,Liquid
+a1Y4W000002lTYoUAM,Chlorothalonil,5,lb/gal,Liquid
+a1Y4W000002lTZfUAM,Pyrimethanil,5,lb/gal,Liquid
+a1Y4W000002lTZuUAM,Carbaryl,5,%,Dry
+a1Y4W000002lU5ZUAU,Cymoxanil,5,%,Dry
+a1Y4W000002lU70UAE,Cymoxanil,5,%,Dry
+a1Y4W000003eV3rUAE,Bacillus Mix,5,CFUnitml,Liquid
+a1Y4W000004CwJBUA0,Fulvic Acid,5,%,Liquid
+a1Y4W000004Cwp9UAC,Azoxystrobin,5,%,Dry
+a1Y4W000004Cx52UAC,Imidacloprid,5,lb/gal,Liquid
+a1YOF0000002evp2AA,Lambda-cyhalothrin,5,%,Liquid
+a1YOF0000002fgb2AA,Cymoxanil,5,%,Liquid
+a1YOF0000002fYX2AY,Quizalofop-P-ethyl,5,%,Liquid
+a1YOF0000002Ik12AE,Quizalofop-ethyl,5,%,Liquid
+a1YOF0000002SBV2A2,Lambda-cyhalothrin,5,%,Liquid
+a1YOF0000002SD72AM,Lambda-cyhalothrin,5,%,Liquid
+a1YOF000000bjpN2AQ,Clove Oil,5,%,Liquid
+a1YOF000000fOZR2A2,Chlorantraniliprole,5,lb/gal,Liquid
+a1YOF000000hPZR2A2,Lambda-cyhalothrin,5,%,Liquid
+a1YOF000000huIH2AY,Lambda-cyhalothrin,5,%,Liquid
+a1YOF000000YJBV2A4,Streptomycin,5,%,Liquid
+a1Y4W000002lTUgUAM,Glyphosate,5.07,lb/gal,Liquid
+a1Y4W000002lgdsUAA,Metolachlor,5.25,lb/gal,Liquid
+a1Y4W000002lTadUAE,Metolachlor,5.25,lb/gal,Liquid
+a1Y4W000002lTTDUA2,S-metolachlor,5.25,lb/gal,Liquid
+a1Y4W000002lTWLUA2,S-metolachlor,5.25,lb/gal,Liquid
+a1Y4W000002lTYWUA2,Metolachlor,5.25,lb/gal,Liquid
+a1Y4W000002lTT6UAM,Chlorpropham,5.3,lb/gal,Liquid
+a1Y4W000002lTTvUAM,Coniothyrium minitans strain CON/M/91-08,5.3,%,Dry
+a1Y4W000002lgecUAA,Glyphosate,5.4,lb/gal,Liquid
+a1Y4W000002lqbyUAA,Glyphosate,5.4,lb/gal,Liquid
+a1Y4W000002lqYzUAI,Glyphosate,5.4,lb/gal,Liquid
+a1Y4W000002lrsIUAQ,Glyphosate,5.4,lb/gal,Liquid
+a1Y4W000004CwtQUAS,Glyphosate,5.4,lb/gal,Liquid
+a1Y4W000004CynQUAS,Phosphorous Acid,5.41,lb/gal,Liquid
+a1Y4W000002lTbJUAU,Neem oil,5.46,lb/gal,Liquid
+a1Y4W000002lTZaUAM,Glyphosate,5.5,lb/gal,Liquid
+a1Y4W000002lTZRUA2,Glyphosate,5.5,lb/gal,Liquid
+a1YOF0000000z572AA,Glyphosate,5.5,lb/gal,Liquid
+a1YOF000000YJD72AO,Chitosan,5.75,%,Liquid
+a1Y4W000002lTWBUA2,Metam-potassium,5.8,lb/gal,Liquid
+a1Y4W000002lTWrUAM,Potassium N-methyldithiocarbamate,5.8,lb/gal,Liquid
+a1Y4W000002lTZkUAM,Potassium N-methyldithiocarbamate,5.8,lb/gal,Liquid
+a1Y4W000002lgrjUAA,Oil,5.95,lb/gal,Liquid
+a1Y4W000002lgaCUAQ,nitrogen,6,%,Liquid
+a1Y4W000002lgdBUAQ,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002lgdkUAA,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002lgdQUAQ,Sodium chlorate,6,lb/gal,Liquid
+a1Y4W000002lslcUAA,Sulfur,6,lb/gal,Liquid
+a1Y4W000002lTa1UAE,Dimethenamid-P,6,lb/gal,Liquid
+a1Y4W000002lTa6UAE,Dimethenamid-P,6,lb/gal,Liquid
+a1Y4W000002lTaRUAU,Sulfur,6,lb/gal,Liquid
+a1Y4W000002lTaWUAU,Sulfur,6,lb/gal,Liquid
+a1Y4W000002lTaZUAU,Sulfur,6,lb/gal,Liquid
+a1Y4W000002lTbSUAU,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002lTc2UAE,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002ltOtUAI,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002lTTtUAM,Dimethenamid-P,6,lb/gal,Liquid
+a1Y4W000002lTUdUAM,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002lTV1UAM,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002lTV3UAM,Dimethenamid-P,6,lb/gal,Liquid
+a1Y4W000002lTVvUAM,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002lTWmUAM,Paecilomyces lilacinus strain 251,6,%,Dry
+a1Y4W000002lTWTUA2,Sulfur,6,lb/gal,Liquid
+a1Y4W000002lTX8UAM,Ethoprop,6,lb/gal,Liquid
+a1Y4W000002lTXAUA2,Mancozeb,6,%,Dry
+a1Y4W000002lTXgUAM,Propargite,6,lb/gal,Liquid
+a1Y4W000002lTXhUAM,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002lTXnUAM,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002lTXSUA2,Mancozeb,6,%,Dry
+a1Y4W000002lTXwUAM,Dimethenamid-P,6,lb/gal,Liquid
+a1Y4W000002lTXzUAM,Mancozeb,6,%,Dry
+a1Y4W000002lTYUUA2,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000002lTYYUA2,Propamocarb hydrochloride,6,lb/gal,Liquid
+a1Y4W000003eV2tUAE,Chlorothalonil,6,lb/gal,Liquid
+a1Y4W000003ungPUAQ,Sulfur,6,lb/gal,Liquid
+a1Y4W000004Cv94UAC,Humic Acids,6,%,Liquid
+a1YOF00000029aH2AQ,Carfentrazone-ethyl,6,%,Liquid
+a1YOF00000029iL2AQ,Carfentrazone-ethyl,6,%,Liquid
+a1YOF0000002ehJ2AQ,Flutolanil,6,%,Dry
+a1YOF0000002fWv2AI,Flutolanil,6,%,Dry
+a1YOF0000002Gv72AE,Carfentrazone-ethyl,6,%,Liquid
+a1YOF000000huuz2AA,Valifenalate,6,%,Dry
+a1YOF000000PHyX2AW,Mancozeb,6,%,Dry
+a1YOF000000VflF2AS,Sulfur,6,lb/gal,Liquid
+a1YOF0000002SwH2AU,Diflufenican,6.25,%,Liquid
+a1Y4W000002lTT4UAM,Bacillus thuringiensis,6.4,%,Dry
+a1Y4W000002lTZPUA2,Glyphosate,6.42,lb/gal,Liquid
+a1Y4W000002lTTsUAM,Propargite,6.55,lb/gal,Liquid
+a1Y4W000002lTVwUAM,"1,3-dichloropropene",6.57,lb/gal,Liquid
+a1Y4W000002w8FdUAI,Surfactant blend,6.64,%,Liquid
+a1Y4W000002lU6QUAU,Pyraclostrobin,6.7,%,Dry
+a1YOF0000002fv72AA,Pyraclostrobin,6.7,%,Liquid
+a1YOF000000hOlR2AU,Pyraclostrobin,6.7,%,Dry
+a1Y4W000002lTRyUAM,1-Octanol,6.8,lb/gal,Liquid
+a1Y4W000002lTahUAE,"1,3-dichloropropene",6.84,lb/gal,Liquid
+a1Y4W000002lTaDUAU,Chlorpropham,7,lb/gal,Liquid
+a1Y4W000002lTTlUAM,Chlorpropham,7,lb/gal,Liquid
+a1Y4W000002lTUzUAM,EPTC,7,lb/gal,Liquid
+a1Y4W000002lTW4UAM,Oil,7,lb/gal,Liquid
+a1Y4W000002luPyUAI,Glucoethers,7,%,Liquid
+a1YOF00000028Ph2AI,Benthiavalicarb,7,%,Liquid
+a1Y4W000002lTRoUAM,3-decen-2-one,7.05,lb/gal,Liquid
+a1Y4W000002lgdOUAQ,Chlorpropham,7.34,lb/gal,Liquid
+a1Y4W000002lgYyUAI,Dimethomorph,7.5,%,Dry
+a1Y4W000002lTW1UAM,Bacillus thuringiensis,7.5,%,Dry
+a1Y4W000002lU6HUAU,Dimethomorph,7.5,%,Dry
+a1YOF00000029C52AI,Mefentrifluconazole,7.5,%,Liquid
+a1Y4W000002lTbZUAU,S-metolachlor,7.62,lb/gal,Liquid
+a1Y4W000002lTROUA2,S-metolachlor,7.62,lb/gal,Liquid
+a1Y4W000002lTTdUAM,S-metolachlor,7.62,lb/gal,Liquid
+a1Y4W000002lTTKUA2,S-metolachlor,7.64,lb/gal,Liquid
+a1Y4W000002lTTkUAM,S-metolachlor,7.64,lb/gal,Liquid
+a1Y4W000002lTTLUA2,S-metolachlor,7.64,lb/gal,Liquid
+a1Y4W000002lTUeUAM,S-metolachlor,7.64,lb/gal,Liquid
+a1Y4W000002w8ZOUAY,S-metolachlor,7.64,lb/gal,Liquid
+a1Y4W000004Cx1tUAC,S-metolachlor,7.64,lb/gal,Liquid
+a1Y4W000002lTY0UAM,Metolachlor,7.8,lb/gal,Liquid
+a1YOF000000QJlN2AW,Metolachlor,7.8,lb/gal,Liquid
+a1Y4W000002lTWZUA2,Burkholderia spp strain A396,7.88,lb/gal,Liquid
+a1Y4W000002lgccUAA,alkoxylated alcohol,8,%,Liquid
+a1Y4W000002lTaJUAU,Metolachlor,8,lb/gal,Liquid
+a1Y4W000002lTbAUAU,Bacillus thuringiensis,8,lb/gal,Liquid
+a1Y4W000002lTTRUA2,Piperonyl butoxide,8,lb/gal,Liquid
+a1Y4W000002lTWvUAM,Metolachlor,8,lb/gal,Liquid
+a1Y4W000002lU4FUAU,Ametoctradin,8,%,Dry
+a1Y4W000004CwIwUAK,Phosphorous Acid,8,%,Dry
+a1Y4W000004Cx2IUAS,S-metolachlor,8,lb/gal,Liquid
+a1YOF000000g6iX2AQ,Quillaja Extract,8,%,Liquid
+a1YOF000000RITt2AO,Metolachlor,8,lb/gal,Liquid
+a1Y4W000002lThPUAU,Bacillus thuringiensis strain EVB113-19,8.12,%,Liquid
+a1Y4W000002lgcWUAQ,Zoxamide,8.3,%,Dry
+a1Y4W000002lTigUAE,Zoxamide,8.3,%,Dry
+a1Y4W000002lTVPUA2,Zoxamide,8.3,%,Dry
+a1Y4W000002lU4NUAU,Zoxamide,8.3,%,Dry
+a1Y4W000002lU6EUAU,Zoxamide,8.3,%,Dry
+a1Y4W000004CukJUAS,Bacillus licheniformis,8.34,lb/gal,Dry
+a1Y4W000002lgbsUAA,Heptamethyl Trisiloxane,8.44,%,Liquid
+a1Y4W000002lgX7UAI,Polyalkylene Oxide Modified,8.44,%,Liquid
+a1Y4W000002lgXxUAI,polyether-modified trisiloxane; synthetic latex solution (73 % w/v),8.5,%,Liquid
+a1Y4W000002lgXhUAI,Dimethomorph,9,%,Dry
+a1Y4W000002w8HjUAI,Calcium Chloride,9,%,Liquid
+a1YOF000000WHXB2A4,Algae,9,%,Liquid
+a1Y4W000002lTaiUAE,"1,3-dichloropropene",9.17,lb/gal,Liquid
+a1Y4W000002lgbIUAQ,polyoxyethylene (5-7EO) C10-C15 primary alcohol,9.39,%,Liquid
+a1Y4W000002lgYDUAY,polyoxyethylene (5-7EO) C10-C15 primary alcohol,9.39,%,Liquid
+a1Y4W000002lU5FUAU,polyoxyethylene (5-7EO) C10-C15 primary alcohol,9.39,%,Liquid
+a1Y4W000002lTWiUAM,Mancozeb,9.6,%,Dry
+a1Y4W000002lTajUAE,"1,3-dichloropropene",9.85,lb/gal,Liquid
+a1Y4W000004CxpPUAS,Bacillus subtilis strain QST 713,9.89,%,Liquid
+a1Y4W000002lgbgUAA,polyoxyethylene (2-3EO)-polyoxypropylene (10-12PO),10,%,Liquid
+a1Y4W000002lgbtUAA,uptake agent,10,%,Liquid
+a1Y4W000002lgcBUAQ,1-octyl-2-pyrrolidone,10,%,Liquid
+a1Y4W000002lgccUAA,Alkyl PolyGlucoside,10,%,Liquid
+a1Y4W000002lgVcUAI,Polyoxyethylene (10 EO),10,%,Liquid
+a1Y4W000002lgYBUAY,polyoxyethylene (2-3EO)-polyoxypropylene (10-12PO),10,%,Liquid
+a1Y4W000002lgYLUAY,uptake agent,10,%,Liquid
+a1Y4W000002lgYWUAY,Polyoxyethylene Rapeseed Fatty Acid Triglyceride,10,%,Liquid
+a1Y4W000002lgZCUAY,synthetic latex solution,10,%,Liquid
+a1Y4W000002lTb4UAE,Trifluralin,10,%,Dry
+a1Y4W000002lTbBUAU,Trifluralin,10,%,Dry
+a1Y4W000002lThlUAE,Deltamethrin,10,g/L,Liquid
+a1Y4W000002lTT9UAM,Pentachloronitrobenzene,10,%,Dry
+a1Y4W000002lU5aUAE,Fosthiazate,10,%,Dry
+a1Y4W000002luPyUAI,Alkoxylated polyols,10,%,Liquid
+a1Y4W000003eV3hUAE,Phosphate,10,%,Liquid
+a1Y4W000004CxFrUAK,Phosphoric acid,10,%,Liquid
+a1YOF00000028Kr2AI,Oxathiapiprolin,10,%,Liquid
+a1YOF00000029412AA,Propaquizafop,10,%,Liquid
+a1YOF00000029FJ2AY,Propaquizafop,10,%,Liquid
+a1YOF0000002ePZ2AY,Lambda-cyhalothrin,10,%,Liquid
+a1YOF0000002f3t2AA,Propaquizafop,10,%,Liquid
+a1YOF0000002f772AA,Propaquizafop,10,%,Liquid
+a1YOF0000002fbl2AA,Propaquizafop,10,%,Liquid
+a1YOF0000002Ggb2AE,Lambda-cyhalothrin,10,%,Liquid
+a1YOF0000002I7J2AU,Propaquizafop,10,%,Liquid
+a1YOF0000002Ign2AE,Propaquizafop,10,%,Liquid
+a1YOF0000002Is52AE,Lambda-cyhalothrin,10,%,Liquid
+a1YOF0000002SEj2AM,Lambda-cyhalothrin,10,%,Liquid
+a1YOF0000002SGL2A2,Propaquizafop,10,%,
+a1YOF0000002SMn2AM,Deltamethrin,10,%,Liquid
+a1YOF0000002Suf2AE,Propaquizafop,10,%,Liquid
+a1YOF0000002T2j2AE,Quizalofop-P-ethyl,10,%,Liquid
+a1YOF000000bjpN2AQ,Garlic,10,%,Liquid
+a1YOF000000daOb2AI,Humic Acids,10,%,Liquid
+a1YOF000000Dwar2AC,Purpureocillium lilacinum strain PL11,10,%,Dry
+a1YOF000000hOa92AE,Propaquizafop,10,%,Liquid
+a1YOF000000hOof2AE,Oxathiapiprolin,10,%,Liquid
+a1YOF000000hOQT2A2,Lambda-cyhalothrin,10,%,Liquid
+a1YOF000000hOTh2AM,Propaquizafop,10,%,Liquid
+a1YOF000000hP9d2AE,Amisulbrom,10,%,Liquid
+a1YOF000000hPXp2AM,Lambda-cyhalothrin,10,%,Liquid
+a1YOF000000hurl2AA,Lambda-cyhalothrin,10,%,Liquid
+a1YOF000000hutN2AQ,Lambda-cyhalothrin,10,%,Liquid
+a1YOF000000Vt532AC,Methylated Vegetable Oil,10,%,Liquid
+a1YOF000000WHTx2AO,Soil bacteria,10,%,Dry
+a1YOF000000XWHF2A4,Garlic Oil,10,%,Liquid
+a1Y4W000002lgbKUAQ,Bacillus subtilis strain QST 713,10.2,g/L,Liquid
+a1Y4W000002lTaPUAU,Chloropicrin,10.3,lb/gal,Liquid
+a1Y4W000002lTaQUAU,Chloropicrin,10.3,lb/gal,Liquid
+a1Y4W000002lTbnUAE,Bacillus thuringiensis,10.3,%,Dry
+a1Y4W000002lTUVUA2,Bacillus thuringiensis,10.3,%,Dry
+a1Y4W000002lgV6UAI,Sorbiton Ester,11.87,%,Liquid
+a1Y4W000002lTZbUAM,Peroxyacetic acid,12,%,Liquid
+a1Y4W000002lgYXUAY,Alkylamine Ethoxylate Propoxylate,12.5,%,Liquid
+a1Y4W000002lgYXUAY,Polyoxyethylene (20) Sorbitan Monolaurate,12.5,%,Liquid
+a1Y4W000002lTRQUA2,Chlorothalonil,12.5,%,Dry
+a1YOF0000002J3N2AU,Fluazifop-p-butyl,12.5,%,Liquid
+a1Y4W000002lTacUAE,Bacillus subtilis strain FZB24,13,%,Dry
+a1Y4W000002lTkhUAE,Bacillus subtilis strain QST 713,13,g/L,Liquid
+a1Y4W000002lTYwUAM,Lambda-cyhalothrin,13,%,Liquid
+a1YOF0000008USL2A2,Bacillus subtilis strain QST 713,13.4,g/L,Liquid
+a1Y4W000002lTaOUAU,Chloropicrin,13.88,lb/gal,Liquid
+a1Y4W000002lTTrUAM,Copper Oxychloride,14.2,%,Dry
+a1Y4W000002lgfGUAQ,Bacillus subtilis strain QST 713,14.6,%,Dry
+a1Y4W000002lTkiUAE,Bacillus subtilis strain QST 713,14.6,%,Dry
+a1Y4W000002lrl3UAA,aliphatic alcohol ethoxylate,14.96,%,Liquid
+a1Y4W000002lrl3UAA,Sodium Lauryl Ether Sulfate,14.96,%,Liquid
+a1Y4W000002luB3UAI,Secondary alcohol ethoxylate and sodium lauryl ether sulfate,14.96,%,Liquid
+a1Y4W000002lgcPUAQ,Heptamethyl Trisiloxane,15,%,Liquid
+a1Y4W000002lgVrUAI,"Modified Soya Lecithin, Propionic Acid",15,g/L,Liquid
+a1Y4W000002lgW4UAI,Polyalkylene Oxide Modified,15,%,Liquid
+a1Y4W000002lgXCUAY,Polyoxyethylene (5-8 EO) C10-C15 primary alcohol,15,%,Liquid
+a1Y4W000002lTl8UAE,Bacillus thuringiensis strain SA-12,15,%,Liquid
+a1Y4W000002lTU9UAM,Bacillus thuringiensis,15,%,Dry
+a1Y4W000002lTWNUA2,Bacillus thuringiensis,15,%,Dry
+a1Y4W000002lTX7UAM,Ethoprop,15,%,Dry
+a1Y4W000002lU3FUAU,Fatty acids,15,%,Liquid
+a1Y4W000002lU6zUAE,Benthiavalicarb,15,%,Dry
+a1Y4W000004CxHDUA0,Mancozeb,15,%,Dry
+a1YOF0000000z8L2AQ,Ethoprop,15,%,Dry
+a1YOF0000002enl2AA,Spirotetramat,15,%,Liquid
+a1YOF0000002fAL2AY,Valifenalate,15,%,Liquid
+a1YOF0000002Gwj2AE,Valifenalate,15,%,Liquid
+a1YOF0000002JD32AM,Spirotetramat,15,%,Liquid
+a1YOF0000002SbJ2AU,Spirotetramat,15,%,Liquid
+a1YOF000000hObl2AE,Spirotetramat,15,%,Liquid
+a1YOF000000iGDx2AM,Flufenacet,15,%,Liquid
+a1Y4W000002lTaVUAU,Sulfuric Acid,15.3,lb/gal,Liquid
+a1Y4W000002lTkrUAE,Mancozeb,16,%,Dry
+a1Y4W000002lTSvUAM,Clothianidin,16,%,Dry
+a1Y4W000002lTUfUAM,S-metolachlor,16,%,Dry
+a1Y4W000002lU40UAE,Ammonium Sulphate,16,%,Liquid
+a1YOF0000002fyL2AQ,Cyazofamid,16,%,Liquid
+a1YOF0000002Scv2AE,Cyazofamid,16,%,Liquid
+a1YOF000000c4FV2AY,Ethoxylated Alkyl Phenols,16,%,Liquid
+a1YOF000000hPRN2A2,Cyazofamid,16,%,Liquid
+a1YOF000000hui52AA,Cyazofamid,16,%,Liquid
+a1YOF000000huWn2AI,Cyazofamid,16,%,Liquid
+a1YOF000000hvB72AI,Cyazofamid,16,%,
+a1Y4W000002lfHvUAI,Non-Ionic Liquid Wetting Agent,17,%,Liquid
+a1Y4W000002lTSKUA2,Streptomycin,17,%,Dry
+a1Y4W000002lgXCUAY,Natural Fatty Acids,17.5,%,Liquid
+a1Y4W000002lU3NUAU,Metribuzin,17.5,%,Dry
+a1Y4W000002lgVlUAI,Cymoxanil,18,%,Dry
+a1Y4W000002lTiUUAU,Prothioconazole,18,g/L,Liquid
+a1Y4W000002lU3dUAE,Cymoxanil,18,%,Dry
+a1Y4W000002lTZbUAM,Hydrogen peroxide,18.5,%,Liquid
+a1YOF0000002euD2AQ,Fatty acids: pelargonic acid,18.67,%,Liquid
+a1Y4W000002lgVoUAI,Polyoxethylene (5-7eo) C10-c15 Primary Alcohol (19 % w/w),19,%,Liquid
+a1Y4W000002lgXGUAY,alkoxylated alcohol,19,%,Liquid
+a1Y4W000002lgXZUAY,polyoxyethylene (5-7EO) C10-C15 primary alcohol,19,%,Liquid
+a1Y4W000002lgYUUAY,Ethylene Oxide Condensate,19,%,Liquid
+a1Y4W000002lgYvUAI,Ethylene Oxide Condensate,19,%,Liquid
+a1Y4W000002lgYdUAI,polyoxyethylene alcohols,19.1,g/L,Liquid
+a1Y4W000002lgYeUAI,polyoxyethylene alcohols,19.1,g/L,Liquid
+a1Y4W000002lgYxUAI,polyoxyethylene alcohols,19.1,g/L,Liquid
+a1YOF000000gadP2AQ,Oxathiapiprolin,19.1,g/L,Liquid
+a1Y4W000002lTjMUAU,Difenoconazole,19.4,g/L,Liquid
+a1YOF0000000udJ2AQ,alcohol ethoxylate,19.4,%,Liquid
+a1YOF000000KDSX2A4,Copper sulfate pentahydrate,19.8,%,Dry
+a1Y4W000002lgaUUAQ,Acetamiprid,20,%,Dry
+a1Y4W000002lgbOUAQ,Allyloxypolyethylene Glycol Methyl Ether,20,%,Liquid
+a1Y4W000002lgV6UAI,alcohol ethoxylate,20,%,Liquid
+a1Y4W000002lgYsUAI,alcohol ethoxylate,20,%,Liquid
+a1Y4W000002lgZ8UAI,Polyalkylene Oxide Modified,20,%,Liquid
+a1Y4W000002lTbaUAE,Chlorantraniliprole,20,%,Dry
+a1Y4W000002lTbaUAE,Thiamethoxam (foliar),20,%,Dry
+a1Y4W000002lTepUAE,Phorate,20,%,Dry
+a1Y4W000002lTjSUAU,Cyantraniliprole,20,%,Dry
+a1Y4W000002lTjSUAU,Thiamethoxam,20,%,Dry
+a1Y4W000002lTRqUAM,Phorate,20,%,Dry
+a1Y4W000002lTUyUAM,EPTC,20,%,Dry
+a1Y4W000002lTV7UAM,Gibberellic acid,20,%,Dry
+a1Y4W000002lTVUUA2,Gibberellic acid,20,%,Dry
+a1Y4W000002lTYFUA2,Phorate,20,%,Dry
+a1Y4W000002lU4uUAE,Acetamiprid,20,%,Dry
+a1YOF0000002fAL2AY,Fluazinam,20,%,Liquid
+a1YOF0000002fTh2AI,Acetamiprid,20,%,Dry
+a1YOF0000002Gwj2AE,Fluazinam,20,%,Liquid
+a1YOF000000hP9d2AE,Mandipropamid,20,%,Liquid
+a1YOF000000hPET2A2,Amisulbrom,20,%,Liquid
+a1YOF000000hvMP2AY,Flupyradifurone,20,%,Liquid
+a1YOF000000WHNV2A4,Thyme Oil,20,%,Liquid
+a1Y4W000002lThOUAU,Bacillus thuringiensis strain EVB113-19,21.7,%,Dry
+a1Y4W000002lgYdUAI,fatty alcohol ethylene oxide condensate,22.5,g/L,Liquid
+a1Y4W000002lgYeUAI,fatty alcohol ethylene oxide condensate,22.5,g/L,Liquid
+a1Y4W000002lgYxUAI,fatty alcohol ethylene oxide condensate,22.5,g/L,Liquid
+a1YOF000000hOjp2AE,Cymoxanil,22.5,%,Liquid
+a1YOF000000hOrt2AE,Cymoxanil,22.5,%,Liquid
+a1YOF000000hPUb2AM,Cymoxanil,22.5,%,Liquid
+a1Y4W000002lU3NUAU,Flufenacet,24,%,Dry
+a1Y4W000002lTjoUAE,Elemental Copper,24.4,%,Liquid
+a1Y4W000002lTZFUA2,Bacillus subtilis strain FZB24,24.5,%,Dry
+a1Y4W000002lgaDUAQ,Polyoxypropylene; Polyoxyethylene (12eo),25,%,Liquid
+a1Y4W000002lgb2UAA,Rimsulfuron,25,%,Dry
+a1Y4W000002lgcEUAQ,Cymoxanil,25,%,Dry
+a1Y4W000002lgcjUAA,Methyl Esters Of Soybean Fatty Acids,25,%,Liquid
+a1Y4W000002lgcjUAA,polyoxyethylene (5-7EO) C10-C15 primary alcohol,25,%,Liquid
+a1Y4W000002lgcYUAQ,Methyl Esters Of Soybean Fatty Acids,25,%,Liquid
+a1Y4W000002lgcYUAQ,polyoxyethylene (5-7EO) C10-C15 primary alcohol,25,%,Liquid
+a1Y4W000002lge0UAA,Rimsulfuron,25,%,Dry
+a1Y4W000002lgebUAA,Rimsulfuron,25,%,Dry
+a1Y4W000002lgfJUAQ,Chlorpropham,25,%,Liquid
+a1Y4W000002lgVeUAI,Esfenvalerate,25,g/L,Liquid
+a1Y4W000002lgVJUAY,Polyoxyethylene/polyoxypropylene Block Copolymer,25,%,Liquid
+a1Y4W000002lgVlUAI,Mandipropamid,25,%,Dry
+a1Y4W000002lgW6UAI,Polyoxyethylene Sorbitan Monolaurate,25,%,Liquid
+a1Y4W000002lgY7UAI,Esfenvalerate,25,g/L,Liquid
+a1Y4W000002lgZFUAY,Methyl Esters Of Soybean Fatty Acids,25,%,Liquid
+a1Y4W000002lgZFUAY,polyoxyethylene (5-7EO) C10-C15 primary alcohol,25,%,Liquid
+a1Y4W000002lgZoUAI,Alkoxylated Fatty Amine,25,%,Liquid
+a1Y4W000002lt4CUAQ,Rimsulfuron,25,%,Dry
+a1Y4W000002lTaeUAE,Cymoxanil,25,%,Dry
+a1Y4W000002lTaeUAE,Famoxadone,25,%,Dry
+a1Y4W000002lTh0UAE,Thiamethoxam,25,%,Dry
+a1Y4W000002ltHcUAI,Bacillus licheniformis,25,%,Liquid
+a1Y4W000002lTi9UAE,Spinetoram,25,%,Dry
+a1Y4W000002lTiNUAU,Bacillus amyloliquefaciens strain D747,25,%,Dry
+a1Y4W000002lTk3UAE,Rimsulfuron,25,%,Dry
+a1Y4W000002lTk4UAE,Rimsulfuron,25,%,Dry
+a1Y4W000002lTkoUAE,Rimsulfuron,25,%,Dry
+a1Y4W000002lTkOUAU,Rimsulfuron,25,%,Dry
+a1Y4W000002lTl3UAE,Cymoxanil,25,%,Dry
+a1Y4W000002lTS6UAM,Thiamethoxam,25,%,Dry
+a1Y4W000002lTUCUA2,Spinetoram,25,%,Dry
+a1Y4W000002lTVmUAM,Rimsulfuron,25,%,Dry
+a1Y4W000002lTVRUA2,Trifloxystrobin,25,%,Dry
+a1Y4W000002lTWgUAM,Rimsulfuron,25,%,Dry
+a1Y4W000002lTYCUA2,Permethrin,25,%,Dry
+a1Y4W000002lTYkUAM,Rimsulfuron,25,%,Dry
+a1Y4W000002lTYPUA2,Permethrin,25,%,Dry
+a1Y4W000002lU3bUAE,Rimsulfuron,25,%,Dry
+a1Y4W000002lU3dUAE,Mandipropamid,25,%,Dry
+a1Y4W000002lU52UAE,Esfenvalerate,25,g/L,Liquid
+a1Y4W000002lU6fUAE,Esfenvalerate,25,g/L,Liquid
+a1Y4W000002lU6gUAE,Esfenvalerate,25,g/L,Liquid
+a1Y4W000002lU6iUAE,Cymoxanil,25,%,Dry
+a1Y4W000002lU6iUAE,Famoxadone,25,%,Dry
+a1Y4W000002lU6nUAE,Rimsulfuron,25,%,Dry
+a1Y4W000002lU6NUAU,Cymoxanil,25,%,Dry
+a1Y4W000002w8HjUAI,"2-Hydroxy-1,2,3-propanetricarboxylic Acid",25,%,Liquid
+a1YOF0000001Qi12AE,Rimsulfuron,25,%,Dry
+a1YOF00000028JF2AY,Azoxystrobin,25,%,Liquid
+a1YOF00000028Sv2AI,Azoxystrobin,25,%,Liquid
+a1YOF00000029vF2AQ,Azoxystrobin,25,%,Liquid
+a1YOF0000002A4v2AE,Azoxystrobin,25,%,Liquid
+a1YOF0000002f5V2AQ,Azoxystrobin,25,%,Liquid
+a1YOF0000002f8j2AA,Azoxystrobin,25,%,Liquid
+a1YOF0000002flR2AQ,Azoxystrobin,25,%,Liquid
+a1YOF0000002frt2AA,Azoxystrobin,25,%,Liquid
+a1YOF0000002I8v2AE,Azoxystrobin,25,%,Liquid
+a1YOF0000002IFN2A2,Azoxystrobin,25,%,Liquid
+a1YOF0000002J1l2AE,Rimsulfuron,25,%,Dry
+a1YOF0000002J9p2AE,Rimsulfuron,25,%,Dry
+a1YOF0000002JEf2AM,Rimsulfuron,25,%,Dry
+a1YOF0000002S9t2AE,Azoxystrobin,25,%,Liquid
+a1YOF0000002SOP2A2,Azoxystrobin,25,%,Liquid
+a1YOF0000002SRd2AM,Azoxystrobin,25,%,Liquid
+a1YOF0000002SwH2AU,Metribuzin,25,%,Liquid
+a1YOF0000002T4L2AU,Cymoxanil,25,%,Liquid
+a1YOF0000002T4L2AU,Famoxadone,25,%,Liquid
+a1YOF000000bjnl2AA,Thyme Oil,25,%,Liquid
+a1YOF000000g6gv2AA,Bacillus amyloliquefaciens strain D747,25,%,Dry
+a1YOF000000h6Oj2AI,Azoxystrobin,25,%,Liquid
+a1YOF000000hOIP2A2,Rimsulfuron,25,%,Dry
+a1YOF000000hOOr2AM,Rimsulfuron,25,%,Liquid
+a1YOF000000hPWD2A2,Cymoxanil,25,%,Dry
+a1YOF000000htvi2AA,Mandipropamid,25,%,Liquid
+a1YOF000000hugT2AQ,Mandipropamid,25,%,Liquid
+a1YOF000000hulJ2AQ,Cymoxanil,25,%,Dry
+a1YOF000000hulJ2AQ,Famoxadone,25,%,Dry
+a1YOF000000humv2AA,Cymoxanil,25,%,Dry
+a1YOF000000huoX2AQ,Rimsulfuron,25,%,Dry
+a1YOF000000huq92AA,Azoxystrobin,25,%,Liquid
+a1YOF000000huYP2AY,Rimsulfuron,25,%,Dry
+a1YOF000000hv7t2AA,Azoxystrobin,25,%,Liquid
+a1YOF000000hvEL2AY,Azoxystrobin,25,%,Liquid
+a1YOF000000N0VZ2A0,Rimsulfuron,25,%,Dry
+a1Y4W000002lTSQUA2,Permethrin,26,%,Dry
+a1Y4W000004CxnfUAC,"N-(n-butyl)-thiophosphoric triamide (NBPT),",26,%,Liquid
+a1Y4W000002lTRlUAM,Bacillus subtilis strain QST 713,26.2,%,Dry
+a1Y4W000002lTZsUAM,Bacillus subtilis strain QST 713,26.2,%,Dry
+a1Y4W000002lU4iUAE,Pyraflufen-ethyl,26.5,g/L,Liquid
+a1Y4W000002lU4zUAE,Pyraflufen-ethyl,26.5,g/L,Liquid
+a1Y4W000002lU6QUAU,Boscalid,26.7,%,Dry
+a1YOF0000002fv72AA,Boscalid,26.7,%,Liquid
+a1YOF000000hOlR2AU,Boscalid,26.7,%,Dry
+a1Y4W000002lgYcUAI,polyoxyethylene disiloxyanyl propylether,27,%,Liquid
+a1Y4W000002lgYjUAI,polyoxyethylene disiloxyanyl propylether,27,%,Liquid
+a1Y4W000002lgYqUAI,polyoxyethylene disiloxyanyl propylether,27,%,Liquid
+a1Y4W000002lgYwUAI,polyoxyethylene disiloxyanyl propylether,27,%,Liquid
+a1Y4W000002lTkyUAE,Hydrogen peroxide,27,%,Liquid
+a1YOF000000hPMX2A2,Maleic hydrazide,27,%,Liquid
+a1Y4W000002lTeZUAU,Peroxyacetic acid,27.5,g/L,Liquid
+a1YOF000000VgRC2A0,Diemethly-siloxame,27.5,%,Liquid
+a1Y4W000002lgZVUAY,Ethylene Oxide Condensate,28,%,Liquid
+a1Y4W000002lTSqUAM,Copper,28.2,%,Dry
+a1Y4W000002lTjTUAU,Abamectin,28.5,g/L,Liquid
+a1Y4W000002lTRHUA2,Pseudomonas syringae,28.61,%,Dry
+a1YOF000000V1av2AC,Potassium silicate,29,%,Liquid
+a1Y4W000002lgVdUAI,Alkyl Pyrrolidones,29.2,%,Liquid
+a1Y4W000002lTSgUAM,GABA,29.2,%,Dry
+a1Y4W000002lTSgUAM,L-Glutamic acid,29.2,%,Dry
+a1Y4W000002lTeFUAU,Pseudomonas syringae,29.8,%,Dry
+a1YOF000000b0CL2AY,Pseudomonas syringae,29.8,%,Dry
+a1YOF000000Wgc12AC,Pseudomonas syringae,29.8,%,Dry
+a1Y4W000002lfHuUAI,Non-Ionic Liquid Wetting Agent,30,%,
+a1Y4W000002lgbbUAA,Ethylene Oxide Condensate,30,%,Liquid
+a1Y4W000002lgbDUAQ,Alkyl Ethoxylate,30,%,Liquid
+a1Y4W000002lgVKUAY,Polyoxyethylene,30,%,Liquid
+a1Y4W000002lgVmUAI,Alkyl Ethoxylate,30,%,Liquid
+a1Y4W000002lgXvUAI,Polyoxyethylene,30,%,Liquid
+a1Y4W000002lgYSUAY,Ethylene Oxide Condensate,30,%,Liquid
+a1Y4W000002lTjmUAE,Oxathiapiprolin,30,g/L,Liquid
+a1Y4W000002lTScUAM,Acetamiprid,30,%,Dry
+a1Y4W000002lTShUAM,Indoxacarb,30,%,Dry
+a1Y4W000002lTVkUAM,Chromobacterium subtsugae strain PRAA4-1,30,%,Dry
+a1Y4W000002lTVlUAM,Chromobacterium subtsugae strain PRAA4-1,30,%,Dry
+a1Y4W000002lU6aUAE,Clomazone,30,g/L,Liquid
+a1Y4W000002lU78UAE,Oxathiapiprolin,30,g/L,Liquid
+a1Y4W000002luRQUAY,Acetamiprid,30,%,Liquid
+a1Y4W000004Cv6UUAS,N-(n-butyl) thiophosphoric triamide,30,%,Liquid
+a1Y4W000004Cy9uUAC,Fulvic Acid,30,%,Liquid
+a1YOF0000002T7Z2AU,Fluxapyroxad,30,%,Liquid
+a1YOF000000R2k52AC,Phosphate Ester,30,%,Liquid
+a1YOF0000000uev2AA,Alkyl Aryl Polyethoxy Ethanol,30.7,%,Liquid
+a1Y4W000002lgaaUAA,Polyoxyethylene (5-7 Eo) C9-c11 Primary Alcohol,31,%,Liquid
+a1Y4W000002lgaaUAA,Polyoxyethylene (8-12 Eo) c9-c11 Primary Alcohol,31,%,Liquid
+a1Y4W000002lgbzUAA,Polyoxyethylene (5-7 Eo) C9-c11 Primary Alcohol,31,%,Liquid
+a1Y4W000002lgbzUAA,Polyoxyethylene (8-12 Eo) c9-c11 Primary Alcohol,31,%,Liquid
+a1Y4W000002lgcNUAQ,Polyoxyethylene (5-7 Eo) C9-c11 Primary Alcohol,31,%,Liquid
+a1Y4W000002lgcNUAQ,Polyoxyethylene (8-12 Eo) c9-c11 Primary Alcohol,31,%,Liquid
+a1Y4W000002lThNUAU,Capric Acid,31.6,%,Liquid
+a1Y4W000002lgYbUAI,linear alcohol surfactant,32.6,%,Liquid
+a1Y4W000002lgYmUAI,linear alcohol surfactant,32.6,%,Liquid
+a1Y4W000002lgcIUAQ,linear alcohol surfactant,32.67,%,Liquid
+a1Y4W000002lgauUAA,Cymoxanil,33,%,Dry
+a1Y4W000002lgauUAA,Zoxamide,33,%,Dry
+a1Y4W000002lU5GUAU,Cymoxanil,33,%,Dry
+a1Y4W000002lU5GUAU,Zoxamide,33,%,Dry
+a1YOF0000002fK12AI,Pendimethalin,33,%,Liquid
+a1YOF0000002fNF2AY,Pendimethalin,33,%,Liquid
+a1YOF000000Vfuv2AC,Ammonium Sulfate,34,%,Dry
+a1Y4W000002lgbCUAQ,Polyoxyethylene/polyoxypropylene Block Copolymer,35,%,Liquid
+a1Y4W000002lgbIUAQ,Modified Soya Lecithin,35,%,Liquid
+a1Y4W000002lgbIUAQ,Propionic Acid,35,%,Liquid
+a1Y4W000002lgYDUAY,Modified Soya Lecithin,35,%,Liquid
+a1Y4W000002lgYDUAY,Propionic Acid,35,%,Liquid
+a1Y4W000002lU5FUAU,Modified Soya Lecithin,35,%,Liquid
+a1Y4W000002lU5FUAU,Propionic Acid,35,%,Liquid
+a1Y4W000004CxKMUA0,"Saccharides, alkyl polyglucoside, ammonium sulfate",35,%,Liquid
+a1YOF000000bjqz2AA,Alkyl PolyGlucoside,35,%,Liquid
+a1YOF000000eVDB2A2,Oxathiapiprolin,35,g/L,Liquid
+a1Y4W000002lTT7UAM,Spinosad,36,%,Dry
+a1YOF00000028EP2AY,Clomazone,36,%,Liquid
+a1YOF00000028Hd2AI,Clomazone,36,%,Liquid
+a1YOF00000028UX2AY,Clomazone,36,%,Liquid
+a1YOF00000028vx2AA,Clomazone,36,%,Liquid
+a1YOF0000002ecT2AQ,Clomazone,36,%,Liquid
+a1YOF0000002em92AA,Clomazone,36,%,Liquid
+a1YOF0000002ez32AA,Clomazone,36,%,Liquid
+a1YOF0000002ITt2AM,Clomazone,36,%,Liquid
+a1YOF0000002IvJ2AU,Clomazone,36,%,Liquid
+a1YOF0000002TSX2A2,Clomazone,36,%,Liquid
+a1YOF000000h6LV2AY,Clomazone,36,%,Liquid
+a1YOF000000hODZ2A2,Glyphosate,36,%,Liquid
+a1YOF000000hOn32AE,Glyphosate,36,%,Liquid
+a1YOF000000hONF2A2,Clomazone,36,%,Liquid
+a1YOF000000hPG52AM,Glyphosate,36,%,Liquid
+a1YOF000000hPHh2AM,Glyphosate,36,%,Liquid
+a1YOF000000hua12AA,Glyphosate,36,%,Liquid
+a1YOF000000hubd2AA,Glyphosate,36,%,Liquid
+a1YOF000000hv332AA,Clomazone,36,%,Liquid
+a1Y4W000002lgV7UAI,Paraffin Wax,36.4,%,Liquid
+a1YOF0000002ekX2AQ,Pendimethalin,36.5,%,Liquid
+a1Y4W000002lgclUAA,Maneb,36.8,%,Liquid
+a1Y4W000004CuuOUAS,Polyoxyethelene fatty acids,37,%,Liquid
+a1Y4W000002lgZqUAI,Cymoxanil,37.2,g/L,Dry
+a1Y4W000002lgcEUAQ,Fluazinam,37.5,%,Dry
+a1Y4W000002lU6NUAU,Fluazinam,37.5,%,Dry
+a1YOF000000hPWD2A2,Fluazinam,37.5,%,Dry
+a1YOF000000humv2AA,Fluazinam,37.5,%,Dry
+a1Y4W000004CyPJUA0,Fludioxonil,38.4,g/L,Liquid
+a1Y4W000004CuuTUAS,Ammonium Sulphate,39,%,Liquid
+a1Y4W000004Cv99UAC,Ammonium Sulfate and Dimethylpolysiloxane,39,%,Liquid
+a1Y4W000002w8HeUAI,Ammonium Sulfate and Dimethylpolysiloxane,39.8,%,Liquid
+a1Y4W000002lgazUAA,Ammonium Sulphate,40,%,Liquid
+a1Y4W000002lgcOUAQ,Propionic Acid,40,%,Liquid
+a1Y4W000002lgYJUAY,Propionic Acid,40,%,Liquid
+a1Y4W000002lt8LUAQ,Gibberellic acid,40,%,Liquid
+a1Y4W000002lTeUUAU,Bacillus mycoides isolate J,40,%,Dry
+a1Y4W000002lTRVUA2,Bacillus mycoides isolate J,40,%,Dry
+a1Y4W000002lU5iUAE,Quizalofop-P-tefuryl,40,g/L,Dry
+a1Y4W000002lU5uUAE,Quizalofop-P-tefuryl,40,g/L,Liquid
+a1YOF0000002fgb2AA,Propamocarb hydrochloride,40,%,Liquid
+a1YOF0000002fLd2AI,Pendimethalin,40,%,Liquid
+a1YOF0000002fOr2AI,Pendimethalin,40,%,Liquid
+a1YOF0000002fQT2AY,Pendimethalin,40,%,Liquid
+a1YOF0000002fS52AI,Pendimethalin,40,%,Liquid
+a1YOF0000002fwj2AA,Pendimethalin,40,%,Liquid
+a1YOF0000002IAX2A2,Pendimethalin,40,%,Liquid
+a1YOF0000002INR2A2,Fluopyram,40,%,Liquid
+a1YOF0000002T9B2AU,Pendimethalin,40,%,Liquid
+a1Y4W000004CxndUAC,"N-(n-butyl)-thiophosphoric triamide (NBPT),",40.4,%,Liquid
+a1Y4W000004ugrZUAQ,Flumioxazin,41.4,%,Liquid
+a1Y4W000002lgYaUAI,Styrene-butadiene Co-polymer,41.65,%,Liquid
+a1Y4W000002lgYsUAI,Styrene-butadiene Co-polymer,41.65,%,Liquid
+a1Y4W000002lThVUAU,Metam Sodium,42,%,Liquid
+a1Y4W000002lgXJUAY,Alkyl Ethoxylate,42.5,%,Liquid
+a1Y4W000002lTklUAE,Carbaryl,42.8,%,Liquid
+a1Y4W000002lTY1UAM,Paraquat,43.8,%,Liquid
+a1YOF000000bjvp2AA,Calcium Oxide,44.1,%,Dry
+a1Y4W000002lgbgUAA,Styrene-butadiene Co-polymer,45,%,Liquid
+a1Y4W000002lgWnUAI,Cymoxanil,45,%,Dry
+a1Y4W000002lgYBUAY,Styrene-butadiene Co-polymer,45,%,Liquid
+a1Y4W000002lgZtUAI,Garlic,45,%,Dry
+a1Y4W000002lU4BUAU,Cymoxanil,45,%,Dry
+a1Y4W000002lU6GUAU,Cymoxanil,45,%,Liquid
+a1Y4W000003eQ32UAE,Cymoxanil,45,%,Dry
+a1Y4W000004CvtWUAS,Malathion,45,%,Liquid
+a1YOF0000002eqz2AA,Garlic,45,%,Dry
+a1YOF0000002f2H2AQ,Cymoxanil,45,%,Dry
+a1YOF0000002THF2A2,Cymoxanil,45,%,Liquid
+a1YOF000000hOgb2AE,Cymoxanil,45,%,Dry
+a1YOF000000hOiD2AU,Cymoxanil,45,%,Dry
+a1YOF000000hOqH2AU,Cymoxanil,45,%,Dry
+a1YOF000000hPKv2AM,Glyphosate,45,%,Liquid
+a1YOF000000huyD2AQ,Cymoxanil,45,%,Dry
+a1YOF000000huzp2AA,Cymoxanil,45,%,Dry
+a1YOF000000iGDx2AM,Aclonifen,45,%,Liquid
+a1YOF0000002exR2AQ,Flutolanil,46,%,Liquid
+a1Y4W000002lTW7UAM,Copper hydroxide,46.1,%,Dry
+a1Y4W000002lTXTUA2,Copper hydroxide,46.1,%,Dry
+a1Y4W000003eUq4UAE,Copper hydroxide,46.1,%,
+a1Y4W000004Cv86UAC,Copper hydroxide,46.1,%,Dry
+a1Y4W000002lTjeUAE,Potassium salts of fatty acids,47,%,Liquid
+a1Y4W000002lThNUAU,Caprylic Acisd,47.16,%,Liquid
+a1Y4W000002lU4FUAU,Mancozeb,48,%,Dry
+a1Y4W000002luIOUAY,Ammonium laureth sulfate,48,%,Liquid
+a1YOF000000huN72AI,Glyphosate,48,%,Liquid
+a1YOF000000hvKn2AI,Glyphosate,48,%,Liquid
+a1YOF000000Mttt2AC,Oxathiapiprolin,48,g/L,Liquid
+a1Y4W000002lfHxUAI,Non-Ionic Liquid Wetting Agent,50,%,Liquid
+a1Y4W000002lfI1UAI,Non-Ionic Liquid Wetting Agent,50,%,
+a1Y4W000002lgaAUAQ,Cymoxanil,50,g/L,Liquid
+a1Y4W000002lgaLUAQ,Flonicamid,50,%,Dry
+a1Y4W000002lgaTUAQ,Difenoconazole,50,g/L,Liquid
+a1Y4W000002lgaXUAQ,Quizalofop-P-ethyl,50,g/L,Liquid
+a1Y4W000002lgb3UAA,Cymoxanil,50,g/L,Liquid
+a1Y4W000002lgbsUAA,Styrene-butadiene Co-polymer,50,%,Liquid
+a1Y4W000002lgc6UAA,Quizalofop-P-ethyl,50,g/L,Liquid
+a1Y4W000002lgcjUAA,Modified Soya Lecithin,50,%,Liquid
+a1Y4W000002lgcYUAQ,Modified Soya Lecithin,50,%,Liquid
+a1Y4W000002lgdEUAQ,Flonicamid,50,%,Dry
+a1Y4W000002lge1UAA,Pseudomonas chlororaphis strain AFS009,50,%,Dry
+a1Y4W000002lge8UAA,Linuron,50,%,Dry
+a1Y4W000002lgWhUAI,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lgX7UAI,Styrene-butadiene Co-polymer,50,%,Liquid
+a1Y4W000002lgYRUAY,Flonicamid,50,%,Dry
+a1Y4W000002lgYTUAY,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lgZ3UAI,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lgZ6UAI,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lgZBUAY,Quizalofop-P-ethyl,50,g/L,Liquid
+a1Y4W000002lgZFUAY,Modified Soya Lecithin,50,%,Liquid
+a1Y4W000002lgZMUAY,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lgZrUAI,Dimethomorph,50,%,Dry
+a1Y4W000002lgZzUAI,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lTb0UAE,Sulfoxaflor,50,%,Dry
+a1Y4W000002lTetUAE,Cyhalothrin-lambda,50,g/L,Liquid
+a1Y4W000002lThkUAE,Clothianidin,50,%,Dry
+a1Y4W000002lThLUAU,Flonicamid,50,%,Dry
+a1Y4W000002lThrUAE,Copper Oxychloride,50,%,Dry
+a1Y4W000002lThsUAE,Copper hydroxide,50,%,Dry
+a1Y4W000002lTi7UAE,Deltamethrin,50,g/L,Liquid
+a1Y4W000002lTi8UAE,Deltamethrin,50,g/L,Liquid
+a1Y4W000002lTisUAE,Cyantraniliprole,50,g/L,Liquid
+a1Y4W000002lTiwUAE,Phosmet,50,%,Dry
+a1Y4W000002lTjqUAE,Elemental Copper,50,%,Dry
+a1Y4W000002lTk7UAE,Metconazole,50,%,Dry
+a1Y4W000002lTkZUAU,Afidopyropen,50,g/L,Liquid
+a1Y4W000002ltP3UAI,Phosphorous Acid,50,%,Liquid
+a1Y4W000002lTSwUAM,Clothianidin,50,%,Dry
+a1Y4W000002lTSyUAM,Flonicamid,50,%,Dry
+a1Y4W000002lTVJUA2,Pymetrozine,50,%,Dry
+a1Y4W000002lTXCUA2,Flutolanil,50,%,Dry
+a1Y4W000002lTYrUAM,Metconazole,50,%,Dry
+a1Y4W000002lU3PUAU,Cymoxanil,50,g/L,Liquid
+a1Y4W000002lU3qUAE,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lU3tUAE,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lU4AUAU,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lU55UAE,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lU58UAE,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lU5NUAU,Lambda-cyhalothrin,50,g/L,Liquid
+a1Y4W000002lU5rUAE,Cymoxanil,50,g/L,Liquid
+a1Y4W000002lU6RUAU,Cymoxanil,50,%,Dry
+a1Y4W000002luITUAY,Humic Acids,50,%,Dry
+a1Y4W000003eQ2xUAE,Cymoxanil,50,g/L,Liquid
+a1Y4W000003eV1lUAE,Propionic acid ammonium salt,50,%,Liquid
+a1Y4W000004CuuxUAC,Ammonium Sulphate,50,%,Liquid
+a1Y4W000004Cz7uUAC,Bacillus amyloliquefaciens subspecies plantarum strain FZB42,50,%,Liquid
+a1YOF00000027VF2AY,Flonicamid,50,%,Dry
+a1YOF00000027YT2AY,Cypermethrin,50,%,Liquid
+a1YOF00000028Cn2AI,Fluazinam,50,%,Liquid
+a1YOF00000029jx2AA,Fluazinam,50,%,Liquid
+a1YOF00000029Yf2AI,Fluazinam,50,%,Liquid
+a1YOF0000002epN2AQ,Fluazinam,50,%,Liquid
+a1YOF0000002eXd2AI,Metobromuron,50,%,Liquid
+a1YOF0000002eZF2AY,Fluazinam,50,%,Liquid
+a1YOF0000002fFB2AY,Flonicamid,50,%,Dry
+a1YOF0000002QuU2AU,Fluazinam,50,%,Liquid
+a1YOF000000h9eL2AQ,Fluazinam,50,%,Liquid
+a1YOF000000hP6b2AE,Fluazinam,50,%,Liquid
+a1YOF000000hPSz2AM,Flonicamid,50,%,Dry
+a1YOF000000huwb2AA,Flonicamid,50,%,Dry
+a1YOF000000ismH2AQ,Flonicamid,50,%,Dry
+a1YOF000000isnt2AA,Flonicamid,50,%,Dry
+a1YOF000000Tl8P2AS,Flonicamid,50,%,Dry
+a1YOF000000Ognh2AC,"Saccharides, alkyl polyglucoside, ammonium sulfate",50.5,%,Liquid
+a1Y4W000002lr55UAA,Flumioxazin,51,%,Dry
+a1Y4W000002lTbQUAU,Flumioxazin,51,%,Dry
+a1Y4W000002lTTeUAM,Flumioxazin,51,%,Dry
+a1Y4W000002lTTfUAM,Flumioxazin,51,%,Dry
+a1Y4W000004Cv7cUAC,Flumioxazin,51,%,Dry
+a1Y4W000004CvMHUA0,Flumioxazin,51,%,Dry
+a1Y4W000004CyQHUA0,Flumioxazin,51,%,Dry
+a1Y4W000002lThbUAE,Flumioxazin,51.1,%,Dry
+a1YOF000000bjvp2AA,Silicon Dioxide,51.3,%,Dry
+a1Y4W000004CwtGUAS,Sulfur,52,%,Liquid
+a1Y4W000002lTSrUAM,Basic copper sulfate,53,%,Dry
+a1Y4W000002lTSsUAM,Basic copper sulfate,53,%,Dry
+a1Y4W000002lThqUAE,Copper Sulphate,53.4,%,Dry
+a1Y4W000002lgV6UAI,Esterified Rapeseed Oil,53.43,%,Liquid
+a1Y4W000002lTRTUA2,Copper hydroxide,53.8,%,Dry
+a1YOF000000hOdN2AU,Glyphosate,54,%,Liquid
+a1Y4W000004CwtaUAC,Alkyl amine ethoxylate,54.1,%,Liquid
+a1Y4W000002lTXRUA2,Copper oxide,56.4,%,Dry
+a1Y4W000002lgayUAA,Polyoxypropylene-polyoxyethylene Glycol,57,%,Liquid
+a1Y4W000002lgbtUAA,ethylene oxide-propylene oxide copolymers,57,%,Liquid
+a1Y4W000002lgYLUAY,ethylene oxide-propylene oxide copolymers,57,%,Liquid
+a1Y4W000004CwGMUA0,aliphatic alcohol ethoxylate,57.5,%,Liquid
+a1Y4W000002lTTaUAM,Copper hydroxide,57.6,%,Dry
+a1Y4W000002lgb1UAA,Flutolanil,60,g/kg,Dry
+a1Y4W000002lgcZUAQ,Mancozeb,60,%,Dry
+a1Y4W000002lgWsUAI,Cymoxanil,60,%,Dry
+a1Y4W000002lgXhUAI,Mancozeb,60,%,Dry
+a1Y4W000002lp0MUAQ,Refined Petroleum Oil,60,%,Liquid
+a1Y4W000002lTeJUAU,Cymoxanil,60,%,Dry
+a1Y4W000002lTiPUAU,Maleic hydrazide,60,%,Dry
+a1Y4W000002lTRLUA2,Cymoxanil,60,%,Dry
+a1Y4W000002lTZMUA2,Copper hydroxide,60,%,Dry
+a1Y4W000002lTZZUA2,Maleic hydrazide,60,%,Dry
+a1Y4W000002lU3SUAU,Paraffinic Petroleum Oil,60,%,Liquid
+a1Y4W000002lU4nUAE,Carfentrazone-ethyl,60,g/L,Liquid
+a1Y4W000002lU4oUAE,Maleic hydrazide,60,%,Liquid
+a1Y4W000002lU4VUAU,Maleic hydrazide,60,%,Dry
+a1Y4W000002lU5dUAE,Cymoxanil,60,%,Dry
+a1Y4W000002lU5PUAU,Clomazone,60,g/L,Liquid
+a1Y4W000002lU6KUAU,Carfentrazone-ethyl,60,g/L,Liquid
+a1Y4W000002lU6ZUAU,Carfentrazone-ethyl,60,g/L,Liquid
+a1Y4W000004CwsrUAC,Secondary alcohol ethoxylate and sodium lauryl ether sulfate,60,%,Liquid
+a1YOF0000002fGn2AI,Metribuzin,60,%,Liquid
+a1YOF0000002HCr2AM,Aclonifen,60,%,Liquid
+a1YOF0000002IyX2AU,Cymoxanil,60,%,Dry
+a1YOF000000bjnl2AA,Chitosan,60,%,Liquid
+a1YOF000000h9cj2AA,Aclonifen,60,%,Liquid
+a1YOF000000huer2AA,Metribuzin,60,%,Liquid
+a1YOF000000huuz2AA,Mancozeb,60,%,Dry
+a1YOF000000hv1R2AQ,Maleic hydrazide,60,%,Dry
+a1YOF000000hv9V2AQ,Cymoxanil,60,%,Dry
+a1YOF000000hvJB2AY,Aclonifen,60,%,Liquid
+a1Y4W000002lTiBUAU,Endothall,62,g/L,Liquid
+a1Y4W000002lgc7UAA,Diflufenican,62.5,g/L,Liquid
+a1Y4W000002lTeIUAU,Fludioxonil,62.5,g/L,Liquid
+a1Y4W000002lThJUAU,Fluxapyroxad,62.5,g/L,Liquid
+a1Y4W000002lTRQUA2,Mancozeb,62.5,%,Dry
+a1Y4W000002lU4sUAE,Fluopicolide,62.5,g/L,Liquid
+a1Y4W000002lgccUAA,alkoxylated alkyl polyglucoside,63,%,Liquid
+a1Y4W000002lTiuUAE,Saponins of Chenopodium quinoa,63.02,%,Dry
+a1Y4W000002lgXCUAY,Esterified Rapeseed Oil,63.34,%,Liquid
+a1Y4W000002lgbpUAA,Heptamethyl Trisiloxane,64,%,Liquid
+a1Y4W000002lgbSUAQ,Heptamethyl Trisiloxane,64,%,Liquid
+a1Y4W000002lgcSUAQ,Heptamethyl Trisiloxane,64,%,Liquid
+a1Y4W000002lgWLUAY,Mancozeb,64,g/L,Dry
+a1Y4W000002lgXKUAY,Mancozeb,64,g/L,Dry
+a1Y4W000002lTkFUAU,Mancozeb,64,%,Dry
+a1Y4W000002lTZJUA2,Mancozeb,64,%,Dry
+a1Y4W000002lTZKUA2,Mancozeb,64,%,Dry
+a1Y4W000002lU4aUAE,Mancozeb,64,g/L,Dry
+a1Y4W000002lU6YUAU,trisiloxane organosilicone copolymers,64,%,Liquid
+a1Y4W000002lU6VUAU,Mancozeb,65,%,Dry
+a1Y4W000002lU77UAE,Mancozeb,65,%,Dry
+a1Y4W000002lU5hUAE,Mancozeb,65.78,%,Liquid
+a1YOF000000BLFd2AO,Penflufen,66.5,g/L,Liquid
+a1Y4W000002lgcWUAQ,Mancozeb,66.7,%,Dry
+a1Y4W000002lgYyUAI,Mancozeb,66.7,%,Dry
+a1Y4W000002lTigUAE,Mancozeb,66.7,%,Dry
+a1Y4W000002lTVPUA2,Mancozeb,66.7,%,Dry
+a1Y4W000002lU4NUAU,Mancozeb,66.7,%,Dry
+a1Y4W000002lU6EUAU,Mancozeb,66.7,%,Dry
+a1Y4W000002lU6HUAU,Mancozeb,66.7,%,Dry
+a1YOF000000WHNV2A4,Chitosan hydrochloride,67.5,%,Liquid
+a1Y4W000002lgbYUAQ,Mancozeb,68,%,Dry
+a1Y4W000002lgWwUAI,Mancozeb,68,%,Dry
+a1Y4W000002lU44UAE,Mancozeb,68,%,Dry
+a1Y4W000002lU45UAE,Mancozeb,68,%,Liquid
+a1Y4W000002lU48UAE,Mancozeb,68,%,Dry
+a1Y4W000002lU4eUAE,Glyphosate,68,%,Liquid
+a1Y4W000002lU4fUAE,Glyphosate,68,%,Dry
+a1Y4W000002lU4gUAE,Glyphosate,68,%,Dry
+a1Y4W000002lU5pUAE,Mancozeb,68,%,Dry
+a1Y4W000002lU5zUAE,Mancozeb,68,g/L,Liquid
+a1Y4W000002lU5ZUAU,Mancozeb,68,%,Dry
+a1Y4W000002lU70UAE,Mancozeb,68,%,Dry
+a1Y4W000002lfFvUAI,Acetamiprid,70,%,Dry
+a1Y4W000002lge2UAA,Phosmet,70,%,Dry
+a1Y4W000002lgVSUAY,Esterified Rapeseed Oil,70,%,Liquid
+a1Y4W000002lgWKUAY,Metribuzin,70,%,Dry
+a1Y4W000002lgWQUAY,Metribuzin,70,%,Dry
+a1Y4W000002lgYAUAY,Metribuzin,70,%,Dry
+a1Y4W000002lgZdUAI,Metribuzin,70,%,Dry
+a1Y4W000002lgZYUAY,Metribuzin,70,%,Dry
+a1Y4W000002lThGUAU,Acetamiprid,70,%,Dry
+a1Y4W000002lThXUAU,Boscalid,70,%,Dry
+a1Y4W000002lTixUAE,Phosmet,70,%,Dry
+a1Y4W000002lTj2UAE,Boscalid,70,%,Dry
+a1Y4W000002lTUvUAM,Boscalid,70,%,Dry
+a1Y4W000002lU3wUAE,Metribuzin,70,%,Dry
+a1Y4W000002lU4HUAU,Metribuzin,70,%,Dry
+a1Y4W000002lU5OUAU,Metribuzin,70,%,Liquid
+a1Y4W000002lU5sUAE,Metribuzin,70,%,Liquid
+a1Y4W000002lU6PUAU,Metribuzin,70,%,Dry
+a1Y4W000002lU6xUAE,Mancozeb,70,%,Dry
+a1Y4W000002lU75UAE,Esterified Rapeseed Oil,70,%,Liquid
+a1Y4W000002lU78UAE,Benthiavalicarb,70,g/L,Liquid
+a1Y4W000003eUSHUA2,Boscalid,70,%,Dry
+a1Y4W000004Cwp9UAC,Mancozeb,70,%,Dry
+a1Y4W000004Cx6AUAS,Thiophanate-methyl,70,%,Dry
+a1YOF00000027Td2AI,Metribuzin,70,%,Dry
+a1YOF0000002ear2AA,Metribuzin,70,%,Dry
+a1YOF0000002eJj2AI,Metribuzin,70,%,Liquid
+a1YOF0000002IYj2AM,Mancozeb,70,%,Liquid
+a1YOF0000002RvN2AU,Metribuzin,70,%,Liquid
+a1YOF000000hOv72AE,Mancozeb,70,%,Dry
+a1YOF000000hOWv2AM,Metribuzin,70,%,Dry
+a1YOF000000huRx2AI,Metribuzin,70,%,Dry
+a1YOF000000OR772AG,Methylated seed oil,70,%,Liquid
+a1YOF000000WHSL2A4,Neem oil,70,%,Liquid
+a1Y4W000004CwnSUAS,Basic copper sulfate,71.1,%,Dry
+a1Y4W000002lTZUUA2,Glyphosate,71.4,%,Dry
+a1Y4W000002lU6BUAU,Glyphosate,72,%,Dry
+a1YOF000000huOj2AI,Glyphosate,72,%,Dry
+a1YOF0000002ftV2AQ,Propamocarb hydrochloride,72.2,%,Liquid
+a1YOF0000002TnV2AU,Propamocarb hydrochloride,72.2,%,Liquid
+a1YOF000000huTZ2AY,Propamocarb hydrochloride,72.2,%,Liquid
+a1YOF000000hvHZ2AY,Propamocarb hydrochloride,72.2,%,Liquid
+a1Y4W000002lgXxUAI,synthetic latex solution,73,%,Liquid
+a1YOF000000bjpN2AQ,Chitosan,74,%,Liquid
+a1Y4W000002lTTrUAM,Basic copper sulfate,74.8,%,Dry
+a1Y4W000002lgarUAA,Nonylphenol Ethylene Oxide Condensate,75,%,Liquid
+a1Y4W000002lgaTUAQ,Fluxapyroxad,75,g/L,Liquid
+a1Y4W000002lgaVUAQ,Methylated Rapeseed Oil,75,%,Liquid
+a1Y4W000002lgcfUAA,Nonylphenol Ethylene Oxide Condensate,75,%,Liquid
+a1Y4W000002lgcLUAQ,Natural Fatty Acids,75,g/L,Liquid
+a1Y4W000002lgcQUAQ,Mancozeb,75,%,Dry
+a1Y4W000002lgfCUAQ,Mancozeb,75,%,Dry
+a1Y4W000002lgVXUAY,Mancozeb,75,%,Dry
+a1Y4W000002lgWSUAY,Mancozeb,75,%,Dry
+a1Y4W000002lgX5UAI,mixed fatty acid esters of seed oil and n-butanol,75,%,Liquid
+a1Y4W000002lgXqUAI,Mancozeb,75,%,Dry
+a1Y4W000002lgXzUAI,Natural Fatty Acids,75,g/L,Liquid
+a1Y4W000002lgYGUAY,Methylated Rapeseed Oil,75,%,Liquid
+a1Y4W000002lgYHUAY,Methylated Rapeseed Oil,75,%,Liquid
+a1Y4W000002lgYKUAY,Methylated Rapeseed Oil,75,%,Liquid
+a1Y4W000002lgZoUAI,Esterified Rapeseed Oil,75,%,Liquid
+a1Y4W000002lgZUUAY,Mancozeb,75,%,Dry
+a1Y4W000002lsXOUAY,Mancozeb,75,%,Dry
+a1Y4W000002lTa7UAE,Sulfentrazone,75,%,Dry
+a1Y4W000002lTb9UAE,Metribuzin,75,%,Dry
+a1Y4W000002lTeaUAE,Mancozeb,75,%,Dry
+a1Y4W000002lTeWUAU,Mancozeb,75,%,Dry
+a1Y4W000002lThlUAE,Imidacloprid,75,g/L,Liquid
+a1Y4W000002lTiMUAU,Mancozeb,75,%,Dry
+a1Y4W000002lTinUAE,Cyromazine,75,%,Dry
+a1Y4W000002lTj4UAE,Metribuzin,75,%,Dry
+a1Y4W000002lTjrUAE,Mancozeb,75,%,Dry
+a1Y4W000002lTjUUAU,Pydiflumetofen,75,g/L,Liquid
+a1Y4W000002lTkeUAE,Metribuzin,75,%,Dry
+a1Y4W000002lTkfUAE,Metribuzin,75,%,Dry
+a1Y4W000002lTkvUAE,Metribuzin,75,%,Dry
+a1Y4W000002lTlFUAU,Metribuzin,75,%,Dry
+a1Y4W000002lTRbUAM,Mancozeb,75,%,Dry
+a1Y4W000002lTRXUA2,Mancozeb,75,%,Dry
+a1Y4W000002lTTCUA2,"2,6-Dichloro-4-nitroaniline",75,%,Dry
+a1Y4W000002lTUaUAM,Mancozeb,75,%,Dry
+a1Y4W000002lTUEUA2,Metribuzin,75,%,Dry
+a1Y4W000002lTUmUAM,Chlorothalonil,75,%,Dry
+a1Y4W000002lTUSUA2,Metribuzin,75,%,Dry
+a1Y4W000002lTUTUA2,Metribuzin,75,%,Dry
+a1Y4W000002lTVEUA2,Mancozeb,75,%,Dry
+a1Y4W000002lTVYUA2,Metribuzin,75,%,Dry
+a1Y4W000002ltvZUAQ,Metribuzin,75,%,Dry
+a1Y4W000002lTWAUA2,Mancozeb,75,%,Dry
+a1Y4W000002lTWwUAM,Metribuzin,75,%,Dry
+a1Y4W000002lTWxUAM,Metribuzin,75,%,Dry
+a1Y4W000002lTWyUAM,Metribuzin,75,%,Dry
+a1Y4W000002lTX0UAM,Metribuzin,75,%,Dry
+a1Y4W000002lTXlUAM,Metribuzin,75,%,Dry
+a1Y4W000002lTYKUA2,Thiamethoxam,75,%,Dry
+a1Y4W000002lTZOUA2,Mancozeb,75,%,Dry
+a1Y4W000002lTZrUAM,Metribuzin,75,%,Dry
+a1Y4W000002lU3FUAU,Polyoxyethylene (5-8 EO) C10-C15 primary alcohol,75,%,Liquid
+a1Y4W000002lU3GUAU,Mancozeb,75,%,Dry
+a1Y4W000002lU3vUAE,Mancozeb,75,%,Dry
+a1Y4W000002lU3yUAE,Mancozeb,75,%,Dry
+a1Y4W000002lU4JUAU,Mancozeb,75,%,Dry
+a1Y4W000002lU5AUAU,Mancozeb,75,%,Dry
+a1Y4W000002lU5BUAU,Mancozeb,75,%,Liquid
+a1Y4W000002lU5kUAE,Mancozeb,75,%,Dry
+a1Y4W000002lU5KUAU,Mancozeb,75,%,Liquid
+a1Y4W000002lU5LUAU,Mancozeb,75,%,Dry
+a1Y4W000002lU6sUAE,Natural Fatty Acids,75,g/kg,Liquid
+a1Y4W000002lU76UAE,Mancozeb,75,%,Dry
+a1Y4W000002w8F4UAI,Metribuzin,75,%,Dry
+a1Y4W000004CvjHUAS,Mancozeb,75,%,Dry
+a1Y4W000004uh2DUAQ,Mancozeb,75,%,Dry
+a1YOF000000Mmdt2AC,Ametoctradin,75,g/L,Liquid
+a1YOF000000N1g92AC,Metribuzin,75,%,Dry
+a1YOF000000XWHF2A4,Chitosan,75,%,Liquid
+a1Y4W000004CyPJUA0,Difenoconazole,76.9,g/L,Liquid
+a1Y4W000004CyPJUA0,Sedaxane,76.9,g/L,Liquid
+a1Y4W000002lgdFUAQ,Copper hydroxide,77,%,Dry
+a1Y4W000002lge4UAA,Copper hydroxide,77,%,Dry
+a1Y4W000002lgeEUAQ,Copper hydroxide,77,%,Dry
+a1Y4W000002lTTcUAM,Copper hydroxide,77,%,Dry
+a1Y4W000002lTXVUA2,Copper hydroxide,77,%,Dry
+a1Y4W000002lTXWUA2,Copper hydroxide,77,%,Dry
+a1Y4W000002lTesUAE,Sedaxane,77.2,g/L,Liquid
+a1Y4W000002lThCUAU,Benzovindiflupyr,78,g/L,Liquid
+a1Y4W000002lfHwUAI,Non-Ionic Liquid Wetting Agent,80,%,Liquid
+a1Y4W000002lgbOUAQ,Heptamethyl Trisiloxane,80,%,Liquid
+a1Y4W000002lgbTUAQ,Polyalkylene Oxide,80,%,Liquid
+a1Y4W000002lgcPUAQ,Methylated Soybean Oil,80,%,Liquid
+a1Y4W000002lgd0UAA,Sulfur,80,%,Dry
+a1Y4W000002lgekUAA,Maleic hydrazide,80,%,Dry
+a1Y4W000002lgfDUAQ,Mancozeb,80,%,Dry
+a1Y4W000002lgVAUAY,Polyalklene Oxide Modified Heptamethyl Trisiloxane,80,%,Liquid
+a1Y4W000002lgVEUAY,Mancozeb,80,%,Dry
+a1Y4W000002lgVVUAY,Prosulfocarb,80,%,Liquid
+a1Y4W000002lgW4UAI,Methylated Soya Bean Oil,80,%,Liquid
+a1Y4W000002lgZ8UAI,Polyoxypropylene-polyoxyethylene Glycol,80,%,Liquid
+a1Y4W000002lgZSUAY,Mancozeb,80,%,Dry
+a1Y4W000002lTaTUAU,Sulfur,80,%,Dry
+a1Y4W000002lTeHUAU,Acetamiprid,80,g/L,Liquid
+a1Y4W000002lTiXUAU,Spinosad,80,%,Dry
+a1Y4W000002lTleUAE,Zoxamide,80,%,Dry
+a1Y4W000002lTRcUAM,Mancozeb,80,%,Dry
+a1Y4W000002lTRNUA2,Mancozeb,80,%,Dry
+a1Y4W000002lTU1UAM,Sulfur,80,%,Dry
+a1Y4W000002lTWEUA2,Sulfur,80,%,Dry
+a1Y4W000002lTX2UAM,Sulfur,80,%,Dry
+a1Y4W000002lTX3UAM,Sulfur,80,%,Dry
+a1Y4W000002lTYNUA2,Metiram,80,%,Dry
+a1Y4W000002lTZvUAM,Carbaryl,80,%,Dry
+a1Y4W000002lTZwUAM,Carbaryl,80,%,Dry
+a1Y4W000002lU4IUAU,Mancozeb,80,%,Dry
+a1Y4W000002lU4LUAU,tisiloxane organosilcone copolymers,80,%,Liquid
+a1Y4W000002lU4ZUAU,Mancozeb,80,%,Liquid
+a1Y4W000002lU5jUAE,Mancozeb,80,%,Liquid
+a1Y4W000002lU5MUAU,Mancozeb,80,%,Dry
+a1Y4W000002lU5QUAU,Mancozeb,80,%,Liquid
+a1Y4W000002lU6vUAE,Mancozeb,80,%,Dry
+a1Y4W000002luDTUAY,Sulfur,80,%,Dry
+a1Y4W000004CujLUAS,"Monocarbamide dihydrogen sulfate, alkyl amine ethoxylate, 1,2,3-trihydroxypropan",80,%,Liquid
+a1Y4W000004CvtgUAC,Sulfur,80,%,Dry
+a1YOF0000000ua52AA,polypropylene Glyco,80,%,Liquid
+a1YOF0000000ubh2AA,"Monocarbamide dihydrogen sulfate, alkyl amine ethoxylate, 1,2,3-trihydroxypropan",80,%,Liquid
+a1YOF00000027S12AI,Prosulfocarb,80,%,Liquid
+a1YOF00000029K92AI,Prosulfocarb,80,%,Liquid
+a1YOF00000029qP2AQ,Prosulfocarb,80,%,Liquid
+a1YOF0000002eiv2AA,Prosulfocarb,80,%,Liquid
+a1YOF0000002eRB2AY,Prosulfocarb,80,%,
+a1YOF0000002f0f2AA,Prosulfocarb,80,%,Liquid
+a1YOF0000002fiD2AQ,Prosulfocarb,80,%,Liquid
+a1YOF0000002fIP2AY,Prosulfocarb,80,%,Liquid
+a1YOF0000002fLe2AI,Prosulfocarb,80,%,Liquid
+a1YOF0000002fn32AA,Prosulfocarb,80,%,Liquid
+a1YOF0000002fof2AA,Prosulfocarb,80,%,Liquid
+a1YOF0000002fqH2AQ,Prosulfocarb,80,%,Liquid
+a1YOF0000002I452AE,Prosulfocarb,80,%,Liquid
+a1YOF0000002IaL2AU,Prosulfocarb,80,%,Liquid
+a1YOF0000002IiP2AU,Prosulfocarb,80,%,Liquid
+a1YOF0000002JBR2A2,Prosulfocarb,80,%,Liquid
+a1YOF0000002SJZ2A2,Prosulfocarb,80,%,Liquid
+a1YOF0000002TNh2AM,Prosulfocarb,80,%,Liquid
+a1YOF0000004Tt32AE,"Monocarbamide dihydrogen sulfate, alkyl amine ethoxylate, 1,2,3-trihydroxypropan",80,%,Liquid
+a1YOF000000hOFB2A2,Prosulfocarb,80,%,Liquid
+a1YOF000000hOzx2AE,Prosulfocarb,80,%,Liquid
+a1YOF000000hujh2AA,Prosulfocarb,80,%,Liquid
+a1YOF000000huLV2AY,Prosulfocarb,80,%,Liquid
+a1YOF000000huN82AI,Prosulfocarb,80,%,Liquid
+a1YOF000000huQL2AY,Prosulfocarb,80,%,Liquid
+a1YOF000000huVB2AY,Prosulfocarb,80,%,Liquid
+a1YOF000000if5t2AA,Prosulfocarb,80,%,Liquid
+a1YOF000000Vt0D2AS,Phosphatidylcholine,80,%,Liquid
+a1Y4W000002lTW5UAM,Potassium bicarbonate,82,%,Dry
+a1Y4W000002lTTEUA2,Chlorothalonil,82.5,%,Dry
+a1Y4W000002lTV2UAM,Chlorothalonil,82.5,%,Dry
+a1Y4W000002lp0RUAQ,Refined Petroleum Oil,82.6,%,Liquid
+a1Y4W000002w8EQUAY,Paraffin Base Petroleum Oil,83,%,Liquid
+a1Y4W000004CvJmUAK,Petroleum Hydrocarbons,83,%,Liquid
+a1Y4W000004CxniUAC,Paraffin Base Petroleum Oil,83,%,Liquid
+a1Y4W000002lgaKUAQ,Polyalkylene Oxide,85,%,Liquid
+a1Y4W000002lgVtUAI,Heptamethyl Trisiloxane,85,%,Liquid
+a1Y4W000002lgWuUAI,Rapeseed Oil,85,%,Liquid
+a1Y4W000002lgYIUAY,Heptamethyl Trisiloxane,85,%,Liquid
+a1Y4W000002lTkzUAE,Chloropicrin,85,%,Liquid
+a1Y4W000002lTldUAE,Zoxamide,85,g/L,Liquid
+a1Y4W000002lTSZUA2,Potassium bicarbonate,85,%,Dry
+a1Y4W000002lU5gUAE,Rapeseed Oil,85,%,Liquid
+a1Y4W000004CutfUAC,Methyl esters of canola oil,85,%,Liquid
+a1Y4W000004Cw3SUAS,Mineral oil,85,%,Liquid
+a1YOF0000001Vkv2AE,Mineral oil,85,%,Liquid
+a1Y4W000002lTYGUA2,Chloropicrin,85.5,%,Dry
+a1Y4W000002lU3UUAU,Bentazone,87,%,Dry
+a1Y4W000002lgYiUAI,Polyoxyethylene C12-c15 Primary Alcohol,89.6,%,Liquid
+a1Y4W000002lgasUAA,Polyoxyethylene (8-12 Eo) c9-c11 Primary Alcohol,90,%,Liquid
+a1Y4W000002lgelUAA,Sulfur,90,%,Dry
+a1Y4W000002lgW2UAI,Alkoxylated Fatty Amine,90,%,Liquid
+a1Y4W000002lgX6UAI,Dimethomorph,90,g/L,Liquid
+a1Y4W000002lgXEUAY,Polyoxyethylene (8-12 Eo) c9-c11 Primary Alcohol,90,%,Liquid
+a1Y4W000002lgYhUAI,Polyoxyethylene,90,%,Liquid
+a1Y4W000002lgZHUAY,Polyoxyethylene (8-12 Eo) c9-c11 Primary Alcohol,90,%,Liquid
+a1Y4W000002lTiRUAU,Chlorothalonil,90,%,Dry
+a1Y4W000002lTRPUA2,Chlorothalonil,90,%,Dry
+a1Y4W000002lTWKUA2,Methomyl,90,%,Dry
+a1Y4W000003eV3mUAE,alcohol ethoxylate,90,%,Liquid
+a1Y4W000004CulvUAC,"1,2,3-Propanetriol, Dimethylbenzenesulfonic acid, sodium salt and alkyl phenol e",90,%,Dry
+a1Y4W000004CutkUAC,"1,2,3-Propanetriol, Dimethylbenzenesulfonic acid, sodium salt and alkyl phenol e",90,%,Liquid
+a1Y4W000004CvqmUAC,alcohol ethoxylate,90,%,Liquid
+a1Y4W000004CxFbUAK,Alkyl Aryl Polyethoxy Ethanol,90,%,Liquid
+a1Y4W000004CxnYUAS,alcohol ethoxylate,90,%,Liquid
+a1Y4W000004CxydUAC,Alkyl Aryl Polyethoxy Ethanol,90,%,Liquid
+a1YOF0000002rhl2AA,polypropylene Glyco,90,%,Liquid
+a1YOF0000002rjN2AQ,"Polyoxyethylene sorbitan fatty acid ester, soybean oil ethoxylate, copolymer of",90,%,Liquid
+a1YOF0000003cAP2AY,"phosphoric and carboxylic acids, sulphurated amides",90,%,Liquid
+a1YOF000000biBl2AI,Alkyl Aryl Polyoxylkane,90,%,Liquid
+a1Y4W000002lgYlUAI,Methylated Rapeseed Oil,91,%,Liquid
+a1Y4W000004CxFqUAK,Methyl soyate,91,%,Liquid
+a1Y4W000004CxngUAC,Piperonyl butoxide,91.3,%,Liquid
+a1Y4W000004CxogUAC,Piperonyl butoxide,91.3,%,Liquid
+a1Y4W000002ltPIUAY,Methylated Vegetable Oil,91.54,%,Dry
+a1Y4W000002lfHrUAI,Non-Ionic Liquid Wetting Agent,92,%,Liquid
+a1Y4W000002lfHsUAI,Non-Ionic Liquid Wetting Agent,92,%,Liquid
+a1Y4W000002lfHtUAI,Non-Ionic Liquid Wetting Agent,92,%,Liquid
+a1Y4W000002lTVhUAM,Sulfur,92,%,Dry
+a1Y4W000004CulCUAS,Nonylphenoxy polyethoxyethanol,92,%,Liquid
+a1Y4W000004CwJ1UAK,Refined Paraffinic Petroleum Oil,92,%,Liquid
+a1Y4W000002lgaoUAA,Esterified Rapeseed Oil,92.5,%,Liquid
+a1Y4W000002lgaWUAQ,Esterified Rapeseed Oil,92.5,%,Liquid
+a1Y4W000002lgbjUAA,Esterified Rapeseed Oil,92.5,%,Liquid
+a1Y4W000002lgcaUAA,trisiloxane organosilicone copolymers,93.4,g/L,Liquid
+a1Y4W000002lga5UAA,Paraffinic Oil,95,%,Liquid
+a1Y4W000002lga9UAA,Methylated Vegetable Oil,95,%,Liquid
+a1Y4W000002lgaIUAQ,Mineral oil,95,%,Liquid
+a1Y4W000002lgVUUAY,Mineral oil,95,%,Liquid
+a1Y4W000002lgW1UAI,Rapeseed Oil Or Soya Oil,95,%,Liquid
+a1Y4W000002lgWlUAI,Mineral oil,95,%,Liquid
+a1Y4W000002lTaaUAE,Kaolin,95,%,Dry
+a1Y4W000002ltP8UAI,Methylated Vegetable Oil,95,%,Liquid
+a1Y4W000002lU6qUAE,Methylated Vegetable Oil,95,%,Liquid
+a1YOF000000BBzR2AW,Vegetable Oil Ethoxylates,95,%,Liquid
+a1Y4W000002lgV9UAI,Esterified Rapeseed Oil,95.2,%,Liquid
+a1Y4W000002lgalUAA,Poly-1-p-menthene,96,%,Liquid
+a1Y4W000002lgYkUAI,Poly-1-p-menthene,96,%,Liquid
+a1YOF0000004TwH2AU,Methylated seed oil,96,%,Liquid
+a1Y4W000002lTaAUAU,Sulfur,97,%,Dry
+a1YOF0000000uYT2AY,Methyl esters of canola oil,97,%,Liquid
+a1Y4W000002lga7UAA,Methylated Rapeseed Oil,97.5,%,Liquid
+a1Y4W000002lgW9UAI,Methylated Rapeseed Oil,97.5,%,Liquid
+a1Y4W000002lTgyUAE,Chlorpropham,98,%,Dry
+a1Y4W000002lTktUAE,Chlorpropham,98,%,Dry
+a1Y4W000002lTTnUAM,Chlorpropham,98,%,Dry
+a1Y4W000002lTUhUAM,Sulfur Dust,98,%,Dry
+a1Y4W000002lTUiUAM,Sulfur,98,%,Dry
+a1Y4W000002lTYIUA2,Chlorpropham,98,%,Dry
+a1Y4W000002w8HUUAY,Polyoxyethelene fatty acids,98,%,Liquid
+a1Y4W000004CvaeUAC,Ethoxylated Castor Oil,98,%,Liquid
+a1YOF000000VfwX2AS,Gluconacetobacter diazotrophicus,98,%,Liquid
+a1YOF000000ZbW92AK,Chlorpropham,98,%,Dry
+a1YOF000000ZMnF2AW,Chlorpropham,98,%,Dry
+a1Y4W000002lTiOUAU,Bacillus amyloliquefaciens strain D747,98.85,%,Liquid
+a1Y4W000002lTUcUAM,Bacillus amyloliquefaciens strain D747,98.85,%,Liquid
+a1Y4W000002lTjvUAE,Chlorpropham,98.9,%,Dry
+a1Y4W000002lga6UAA,Paraffinic Oil,99,%,Liquid
+a1Y4W000002lgacUAA,Paraffinic Oil,99,%,Liquid
+a1Y4W000002lgbWUAQ,Paraffinic Oil,99,%,Liquid
+a1Y4W000002lgdNUAQ,Chlorpropham,99,%,Liquid
+a1Y4W000002lgWqUAI,Paraffinic Oil,99,%,Liquid
+a1Y4W000002lgZxUAI,Paraffinic Oil,99,%,Liquid
+a1Y4W000002lTheUAE,Chloropicrin,99,%,Liquid
+a1Y4W000002lThIUAU,Mineral oil,99,g/L,Liquid
+a1Y4W000002lTi4UAE,Chlorpropham,99,%,Dry
+a1Y4W000002lTTwUAM,Copper sulfate,99,%,Dry
+a1Y4W000002lU42UAE,Paraffinic Oil,99,%,Liquid
+a1Y4W000003eUEFUA2,Gypsum,99,%,Dry
+a1Y4W000004Cx6yUAC,Methylated Vegetable Oil,99,%,Liquid
+a1Y4W000004CxFCUA0,Modified vegetable oil,99,%,Liquid
+a1Y4W000004CxneUAC,Aliphatic Hydrocarbons,99,%,Liquid
+a1Y4W000004CyCtUAK,Chlorpropham,99,%,Dry
+a1YOF00000033RB2AY,Paraffin Base Petroleum Oil,99,%,Liquid
+a1YOF000000Lzy92AC,Alkylphenyl-hydroxypolyoxyethylene,99,%,Liquid
+a1YOF000000WHLt2AO,Anthrobacter globiforms,99,%,Dry
+a1Y4W000003eV2yUAE,Bacillus Mix,99.5,%,Liquid
+a1YOF000000YJ3R2AW,Actrobacter Globiformis,99.99,%,Liquid
+a1YOF000000YJEj2AO,Actrobacter Globiformis,99.99,%,Dry
+a1Y4W000002lgafUAA,Propaquizafop,100,g/L,Liquid
+a1Y4W000002lgaxUAA,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgbAUAQ,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgbcUAA,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgbiUAA,Polyoxyethylene (5-c10-c15 Primary Alcohol,100,g/L,Liquid
+a1Y4W000002lgbmUAA,Alkoxylated Fatty Amine,100,%,Liquid
+a1Y4W000002lgc5UAA,Quizalofop-P-ethyl,100,g/L,Liquid
+a1Y4W000002lgcFUAQ,Polyoxyethylene/polyoxypropylene Block Copolymer,100,%,Liquid
+a1Y4W000002lgcGUAQ,Propaquizafop,100,g/L,Liquid
+a1Y4W000002lgcpUAA,Propaquizafop,100,g/L,Liquid
+a1Y4W000002lgcTUAQ,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgcUUAQ,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgVbUAI,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgVqUAI,Alkylphenyl Hydroxypolyoxyethylene,100,g/L,Liquid
+a1Y4W000002lgVQUAY,Alkoxylated Fatty Amine,100,%,Liquid
+a1Y4W000002lgVWUAY,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgWiUAI,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgWmUAI,Coniothyrium minitans,100,%,Dry
+a1Y4W000002lgWTUAY,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgXIUAY,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgXjUAI,Propaquizafop,100,g/L,Liquid
+a1Y4W000002lgXTUAY,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lgXyUAI,Imazalil,100,g/L,Liquid
+a1Y4W000002lgYMUAY,Oxathiapiprolin,100,g/L,Liquid
+a1Y4W000002lgZXUAY,modified trisiloxane organosilicone copolymers,100,%,Liquid
+a1Y4W000002lgZZUAY,Fludioxonil,100,g/L,Liquid
+a1Y4W000002lsOWUAY,Prothioconazole,100,g/L,Liquid
+a1Y4W000002lt01UAA,Nonylphenol Ethoxylates,100,%,Liquid
+a1Y4W000002lt39UAA,Modified Soya Lecithin,100,%,Liquid
+a1Y4W000002lTeHUAU,Novaluron,100,g/L,Liquid
+a1Y4W000002lTeQUAU,Cyantraniliprole,100,g/L,Liquid
+a1Y4W000002lTetUAE,Chlorantraniliprole,100,g/L,Liquid
+a1Y4W000002lThBUAU,Benzovindiflupyr,100,g/L,Liquid
+a1Y4W000002lTi6UAE,Deltamethrin,100,g/L,Liquid
+a1Y4W000002lTiTUAU,Benzovindiflupyr,100,g/L,Liquid
+a1Y4W000002lTiUUAU,Penflufen,100,g/L,Liquid
+a1Y4W000002lTkMUAU,Novaluron,100,g/L,Liquid
+a1Y4W000002lTkNUAU,Novaluron,100,g/L,Liquid
+a1Y4W000002ltPDUAY,Fatty acids,100,%,Liquid
+a1Y4W000002ltSjUAI,Broflanilide,100,g/L,Liquid
+a1Y4W000002lU4mUAE,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lU4UUAU,Propaquizafop,100,g/L,Liquid
+a1Y4W000002lU51UAE,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lU56UAE,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lU57UAE,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lU59UAE,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lU5IUAU,Propaquizafop,100,g/L,Liquid
+a1Y4W000002lU6cUAE,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lU6IUAU,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lU6OUAU,Propaquizafop,100,g/L,Liquid
+a1Y4W000002lU72UAE,Lambda-cyhalothrin,100,g/L,Liquid
+a1Y4W000002lU79UAE,Oxathiapiprolin,100,g/L,Liquid
+a1Y4W000002luAyUAI,"Polyoxyethylene sorbitan fatty acid ester, soybean oil ethoxylate, copolymer of",100,%,Liquid
+a1Y4W000002luJRUAY,"1,4-Dimethylnaphthalene",100,%,Liquid
+a1Y4W000002w8EVUAY,Polysiloxane polyether copolymer,100,%,Liquid
+a1Y4W000002w8HPUAY,Ethylated seed oil,100,%,Liquid
+a1Y4W000002w8HZUAY,Isoparaffinic hydrocarbons,100,%,Liquid
+a1Y4W000004Cv6PUAS,Non-Ionic Liquid Wetting Agent,100,%,Liquid
+a1Y4W000004CvftUAC,Methylated seed oil,100,%,Liquid
+a1Y4W000004CvjMUAS,Urea – Ammonium nitrate,100,%,Liquid
+a1Y4W000004CwKnUAK,,100,%,Dry
+a1Y4W000004CwKxUAK,Modified vegetable oil,100,%,Liquid
+a1Y4W000004CwswUAC,"N-(n-butyl)-thiophosphoric triamide (NBPT),",100,%,Liquid
+a1Y4W000004Cx73UAC,Modified Soya Lecithin,100,%,Liquid
+a1Y4W000004CxF7UAK,Methyl soyate,100,%,Liquid
+a1Y4W000004CxFgUAK,Alkylarylpolyoxyethylene glycols,100,%,Liquid
+a1Y4W000004CxFHUA0,"Ethoxylated soybean oil,",100,%,Liquid
+a1Y4W000004CxFlUAK,,100,%,Liquid
+a1Y4W000004CxFWUA0,Methylated seed oil,100,%,Liquid
+a1Y4W000004CxOJUA0,Bacillus licheniformis,100,%,Liquid
+a1Y4W000004Cz00UAC,Bacillus Mix,100,%,Liquid
+a1YOF0000002esb2AA,Garlic,100,%,Liquid
+a1YOF0000002I5h2AE,Chitosan hydrochloride,100,%,Liquid
+a1YOF0000003c8n2AA,Modified Soya Lecithin,100,%,Liquid
+a1YOF0000003qoT2AQ,Methylated seed oil,100,%,Liquid
+a1YOF0000004Tuf2AE,Modified vegetable oil,100,%,Liquid
+a1YOF000000cBbx2AE,Calcium Silicate,100,%,Dry
+a1YOF000000e2hR2AQ,Spearmint oil,100,%,Liquid
+a1YOF000000huGf2AI,Lecithins,100,%,Liquid
+a1YOF000000i5gj2AA,Bacillus velezensis,100,%,Liquid
+a1YOF000000iRUL2A2,Modified vegetable oil,100,%,Liquid
+a1YOF000000JqkT2AS,mycorrhizae,100,%,Liquid
+a1YOF000000LycH2AS,Surfactant blend,100,%,Liquid
+a1YOF000000WxGH2A0,Humic Acids,100,%,Liquid
+a1YOF000000YH4r2AG,Amisulbrom,100,g/L,Liquid
+a1YOF000000eVDB2A2,Metalaxyl,105,g/L,Liquid
+a1Y4W000003eUAmUAM,Penflufen,106,g/L,Liquid
+a1Y4W000002w8FnUAI,Gluconacetobacter diazotrophicus,107,CFUnitml,Liquid
+a1Y4W000002lgYdUAI,trisiloxane organosilcone copolymers,112,g/L,Liquid
+a1Y4W000002lgYeUAI,trisiloxane organosilcone copolymers,112,g/L,Liquid
+a1Y4W000002lgYxUAI,trisiloxane organosilcone copolymers,112,g/L,Liquid
+a1Y4W000002lThCUAU,Difenoconazole,117,g/L,Liquid
+a1Y4W000002lfFwUAI,Lambda-cyhalothrin,120,g/L,Liquid
+a1Y4W000002lThFUAU,Clethodim,120,g/L,Liquid
+a1Y4W000002lTjJUAU,Cyhalothrin-lambda,120,g/L,Liquid
+a1Y4W000002lTkpUAE,Cyhalothrin-lambda,120,g/L,Liquid
+a1Y4W000004CygFUAS,Lambda-cyhalothrin,120,g/L,Liquid
+a1YOF000000DXHV2A4,Clethodim,120,g/L,Liquid
+a1YOF000000OVPF2A4,Clethodim,120,g/L,Liquid
+a1Y4W000002lTeuUAE,Cyhalothrin-lambda,122,g/L,Liquid
+a1Y4W000002lTeIUAU,Difenoconazole,123,g/L,Liquid
+a1Y4W000002lgVuUAI,Fluopyram,125,g/L,Liquid
+a1Y4W000002lgVuUAI,Prothioconazole,125,g/L,Liquid
+a1Y4W000002lgXtUAI,Fluazifop-p-butyl,125,g/L,Liquid
+a1Y4W000002lTeeUAE,Difenoconazole,125,g/L,Liquid
+a1Y4W000002lTjUUAU,Difenoconazole,125,g/L,Liquid
+a1Y4W000002lTlSUAU,Fluazifop-p-butyl,125,g/L,Liquid
+a1Y4W000002lgVjUAI,Growth Stimulants,135,g/L,Liquid
+a1Y4W000002lTjTUAU,Cyantraniliprole,135,g/L,Liquid
+a1Y4W000002lTl0UAE,Metribuzin,135,g/L,Liquid
+a1Y4W000002lThQUAU,Metribuzin,149,g/L,Liquid
+a1Y4W000002lgbfUAA,Spirotetramat,150,g/L,Liquid
+a1Y4W000002lgcbUAA,Azoxystrobin,150,g/L,Liquid
+a1Y4W000002lgcDUAQ,Spirotetramat,150,g/L,Liquid
+a1Y4W000002lgcmUAA,Fatty acids,150,g/kg,Liquid
+a1Y4W000002lgVnUAI,Fatty acids,150,g/L,Liquid
+a1Y4W000002lgXPUAY,Glufosinate-ammonium,150,g/L,Liquid
+a1Y4W000002lgZnUAI,Spirotetramat,150,g/L,Liquid
+a1Y4W000002lTivUAE,Glufosinate-ammonium,150,g/L,Liquid
+a1Y4W000002lTjcUAE,Spirotetramat,150,g/L,Liquid
+a1Y4W000002lU3aUAE,Natural Fatty Acids,150,g/L,Liquid
+a1YOF000000IXaD2AW,Glufosinate-ammonium,150,g/L,Liquid
+a1Y4W000004CyPJUA0,Thiamethoxam,154,g/L,Liquid
+a1Y4W000002lTesUAE,Difenoconazole,154.3,g/L,Liquid
+a1Y4W000002lTesUAE,Mandipropamid,154.3,g/L,Liquid
+a1Y4W000002lgbuUAA,Cyazofamid,160,g/L,Liquid
+a1Y4W000002loxxUAA,Cyazofamid,160,g/L,Liquid
+a1Y4W000002loy2UAA,Cyazofamid,160,g/L,Liquid
+a1Y4W000002loyCUAQ,Cyazofamid,160,g/L,Liquid
+a1Y4W000002loyHUAQ,Cyazofamid,160,g/L,Liquid
+a1Y4W000002lU5vUAE,Cyazofamid,160,g/L,Liquid
+a1Y4W000002lU5oUAE,Dimethomorph,180,g/L,Liquid
+a1Y4W000002lgXiUAI,Fatty acids: pelargonic acid,186.7,g/L,Liquid
+a1Y4W000002lgZuUAI,Fatty acids: pelargonic acid,186.7,g/L,Liquid
+a1Y4W000002lfI2UAI,Cyantraniliprole,200,g/L,Liquid
+a1Y4W000002lgbFUAQ,Amisulbrom,200,g/L,Liquid
+a1Y4W000002lrfGUAQ,Mefentrifluconazole,200,g/L,Liquid
+a1Y4W000002lrfGUAQ,Pyraclostrobin,200,g/L,Liquid
+a1Y4W000002lTeeUAE,Azoxystrobin,200,g/L,Liquid
+a1Y4W000002lTemUAE,Flupyradifurone,200,g/L,Liquid
+a1Y4W000002lTerUAE,Penthiopyrad,200,g/L,Liquid
+a1Y4W000002lThtUAE,Chlorantraniliprole,200,g/L,Liquid
+a1Y4W000002lTjjUAE,Oxathiapiprolin,200,g/L,Liquid
+a1Y4W000002lTlRUAU,Tetraniliprole,200,g/L,Liquid
+a1Y4W000002lTlTUAU,Cyantraniliprole,200,g/L,Liquid
+a1Y4W000002lU4PUAU,Ametoctradin,200,g/L,Liquid
+a1Y4W000002lU4qUAE,Dimethomorph,200,g/L,Liquid
+a1Y4W000002lU4qUAE,Fluazinam,200,g/L,Liquid
+a1Y4W000002lU5CUAU,Cycloxydim,200,g/L,Liquid
+a1Y4W000002lU5EUAU,Amisulbrom,200,g/L,Liquid
+a1Y4W000002lU6LUAU,Amisulbrom,200,g/L,Liquid
+a1Y4W000004Cxo7UAC,Fluopyram,200,g/L,Liquid
+a1Y4W000004Cxo7UAC,Prothioconazole,200,g/L,Liquid
+a1Y4W000004CxoMUAS,Fluopyram,200,g/L,Liquid
+a1Y4W000004CxoMUAS,Prothioconazole,200,g/L,Liquid
+a1YOF0000001x1F2AQ,Oxathiapiprolin,200,g/L,Liquid
+a1YOF000000YH4r2AG,Mandipropamid,200,g/L,Liquid
+a1YOF000000BLFd2AO,Clothianidin,207,g/L,Liquid
+a1Y4W000002lU6sUAE,Alkoxylated Tallow Amine,210,g/kg,Liquid
+a1Y4W000002lgXzUAI,Alkoxylated Tallow Amine,215.5,g/L,Liquid
+a1Y4W000002lgWvUAI,Cymoxanil,225,g/L,Liquid
+a1Y4W000002lgX1UAI,Cymoxanil,225,g/L,Liquid
+a1Y4W000002lgZ4UAI,Cymoxanil,225,g/L,Liquid
+a1Y4W000002lTlbUAE,Dimethomorph,225,g/L,Liquid
+a1Y4W000002lU5lUAE,Dimethomorph,225,g/L,Liquid
+a1Y4W000002lU5wUAE,Dimethomorph,225,g/L,Liquid
+a1Y4W000002lU74UAE,Dimethomorph,225,g/L,Liquid
+a1Y4W000002lU5PUAU,Metribuzin,233,g/L,Liquid
+a1Y4W000002lgY9UAI,Alkyl Phenol Ethoxylate,235,g/L,Liquid
+a1Y4W000002lgXpUAI,Tallow Amine Ethoxylate,240,g/L,Liquid
+a1Y4W000002lseaUAA,Clethodim,240,g/L,Liquid
+a1Y4W000002lsWQUAY,Diquat,240,g/L,Liquid
+a1Y4W000002lTegUAE,Diquat,240,g/L,Liquid
+a1Y4W000002lTgzUAE,Thiamethoxam,240,g/L,Liquid
+a1Y4W000002lTh1UAE,Imidacloprid,240,g/L,Liquid
+a1Y4W000002lTh4UAE,Carfentrazone,240,g/L,Liquid
+a1Y4W000002lThAUAU,Clethodim,240,g/L,Liquid
+a1Y4W000002lThDUAU,Diquat,240,g/L,Liquid
+a1Y4W000002lThEUAU,Clethodim,240,g/L,Liquid
+a1Y4W000002lThjUAE,Sulfoxaflor,240,g/L,Liquid
+a1Y4W000002lThZUAU,Clethodim,240,g/L,Liquid
+a1Y4W000002lTiCUAU,Diquat,240,g/L,Liquid
+a1Y4W000002lTiIUAU,Diquat,240,g/L,Liquid
+a1Y4W000002lTiWUAU,Spinosad,240,g/L,Liquid
+a1Y4W000002lTizUAE,Carfentrazone,240,g/L,Liquid
+a1Y4W000002lTjdUAE,Spirotetramat,240,g/L,Liquid
+a1Y4W000002lTjiUAE,Spiromesifen,240,g/L,Liquid
+a1Y4W000002lTjsUAE,Penflufen,240,g/L,Liquid
+a1Y4W000002lTkaUAE,Clethodim,240,g/L,Liquid
+a1Y4W000002lTkmUAE,Clethodim,240,g/L,Liquid
+a1Y4W000002lTkwUAE,Diquat,240,g/L,Liquid
+a1Y4W000002lTlXUAU,Oxamyl,240,g/L,Liquid
+a1Y4W000002lty9UAA,Clethodim,240,g/L,Liquid
+a1YOF000000Mttt2AC,Amisulbrom,240,g/L,Liquid
+a1Y4W000002lTkuUAE,Chlorpropham,246.5,g/L,Liquid
+a1Y4W000002lgaBUAQ,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgadUAA,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgaeUAA,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgaFUAQ,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgagUAA,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgaGUAQ,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgaJUAQ,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lganUAA,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgapUAA,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgbPUAQ,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgbQUAQ,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgbrUAA,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgc7UAA,Metribuzin,250,g/L,Liquid
+a1Y4W000002lgc8UAA,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgcKUAQ,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgcnUAA,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgctUAA,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgV4UAI,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgVaUAI,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgVBUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgVHUAY,Difenoconazole,250,g/L,Liquid
+a1Y4W000002lgVLUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgVPUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgVYUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgVZUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgW5UAI,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgWNUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgWWUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgXkUAI,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgY2UAI,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgY3UAI,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgYPUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgYQUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgZAUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgZeUAI,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgZGUAY,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lgZQUAY,Mandipropamid,250,g/L,Liquid
+a1Y4W000002lgZRUAY,Mandipropamid,250,g/L,Liquid
+a1Y4W000002lgZTUAY,Mandipropamid,250,g/L,Liquid
+a1Y4W000002lTedUAE,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lTehUAE,Mandipropamid,250,g/L,Liquid
+a1Y4W000002lTeIUAU,Thiamethoxam,250,g/L,Liquid
+a1Y4W000002lThHUAU,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lTiSUAU,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lTitUAE,Pyraclostrobin,250,g/L,Liquid
+a1Y4W000002lTiVUAU,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lTiyUAE,Difenoconazole,250,g/L,Liquid
+a1Y4W000002lTjmUAE,Mandipropamid,250,g/L,Liquid
+a1Y4W000002lTk1UAE,Pyraclostrobin,250,g/L,Liquid
+a1Y4W000002lTlJUAU,Cypermethrin,250,g/L,Liquid
+a1Y4W000002lU3aUAE,Polyoxyethylene (15 Eo) C12-c14 Coco Amine,250,g/L,Liquid
+a1Y4W000002lU3eUAE,Difenoconazole,250,g/L,Liquid
+a1Y4W000002lU3eUAE,Mandipropamid,250,g/L,Liquid
+a1Y4W000002lU3JUAU,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lU3KUAU,Difenoconazole,250,g/L,Liquid
+a1Y4W000002lU3KUAU,Mandipropamid,250,g/L,Liquid
+a1Y4W000002lU3QUAU,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lU3rUAE,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lU41UAE,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lU4TUAU,Mandipropamid,250,g/L,Liquid
+a1Y4W000002lU53UAE,Difenoconazole,250,g/L,Liquid
+a1Y4W000002lU5yUAE,Mandipropamid,250,g/L,Liquid
+a1Y4W000002lU5YUAU,Difenoconazole,250,g/L,Liquid
+a1Y4W000002lU6bUAE,Mandipropamid,250,g/L,Liquid
+a1Y4W000002lU6UUAU,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002w8OzUAI,Pyraclostrobin,250,g/L,Liquid
+a1Y4W000003eUAmUAM,Fluopyram,250,g/L,Liquid
+a1YOF0000005yI52AI,Azoxystrobin,250,g/L,Liquid
+a1YOF000000N0Dp2AK,Pyraclostrobin,250,g/L,Liquid
+a1YOF000000N0FR2A0,Pyraclostrobin,250,g/L,Liquid
+a1YOF000000YH3F2AW,Azoxystrobin,250,g/L,Liquid
+a1Y4W000002lThiUAE,Clethodim,252,g/L,Liquid
+a1Y4W000002lgVrUAI,Ammonium Sulphate,258,g/L,Liquid
+a1Y4W000002lgZ1UAI,Maleic hydrazide,270,g/L,Liquid
+a1Y4W000002lgZOUAY,Maleic hydrazide,270,g/L,Liquid
+a1Y4W000002lTejUAE,Maleic hydrazide,270,g/L,Liquid
+a1Y4W000002lU43UAE,Maleic hydrazide,270,g/L,Liquid
+a1Y4W000002lgbNUAQ,Polyoxyethylen-methyl,273,g/L,Liquid
+a1Y4W000002lTeZUAU,Hydrogen peroxide,297,g/L,Liquid
+a1Y4W000002lgbGUAQ,Ethylene Oxide Condensate,300,g/L,Liquid
+a1Y4W000002lgbJUAQ,Fluxapyroxad,300,g/L,Liquid
+a1Y4W000002lgbkUAA,Ethylene Oxide Condensate,300,g/L,Liquid
+a1Y4W000002lgblUAA,Ethylene Oxide Condensate,300,g/L,Liquid
+a1Y4W000002lgceUAA,aliphatic alcohol ethoxylate,300,g/L,Liquid
+a1Y4W000002lgZsUAI,EAC 1,300,g/L,Liquid
+a1Y4W000002lgZsUAI,EAC 2,300,g/L,Liquid
+a1Y4W000002lozxUAA,Alkoxylated alcohols (EAC 1),300,g/L,Liquid
+a1Y4W000002lThKUAU,Fluxapyroxad,300,g/L,Liquid
+a1Y4W000002lTkgUAE,Fluxapyroxad,300,g/L,Liquid
+a1Y4W000002lTlbUAE,Ametoctradin,300,g/L,Liquid
+a1Y4W000002lU3HUAU,Fluxapyroxad,300,g/L,Liquid
+a1Y4W000002lU4jUAE,Fluazinam,300,g/L,Dry
+a1Y4W000002lU5lUAE,Ametoctradin,300,g/L,Liquid
+a1Y4W000002lU5wUAE,Ametoctradin,300,%,Liquid
+a1Y4W000002lU74UAE,Ametoctradin,300,g/L,Liquid
+a1Y4W000002lgaNUAQ,Pendimethalin,330,g/L,Liquid
+a1Y4W000002lgaPUAQ,Pendimethalin,330,g/L,Liquid
+a1Y4W000002lU6aUAE,Pendimethalin,333,g/L,Liquid
+a1Y4W000002lgVgUAI,Di-1-p-menthene,334.4,g/L,Liquid
+a1Y4W000002lgVfUAI,Di-1-p-menthene,334.87,g/L,Liquid
+a1Y4W000002lThoUAE,Phosphorous Acid,340,g/L,Liquid
+a1Y4W000002lgbiUAA,Propionic Acid,350,g/L,Liquid
+a1Y4W000002lgXUUAY,Propionic Acid,350,g/L,Liquid
+a1Y4W000002lTlaUAE,Glyphosate,356,g/L,Liquid
+a1Y4W000002lTlYUAU,Glyphosate,356,g/L,Liquid
+a1Y4W000002lga0UAA,Clomazone,360,g/L,Liquid
+a1Y4W000002lga3UAA,Clomazone,360,g/L,Liquid
+a1Y4W000002lgaHUAQ,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgb4UAA,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgb5UAA,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgb6UAA,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgbEUAQ,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgbHUAQ,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgbnUAA,Clomazone,360,g/L,Liquid
+a1Y4W000002lgbRUAQ,Clomazone,360,g/L,Liquid
+a1Y4W000002lgbyUAA,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgcdUAA,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgcHUAQ,Clomazone,360,g/L,Liquid
+a1Y4W000002lgcsUAA,Clomazone,360,g/L,Liquid
+a1Y4W000002lgcuUAA,Clomazone,360,g/L,Liquid
+a1Y4W000002lgcVUAQ,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgcXUAQ,Clomazone,360,g/L,Liquid
+a1Y4W000002lgVhUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgVkUAI,Clomazone,360,g/L,Liquid
+a1Y4W000002lgVNUAY,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgVOUAY,Clomazone,360,g/L,Liquid
+a1Y4W000002lgVsUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgWaUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgWcUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgWdUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgWeUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgWfUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgWgUAI,Clomazone,360,g/L,Liquid
+a1Y4W000002lgWVUAY,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgWzUAI,Clomazone,360,g/L,Liquid
+a1Y4W000002lgXdUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgXFUAY,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgXuUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgXVUAY,Clomazone,360,g/L,Liquid
+a1Y4W000002lgXwUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgY0UAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgY4UAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgY5UAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgYFUAY,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgZ7UAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgZcUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgZDUAY,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgZfUAI,Clomazone,360,g/L,Liquid
+a1Y4W000002lgZjUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgZkUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgZpUAI,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgZWUAY,Glyphosate,360,g/L,Liquid
+a1Y4W000002lThyUAE,Glyphosate,360,g/L,Liquid
+a1Y4W000002lTknUAE,Glyphosate,360,g/L,Liquid
+a1Y4W000002lTkRUAU,Glyphosate,360,g/L,Liquid
+a1Y4W000002lTlQUAU,Metam Sodium,360,g/L,Liquid
+a1Y4W000002lU3RUAU,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU3TUAU,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU3uUAE,Clomazone,360,g/L,Dry
+a1Y4W000002lU3YUAU,Clomazone,360,g/L,Liquid
+a1Y4W000002lU3zUAE,Clomazone,360,g/L,Liquid
+a1Y4W000002lU4dUAE,Clomazone,360,g/L,Liquid
+a1Y4W000002lU4pUAE,Clomazone,360,%,Liquid
+a1Y4W000002lU5fUAE,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU5SUAU,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU5UUAU,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU5WUAU,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU61UAE,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU62UAE,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU63UAE,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU64UAE,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU6AUAU,Glyphosate,360,g/L,Liquid
+a1Y4W000002lU6tUAE,Glyphosate,360,g/L,Liquid
+a1Y4W000004Cv8zUAC,Glyphosate,360,g/L,Liquid
+a1Y4W000002lgZmUAI,Pendimethalin,365,g/L,Liquid
+a1Y4W000002lgcbUAA,Fluazinam,375,g/L,Liquid
+a1Y4W000002lgcLUAQ,Alkylphenyl Hydroxypolyoxyethylene,375,g/L,Liquid
+a1Y4W000002lgXzUAI,Alkylphenyl Hydroxypolyoxyethylene,375,g/L,Liquid
+a1Y4W000002lU3aUAE,Polyoxyethylene(5-7 Eo) C9-c11 Primary Alc (375 g/l); Natural Fatty Acids (50 g/,375,g/L,Liquid
+a1Y4W000002lU6sUAE,Polyoxyethylene (5-8eo) c10-c15 Primary Alcohol,380,g/kg,Liquid
+a1Y4W000002lTjtUAE,Permethrin,384,g/L,Liquid
+a1Y4W000002lTk0UAE,Permethrin,384,g/L,Liquid
+a1YOF000000gadP2AQ,Fluazinam,384,g/L,Liquid
+a1Y4W000004CyfvUAC,Azoxystrobin,390,g/L,Liquid
+a1Y4W000002lgaAUAQ,Propamocarb hydrochloride,400,g/L,Liquid
+a1Y4W000002lgaOUAQ,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lgaqUAA,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lgaQUAQ,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lgaRUAQ,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lgb3UAA,Propamocarb hydrochloride,400,g/L,Liquid
+a1Y4W000002lgbBUAQ,Cyazofamid,400,g/L,Liquid
+a1Y4W000002lgcLUAQ,Alkoxylated Fatty Amine,400,g/L,Liquid
+a1Y4W000002lgcMUAQ,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lgWXUAY,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lgXAUAY,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lgXWUAY,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lrzZUAQ,,400,g/L,Liquid
+a1Y4W000002lTh6UAE,Fluazinam,400,g/L,Liquid
+a1Y4W000002lThaUAE,Mefentrifluconazole,400,g/L,Liquid
+a1Y4W000002lTi0UAE,Cyazofamid,400,g/L,Liquid
+a1Y4W000002lTk9UAE,Cyazofamid,400,g/L,Liquid
+a1Y4W000002lTkYUAU,Pyrimethanil,400,g/L,Liquid
+a1Y4W000002lU3LUAU,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lU3PUAU,Propamocarb hydrochloride,400,g/L,Liquid
+a1Y4W000002lU4jUAE,Cymoxanil,400,g/L,Dry
+a1Y4W000002lU5HUAU,Cyazofamid,400,g/L,Liquid
+a1Y4W000002lU5rUAE,Propamocarb hydrochloride,400,g/L,Liquid
+a1Y4W000002lU60UAE,Cyazofamid,400,g/L,Liquid
+a1Y4W000002lU6dUAE,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lU6hUAE,Cyazofamid,400,g/L,Liquid
+a1Y4W000002lU6XUAU,Pendimethalin,400,g/L,Liquid
+a1Y4W000002lU6yUAE,Fluopyram,400,g/L,Liquid
+a1Y4W000002w8OpUAI,Pyrimethanil,400,g/L,Liquid
+a1Y4W000003eQ2xUAE,Propamocarb hydrochloride,400,g/L,Liquid
+a1Y4W000003eV3wUAE,Ammonium Sulphate,400,g/L,Liquid
+a1Y4W000002lTl0UAE,S-metolachlor,405,g/L,Liquid
+a1Y4W000002lTkPUAU,Cypermethrin,407,g/L,Liquid
+a1Y4W000002lgVTUAY,Glyphosate,418,g/L,Liquid
+a1Y4W000002lgc1UAA,Polyethoxylated Tallow Amine,431,g/L,Liquid
+a1Y4W000002lgcAUAQ,Polyethoxylated Tallow Amine,431,g/L,Liquid
+a1Y4W000002lgcJUAQ,Polyoxyethylene Tallow Amine,431,g/L,Liquid
+a1Y4W000002lgcvUAA,Polyethoxylated Tallow Amine 15eo,431,g/L,Liquid
+a1Y4W000002lgZIUAY,Polyethoxylated Tallow Amine,431,g/L,Liquid
+a1Y4W000002lgb8UAA,Glyphosate,450,g/L,Liquid
+a1Y4W000002lgb9UAA,Glyphosate,450,g/L,Liquid
+a1Y4W000002lgc3UAA,Glyphosate,450,g/L,Liquid
+a1Y4W000002lgVqUAI,Synthetic Latex,450,g/L,Liquid
+a1Y4W000002lgWbUAI,Glyphosate,450,g/L,Liquid
+a1Y4W000002lgXLUAY,Glyphosate,450,g/L,Liquid
+a1Y4W000002lgY1UAI,Glyphosate,450,g/L,Liquid
+a1Y4W000002lgY6UAI,Glyphosate,450,g/L,Liquid
+a1Y4W000002lgZhUAI,Glyphosate,450,g/L,Liquid
+a1Y4W000002lTh3UAE,Linuron,450,g/L,Liquid
+a1Y4W000002lTjwUAE,Sethoxydim,450,g/L,Liquid
+a1Y4W000002lU4hUAE,Glyphosate,450,g/L,Liquid
+a1Y4W000002lU65UAE,Glyphosate,450,g/L,Liquid
+a1Y4W000002lU68UAE,Glyphosate,450,g/L,Liquid
+a1Y4W000002lU6CUAU,Glyphosate,450,g/L,Liquid
+a1Y4W000002lU6DUAU,Glyphosate,450,g/L,Liquid
+a1YOF000000Q5AX2A0,Glyphosate,450,g/L,Liquid
+a1YOF000000Mmdt2AC,potassium phosphonates,453,g/L,Liquid
+a1Y4W000002lgabUAA,Pendimethalin,455,g/L,Liquid
+a1Y4W000002lgbZUAQ,Pendimethalin,455,g/L,Liquid
+a1Y4W000002lU6eUAE,Pendimethalin,455,g/L,Liquid
+a1Y4W000002lThmUAE,Phosphorous Acid,458,g/L,Liquid
+a1Y4W000002lgb0UAA,Flutolanil,460,g/L,Liquid
+a1Y4W000002lgc9UAA,Polyethoxylated Tallow Amine,471,g/L,Liquid
+a1Y4W000002lgXSUAY,Polyethoxylated Tallow Amine,471,g/L,Liquid
+a1Y4W000002lgZwUAI,Polyethoxylated Tallow Amine,471,g/L,Liquid
+a1Y4W000004ugrPUAQ,Flumioxazin,479.2,g/L,Liquid
+a1Y4W000002lgb7UAA,Glyphosate,480,g/L,Liquid
+a1Y4W000002lTeoUAE,Spinosad,480,g/L,Liquid
+a1Y4W000002lTeVUAU,Mancozeb,480,g/L,Liquid
+a1Y4W000002lTi2UAE,Dimethoate,480,g/L,Liquid
+a1Y4W000002lTiZUAU,Fluoxastrobin,480,g/L,Liquid
+a1Y4W000002lTj1UAE,Dimethoate,480,g/L,Liquid
+a1Y4W000002lTj7UAE,Linuron,480,g/L,Liquid
+a1Y4W000002lTjkUAE,Metalaxyl,480,g/L,Liquid
+a1Y4W000002lTjLUAU,Glyphosate,480,g/L,Liquid
+a1Y4W000002lTjRUAU,Metribuzin,480,g/L,Liquid
+a1Y4W000002lTkcUAE,Metribuzin,480,g/L,Liquid
+a1Y4W000002lTkEUAU,Metalaxyl,480,g/L,Liquid
+a1Y4W000002lTkTUAU,Glyphosate,480,g/L,Liquid
+a1Y4W000002lTl1UAE,Sulfentrazone,480,g/L,Liquid
+a1Y4W000002lTlGUAU,Metribuzin,480,g/L,Liquid
+a1Y4W000002lTlNUAU,Glyphosate,480,g/L,Liquid
+a1Y4W000002lTlOUAU,Glyphosate,480,g/L,Liquid
+a1Y4W000002lTlWUAU,Glyphosate,480,g/L,Liquid
+a1Y4W000002lU3VUAU,Bentazone,480,g/L,Liquid
+a1Y4W000002lU5oUAE,Zoxamide,480,g/L,Liquid
+a1Y4W000002lU66UAE,Glyphosate,480,g/L,Liquid
+a1Y4W000002lu8OUAQ,Metconazole,480,g/L,Liquid
+a1Y4W000004CwFsUAK,Glyphosate,480,g/L,Liquid
+a1Y4W000004CymrUAC,Dimethoate,480,g/L,Liquid
+a1Y4W000002lgaEUAQ,Glyphosate,490,g/L,Liquid
+a1Y4W000002lgViUAI,Glyphosate,490,g/L,Liquid
+a1Y4W000002lgbLUAQ,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgbqUAA,Thiabendazole,500,g/L,Liquid
+a1Y4W000002lgbvUAA,Cypermethrin,500,g/L,Liquid
+a1Y4W000002lgbXUAQ,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgcgUAA,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgcqUAA,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgcrUAA,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgcRUAQ,Alkoxylated Fatty Amine,500,g/L,Liquid
+a1Y4W000002lgcRUAQ,Polyoxyethylene Monolaurate,500,g/L,Liquid
+a1Y4W000002lgVRUAY,Polyoxyethylene Monolaurate,500,g/L,Liquid
+a1Y4W000002lgW3UAI,Alkoxylated Fatty Amine,500,g/L,Liquid
+a1Y4W000002lgW3UAI,Polyoxyethylene Monolaurate,500,g/L,Liquid
+a1Y4W000002lgWBUAY,Rapeseed Oil,500,g/L,Liquid
+a1Y4W000002lgWxUAI,Cypermethrin,500,g/L,Liquid
+a1Y4W000002lgWyUAI,Cypermethrin,500,g/L,Liquid
+a1Y4W000002lgX0UAI,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgX4UAI,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgX6UAI,Propamocarb hydrochloride,500,g/L,Liquid
+a1Y4W000002lgXlUAI,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgXmUAI,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgXnUAI,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgXoUAI,Fluazinam,500,g/L,Liquid
+a1Y4W000002lgYgUAI,alkoxylated alcohol,500,g/L,Liquid
+a1Y4W000002lgYZUAY,alkoxylated alcohol,500,g/L,Liquid
+a1Y4W000002lgZEUAY,Metobromuron,500,g/L,Liquid
+a1Y4W000002lgZNUAY,Fluazinam,500,g/L,Liquid
+a1Y4W000002lp0HUAQ,Ammonium Sulphate,500,g/L,Liquid
+a1Y4W000002lTeqUAE,Fluopyram,500,g/L,Liquid
+a1Y4W000002lTh8UAE,Permethrin,500,g/L,Liquid
+a1Y4W000002lThTUAU,Chlorothalonil,500,g/L,Liquid
+a1Y4W000002lTibUAE,Dimethomorph,500,g/L,Liquid
+a1Y4W000002lTjAUAU,Fluopyram,500,g/L,Liquid
+a1Y4W000002lTjQUAU,Thiabendazole,500,g/L,Liquid
+a1Y4W000002lTkAUAU,Fenamidone,500,g/L,Liquid
+a1Y4W000002lTlcUAE,Pyroxasulfone,500,g/L,Liquid
+a1Y4W000002lTldUAE,Chlorothalonil,500,g/L,Liquid
+a1Y4W000002lTlDUAU,Glyphosate,500,g/L,Liquid
+a1Y4W000002lU49UAE,Cypermethrin,500,g/L,Dry
+a1Y4W000002lU4GUAU,Dimethomorph,500,g/L,Liquid
+a1Y4W000002lU4rUAE,Fluazinam,500,g/L,Liquid
+a1Y4W000002lU4tUAE,Metobromuron,500,g/L,Liquid
+a1Y4W000002lU4XUAU,Fluazinam,500,g/L,Liquid
+a1Y4W000002lU4YUAU,Fluazinam,500,g/L,Liquid
+a1Y4W000002lU5cUAE,Fluazinam,500,g/L,Liquid
+a1Y4W000002lU5DUAU,Fluazinam,500,g/L,Dry
+a1Y4W000002lU5mUAE,Cypermethrin,500,g/L,Liquid
+a1Y4W000002lU5nUAE,Metobromuron,500,g/L,Liquid
+a1Y4W000002lU5VUAU,Dimethomorph,500,g/L,Liquid
+a1Y4W000002lU5XUAU,Fluazinam,500,g/L,Liquid
+a1Y4W000002lU6MUAU,Fluazinam,500,g/L,Liquid
+a1Y4W000002lU6pUAE,Fluazinam,500,g/L,Liquid
+a1Y4W000002lU6WUAU,Metobromuron,500,g/L,Liquid
+a1Y4W000002lU71UAE,Fluazinam,500,g/L,Liquid
+a1Y4W000004CxqcUAC,Fluazinam,500,g/L,Liquid
+a1YOF000000NMkb2AG,Fluazinam,500,g/L,Liquid
+a1Y4W000002lTlPUAU,Metam Sodium,508.2,g/L,Liquid
+a1Y4W000002lTefUAE,Phosphorous Acid,530,g/L,Liquid
+a1Y4W000002lThnUAE,Phosphorous Acid,530,g/L,Liquid
+a1Y4W000002lTlZUAU,Phosphorous Acid,530,g/L,Liquid
+a1Y4W000002lgYpUAI,Methylated Rapeseed Oil,530.4,g/L,Liquid
+a1Y4W000002lTecUAE,Phosphorous Acid,536,g/L,Liquid
+a1Y4W000002lgatUAA,Glyphosate,540,g/L,Liquid
+a1Y4W000002lgaYUAQ,Glyphosate,540,g/L,Liquid
+a1Y4W000002lgc4UAA,Glyphosate,540,g/L,Liquid
+a1Y4W000002lgVIUAY,Glyphosate,540,g/L,Liquid
+a1Y4W000002lgWoUAI,Glyphosate,540,g/L,Liquid
+a1Y4W000002lgWpUAI,Glyphosate,540,g/L,Liquid
+a1Y4W000002lt6DUAQ,Glyphosate,540,g/L,Liquid
+a1Y4W000002lThpUAE,Glyphosate,540,g/L,Liquid
+a1Y4W000002lThvUAE,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTiaUAE,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTirUAE,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTjaUAE,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTjbUAE,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTjCUAU,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTk8UAE,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTkBUAU,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTkSUAU,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTkUUAU,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTkVUAU,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTkWUAU,Glyphosate,540,g/L,Liquid
+a1Y4W000002lTkxUAE,Glyphosate,540,g/L,Liquid
+a1Y4W000002lU6TUAU,Glyphosate,540,g/L,Liquid
+a1Y4W000002lgcCUAQ,Maltodextrin,598,g/L,Liquid
+a1Y4W000002lgXOUAY,Maltodextrin,598,g/L,Liquid
+a1Y4W000002lgZPUAY,Maltodextrin,598,g/L,Liquid
+a1Y4W000002lga1UAA,Ethylene Oxide Condensate,600,g/L,Liquid
+a1Y4W000002lgciUAA,Ethylene Oxide Condensate,600,g/L,Liquid
+a1Y4W000002lgX3UAI,Ethylene Oxide Condensate,600,g/L,Liquid
+a1Y4W000002lgXbUAI,Ethylene Oxide Condensate,600,g/L,Liquid
+a1Y4W000002lTjfUAE,Clothianidin,600,g/L,Liquid
+a1Y4W000002lTl9UAE,Clothianidin,600,g/L,Liquid
+a1Y4W000002lU4cUAE,Ethylene Oxide Condensate,600,g/L,Liquid
+a1Y4W000002lU4OUAU,Aclonifen,600,g/L,Liquid
+a1Y4W000002lU6JUAU,Metribuzin,600,g/L,Liquid
+a1Y4W000003eUJ0UAM,Chlorantraniliprole,600,g/L,Liquid
+a1Y4W000002lU4sUAE,Propamocarb hydrochloride,625,g/L,Liquid
+a1Y4W000002lThQUAU,S-metolachlor,628,g/L,Liquid
+a1Y4W000002lTeAUAU,"1,4-Dimethylnaphthalene",638,g/L,Liquid
+a1Y4W000002lgYdUAI,fatty acid methyl esters,652,g/L,Liquid
+a1Y4W000002lgYeUAI,fatty acid methyl esters,652,g/L,Liquid
+a1Y4W000002lgYxUAI,fatty acid methyl esters,652,g/L,Liquid
+a1Y4W000002lgbaUAA,Polyalkyleneoxide Modified Heptamethyltrisiloxane,655,g/L,Liquid
+a1Y4W000002lgZaUAI,Terpenic Alcohols,655,g/L,Liquid
+a1Y4W000002lgZqUAI,Mancozeb,657.8,g/L,Dry
+a1Y4W000002lTgvUAE,2-ethylhexyl ester,660,g/L,Liquid
+a1Y4W000002lTgxUAE,2-ethylhexyl ester,660,g/L,Liquid
+a1Y4W000004CynLUAS,Pelargonic acid,680,g/L,Liquid
+a1Y4W000002lgaZUAQ,Polyglycol Ether,700,g/L,Liquid
+a1Y4W000002lgVnUAI,Akyl Polyglycol Ether,700,g/L,Liquid
+a1Y4W000002lTeNUAU,Chlorothalonil,720,g/L,Liquid
+a1Y4W000002lThRUAU,Chlorothalonil,720,g/L,Liquid
+a1Y4W000002lTicUAE,Dimethenamid-P,720,g/L,Liquid
+a1Y4W000002lTjnUAE,Dimethenamid-P,720,g/L,Liquid
+a1Y4W000002lU4MUAU,Propamocarb hydrochloride,722,g/L,Liquid
+a1Y4W000002lgawUAA,petroleum (paraffin) oils,732,g/L,Liquid
+a1Y4W000002lgZKUAY,Refined Paraffinic Petroleum Oil,732,g/L,Liquid
+a1Y4W000002lU4kUAE,Paraffinic Oil,732,g/L,Liquid
+a1Y4W000002lgcmUAA,Polyoxyethylene (5-8eo) c10-c15 Primary Alcohol,750,g/kg,Liquid
+a1Y4W000002lgYnUAI,Polyoxyethylene Polypropoxy Propanol,750,g/L,Liquid
+a1Y4W000002lgYrUAI,Polyoxyethylene Polypropoxy Propanol,750,g/L,Liquid
+a1Y4W000002loy7UAA,Mancozeb,750,g/kg,Dry
+a1Y4W000002lgcaUAA,rapeseed fatty acid esters,771.5,g/L,Liquid
+a1Y4W000002lgW0UAI,Esterified Rapeseed Oil,790,g/L,Liquid
+a1Y4W000002lgXgUAI,alkoxylated soybean triglycerid,790,g/L,Liquid
+a1Y4W000002lU50UAE,alkoxylated triglycerides,790,g/L,Liquid
+a1Y4W000002lga8UAA,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgaiUAA,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgakUAA,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgamUAA,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgaSUAQ,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgbdUAA,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgboUAA,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgbxUAA,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgc0UAA,Ethoxylated Tallow Amine,800,g/L,Liquid
+a1Y4W000002lgc2UAA,Ethoxylated Tallow Amine,800,g/L,Liquid
+a1Y4W000002lgcoUAA,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgVpUAI,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgWrUAI,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgWtUAI,Ethoxylated Tallow Amine,800,g/L,Liquid
+a1Y4W000002lgWUUAY,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgX9UAI,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgXeUAI,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgXfUAI,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgXHUAY,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgXsUAI,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgXXUAY,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgXYUAY,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgYCUAY,Ethoxylated Tallow Amine,800,g/L,Liquid
+a1Y4W000002lgYOUAY,Tallow Amine Ethoxylate,800,g/L,Liquid
+a1Y4W000002lgYVUAY,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgZ5UAI,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgZ9UAI,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgZlUAI,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lgZyUAI,Ethoxlyated Tallow Amine,800,g/L,Liquid
+a1Y4W000002loy8UAA,Mancozeb,800,g/kg,Dry
+a1Y4W000002lTiYUAU,EPTC,800,g/L,Liquid
+a1Y4W000002lU4CUAU,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lU4yUAE,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lU5bUAE,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lU5tUAE,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lU6FUAU,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lU6rUAE,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lU73UAE,Prosulfocarb,800,g/L,Liquid
+a1Y4W000002lfFuUAI,1-Octanol,827,g/L,Liquid
+a1Y4W000002lga4UAA,Paraffinic Oil,830,g/L,Liquid
+a1Y4W000002lgYuUAI,Methylated Rapeseed Oil,840,g/L,Liquid
+a1Y4W000002lU4vUAE,Methylated Rapeseed Oil,840,g/L,Liquid
+a1Y4W000002lgYoUAI,Esterified Rapeseed Oil,842,g/L,Liquid
+a1Y4W000002ldhBUAQ,Orange oil,843,g/L,Liquid
+a1Y4W000002lTenUAE,3-decen-2-one,845,g/L,Liquid
+a1Y4W000002lgXRUAY,Ethoxylated Tallow Amine,870,g/L,Liquid
+a1Y4W000002lfHqUAI,Non-Ionic Liquid Wetting Agent,900,g/L,Liquid
+a1Y4W000002lfHyUAI,Non-Ionic Liquid Wetting Agent,900,g/L,Liquid
+a1Y4W000002lga2UAA,Ethylene Oxide Condensate,900,g/L,Liquid
+a1Y4W000002lgYNUAY,Ethylene Oxide Condensate,900,g/L,Liquid
+a1Y4W000002lgYYUAY,polyoxyethylene (5-7EO) C10-C15 primary alcohol,900,g/L,Liquid
+a1Y4W000002lgZJUAY,Ethylene Oxide Condensate,900,g/L,Liquid
+a1Y4W000002lt3EUAQ,Alkylarylpolyoxyethylene glycols,900,g/L,Liquid
+a1Y4W000002w8FsUAI,Alkylarylpolyoxyethylene glycols,900,g/L,Liquid
+a1Y4W000003eUANUA2,"Alkylarylpolyoxyethylene glycols, free fatty acids and IPA",900,g/L,Liquid
+a1Y4W000004CwVDUA0,Alkylarylpolyoxyethylene glycols,900,g/L,Liquid
+a1YOF000000R3jN2AS,"Alkylarylpolyoxyethylene glycols, free fatty acids and IPA",900,g/L,Liquid
+a1Y4W000002lTeMUAU,S-metolachlor,915,g/L,Liquid
+a1Y4W000002lTiQUAU,S-metolachlor,915,g/L,Liquid
+a1Y4W000002lTj0UAE,S-metolachlor,915,g/L,Liquid
+a1Y4W000004Cv7NUAS,S-metolachlor,915,g/L,Liquid
+a1Y4W000002lgVFUAY,Rapeseed Oil,950,g/L,Liquid
+a1Y4W000002lgY8UAI,Rapeseed Oil,950,g/L,Liquid
+a1Y4W000002lgYfUAI,Rapeseed Oil,950,g/L,Liquid
+a1Y4W000002lTkqUAE,S-metolachlor,960,g/L,Liquid
+a1Y4W000002lU5xUAE,Ethanol,960,g/L,Liquid
+a1YOF000000aXWv2AM,Ethanol,960,g/L,Liquid
+a1YOF000000YAbF2AW,"1,4-Dimethylnaphthalene",980,g/kg,Liquid
+a1Y4W000002lTeBUAU,"1,4-Dimethylnaphthalene",988,g/L,Liquid
+a1Y4W000002lTl2UAE,Mineral oil,990,g/L,Liquid
+a1Y4W000002lTgrUAE,"1,4-Dimethylnaphthalene",998,g/L,Liquid
+a1Y4W000002lU3WUAU,Ethylene,999,g/L,Liquid
+a1Y4W000002lU3XUAU,Spearmint oil,1000,g/L,Liquid
+a1Y4W000004CyPEUA0,"1,4-Dimethylnaphthalene",1006,g/L,Liquid
+a1Y4W000002lTjuUAE,Chloropicrin,1302,g/L,Liquid

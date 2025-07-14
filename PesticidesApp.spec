@@ -368,20 +368,22 @@ a = Analysis(
     noarchive=False,
 )
 
-# Filter out test_data and other unwanted directories
+# Filter out unwanted directories
 def filter_data(data_list):
     """Filter out unwanted data files and directories."""
     filtered = []
     for item in data_list:
         if isinstance(item, tuple) and len(item) >= 2:
             source_path = item[0]
-            # Exclude test_data directory, pandas remnants, and cache
+            # Exclude unwanted directories, pandas remnants, and cache
             if (
                 'test_data' not in source_path and 
+                'update_products' not in source_path and
                 '__pycache__' not in source_path and
                 'pandas' not in source_path.lower() and
                 'numpy' not in source_path.lower() and
-                'scipy' not in source_path.lower()
+                'scipy' not in source_path.lower() and
+                not source_path.endswith('.docx')
             ):
                 filtered.append(item)
     return filtered
