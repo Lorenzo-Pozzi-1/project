@@ -13,8 +13,8 @@ def read_files():
     print("=" * 50)
     
     # Define file paths
-    products_file = r"C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\csv_products.csv"
-    cpai_file = r"C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\csv_cpai.csv"
+    products_file = r"C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\PestIQ app\AAA_products file update\csv_products.csv"
+    cpai_file = r"C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\PestIQ app\AAA_products file update\csv_cpai.csv"
     
     try:
         # Read the products CSV file
@@ -148,7 +148,7 @@ def add_ai_info(products_df, cpai_df):
             ai_num = ai_index + 1
             products_df.at[index, f'AI{ai_num}'] = ai_row['Name'] if pd.notna(ai_row['Name']) else ''
             products_df.at[index, f'[AI{ai_num}]'] = ai_row['Concentration_Amount__c'] if pd.notna(ai_row['Concentration_Amount__c']) else ''
-            products_df.at[index, f'[AI{ai_num}] UOM'] = ai_row['UOM Master.Short_Name__c'] if pd.notna(ai_row['UOM Master.Short_Name__c']) else ''
+            products_df.at[index, f'[AI{ai_num}]UOM'] = ai_row['UOM Master.Short_Name__c'] if pd.notna(ai_row['UOM Master.Short_Name__c']) else ''
         
         processed_count += 1
         if processed_count % 100 == 0:  # Progress update every 100 rows
@@ -160,10 +160,93 @@ def add_ai_info(products_df, cpai_df):
     print(f"   ✓ Active ingredient information added successfully!\n")
     return products_df
 
+def standardize_rate_uom(products_df):
+    """
+    Standardize rate UOM columns by checking if min and max rate UOM values match.
+    If they don't match, replace max rate value with "Check label".
+    Then delete max rate UOM column and rename min rate UOM column to "rate UOM".
+    
+    Args:
+        products_df (pd.DataFrame): Products dataframe
+        
+    Returns:
+        pd.DataFrame: Updated products dataframe with standardized rate UOM
+    """
+    print("=" * 50)
+    print("== STEP 4: STANDARDIZING RATE UOM COLUMNS ==")
+    print("=" * 50)
+    
+    print("\n1. Cleaning UOM values...")
+    
+    # Track how many records were cleaned
+    cleaned_count = 0
+    
+    # First pass: Clean FO100G values
+    for index, row in products_df.iterrows():
+        min_rate_uom = row.get('min rate UOM', '')
+        max_rate_uom = row.get('max rate UOM', '')
+        
+        # Replace FO100G with fl oz/100gal in min rate UOM
+        if str(min_rate_uom).strip() == 'FO100G':
+            products_df.at[index, 'min rate UOM'] = 'fl oz/100gal'
+            cleaned_count += 1
+        
+        # Replace FO100G with fl oz/100gal in max rate UOM
+        if str(max_rate_uom).strip() == 'FO100G':
+            products_df.at[index, 'max rate UOM'] = 'fl oz/100gal'
+            cleaned_count += 1
+    
+    print(f"   ✓ Cleaned {cleaned_count} 'FO100G' values, replaced with 'fl oz/100gal'")
+    
+    print("\n2. Checking UOM consistency between min and max rate columns...")
+    
+    # Track how many records were updated
+    updated_count = 0
+    total_products = len(products_df)
+    
+    # Convert max rate column to object dtype to allow string values
+    if 'max rate' in products_df.columns:
+        products_df['max rate'] = products_df['max rate'].astype('object')
+    
+    # Second pass: Check consistency and update max rate if needed
+    for index, row in products_df.iterrows():
+        min_rate_uom = row.get('min rate UOM', '')
+        max_rate_uom = row.get('max rate UOM', '')
+        
+        # Check if UOM values are different (accounting for NaN and empty strings)
+        min_uom_clean = str(min_rate_uom).strip() if pd.notna(min_rate_uom) else ''
+        max_uom_clean = str(max_rate_uom).strip() if pd.notna(max_rate_uom) else ''
+        
+        if min_uom_clean != max_uom_clean and min_uom_clean != '' and max_uom_clean != '':
+            # UOM values don't match, replace max rate with "Check label"
+            products_df.at[index, 'max rate'] = 'Check label'
+            updated_count += 1
+    
+    print(f"   ✓ Found {updated_count} products with mismatched UOM values")
+    print(f"   ✓ Updated max rate to 'Check label' for these {updated_count} products")
+    
+    print("\n3. Cleaning up UOM columns...")
+    
+    # Delete the max rate UOM column
+    if 'max rate UOM' in products_df.columns:
+        products_df = products_df.drop('max rate UOM', axis=1)
+        print("   ✓ Deleted 'max rate UOM' column")
+    
+    # Rename min rate UOM column to rate UOM
+    if 'min rate UOM' in products_df.columns:
+        products_df = products_df.rename(columns={'min rate UOM': 'rate UOM'})
+        print("   ✓ Renamed 'min rate UOM' column to 'rate UOM'")
+    
+    print(f"\n4. Rate UOM standardization complete:")
+    print(f"   ✓ Processed all {total_products} products")
+    print(f"   ✓ Standardized rate UOM structure successfully!\n")
+    
+    return products_df
+
 def main():
     """
     Main function to process pesticide product data.
-    Orchestrates the reading, country filling, and AI information addition.
+    Orchestrates the reading, country filling, AI information addition, and rate UOM standardization.
     """
     print("\033c", end="")
     print("\n" + "=" * 60)
@@ -173,6 +256,7 @@ def main():
     print("• Read product and active ingredient data from CSV files")
     print("• Fill missing country information based on regions")
     print("• Add active ingredient details to each product")
+    print("• Standardize rate UOM columns and clean up structure")
     print("• Save the final processed data to a new CSV file")
     print("=" * 60 + "\n")
     
@@ -191,6 +275,9 @@ def main():
     # Step 3: Add AI information
     products_df = add_ai_info(products_df, cpai_df)
     
+    # Step 4: Standardize rate UOM columns
+    products_df = standardize_rate_uom(products_df)
+    
     # Final summary
     print("=" * 50)
     print("== PROCESSING COMPLETE ==")
@@ -198,7 +285,7 @@ def main():
     print(f"✓ Final dataset contains {products_df.shape[0]} products with {products_df.shape[1]} columns")
     
     if products_df is not None:
-        output_file = "processed_products.csv"
+        output_file = r"C:\Users\LORPOZZI\OneDrive - McCain Foods Limited\Desktop\PestIQ app\AAA_products file update\processed_products.csv"
         products_df.to_csv(output_file, index=False)
         print(f"✓ Data successfully saved to: {output_file}")
         print("\nYou can now open the processed_products.csv file to view the results!")
