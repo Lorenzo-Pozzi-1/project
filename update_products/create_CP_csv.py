@@ -96,7 +96,7 @@ def fill_country_column(products_df):
 def add_ai_info(products_df, cpai_df):
     """
     Add active ingredient information columns to the products dataframe.
-    Adds 12 new columns: AI1, [AI1], [AI1] UOM, AI2, [AI2], [AI2] UOM, AI3, [AI3], [AI3] UOM, AI4, [AI4], [AI4] UOM
+    Adds 12 new columns: AI1, [AI1], [AI1]UOM, AI2, [AI2], [AI2]UOM, AI3, [AI3], [AI3]UOM, AI4, [AI4], [AI4]UOM
     
     Args:
         products_df (pd.DataFrame): Products dataframe
@@ -115,7 +115,7 @@ def add_ai_info(products_df, cpai_df):
         ai_columns.extend([
             f'AI{i}',           # Active ingredient name
             f'[AI{i}]',         # Active ingredient concentration/amount
-            f'[AI{i}] UOM'      # Unit of measure
+            f'[AI{i}]UOM'      # Unit of measure
         ])
     
     print("\n1. Adding new columns for active ingredients...")
@@ -123,7 +123,7 @@ def add_ai_info(products_df, cpai_df):
     for col in ai_columns:
         products_df[col] = ''
     
-    print(f"   ✓ Added 12 new columns: AI1, [AI1], [AI1] UOM, AI2, [AI2], [AI2] UOM, AI3, [AI3], [AI3] UOM, AI4, [AI4], [AI4] UOM")
+    print(f"   ✓ Added 12 new columns: AI1, [AI1], [AI1]UOM, AI2, [AI2], [AI2]UOM, AI3, [AI3], [AI3]UOM, AI4, [AI4], [AI4]UOM")
     
     # Process each row in the products dataframe
     print("\n2. Matching products with their active ingredients...")
@@ -181,22 +181,31 @@ def standardize_rate_uom(products_df):
     # Track how many records were cleaned
     cleaned_count = 0
     
-    # First pass: Clean FO100G values
+    # Define UOM replacements
+    uom_replacements = {
+        'FO100G': 'fl oz/100gal',
+        'Lb100G': 'lb/100gal',
+        'O100G': 'oz/100gal'
+    }
+    
+    # Clean UOM values using the replacement dictionary
     for index, row in products_df.iterrows():
         min_rate_uom = row.get('min rate UOM', '')
         max_rate_uom = row.get('max rate UOM', '')
         
-        # Replace FO100G with fl oz/100gal in min rate UOM
-        if str(min_rate_uom).strip() == 'FO100G':
-            products_df.at[index, 'min rate UOM'] = 'fl oz/100gal'
+        # Check and replace min rate UOM
+        min_uom_clean = str(min_rate_uom).strip()
+        if min_uom_clean in uom_replacements:
+            products_df.at[index, 'min rate UOM'] = uom_replacements[min_uom_clean]
             cleaned_count += 1
         
-        # Replace FO100G with fl oz/100gal in max rate UOM
-        if str(max_rate_uom).strip() == 'FO100G':
-            products_df.at[index, 'max rate UOM'] = 'fl oz/100gal'
+        # Check and replace max rate UOM
+        max_uom_clean = str(max_rate_uom).strip()
+        if max_uom_clean in uom_replacements:
+            products_df.at[index, 'max rate UOM'] = uom_replacements[max_uom_clean]
             cleaned_count += 1
     
-    print(f"   ✓ Cleaned {cleaned_count} 'FO100G' values, replaced with 'fl oz/100gal'")
+    print(f"   ✓ Cleaned {cleaned_count} UOM values using replacements: {', '.join([f'{k}→{v}' for k, v in uom_replacements.items()])}")
     
     print("\n2. Checking UOM consistency between min and max rate columns...")
     
