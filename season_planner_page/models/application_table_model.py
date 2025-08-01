@@ -351,6 +351,13 @@ class ApplicationTableModel(QAbstractTableModel):
                 return ", ".join(app.ai_groups) if app.ai_groups else ""
             elif col == self._col_index("Field EIQ"):
                 validation = self._get_validation(app, row)
+                
+                # Check if product is an adjuvant first
+                if app.product_name:
+                    product = self._find_product(app.product_name)
+                    if product and self._is_adjuvant(product):
+                        return "n/a"
+                
                 # Show calculated EIQ if it exists, regardless of validation state (except INVALID_PRODUCT)
                 # This way products with rate out of label range still show EIQ, 
                 # but they are clearly visible to the user due to tips and highlighting and warning messages
@@ -368,6 +375,31 @@ class ApplicationTableModel(QAbstractTableModel):
         except Exception as e:
             QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel._get_cell_data() method: {e}")
             return ""
+
+    def _is_adjuvant(self, product) -> bool:
+        """
+        Check if a product is an adjuvant based on product type or application method.
+        
+        Args:
+            product: Product object to check
+            
+        Returns:
+            bool: True if product is an adjuvant, False otherwise
+        """
+        if not product:
+            return False
+        
+        # Check product type
+        if hasattr(product, 'product_type') and product.product_type:
+            if product.product_type.lower() == "adjuvant":
+                return True
+                
+        # Check application method
+        if hasattr(product, 'application_method') and product.application_method:
+            if product.application_method.lower() == "adjuvant":
+                return True
+                
+        return False
     
     def _get_cell_background(self, app: Application, col: int, row: int) -> Optional[QColor]:
         """Get background color for a cell based on validation state."""

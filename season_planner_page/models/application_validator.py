@@ -70,9 +70,10 @@ class ApplicationValidator:
         
         Validation order:
         1. Check product existence (INVALID_PRODUCT)
-        2. Check for missing required fields (INCOMPLETE)
-        3. Validate data ranges and rate against label limits (INVALID_DATA)
-        4. Check EIQ calculation capability and AI data completeness (VALID/VALID_ESTIMATED)
+        2. Skip validation for adjuvants (they don't contribute to EIQ)
+        3. Check for missing required fields (INCOMPLETE)
+        4. Validate data ranges and rate against label limits (INVALID_DATA)
+        5. Check EIQ calculation capability and AI data completeness (VALID/VALID_ESTIMATED)
         """
         issues = []
         
@@ -95,7 +96,16 @@ class ApplicationValidator:
             ))
             return ValidationResult(ValidationState.INVALID_PRODUCT, issues, False)
 
-        # 2. INCOMPLETE STATE: Check for missing required fields
+        # 2. Skip validation for adjuvants - they don't contribute to EIQ
+        if self._is_adjuvant(product):
+            issues.append(ValidationIssue(
+                field="status",
+                message="Adjuvant product - excluded from EIQ calculations",
+                severity="info"
+            ))
+            return ValidationResult(ValidationState.VALID, issues, True)
+
+        # 3. INCOMPLETE STATE: Check for missing required fields
         missing_fields = []
         if not app.rate or app.rate <= 0:
             missing_fields.append("application rate")
@@ -109,8 +119,8 @@ class ApplicationValidator:
                 severity="error"
             ))
             return ValidationResult(ValidationState.INCOMPLETE, issues, False)
-        
-        # 3. INVALID_DATA STATE: Validate data ranges and rate against label limits
+
+        # 4. INVALID_DATA STATE: Validate data ranges and rate against label limits
         if app.rate is not None and app.rate < 0:
             issues.append(ValidationIssue(
                 field="rate",
@@ -134,7 +144,7 @@ class ApplicationValidator:
         if issues:
             return ValidationResult(ValidationState.INVALID_DATA, issues, False)
         
-        # 4. VALID/VALID_ESTIMATED STATE: Check EIQ calculation capability
+        # 5. VALID/VALID_ESTIMATED STATE: Check EIQ calculation capability
         can_calculate_eiq = (
             app.product_name and app.product_name.strip() and
             app.rate and app.rate > 0 and
@@ -311,3 +321,23 @@ class ApplicationValidator:
         except Exception as e:
             QMessageBox.warning(None, "Error", f"Error in ApplicationValidator._find_product() method: {e}")
             return None
+    
+    def _is_adjuvant(self, product) -> bool:
+        """
+        Check if the product is an adjuvant.
+        
+        Adjuvants are identified by a specific product type or category.
+        
+        Args:
+            product: Product object to check
+            
+        Returns:
+            True if the product is an adjuvant, False otherwise
+        """
+        try:
+            # Example check: if product type is 'Adjuvant', return True
+            # This logic should be replaced with the actual criteria for adjuvants
+            return product.product_type == "Adjuvant"
+        except Exception as e:
+            QMessageBox.warning(None, "Error", f"Error in ApplicationValidator._is_adjuvant() method: {e}")
+            return False

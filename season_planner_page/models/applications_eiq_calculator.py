@@ -41,11 +41,15 @@ class ApplicationEIQCalculator:
             # Check if we have all required data
             if not app.product_name or not app.rate or not app.rate_uom:
                 return 0.0
-            
+
             product = self._find_product(app.product_name)
             if not product:
                 return 0.0
-            
+
+            # Skip EIQ calculation for adjuvants
+            if self._is_adjuvant(product):
+                return 0.0
+
             # Get validation state to determine calculation method
             validation = self._validator.validate_application(app)
             
@@ -73,6 +77,31 @@ class ApplicationEIQCalculator:
         except Exception as e:
             QMessageBox.warning(None, "Error", f"Error calculating EIQ for {app.product_name}: {e}")
             return 0.0
+
+    def _is_adjuvant(self, product) -> bool:
+        """
+        Check if a product is an adjuvant based on product type or application method.
+        
+        Args:
+            product: Product object to check
+            
+        Returns:
+            bool: True if product is an adjuvant, False otherwise
+        """
+        if not product:
+            return False
+        
+        # Check product type
+        if hasattr(product, 'product_type') and product.product_type:
+            if product.product_type.lower() == "adjuvant":
+                return True
+                
+        # Check application method
+        if hasattr(product, 'application_method') and product.application_method:
+            if product.application_method.lower() == "adjuvant":
+                return True
+                
+        return False
     
     def calculate_all_eiq_values(self, applications: List[Application]) -> None:
         """
