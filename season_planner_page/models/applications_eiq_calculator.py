@@ -5,6 +5,7 @@ Handles EIQ calculations including estimation for applications with missing AI d
 """
 
 from typing import List
+from PySide6.QtWidgets import QMessageBox
 from data.model_application import Application
 from data.repository_product import ProductRepository
 from common.calculations.layer_1_interface import eiq_calculator
@@ -70,7 +71,7 @@ class ApplicationEIQCalculator:
             return 0.0
             
         except Exception as e:
-            print(f"Error calculating EIQ for {app.product_name}: {e}")
+            QMessageBox.warning(None, "Error", f"Error calculating EIQ for {app.product_name}: {e}")
             return 0.0
     
     def calculate_all_eiq_values(self, applications: List[Application]) -> None:
@@ -96,8 +97,8 @@ class ApplicationEIQCalculator:
                     app.field_eiq = self.calculate_application_eiq(app, applications)
                     
         except Exception as e:
-            print(f"Error in calculate_all_eiq_values(): {e}")
-    
+            QMessageBox.warning(None, "Error", f"Error in ApplicationEIQCalculator.calculate_all_eiq_values() method: {e}")
+
     def get_total_eiq(self, applications: List[Application]) -> float:
         """Calculate total EIQ for all applications."""
         try:
@@ -107,7 +108,7 @@ class ApplicationEIQCalculator:
                     total_eiq += app.field_eiq
             return total_eiq
         except Exception as e:
-            print(f"Error calculating total EIQ: {e}")
+            QMessageBox.warning(None, "Error", f"Error calculating total EIQ: {e}")
             return 0.0
     
     def _calculate_average_eiq_for_estimation(self, applications: List[Application]) -> float:
@@ -155,7 +156,7 @@ class ApplicationEIQCalculator:
                 return 30.0  # Default EIQ value
                 
         except Exception as e:
-            print(f"Error calculating average EIQ: {e}")
+            QMessageBox.warning(None, "Error", f"Error calculating average EIQ: {e}")
             return 30.0
     
     def _find_product(self, product_name: str):
@@ -170,5 +171,5 @@ class ApplicationEIQCalculator:
                     return product
             return None
         except Exception as e:
-            print(f"Error in _find_product(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationEIQCalculator._find_product() method: {e}")
             return None

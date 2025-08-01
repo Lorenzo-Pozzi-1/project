@@ -5,7 +5,7 @@ This module defines the ComparisonTable widget which provides a
 side-by-side comparison of product properties.
 """
 
-from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout
+from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QWidget, QVBoxLayout, QMessageBox
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
 
@@ -171,7 +171,7 @@ class ComparisonTable(QTableWidget):
             return field_eiq
             
         except Exception as e:
-            print(f"Error calculating Field EIQ: {e}")
+            QMessageBox.warning(self, "Error", f"Error calculating Field EIQ: {e}")
             return 0
     
     def create_table_item(self, text, bold=False, background_color=None):

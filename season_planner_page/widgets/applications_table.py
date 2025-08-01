@@ -191,7 +191,7 @@ class ApplicationsTableWidget(QWidget):
                     self.table_view.setItemDelegateForColumn(col_index, delegate)
             
         except Exception as e:
-            print(f"Error assigning delegates: {e}")
+            QMessageBox.warning(self, "Error", f"Error assigning delegates: {e}")
             traceback.print_exc()
     
     def _move_up(self, row: int):
@@ -298,7 +298,7 @@ class ApplicationsTableWidget(QWidget):
             self.table_view.reset()
             
         except Exception as e:
-            print(f"Error in set_applications(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableWidget.set_applications(): {e}")
             traceback.print_exc()
     
     def clear_applications(self):
@@ -340,5 +340,5 @@ class ApplicationsTableWidget(QWidget):
                 self.model.dataChanged.emit(top_left, bottom_right)
                 
         except Exception as e:
-            print(f"Error refreshing product data: {e}")
+            QMessageBox.warning(None, "Error", f"Error refreshing product data: {e}")
             traceback.print_exc()

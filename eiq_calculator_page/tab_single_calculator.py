@@ -5,7 +5,7 @@ This module provides the SingleProductCalculatorTab widget
 for calculating EIQ of a single pesticide product.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, QFormLayout, QTableWidgetItem, QMessageBox
 from PySide6.QtCore import Qt
 from common.constants import get_medium_text_size
 from common.styles import GENERIC_TABLE_STYLE
@@ -203,7 +203,7 @@ class SingleProductCalculatorTab(QWidget):
             # NB the signal trigger EIQ calculation. so no need to repeat it!
             
         except Exception as e:
-            print(f"Error loading product info for '{product_name}': {e}")
+            QMessageBox.warning(self, "Error", f"Error loading product info for '{product_name}': {e}")
             self.clear_product_selection()
     
     def update_label_info(self):
@@ -324,5 +324,5 @@ class SingleProductCalculatorTab(QWidget):
             self.eiq_results.update_result(field_eiq)
             
         except Exception as e:
-            print(f"Error calculating EIQ: {e}")
+            QMessageBox.warning(self, "Error", f"Error calculating EIQ: {e}")
             self.eiq_results.update_result(0.0)

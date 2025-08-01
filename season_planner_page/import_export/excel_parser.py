@@ -9,6 +9,7 @@ Supports both:
 import os
 from openpyxl import load_workbook
 from datetime import datetime
+from PySide6.QtWidgets import QMessageBox
 
 from data.model_application import Application
 from data.model_scenario import Scenario
@@ -80,7 +81,7 @@ class ExcelScenarioParser:
                 return self._parse_external_format(data_rows, file_path)
                 
         except Exception as e:
-            print(f"Error parsing Excel file: {e}")
+            QMessageBox.warning(None, "Error", f"Error parsing Excel file: {e}")
             return None, None
     
     def _worksheet_to_rows(self, worksheet):
@@ -140,7 +141,7 @@ class ExcelScenarioParser:
             return "external"
             
         except Exception as e:
-            print(f"Error detecting format: {e}")
+            QMessageBox.warning(None, "Error", f"Error detecting format: {e}")
             return "external"
     
     def _parse_exported_format(self, data_rows, file_path):
@@ -188,7 +189,7 @@ class ExcelScenarioParser:
             return scenario, preview_info
             
         except Exception as e:
-            print(f"Error parsing exported format: {e}")
+            QMessageBox.warning(None, "Error", f"Error parsing exported format: {e}")
             return None, None
     
     def _parse_external_format(self, data_rows, file_path):
@@ -255,7 +256,7 @@ class ExcelScenarioParser:
             return scenario, preview_info
             
         except Exception as e:
-            print(f"Error parsing external format: {e}")
+            QMessageBox.warning(None, "Error", f"Error parsing external format: {e}")
             return None, None
     
     # Exported format parsing methods
@@ -324,7 +325,7 @@ class ExcelScenarioParser:
             return metadata
             
         except Exception as e:
-            print(f"Error extracting exported metadata: {e}")
+            QMessageBox.warning(None, "Error", f"Error extracting exported metadata: {e}")
             return {
                 'crop_year': '',
                 'grower_name': '',
@@ -426,7 +427,7 @@ class ExcelScenarioParser:
             return applications_dict_list
             
         except Exception as e:
-            print(f"Error cleaning exported applications: {e}")
+            QMessageBox.warning(None, "Error", f"Error cleaning exported applications: {e}")
             return []
     
     def _validate_products_exported(self, applications_dict_list):
@@ -489,7 +490,7 @@ class ExcelScenarioParser:
             return scenario
             
         except Exception as e:
-            print(f"Error creating exported scenario: {e}")
+            QMessageBox.warning(None, "Error", f"Error creating exported scenario: {e}")
             return None
     
     def _format_sample_applications_exported(self, applications_dict_list):

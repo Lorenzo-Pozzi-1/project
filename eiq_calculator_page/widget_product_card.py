@@ -1,7 +1,7 @@
 """Product card widget for the LORENZO POZZI Pesticide App."""
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QMessageBox
 from common.constants import get_margin_medium, get_medium_text_size, get_spacing_medium
 from common.styles import FRAME_STYLE, PRODUCT_CARD_STYLE, get_subtitle_font
 from common.widgets.application_parameters import ApplicationParamsWidget
@@ -165,7 +165,7 @@ class ProductCard(QFrame):
             # self.data_changed.emit(self.index)
             
         except Exception as e:
-            print(f"Error loading product info for '{product_name}': {e}")
+            QMessageBox.warning(self, "Error", f"Error loading product info for '{product_name}': {e}")
             self.clear_product()
     
     def clear_product(self):

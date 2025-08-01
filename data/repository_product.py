@@ -6,6 +6,7 @@ product data, with CSV loading and caching for performance optimization.
 """
 
 import csv
+from PySide6.QtWidgets import QMessageBox
 from typing import List, Optional
 from data.model_product import Product
 from common.utils import resource_path
@@ -103,7 +104,7 @@ class ProductRepository:
             self._all_products = [Product.from_dict(row) for row in cleaned_rows]
             
         except Exception as e:
-            print(f"Error loading product data: {e}")
+            QMessageBox.warning(None, "Error", f"Error loading product data: {e}")
             self._all_products = []
     
     def refresh_from_csv(self) -> bool:
@@ -114,7 +115,7 @@ class ProductRepository:
             self.get_all_products()  # Reload data
             return True
         except Exception as e:
-            print(f"Error refreshing from CSV: {e}")
+            QMessageBox.warning(None, "Error", f"Error refreshing product data: {e}")
             return False
     
     @staticmethod
@@ -138,5 +139,5 @@ class ProductRepository:
                 ]
         
         except (IOError, csv.Error) as e:
-            print(f"Error reading CSV file: {e}")
+            QMessageBox.warning(None, "Error", f"Error reading CSV file: {e}")
             return []

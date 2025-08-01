@@ -85,7 +85,7 @@ class ExcelFormatter:
             self._auto_adjust_columns(worksheet)
             self._format_metadata(worksheet)
         except Exception as e:
-            print(f"Warning: Could not apply Excel formatting: {e}")
+            QMessageBox.warning(None, "Warning", f"Could not apply Excel formatting: {e}")
     
     def _format_headers(self, worksheet, header_row_num: int) -> None:
         """Format header row with bold font and grey background."""
@@ -346,5 +346,5 @@ class ExcelScenarioExporter:
     
     def _handle_error(self, message: str, parent_widget) -> None:
         """Handle and display error messages."""
-        print(f"Export error: {message}")
+        
         self.file_handler.show_error_message(parent_widget, message)

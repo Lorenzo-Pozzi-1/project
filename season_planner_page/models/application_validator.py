@@ -7,6 +7,7 @@ Handles all validation logic for pesticide applications with clear state managem
 from dataclasses import dataclass
 from enum import Enum
 from typing import List
+from PySide6.QtWidgets import QMessageBox
 from data.model_application import Application
 from data.repository_product import ProductRepository
 from data.repository_AI import AIRepository
@@ -232,7 +233,7 @@ class ApplicationValidator:
                 
         except Exception as e:
             # If conversion fails, we can't validate - log the issue but don't block
-            print(f"Warning: Could not convert rate units for validation: {app_rate_uom} -> {label_rate_uom}: {e}")
+            QMessageBox.warning(None, "Warning", f"Could not convert rate units for validation: {app_rate_uom} -> {label_rate_uom}: {e}")
             return None
         
         # Now compare converted rate with label rates
@@ -308,5 +309,5 @@ class ApplicationValidator:
                     return product
             return None
         except Exception as e:
-            print(f"Error in _find_product(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationValidator._find_product() method: {e}")
             return None

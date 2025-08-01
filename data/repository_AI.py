@@ -6,6 +6,7 @@ classification data.
 """
 
 import csv, os
+from PySide6.QtWidgets import QMessageBox
 from typing import Dict, Optional, Tuple
 from data.model_AI import ActiveIngredient
 from common.utils import resource_path
@@ -119,7 +120,7 @@ class AIRepository:
             self._build_name_mapping()
             
         except Exception as e:
-            print(f"Error loading active ingredient data: {e}")
+            QMessageBox.warning(None, "Error", f"Error loading active ingredient data: {e}")
             self._all_ingredients = {}
     
     def _build_name_mapping(self) -> None:

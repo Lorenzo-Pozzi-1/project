@@ -4,7 +4,7 @@ Product Type Delegate for the Season Planner.
 QStyledItemDelegate that provides product type selection.
 """
 
-from PySide6.QtWidgets import QStyledItemDelegate, QComboBox
+from PySide6.QtWidgets import QStyledItemDelegate, QComboBox, QMessageBox
 from PySide6.QtCore import Qt
 from data.repository_product import ProductRepository
 
@@ -37,7 +37,7 @@ class ProductTypeDelegate(QStyledItemDelegate):
             
             self._product_types = sorted(list(types))
         except Exception as e:
-            print(f"Error loading product types: {e}")
+            QMessageBox.warning(self, "Error", f"Error loading product types: {e}")
             self._product_types = []
     
     def createEditor(self, parent, option, index):

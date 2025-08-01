@@ -84,7 +84,7 @@ class UOMDelegate(QStyledItemDelegate):
                     return True
             
         except Exception as e:
-            print(f"Error in _open_uom_dialog_direct: {e}")
+            QMessageBox.warning(None, "Error", f"Error opening UOM dialog: {e}")
             import traceback
             traceback.print_exc()
         
@@ -115,7 +115,7 @@ class UOMDelegate(QStyledItemDelegate):
             rate_uom_col = model._COLUMN_INDEX_MAP.get("Rate UOM")
 
             if rate_col is None or rate_uom_col is None or uom_index.column() != rate_uom_col:
-                print("Could not determine rate column for UOM conversion")
+                QMessageBox.warning(None, "Warning", "Could not determine rate column for UOM conversion")
                 # Don't change UOM if we can't find rate column
                 return False
             
@@ -143,11 +143,11 @@ class UOMDelegate(QStyledItemDelegate):
                 return True
             else:
                 # Conversion failed - keep original UOM and rate unchanged
-                print(f"UOM conversion failed: {current_uom} → {new_uom}, keeping original values")
+                QMessageBox.warning(None, "Warning", f"UOM conversion failed: {current_uom} → {new_uom}, keeping original values")
                 return False
                 
         except Exception as e:
-            print(f"Error in rate conversion: {e}")
+            QMessageBox.warning(None, "Error", f"Error in rate conversion: {e}")
             # Don't change anything if there's an exception
             return False
 
@@ -200,6 +200,6 @@ class UOMDelegate(QStyledItemDelegate):
             msg_box.setDetailedText(str(e))
             msg_box.setStandardButtons(QMessageBox.Ok)
             msg_box.exec()
-            
-            print(f"UOM conversion failed: {from_uom} → {to_uom}: {e}")
+
+            QMessageBox.warning(None, f"UOM conversion failed: {from_uom} → {to_uom}: {e}")
             return None

@@ -1,6 +1,6 @@
 """Scenario Tab for the Season Planner."""
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QMessageBox
 from PySide6.QtCore import Signal
 
 from common.constants import get_margin_large, get_spacing_medium
@@ -118,7 +118,7 @@ class ScenarioTabPage(QWidget):
                 self.applications_table.clear_applications()
                 
         except Exception as e:
-            print(f"ERROR in load_scenario_data(): {e}")
+            QMessageBox.warning(self, "Error", f"Error loading scenario data: {e}")
             import traceback
             traceback.print_exc()
     
@@ -143,7 +143,7 @@ class ScenarioTabPage(QWidget):
             self.scenario_changed.emit(self.scenario)
             
         except Exception as e:
-            print(f"ERROR in update_scenario(): {e}")
+            QMessageBox.warning(self, "Error", f"Error updating scenario: {e}")
             import traceback
             traceback.print_exc()
     
@@ -163,8 +163,8 @@ class ScenarioTabPage(QWidget):
         try:
             self.applications_table.refresh_product_data()
         except Exception as e:
-            print(f"ERROR in refresh_product_data(): {e}")
-    
+            QMessageBox.warning(self, "Error", f"Error refreshing product data: {e}")
+
     def get_scenario(self):
         """Get the current scenario object."""
         return self.scenario
@@ -174,7 +174,7 @@ class ScenarioTabPage(QWidget):
         try:
             return self.applications_table.model.get_validation_summary()
         except Exception as e:
-            print(f"ERROR in get_validation_summary(): {e}")
+            QMessageBox.warning(self, "Error", f"Error getting validation summary: {e}")
             return {}
     
     def has_validation_issues(self) -> bool:
@@ -191,7 +191,7 @@ class ScenarioTabPage(QWidget):
             return issue_count > 0
             
         except Exception as e:
-            print(f"ERROR in has_validation_issues(): {e}")
+            QMessageBox.warning(self, "Error", f"Error checking validation issues: {e}")
             return False
     
     def get_applications_count(self) -> int:

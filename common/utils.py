@@ -7,6 +7,7 @@ This module handles mostly application configuration, plus resources paths gener
 import json, os, sys
 from pathlib import Path
 from PySide6.QtCore import QObject, QEvent
+from PySide6.QtWidgets import QMessageBox
 from common.constants import (ADVANCED, EIQ_EXTREME_COLOR, EIQ_HIGH_COLOR, EIQ_HIGH_THRESHOLD, 
                               EIQ_LOW_COLOR, EIQ_MEDIUM_COLOR, ENGAGED, LEADING, ONBOARDING, 
                               EIQ_MEDIUM_THRESHOLD, EIQ_LOW_THRESHOLD)
@@ -72,7 +73,7 @@ def load_config():
                 # (in case the config file is from an older version)
                 return {**DEFAULT_CONFIG, **config}
         except (json.JSONDecodeError, IOError) as e:
-            print(f"Error loading config: {e}")
+            QMessageBox.warning(None, "Error", f"Error loading config: {e}")
             return DEFAULT_CONFIG
     else:
         # Create default config file
@@ -101,21 +102,21 @@ def save_config(config):
             json.dump(config, file, indent=4)
         return True
     except (IOError, OSError) as e:
-        print(f"Error saving config to {config_path}: {e}")
-        
+        QMessageBox.warning(None, "Error", f"Error saving config to {config_path}: {e}")
+
         # Fallback: try saving to a temp directory
         try:
             import tempfile
             temp_dir = tempfile.gettempdir()
             fallback_path = os.path.join(temp_dir, "mccain_pesticides_config.json")
-            print(f"Trying fallback location: {fallback_path}")
+            QMessageBox.warning(None, "Warning", f"Trying fallback location: {fallback_path}")
             
             with open(fallback_path, 'w') as file:
                 json.dump(config, file, indent=4)
-            print(f"Config saved to fallback location: {fallback_path}")
+            QMessageBox.warning(None, "Warning", f"Config saved to fallback location: {fallback_path}")
             return True
         except Exception as fallback_error:
-            print(f"Fallback save also failed: {fallback_error}")
+            QMessageBox.critical(None, "Critical Error", f"Failed to save config: {fallback_error}")
             return False
 
 def get_config(key, default=None):

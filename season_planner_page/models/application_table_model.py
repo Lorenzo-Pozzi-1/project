@@ -7,6 +7,7 @@ Clean Qt model interface with validation and EIQ calculation delegated to separa
 from dataclasses import dataclass
 from PySide6.QtCore import QAbstractTableModel, Qt, QModelIndex, Signal
 from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QMessageBox
 from typing import List, Any, Optional
 from data.model_application import Application
 from data.repository_product import ProductRepository
@@ -119,7 +120,7 @@ class ApplicationTableModel(QAbstractTableModel):
                 return self._get_cell_tooltip(app, col, index.row())
         
         except Exception as e:
-            print(f"Error in data() method: {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel.data() method: {e}")
             return None
         
         return None
@@ -153,7 +154,7 @@ class ApplicationTableModel(QAbstractTableModel):
                 return True
                 
         except Exception as e:
-            print(f"Error in setData(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel.setData() method: {e}")
             return False
         
         return False
@@ -195,7 +196,7 @@ class ApplicationTableModel(QAbstractTableModel):
             return True
             
         except Exception as e:
-            print(f"Error in insertRows(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel.insertRows() method: {e}")
             return False
     
     def removeRows(self, position: int, rows: int, parent: QModelIndex = QModelIndex()) -> bool:
@@ -221,7 +222,7 @@ class ApplicationTableModel(QAbstractTableModel):
             return True
             
         except Exception as e:
-            print(f"Error in removeRows(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel.removeRows() method: {e}")
             return False
 
     # --- Public Interface ---
@@ -248,7 +249,7 @@ class ApplicationTableModel(QAbstractTableModel):
             self._emit_signals()
             
         except Exception as e:
-            print(f"Error in set_applications(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel.set_applications() method: {e}")
             self.endResetModel()
 
     def add_application(self, position: int = -1) -> int:
@@ -292,7 +293,7 @@ class ApplicationTableModel(QAbstractTableModel):
             
             return True
         except Exception as e:
-            print(f"Error in move_application_up(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel.move_application_up() method: {e}")
             return False
     
     def move_application_down(self, row: int) -> bool:
@@ -310,7 +311,7 @@ class ApplicationTableModel(QAbstractTableModel):
             
             return True
         except Exception as e:
-            print(f"Error in move_application_down(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel.move_application_down() method: {e}")
             return False
 
     # --- Private Methods ---
@@ -365,7 +366,7 @@ class ApplicationTableModel(QAbstractTableModel):
             
             return None
         except Exception as e:
-            print(f"Error in _get_cell_data(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel._get_cell_data() method: {e}")
             return ""
     
     def _get_cell_background(self, app: Application, col: int, row: int) -> Optional[QColor]:
@@ -429,7 +430,7 @@ class ApplicationTableModel(QAbstractTableModel):
             return True
             
         except (ValueError, TypeError) as e:
-            print(f"Invalid value in _set_cell_data: {e}")
+            QMessageBox.warning(None, "Error", f"Invalid value in ApplicationTableModel._set_cell_data() method: {e}")
             return False
 
     def _update_dependent_fields(self, app: Application, changed_col: int, row: int):
@@ -474,8 +475,8 @@ class ApplicationTableModel(QAbstractTableModel):
                     self.dataChanged.emit(top_left, bottom_right, [Qt.DisplayRole, Qt.BackgroundRole, Qt.ToolTipRole])
         
         except Exception as e:
-            print(f"Error in _update_dependent_fields(): {e}")
-    
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel._update_dependent_fields() method: {e}")
+
     def _update_ai_groups(self, app: Application, row: int):
         """Update AI groups based on the selected product."""
         try:
@@ -490,7 +491,7 @@ class ApplicationTableModel(QAbstractTableModel):
             else:
                 app.ai_groups = []
         except Exception as e:
-            print(f"Error in _update_ai_groups(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel._update_ai_groups() method: {e}")
             app.ai_groups = []
     
     def _recalculate_all_eiq(self):
@@ -501,8 +502,8 @@ class ApplicationTableModel(QAbstractTableModel):
             
             self._eiq_calculator.calculate_all_eiq_values(self._applications)
         except Exception as e:
-            print(f"Error in _recalculate_all_eiq(): {e}")
-    
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel._recalculate_all_eiq() method: {e}")
+
     def _get_validation(self, app: Application, row: int):
         """Get validation result with caching."""
         if row not in self._validation_cache:
@@ -520,8 +521,8 @@ class ApplicationTableModel(QAbstractTableModel):
             self.eiq_changed.emit(total_eiq)
             self.validation_changed.emit()
         except Exception as e:
-            print(f"Error in _emit_signals(): {e}")
-    
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel._emit_signals() method: {e}")
+
     def _find_product(self, product_name: str):
         """Find a product by name in the filtered products list."""
         try:
@@ -534,7 +535,7 @@ class ApplicationTableModel(QAbstractTableModel):
                     return product
             return None
         except Exception as e:
-            print(f"Error in _find_product(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel._find_product() method: {e}")
             return None
     
     def auto_populate_from_product(self, row: int, product_name: str):
@@ -568,4 +569,4 @@ class ApplicationTableModel(QAbstractTableModel):
                 self.dataChanged.emit(top_left, bottom_right, [Qt.DisplayRole, Qt.BackgroundRole, Qt.ToolTipRole])
             
         except Exception as e:
-            print(f"Error in auto_populate_from_product(): {e}")
+            QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel.auto_populate_from_product() method: {e}")

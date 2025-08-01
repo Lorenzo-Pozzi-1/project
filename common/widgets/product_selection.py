@@ -7,7 +7,7 @@ This module provides improved product search with ranking and better suggestion 
 from PySide6.QtCore import Qt, Signal, QStringListModel, QEvent
 from PySide6.QtWidgets import (
     QComboBox, QCompleter, QFormLayout, QLineEdit, QVBoxLayout, 
-    QWidget, QHBoxLayout, QLabel, QAbstractItemView
+    QWidget, QHBoxLayout, QLabel, QAbstractItemView, QMessageBox
 )
 from common.styles import get_medium_font, get_small_font
 from common.widgets.header_frame_buttons import ContentFrame
@@ -271,7 +271,7 @@ class ProductTypeSelector(QComboBox):
                     if index >= 0:
                         self.setCurrentIndex(index)
         except Exception as e:
-            print(f"Error loading product types: {e}")
+            QMessageBox.warning(None, "Warning", f"Error loading product types: {e}")
 
 
 class ProductSelectionWidget(QWidget):
@@ -376,7 +376,7 @@ class ProductSelectionWidget(QWidget):
             self.product_search.set_products(filtered_products)
             
         except Exception as e:
-            print(f"Error updating product list: {e}")
+            QMessageBox.warning(None, "Warning", f"Error updating product list: {e}")
             self.product_search.set_products([])
     
     def _on_product_selected(self, product_name):
@@ -426,7 +426,7 @@ class ProductSelectionWidget(QWidget):
                     # This triggers _update_product_list() which updates available products
         
         except Exception as e:
-            print(f"Warning: Could not set product type for {product_name}: {e}")
-        
+            QMessageBox.warning(None, "Warning", f"Could not set product type for {product_name}: {e}")
+
         # Set the product name (the search field will handle formatting)
         self.product_search.text = product_name

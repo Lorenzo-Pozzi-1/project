@@ -5,7 +5,7 @@ A simple widget that displays a single scenario's data in a table format.
 Shows applications grouped by product type and sorted by EIQ values.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView, QMessageBox
 from PySide6.QtCore import Qt
 
 from common.constants import EIQ_HIGH_THRESHOLD, EIQ_LOW_THRESHOLD, EIQ_MEDIUM_THRESHOLD
@@ -130,7 +130,7 @@ class ScenarioComparisonTable(QWidget):
             return "; ".join(all_moa_codes) if all_moa_codes else ""
             
         except Exception as e:
-            print(f"Error getting MoA groups for {product_name}: {e}")
+            QMessageBox.warning(None, "Error", f"Error getting MoA groups for {product_name}: {e}")
             return ""
 
     def _add_section_header(self, row, product_type, count):

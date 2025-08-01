@@ -6,7 +6,7 @@ values of multiple pesticide products with card-based UI.
 """
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QScrollArea, QVBoxLayout, QWidget, QMessageBox
 from common.calculations.layer_1_interface import eiq_calculator
 from common.constants import get_margin_medium, get_spacing_large
 from common.styles import get_subtitle_font
@@ -196,7 +196,7 @@ class ProductComparisonCalculatorTab(QWidget):
             return product_data, field_eiq
             
         except Exception as e:
-            print(f"Error calculating EIQ for product {card_index}: {e}")
+            QMessageBox.warning(self, "Error", f"Error calculating EIQ for product {card_index}: {e}")
             return product_data, 0.0
     
     def update_comparison_table(self):

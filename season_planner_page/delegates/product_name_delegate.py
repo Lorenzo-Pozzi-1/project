@@ -6,7 +6,7 @@ with autocomplete functionality, filtered by product type when specified.
 Now displays suggestions in "Name - Method" format.
 """
 
-from PySide6.QtWidgets import QStyledItemDelegate, QComboBox, QCompleter
+from PySide6.QtWidgets import QStyledItemDelegate, QComboBox, QCompleter, QMessageBox
 from PySide6.QtCore import Qt
 from data.repository_product import ProductRepository
 
@@ -33,7 +33,7 @@ class ProductNameDelegate(QStyledItemDelegate):
             filtered_products = products_repo.get_filtered_products()
             self._all_products = filtered_products
         except Exception as e:
-            print(f"Error loading products in ProductDelegate: {e}")
+            QMessageBox.warning(self, "Error", f"Error loading products in ProductDelegate: {e}")
             self._all_products = []
     
     def _get_filtered_product_names(self, model, row):
@@ -82,7 +82,7 @@ class ProductNameDelegate(QStyledItemDelegate):
             return display_names
             
         except Exception as e:
-            print(f"Error filtering products by type: {e}")
+            QMessageBox.warning(self, "Error", f"Error filtering products by type: {e}")
             # Fallback to all products
             display_names = []
             
@@ -134,7 +134,7 @@ class ProductNameDelegate(QStyledItemDelegate):
             return product_mapping
             
         except Exception as e:
-            print(f"Error creating product mapping: {e}")
+            QMessageBox.warning(self, "Error", f"Error creating product mapping: {e}")
             # Fallback to all products
             product_mapping = {}
             for product in self._all_products:
@@ -259,7 +259,7 @@ class ProductNameDelegate(QStyledItemDelegate):
             
             if potential_product_name in all_product_names:
                 # Valid product name, just not in current filtered view
-                print(f"Warning: Selected product '{potential_product_name}' doesn't match the selected product type")
+                QMessageBox.warning(self, "Warning", f"Selected product '{potential_product_name}' doesn't match the selected product type")
                 model.setData(index, potential_product_name, Qt.EditRole)
                 
                 # Auto-populate from product data
@@ -282,11 +282,11 @@ class ProductNameDelegate(QStyledItemDelegate):
                     # Check if it exists in the full product list (original validation logic)
                     if potential_product_name in all_product_names:
                         # Product exists but is filtered out by type - allow it but show warning
-                        print(f"Warning: Selected product '{potential_product_name}' doesn't match the selected product type")
+                        QMessageBox.warning(self, "Warning", f"Selected product '{potential_product_name}' doesn't match the selected product type")
                     else:
                         # Product doesn't exist at all - still allow for import scenarios
-                        print(f"Warning: Product '{potential_product_name}' not found in database")
-                
+                        QMessageBox.warning(self, "Warning", f"Product '{potential_product_name}' not found in database")
+
                 # Set the product name (maintaining original behavior)
                 model.setData(index, potential_product_name, Qt.EditRole)
                 

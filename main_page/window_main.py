@@ -7,7 +7,7 @@ for all pages in the application.
 
 import os
 import shutil
-from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QFrame, QWidget, QLabel
+from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLayout, QFrame, QWidget, QLabel, QMessageBox
 from PySide6.QtCore import Signal, Qt
 
 from common.styles import YELLOW_BAR_STYLE
@@ -260,7 +260,7 @@ class MainWindow(QMainWindow):
                         except Exception:
                             pass
         except Exception as e:
-            print(f"Error during cache cleanup: {e}")
-        
+            QMessageBox.warning(self, "Error", f"Error during cache cleanup: {e}")
+
         # Accept the close event
         event.accept()
