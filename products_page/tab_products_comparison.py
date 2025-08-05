@@ -1,5 +1,5 @@
 """
-Products comparison tab for the LORENZO POZZI Pesticide App.
+Products comparison tab for the LORENZO POZZI EIQ App.
 
 This module defines the ProductsComparisonTab class which displays a side-by-side
 comparison of selected products using the ComparisonTable widget.

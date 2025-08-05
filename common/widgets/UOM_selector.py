@@ -1,5 +1,5 @@
 """
-Contextual UOM Selector for the LORENZO POZZI Pesticide App.
+Contextual UOM Selector for the LORENZO POZZI EIQ App.
 
 This module provides a UOM selector that displays only relevant
 units based on a specified context.

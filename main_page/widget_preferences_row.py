@@ -1,5 +1,5 @@
 """
-Preferences row widget for the LORENZO POZZI Pesticide App.
+Preferences row widget for the LORENZO POZZI EIQ App.
 
 This module provides a preferences row widget for the application's home page.
 """

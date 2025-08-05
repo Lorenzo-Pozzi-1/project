@@ -1,5 +1,5 @@
 """
-Product Comparison Calculator Tab for the LORENZO POZZI Pesticide App.
+Product Comparison Calculator Tab for the LORENZO POZZI EIQ App.
 
 This module provides the ProductComparisonCalculatorTab widget for comparing EIQ
 values of multiple pesticide products with card-based UI.

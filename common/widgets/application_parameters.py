@@ -1,5 +1,5 @@
 """
-Application parameters widgets for the LORENZO POZZI Pesticide App.
+Application parameters widgets for the LORENZO POZZI EIQ App.
 
 This module provides widgets for entering application rate, units, and other parameters.
 """

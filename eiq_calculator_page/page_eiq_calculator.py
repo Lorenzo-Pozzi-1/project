@@ -1,5 +1,5 @@
 """
-Main EIQ Calculator page for the LORENZO POZZI Pesticide App.
+Main EIQ Calculator page for the LORENZO POZZI EIQ App.
 
 This module defines the EiqCalculatorPage class which serves as a container for
 two EIQ calculator components:
@@ -35,7 +35,7 @@ class EiqCalculatorPage(QWidget):
         
         # Header with back button
         header = HeaderWithHomeButton("EIQ Calculator")
-        header.back_clicked.connect(lambda: self.parent.navigate_to_page(0))
+        header.back_clicked.connect(lambda: self.parent.navigate_to_page(1))
         
         # Add Reset button directly to the header
         reset_button = create_button(text="Reset", callback=self.reset, style="white")

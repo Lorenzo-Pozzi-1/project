@@ -1,5 +1,5 @@
 """
-Products list tab for the LORENZO POZZI Pesticide App with improved component architecture.
+Products list tab for the LORENZO POZZI EIQ App with improved component architecture.
 
 This module defines the ProductsListTab class that provides product listing
 and filtering functionality using a table-based view.

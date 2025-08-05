@@ -1,5 +1,5 @@
 """
-Product model for the LORENZO POZZI Pesticide App.
+Product model for the LORENZO POZZI EIQ App.
 
 This module defines the Product class and related functionality.
 Updated to support multiple active ingredients without EIQ data in the product.

@@ -1,5 +1,5 @@
 """
-Season Planner package for the LORENZO POZZI Pesticide App.
+Season Planner package for the LORENZO POZZI EIQ App.
 
 This package provides a completely rewritten season planner using proper Qt table
 architecture (QTableView + QAbstractTableModel + QStyledItemDelegate) for clean,

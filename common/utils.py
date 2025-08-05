@@ -1,5 +1,5 @@
 """
-Utility functions for the Lorenzo Pozzi Pesticide App.
+Utility functions for the Lorenzo Pozzi EIQ App.
 
 This module handles mostly application configuration, plus resources paths generation.
 """

@@ -1,5 +1,5 @@
 """
-Comparison table component for the LORENZO POZZI Pesticide App.
+Comparison table component for the LORENZO POZZI EIQ App.
 
 This module defines the ComparisonTable widget which provides a
 side-by-side comparison of product properties.

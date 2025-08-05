@@ -1,5 +1,5 @@
 """
-Filter components for the LORENZO POZZI Pesticide App.
+Filter components for the LORENZO POZZI EIQ App.
 
 This module defines filter widgets that display as chips for a more modern
 and compact filtering interface.

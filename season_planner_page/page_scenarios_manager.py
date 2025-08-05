@@ -62,7 +62,7 @@ class ScenariosManagerPage(QWidget):
         
         # Header with back button and operation buttons
         header = HeaderWithHomeButton("Season Planner - Scenarios")
-        header.back_clicked.connect(lambda: self.parent.navigate_to_page(0))
+        header.back_clicked.connect(lambda: self.parent.navigate_to_page(1))
         
         # Wrap buttons in ContentFrame
         buttons_frame = ContentFrame()

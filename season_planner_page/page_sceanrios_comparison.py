@@ -133,5 +133,5 @@ class ScenariosComparisonPage(QWidget):
     def go_back(self):
         """Navigate back to the scenarios manager page."""
         if self.parent:
-            # Navigate back to scenarios manager page (index 2)
-            self.parent.navigate_to_page(2)
+            # Navigate back to scenarios manager page (index 3)
+            self.parent.navigate_to_page(3)

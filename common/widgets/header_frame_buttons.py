@@ -1,5 +1,5 @@
 """
-Common custom widgets for the LORENZO POZZI Pesticide App
+Common custom widgets for the LORENZO POZZI EIQ App
 
 This module provides reusable custom widgets used throughout the application.
 """

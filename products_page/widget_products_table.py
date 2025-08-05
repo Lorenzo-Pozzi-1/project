@@ -1,5 +1,5 @@
 """
-Product table widget for the LORENZO POZZI Pesticide App.
+Product table widget for the LORENZO POZZI EIQ App.
 
 This module defines the ProductTable widget which provides a table
 view of products with selection, filtering, and sorting capabilities.

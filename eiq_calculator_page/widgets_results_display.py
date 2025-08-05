@@ -1,5 +1,5 @@
 """
-Result display widgets for the LORENZO POZZI Pesticide App.
+Result display widgets for the LORENZO POZZI EIQ App.
 
 This module provides widgets for displaying EIQ calculation results.
 """

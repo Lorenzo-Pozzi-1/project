@@ -1,4 +1,4 @@
-"""Style functions and stylesheets for the LORENZO POZZI Pesticide App"""
+"""Style functions and stylesheets for the LORENZO POZZI EIQ App"""
 
 from PySide6.QtGui import QFont
 from common.constants import (

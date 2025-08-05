@@ -1,5 +1,5 @@
 """
-UOM Repository for the LORENZO POZZI Pesticide App.
+UOM Repository for the LORENZO POZZI EIQ App.
 
 This module provides the public interface for unit of measure operations,
 delegating complex conversion logic to the UOM converter.

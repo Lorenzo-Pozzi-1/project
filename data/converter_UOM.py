@@ -1,5 +1,5 @@
 """
-UOM Converter for the LORENZO POZZI Pesticide App.
+UOM Converter for the LORENZO POZZI EIQ App.
 
 This module contains all the conversion logic and agricultural domain-specific
 calculations for unit of measure operations.

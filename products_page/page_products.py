@@ -1,5 +1,5 @@
 """
-Main products page for the LORENZO POZZI Pesticide App.
+Main products page for the LORENZO POZZI EIQ App.
 
 This module defines the ProductsPage class which acts as a container for the
 product listing and comparison tabs, coordinating between them.
@@ -36,7 +36,7 @@ class ProductsPage(QWidget):
                 
         # Header with back button
         header = HeaderWithHomeButton("Products List and Comparison")
-        header.back_clicked.connect(lambda: self.parent.navigate_to_page(0))
+        header.back_clicked.connect(lambda: self.parent.navigate_to_page(1))
         
         # Add Reset button directly to the header
         reset_button = create_button(text="Reset", callback=self.reset, style="white")

@@ -1,5 +1,5 @@
 """
-Home page for the LORENZO POZZI Pesticide App
+Home page for the LORENZO POZZI EIQ App
 
 This module defines the HomePage class which serves as the main navigation
 screen for the application.
@@ -42,36 +42,58 @@ class HomePage(QWidget):
         # Header with logos and title in its own ContentFrame
         header_frame = ContentFrame()
         
+        # Create a layout for the entire header including back button
+        header_main_layout = QVBoxLayout()
+        
+        # Top row with back button
+        top_row_layout = QHBoxLayout()
+        top_row_layout.setAlignment(Qt.AlignLeft)
+        
+        # Back button in top left
+        back_button = create_button(
+            text="← Back to Feature Selection", 
+            style="white", 
+            callback=self.go_back_to_feature_selection,
+            parent=self
+        )
+        top_row_layout.addWidget(back_button)
+        top_row_layout.addStretch()  # Push button to the left
+        
+        header_main_layout.addLayout(top_row_layout)
+        
         # Logos and title row, centered together
-        top_layout = QHBoxLayout()
-        top_layout.setAlignment(Qt.AlignCenter)
+        logos_title_layout = QHBoxLayout()
+        logos_title_layout.setAlignment(Qt.AlignCenter)
         
         # Logo on the left
         left_logo_label = QLabel()
         pixmap = QPixmap(resource_path("main_page/logo_McCain.png"))
         left_logo_label.setPixmap(pixmap.scaled(get_picture_size(), get_picture_size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        top_layout.addWidget(left_logo_label)
+        logos_title_layout.addWidget(left_logo_label)
         
         # Small spacing between logo and title
-        top_layout.addSpacing(get_spacing_medium())
+        logos_title_layout.addSpacing(get_spacing_medium())
         
         # Title in the center
-        title_label = QLabel("Pesticides App")
+        title_label = QLabel("EIQ")
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setFont(get_title_font())
-        top_layout.addWidget(title_label)
+        logos_title_layout.addWidget(title_label)
         
         # Small spacing between title and logo
-        top_layout.addSpacing(get_spacing_medium())
+        logos_title_layout.addSpacing(get_spacing_medium())
         
         # Logo on the right
         right_logo_label = QLabel()
         right_logo_pixmap = QPixmap(resource_path("main_page/logo_NAAg.png"))
         right_logo_label.setPixmap(right_logo_pixmap.scaled(get_picture_size(), get_picture_size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        top_layout.addWidget(right_logo_label)
+        logos_title_layout.addWidget(right_logo_label)
         
-        # Add top layout to header frame
-        header_frame.layout.addLayout(top_layout)
+        # Add logos and title layout to header main layout
+        header_main_layout.addLayout(logos_title_layout)
+        
+        # Add header main layout to header frame
+        header_frame.layout.addLayout(header_main_layout)
         
         # Add header frame to main layout
         main_layout.addWidget(header_frame)
@@ -102,17 +124,17 @@ class HomePage(QWidget):
             {
             "title": "Products List and Comparison",
             "description": "View and compare products with quick fact sheets\n",
-            "page_index": 1
+            "page_index": 2
             },
             {
             "title": "EIQ Season Planner",
             "description": "Plan applications, Compare scenarios\nImport and work from previous years plans",
-            "page_index": 2
+            "page_index": 3
             },
             {
             "title": "EIQ Calculator",
             "description": "Calculate Environmental Impact Quotients\nCompare EIQ of different applications",
-            "page_index": 3
+            "page_index": 4
             }
         ]
         
@@ -168,6 +190,10 @@ class HomePage(QWidget):
 
         info_frame.layout.addLayout(info_layout)
         main_layout.addWidget(info_frame)
+
+    def go_back_to_feature_selection(self):
+        """Navigate back to the feature selection page."""
+        self.parent.navigate_to_page(0)  # Feature selection page is at index 0
 
     def on_country_changed(self, country):
         """Forward country change signal."""

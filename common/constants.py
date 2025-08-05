@@ -1,4 +1,4 @@
-"""Constants and color definitions for the LORENZO POZZI Pesticide App"""
+"""Constants and color definitions for the LORENZO POZZI EIQ App"""
 
 from PySide6.QtGui import QColor, QGuiApplication
 from PySide6.QtCore import QSize

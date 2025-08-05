@@ -1,5 +1,5 @@
 """
-Application model for the LORENZO POZZI Pesticide App.
+Application model for the LORENZO POZZI EIQ App.
 
 This module defines the Application class which represents a single 
 pesticide application within a season plan.

@@ -1,5 +1,5 @@
 """
-Main application window for the Pesticide App
+Main application window for the EIQ App
 
 This module defines the MainWindow class which serves as the container
 for all pages in the application.
@@ -15,7 +15,9 @@ from common.utils import load_config
 from common.widgets.header_frame_buttons import create_button
 #region from common.widgets.tracer import CalculationTraceDialog 
 from data.repository_product import ProductRepository
-from main_page.page_home import HomePage
+from main_page.page_initial import FeatureSelectionPage
+from main_page.page_EIQ_home import HomePage
+from main_page.page_STIR_home import STIRPlaceholderPage
 from products_page.page_products import ProductsPage
 from eiq_calculator_page.page_eiq_calculator import EiqCalculatorPage
 from season_planner_page.page_scenarios_manager import ScenariosManagerPage
@@ -77,25 +79,33 @@ class MainWindow(QMainWindow):
 
     def _create_pages(self):
         """Create and add all pages to the stacked widget."""
-        # Create and add the home page (index 0)
+        # Create and add the feature selection page (index 0)
+        self.feature_selection_page = FeatureSelectionPage(self)
+        self.stacked_widget.addWidget(self.feature_selection_page)
+        
+        # Create and add the EIQ home page (index 1)
         self.home_page = HomePage(self)
         self.stacked_widget.addWidget(self.home_page)
         
-        # Create and add the products page (index 1)
+        # Create and add the products page (index 2)
         self.products_page = ProductsPage(self)
         self.stacked_widget.addWidget(self.products_page)
         
-        # Create and add the scenarios manager page (index 2)
+        # Create and add the scenarios manager page (index 3)
         self.scenarios_manager_page = ScenariosManagerPage(self)
         self.stacked_widget.addWidget(self.scenarios_manager_page)
         
-        # Create and add the EIQ calculator page (index 3)
+        # Create and add the EIQ calculator page (index 4)
         self.eiq_calculator_page = EiqCalculatorPage(self)
         self.stacked_widget.addWidget(self.eiq_calculator_page)
 
-        # Create and add the scenarios comparison page (index 4)
+        # Create and add the scenarios comparison page (index 5)
         self.scenarios_comparison_page = ScenariosComparisonPage(self)
         self.stacked_widget.addWidget(self.scenarios_comparison_page)
+        
+        # Create and add the STIR placeholder page (index 6)
+        self.stir_placeholder_page = STIRPlaceholderPage(self)
+        self.stacked_widget.addWidget(self.stir_placeholder_page)
 
     def _create_yellow_bar(self):
         """Create the yellow bar at the bottom with user manual and links."""
@@ -168,8 +178,8 @@ class MainWindow(QMainWindow):
 
     def navigate_to_page(self, page_index):
         """Navigate to a specific page in the stacked widget."""
-        # If we're currently on the home page (index 0), check for unsaved preferences
-        if self.stacked_widget.currentIndex() == 0 and self.home_page.preferences_row.has_unsaved_changes:
+        # If we're currently on the EIQ home page (index 1), check for unsaved preferences
+        if self.stacked_widget.currentIndex() == 1 and self.home_page.preferences_row.has_unsaved_changes:
             if not self.home_page.check_unsaved_preferences():
                 return  # Don't navigate if the user cancelled
         

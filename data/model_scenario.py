@@ -1,5 +1,5 @@
 """
-Scenario model for the LORENZO POZZI Pesticide App.
+Scenario model for the LORENZO POZZI EIQ App.
 
 This module defines the Scenario class which represents a complete
 pesticide application scenario for a season.

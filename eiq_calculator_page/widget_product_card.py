@@ -1,4 +1,4 @@
-"""Product card widget for the LORENZO POZZI Pesticide App."""
+"""Product card widget for the LORENZO POZZI EIQ App."""
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QMessageBox

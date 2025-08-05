@@ -1,5 +1,5 @@
 """
-Single Product Calculator Tab for the LORENZO POZZI Pesticide App.
+Single Product Calculator Tab for the LORENZO POZZI EIQ App.
 
 This module provides the SingleProductCalculatorTab widget 
 for calculating EIQ of a single pesticide product.

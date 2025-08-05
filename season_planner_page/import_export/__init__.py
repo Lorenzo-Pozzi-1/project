@@ -1,5 +1,5 @@
 """
-Import Scenario package for the LORENZO POZZI Pesticide App.
+Import Scenario package for the LORENZO POZZI EIQ App.
 
 This package provides functionality to import scenarios from external files.
 """

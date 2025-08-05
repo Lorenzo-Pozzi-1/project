@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LORENZO POZZI Pesticide App - Main Application Entry Point
+LORENZO POZZI EIQ & STIR App - Main Application Entry Point
 
 This module serves as the entry point for the App.
 It initializes the application, sets up the main window, and starts the event loop.
@@ -31,7 +31,7 @@ def main() -> int:
     # Create the Qt application
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
-    app.setApplicationName("Pesticides App")
+    app.setApplicationName("EIQ & STIR App")
     
     # Block scroll-to-change-value for QComboBox and QDoubleSpinBox (uncomment if wanted)
     # scroll_filter = WheelProtectionFilter()

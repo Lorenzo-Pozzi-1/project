@@ -1,5 +1,5 @@
 """
-Active ingredient model for the LORENZO POZZI Pesticide App.
+Active ingredient model for the LORENZO POZZI EIQ App.
 
 This module defines the active ingredient class and related functionality.
 """

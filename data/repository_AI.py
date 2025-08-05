@@ -1,5 +1,5 @@
 """
-Active ingredient Repository for the LORENZO POZZI Pesticide App.
+Active ingredient Repository for the LORENZO POZZI EIQ App.
 
 This module provides a centralized repository for accessing active ingredients
 classification data.

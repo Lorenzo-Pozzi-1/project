@@ -1,5 +1,5 @@
 """
-Product selection widgets for the LORENZO POZZI Pesticide App.
+Product selection widgets for the LORENZO POZZI EIQ App.
 
 This module provides improved product search with ranking and better suggestion formatting.
 """
