@@ -200,7 +200,7 @@ class STIRCalculatorPage(QWidget):
         
         # Header with back button and action buttons
         header = HeaderWithHomeButton("STIR Calculator")
-        header.back_clicked.connect(self.go_back_to_stir_home)
+        header.back_clicked.connect(lambda: self.parent.navigate_to_page(0))
         
         # Wrap action buttons in ContentFrame
         buttons_frame = ContentFrame()
@@ -324,7 +324,3 @@ class STIRCalculatorPage(QWidget):
         self.action_buttons["Duplicate Current"].setEnabled(has_tabs)
         self.action_buttons["Compare Scenarios"].setEnabled(has_tabs and self.tab_widget.count() > 1)
         self.action_buttons["Export"].setEnabled(has_tabs)
-    
-    def go_back_to_stir_home(self):
-        """Navigate back to the STIR home page."""
-        self.parent.navigate_to_page(6)  # STIR home page is at index 6

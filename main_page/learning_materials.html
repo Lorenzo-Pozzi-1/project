@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EIQ & STIR Learning Module</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Century Gothic', 'Red Hat Display Black', sans-serif;
+            line-height: 1.6;
+            color: #000000;
+            background: #D9D9E4;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Navigation Sidebar */
+        .nav-sidebar {
+            width: 280px;
+            background: #000000;
+            color: #ffffff;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .nav-title span {
+            color: #fee000;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: #ffffff;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: all 0.15s ease;
+            font-size: 1em;
+        }
+
+        .nav-link:hover {
+            background: rgba(201, 191, 176, 0.2);
+            color: #C9BFB0;
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: #C9BFB0;
+            color: #434043;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            background: #ffffff;
+            min-height: 100vh;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h1 {
+            color: #000000;
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #fee000;
+        }
+
+        .section h1 span {
+            color: #fee000;
+        }
+
+        .section h2 {
+            color: #000000;
+            font-size: 1.6em;
+            margin: 30px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #fee000;
+        }
+
+        .definition-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        .formula-box {
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .key-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .key-table th {
+            background: #000000;
+            color: #ffffff;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        .key-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9em;
+        }
+
+        .key-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .score-range {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 2px;
+            font-size: 0.9em;
+        }
+
+        .score-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .score-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .score-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .critical-box {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #fee000;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .critical-box h4 {
+            color: #000000;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .footer-bar {
+            background: #fee000;
+            height: 20px;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .container {
+                flex-direction: column;
+            }
+
+            .key-table {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Sidebar -->
+        <nav class="nav-sidebar">
+            <div class="nav-title">🎓 EIQ & STIR<span>.</span></div>
+            
+            <a href="#eiq" class="nav-link active">🧪 Environmental Impact Quotient</a>
+            <a href="#stir" class="nav-link">🌊 Surface Water Risk Tool</a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- EIQ Page -->
+            <section id="eiq" class="section active">
+                <h1>🧪 Environmental Impact Quotient (EIQ)<span>.</span></h1>
+                
+                <div class="definition-box">
+                    <strong>EIQ</strong> is a numerical score that quantifies the total environmental impact of a pesticide application. Developed at Cornell University, it considers worker safety, consumer exposure, and ecological effects in a single value.
+                </div>
+
+                <h2>What EIQ Measures</h2>
+                <table class="key-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Risk Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Farmworker Impact</strong></td>
+                            <td>Applicator and field worker exposure risk</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Consumer Impact</strong></td>
+                            <td>Food residue risk to end consumers</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ecological Impact</strong></td>
+                            <td>Risk to non-target species and environment</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>How EIQ is Calculated</h2>
+                <div class="formula-box">
+                    Field Use EIQ = (Base EIQ × Application Rate) / (LD50 × 1000)
+                </div>
+
+                <p><strong>Base EIQ</strong> is calculated from 11 toxicological and environmental fate parameters including chronic toxicity, persistence, leaching potential, and toxicity to fish, birds, and beneficial insects.</p>
+
+                <h2>Score Interpretation</h2>
+                <table class="key-table">
+                    <thead>
+                        <tr>
+                            <th>Field Use EIQ</th>
+                            <th>Environmental Impact</th>
+                            <th>Typical Potato Applications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="score-range score-low">< 20</span></td>
+                            <td>Lower impact</td>
+                            <td>Copper fungicides, biologicals</td>
+                        </tr>
+                        <tr>
+                            <td><span class="score-range score-medium">20-50</span></td>
+                            <td>Moderate impact</td>
+                            <td>Modern fungicides, selective insecticides</td>
+                        </tr>
+                        <tr>
+                            <td><span class="score-range score-high">50-100</span></td>
+                            <td>Higher impact</td>
+                            <td>Broad-spectrum insecticides</td>
+                        </tr>
+                        <tr>
+                            <td><span class="score-range score-high">> 100</span></td>
+                            <td>Very high impact</td>
+                            <td>Older chemistry, high rates</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="critical-box">
+                    <h4>💡 Key Points for Potato Production</h4>
+                    <ul style="padding-left: 20px;">
+                        <li>Compare products within the same category (fungicide to fungicide)</li>
+                        <li>Consider application frequency—6 sprays = 6x seasonal impact</li>
+                        <li>Lower application rates can offset higher base EIQ values</li>
+                        <li>Set seasonal EIQ targets for your operation (e.g., < 200 total)</li>
+                        <li>EIQ is comparative, not an absolute safety measure</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- STIR Page -->
+            <section id="stir" class="section">
+                <h1>🌊 Surface Water Tool for Pesticide Risk (STIR)<span>.</span></h1>
+                
+                <div class="definition-box">
+                    <strong>STIR</strong> is a USDA risk assessment model that specifically evaluates pesticide contamination potential to surface water through runoff and drift. It focuses exclusively on aquatic ecosystem protection.
+                </div>
+
+                <h2>What STIR Measures</h2>
+                <table class="key-table">
+                    <thead>
+                        <tr>
+                            <th>Risk Factor</th>
+                            <th>Assessment Focus</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Runoff Potential</strong></td>
+                            <td>Surface water contamination via field runoff</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Leaching Potential</strong></td>
+                            <td>Groundwater to surface water movement</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Aquatic Toxicity</strong></td>
+                            <td>Direct harm to fish and aquatic organisms</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Environmental Persistence</strong></td>
+                            <td>Duration of active contamination risk</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>How STIR is Calculated</h2>
+                <div class="formula-box">
+                    STIR = Predicted Environmental Concentration / Aquatic Toxicity Threshold
+                </div>
+
+                <p><strong>PEC</strong> considers application rate, solubility, soil binding, persistence, and volatility. <strong>Toxicity threshold</strong> is based on effects to fish, invertebrates, and aquatic plants.</p>
+
+                <h2>Risk Level Interpretation</h2>
+                <table class="key-table">
+                    <thead>
+                        <tr>
+                            <th>STIR Value</th>
+                            <th>Risk Level</th>
+                            <th>Management Response</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="score-range score-low">< 0.1</span></td>
+                            <td>Low risk</td>
+                            <td>Standard practices acceptable</td>
+                        </tr>
+                        <tr>
+                            <td><span class="score-range score-medium">0.1 - 1.0</span></td>
+                            <td>Moderate risk</td>
+                            <td>Consider timing, buffers</td>
+                        </tr>
+                        <tr>
+                            <td><span class="score-range score-high">1.0 - 10</span></td>
+                            <td>High risk</td>
+                            <td>Implement risk mitigation</td>
+                        </tr>
+                        <tr>
+                            <td><span class="score-range score-high">> 10</span></td>
+                            <td>Very high risk</td>
+                            <td>Consider alternatives</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="critical-box">
+                    <h4>⚠️ Key Points for Potato Production</h4>
+                    <ul style="padding-left: 20px;">
+                        <li>Critical for fields near streams, rivers, or wetlands</li>
+                        <li>Avoid high-STIR applications before rainfall (>10mm in 24hr)</li>
+                        <li>Use vegetated buffer zones to reduce runoff risk</li>
+                        <li>STIR values influence EPA registration decisions</li>
+                        <li>Site-specific conditions (slope, soil) affect actual risk</li>
+                        <li>Prioritize low-STIR products for sensitive locations</li>
+                    </ul>
+                </div>
+
+                <h2>EIQ vs STIR: When to Use Each</h2>
+                <table class="key-table">
+                    <thead>
+                        <tr>
+                            <th>Use EIQ When...</th>
+                            <th>Use STIR When...</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Overall sustainability assessment</td>
+                            <td>Fields near water bodies</td>
+                        </tr>
+                        <tr>
+                            <td>Comparing broad environmental impact</td>
+                            <td>Regulatory compliance focus</td>
+                        </tr>
+                        <tr>
+                            <td>Season-long program optimization</td>
+                            <td>Site-specific risk management</td>
+                        </tr>
+                        <tr>
+                            <td>Certification requirements</td>
+                            <td>Aquatic habitat protection</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- McCain Yellow Bar -->
+    <div class="footer-bar"></div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links and sections
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -167,7 +167,7 @@ def get_button_min_height():
 
 def get_feature_button_size():
     """Get feature button size scaled to screen size."""
-    base_size = 180
+    base_size = 100
     return int(base_size * get_screen_scale_factor())
 
 # ----------------------

@@ -1,8 +1,11 @@
 """
-Main application window for the EIQ App
+Updated Main application window for the EIQ & STIR App
 
-This module defines the MainWindow class which serves as the container
-for all pages in the application.
+Key changes:
+- Removes the separate feature selection page
+- Uses unified home page as the main entry point
+- Adds learning materials dialog functionality
+- Simplifies navigation structure
 """
 
 import os
@@ -13,11 +16,8 @@ from PySide6.QtCore import Signal, Qt
 from common.styles import YELLOW_BAR_STYLE
 from common.utils import load_config
 from common.widgets.header_frame_buttons import create_button
-#region from common.widgets.tracer import CalculationTraceDialog 
 from data.repository_product import ProductRepository
-from main_page.page_initial import FeatureSelectionPage
-from main_page.page_EIQ_home import HomePage
-from main_page.page_STIR_home import STIRPlaceholderPage
+from main_page.page_home import HomePage
 from products_page.page_products import ProductsPage
 from eiq_calculator_page.page_eiq_calculator import EiqCalculatorPage
 from season_planner_page.page_scenarios_manager import ScenariosManagerPage
@@ -28,10 +28,10 @@ from STIR.page_STIR_calculator import STIRCalculatorPage
 
 class MainWindow(QMainWindow):
     """
-    Main application window that manages all pages.
+    Main application window that manages all pages with simplified navigation.
     
-    The MainWindow uses a QStackedWidget to switch between different pages
-    of the application.
+    The MainWindow now uses a unified home page and provides direct access
+    to both EIQ and STIR tools from a single entry point.
     """
 
     filters_changed = Signal()  # Signal to notify when filters change
@@ -40,7 +40,6 @@ class MainWindow(QMainWindow):
         """Initialize the main window and configuration."""
         super().__init__()
         self.config = config or {}
-        # self.trace_dialog = None # Dialog for calculation trace, removed after negative feedback for now
         self.updating_products = False
         self.selected_country = None
         self.selected_region = None
@@ -76,40 +75,32 @@ class MainWindow(QMainWindow):
         
         main_layout.addWidget(self.yellow_bar)
         
-        # Start with the home page
+        # Start with the unified home page (index 0)
         self.stacked_widget.setCurrentIndex(0)
 
     def _create_pages(self):
         """Create and add all pages to the stacked widget."""
-        # Create and add the feature selection page (index 0)
-        self.feature_selection_page = FeatureSelectionPage(self)
-        self.stacked_widget.addWidget(self.feature_selection_page)
-        
-        # Create and add the EIQ home page (index 1)
+        # Create and add the home page (index 0)
         self.home_page = HomePage(self)
         self.stacked_widget.addWidget(self.home_page)
-        
-        # Create and add the products page (index 2)
+
+        # Create and add the products page (index 1)
         self.products_page = ProductsPage(self)
         self.stacked_widget.addWidget(self.products_page)
         
-        # Create and add the scenarios manager page (index 3)
+        # Create and add the scenarios manager page (index 2) 
         self.scenarios_manager_page = ScenariosManagerPage(self)
         self.stacked_widget.addWidget(self.scenarios_manager_page)
         
-        # Create and add the EIQ calculator page (index 4)
+        # Create and add the EIQ calculator page (index 3)
         self.eiq_calculator_page = EiqCalculatorPage(self)
         self.stacked_widget.addWidget(self.eiq_calculator_page)
 
-        # Create and add the scenarios comparison page (index 5)
+        # Create and add the scenarios comparison page (index 4)
         self.scenarios_comparison_page = ScenariosComparisonPage(self)
         self.stacked_widget.addWidget(self.scenarios_comparison_page)
         
-        # Create and add the STIR placeholder page (index 6)
-        self.stir_placeholder_page = STIRPlaceholderPage(self)
-        self.stacked_widget.addWidget(self.stir_placeholder_page)
-        
-        # Create and add the STIR calculator page (index 7)
+        # Create and add the STIR calculator page (index 5)
         self.stir_calculator_page = STIRCalculatorPage(self)
         self.stacked_widget.addWidget(self.stir_calculator_page)
 
@@ -129,16 +120,6 @@ class MainWindow(QMainWindow):
         )
         self.manual_button.setToolTip("Open User Manual")
         yellow_bar_layout.addWidget(self.manual_button)
-        
-#region        # Create the tracer button
-        # self.tracer_button = create_button(
-        #     text="</>", 
-        #     style="tiny", 
-        #     callback=self.show_calculation_trace,
-        #     parent=self.yellow_bar
-        # )
-        # self.tracer_button.setToolTip("Open Tracer")
-        # yellow_bar_layout.addWidget(self.tracer_button)
 
         yellow_bar_layout.addStretch()
 
@@ -172,20 +153,35 @@ class MainWindow(QMainWindow):
         """Open the user manual in the system browser."""
         open_user_manual(self)
 
+    def show_learning_materials_dialog(self):
+        """Show the learning materials dialog."""
+        from main_page.page_learning_materials import LearningMaterialsDialog
+        dialog = LearningMaterialsDialog(self)
+        dialog.exec()
+
     def connect_signals(self):
         """Connect all signals to their respective handlers."""
         # Connect signal to page refresh methods
         self.filters_changed.connect(self.refresh_pages)
         
-        # Connect the home page signals to handler methods
+        # Connect the unified home page signals to handler methods
         self.home_page.country_changed.connect(self.on_country_changed)
         self.home_page.region_changed.connect(self.on_region_changed)
         self.home_page.preferences_changed.connect(self.apply_config_preferences)
 
     def navigate_to_page(self, page_index):
         """Navigate to a specific page in the stacked widget."""
-        # If we're currently on the EIQ home page (index 1), check for unsaved preferences
-        if self.stacked_widget.currentIndex() == 1 and self.home_page.preferences_row.has_unsaved_changes:
+        # Updated page indices after removing feature selection page:
+        # 0: Unified Home Page
+        # 1: Products Page  
+        # 2: Season Planner (was 3)
+        # 3: EIQ Calculator (was 4)
+        # 4: Scenarios Comparison (was 5)
+        # 5: Reserved (was 6)
+        # 6: STIR Calculator (was 7)
+        
+        # If we're currently on the unified home page (index 0), check for unsaved preferences
+        if self.stacked_widget.currentIndex() == 0 and self.home_page.preferences_row.has_unsaved_changes:
             if not self.home_page.check_unsaved_preferences():
                 return  # Don't navigate if the user cancelled
         
@@ -233,7 +229,7 @@ class MainWindow(QMainWindow):
         default_country = user_preferences.get("default_country", "Canada")
         default_region = user_preferences.get("default_region", "None of these")
         
-        # Set in home page UI
+        # Set in unified home page UI
         self.home_page.set_country_region(default_country, default_region)
         
         # Load other preferences into the home page
@@ -241,19 +237,6 @@ class MainWindow(QMainWindow):
         
         # Apply filters
         self.apply_filters(default_country, default_region)
-
-#region    # def show_calculation_trace(self):
-    #     """Show the calculation trace dialog."""
-    #     # Check if dialog already exists and is visible
-    #     if self.trace_dialog is not None and self.trace_dialog.isVisible():
-    #         # Just bring it to front and focus it
-    #         self.trace_dialog.raise_()
-    #         self.trace_dialog.activateWindow()
-    #         return
-        
-    #     # Create new dialog if none exists or previous one was closed
-    #     self.trace_dialog = CalculationTraceDialog(self)
-    #     self.trace_dialog.show()
 
     def closeEvent(self, event):
         """Handle the close event, clean up __pycache__ directories."""

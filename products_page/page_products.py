@@ -36,7 +36,7 @@ class ProductsPage(QWidget):
                 
         # Header with back button
         header = HeaderWithHomeButton("Products List and Comparison")
-        header.back_clicked.connect(lambda: self.parent.navigate_to_page(1))
+        header.back_clicked.connect(lambda: self.parent.navigate_to_page(0))
         
         # Add Reset button directly to the header
         reset_button = create_button(text="Reset", callback=self.reset, style="white")
