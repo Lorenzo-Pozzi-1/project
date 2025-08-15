@@ -7,170 +7,32 @@ tabbed interface for managing STIR scenarios similar to the EIQ season planner.
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, 
-    QTableWidget, QTableWidgetItem, QHeaderView, QTabBar
+    QMessageBox, QInputDialog, QTabBar
 )
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap, QBrush, QColor
-from common.constants import get_margin_large, get_spacing_large, get_spacing_medium
-from common.styles import (
-    get_title_font, get_large_font, get_subtitle_font, get_medium_font,
-    INFO_TEXT_STYLE, GENERIC_TABLE_STYLE
-)
-from common.utils import resource_path
+from PySide6.QtCore import Qt, Signal
+
+from common.constants import get_margin_large, get_spacing_medium
+from common.styles import get_subtitle_font
 from common.widgets.header_frame_buttons import ContentFrame, create_button, HeaderWithHomeButton
 from common.widgets.scorebar import ScoreBar
-
-class STIRScenarioTab(QWidget):
-    """Individual STIR scenario tab with table and scorebar."""
-    
-    def __init__(self, scenario_name="Scenario", parent=None):
-        """Initialize the STIR scenario tab."""
-        super().__init__(parent)
-        self.scenario_name = scenario_name
-        self.setup_ui()
-    
-    def setup_ui(self):
-        """Set up the UI components for the scenario tab."""
-        # Main layout
-        main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(get_margin_large(), get_margin_large(), 
-                                     get_margin_large(), get_margin_large())
-        main_layout.setSpacing(get_spacing_medium())
-        
-        # STIR Operations Table
-        table_frame = ContentFrame()
-        table_layout = QVBoxLayout()
-        
-        # Table title
-        table_title = QLabel("STIR Operations")
-        table_title.setFont(get_subtitle_font())
-        table_layout.addWidget(table_title)
-        
-        # Create operations table
-        self.operations_table = QTableWidget()
-        self.operations_table.setStyleSheet(GENERIC_TABLE_STYLE)
-        self.operations_table.setAlternatingRowColors(True)
-        self.setup_operations_table()
-        table_layout.addWidget(self.operations_table)
-        
-        table_frame.layout.addLayout(table_layout)
-        main_layout.addWidget(table_frame)
-        
-        # Results section with scorebar
-        results_frame = ContentFrame()
-        results_layout = QVBoxLayout()
-        
-        # Total STIR display
-        total_layout = QHBoxLayout()
-        total_label = QLabel("TOTAL STIR:")
-        total_label.setFont(get_subtitle_font(bold=True))
-        total_layout.addWidget(total_label)
-        
-        self.total_stir_value = QLabel("268")
-        self.total_stir_value.setFont(get_subtitle_font(bold=True, size=18))
-        total_layout.addWidget(self.total_stir_value)
-        
-        total_layout.addStretch()
-        results_layout.addLayout(total_layout)
-        
-        # Custom STIR scorebar (Light to Intense)
-        self.stir_scorebar = ScoreBar(preset="calculator")  # We'll customize this
-        # Override the scorebar settings for STIR
-        self.stir_scorebar.config.title = "Tillage Intensity:"
-        self.stir_scorebar.config.thresholds = [100, 200, 400]
-        self.stir_scorebar.config.labels = ["Light", "Medium", "Intense", "Very Intense"]
-        self.stir_scorebar.config.min_value = 0
-        self.stir_scorebar.config.max_value = 500
-        self.stir_scorebar.set_value(268, "Intense")
-        
-        results_layout.addWidget(self.stir_scorebar)
-        
-        results_frame.layout.addLayout(results_layout)
-        main_layout.addWidget(results_frame)
-    
-    def setup_operations_table(self):
-        """Set up the operations table with placeholder data."""
-        # Set up table structure
-        self.operations_table.setRowCount(7)  # 3 pre-plant + 2 in-season + 1 harvest + 1 empty
-        self.operations_table.setColumnCount(6)
-        
-        # Set headers
-        headers = ["Machine", "Depth (cm)", "Speed (km/h)", "N of passes", "STIR", "Total"]
-        self.operations_table.setHorizontalHeaderLabels(headers)
-        
-        # Configure column widths
-        header = self.operations_table.horizontalHeader()
-        for i in range(len(headers)):
-            header.setSectionResizeMode(i, QHeaderView.Stretch)
-        
-        # Add placeholder data
-        operations_data = [
-            # Operation category, Machine, Depth, Speed, Passes, STIR, Total, row_color
-            ("Pre-plant", "Disk harrow", "15", "10", "2", "52", "135", "#FFE5E5"),  # Light red
-            ("", "Chisel plough", "30", "12", "1", "38", "", ""),
-            ("", '"MyMachine"', "15", "12", "1", "45", "", ""),
-            ("In-season", "Potato planter", "20", "9.0", "1", "29", "49", "#E5FFE5"),  # Light green
-            ("", "Hiller", "35", "12", "1", "20", "", ""),
-            ("Harvest", "Potato harvester", "30", "6.0", "1", "84", "84", "#FFE5E5"),  # Light red
-            ("", "", "", "", "", "", "", "")  # Empty row
-        ]
-        
-        current_category = ""
-        for row, (category, machine, depth, speed, passes, stir, total, row_color) in enumerate(operations_data):
-            # Machine name
-            machine_item = QTableWidgetItem(machine)
-            if category and category != current_category:
-                # This is a category header row
-                machine_item.setText(f"{category} operations")
-                machine_item.setFont(get_medium_font(bold=True))
-                if row_color:
-                    machine_item.setBackground(QBrush(QColor(row_color)))
-                current_category = category
-            else:
-                machine_item.setText(machine)
-                if row_color:
-                    machine_item.setBackground(QBrush(QColor(row_color)))
-            
-            self.operations_table.setItem(row, 0, machine_item)
-            
-            # Other columns
-            columns_data = [depth, speed, passes, stir, total]
-            for col, value in enumerate(columns_data, 1):
-                item = QTableWidgetItem(value)
-                item.setTextAlignment(Qt.AlignCenter)
-                if row_color:
-                    item.setBackground(QBrush(QColor(row_color)))
-                
-                # Color code STIR values
-                if col == 4 and value:  # STIR column
-                    try:
-                        stir_val = int(value)
-                        if stir_val < 30:
-                            item.setBackground(QBrush(QColor("#90EE90")))  # Light green
-                        elif stir_val < 50:
-                            item.setBackground(QBrush(QColor("#FFFF99")))  # Light yellow
-                        else:
-                            item.setBackground(QBrush(QColor("#FFB6C1")))  # Light red
-                    except ValueError:
-                        pass
-                
-                self.operations_table.setItem(row, col, item)
-        
-        # Set row heights
-        self.operations_table.verticalHeader().setVisible(False)
-        for row in range(self.operations_table.rowCount()):
-            self.operations_table.setRowHeight(row, 35)
+from .tab_scenario import STIRScenarioTabPage
 
 
 class CustomSTIRTabBar(QTabBar):
     """Custom tab bar for STIR scenarios with double-click to rename."""
     
+    tab_double_clicked = Signal(int)  # Signal emitted with the tab index
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        
     def mouseDoubleClickEvent(self, event):
-        """Handle double-click to rename tabs."""
-        tab_index = self.tabAt(event.pos())
-        if tab_index >= 0:
-            # For now, just print - will implement rename later
-            print(f"Double-clicked tab {tab_index} - rename functionality coming soon!")
+        """Handle double-click events on tabs."""
+        for i in range(self.count()):
+            if self.tabRect(i).contains(event.pos()):
+                self.tab_double_clicked.emit(i)
+                break
+        
         super().mouseDoubleClickEvent(event)
 
 
@@ -209,7 +71,9 @@ class STIRCalculatorPage(QWidget):
         # Create action buttons
         buttons = {
             "New Scenario": ("yellow", self.new_scenario),
-            "Duplicate Current": ("white", self.duplicate_current_scenario),
+            "Clone Current": ("white", self.clone_current_scenario),
+            "Rename Current": ("white", self.rename_current_scenario),
+            "Delete": ("white", self.delete_current_scenario),
             "Compare Scenarios": ("yellow", self.compare_scenarios),
             "Export": ("special", self.export_scenarios)
         }
@@ -236,91 +100,269 @@ class STIRCalculatorPage(QWidget):
         self.tab_widget.setTabBar(self.custom_tab_bar)
         self.tab_widget.setMovable(True)  # Enable drag-to-reorder
         self.tab_widget.currentChanged.connect(self.on_tab_changed)
+        self.tab_widget.tabBarClicked.connect(self._on_tab_moved)
+        
+        # Connect double-click signal to rename function
+        self.custom_tab_bar.tab_double_clicked.connect(self._on_tab_double_clicked)
         
         tabs_layout.addWidget(self.tab_widget)
         tabs_frame.layout.addLayout(tabs_layout)
         main_layout.addWidget(tabs_frame)
+        
+        # Results Display
+        results_frame = ContentFrame()
+        results_layout = QVBoxLayout()
+        
+        # Combined title with scenario info
+        self.scenario_info_title = QLabel(
+            "Scenario 1: 6 operations | Total STIR: 268", 
+            font=get_subtitle_font()
+        )
+        results_layout.addWidget(self.scenario_info_title)
+        
+        # Create score bar for STIR intensity
+        self.stir_score_bar = ScoreBar(preset="calculator")
+        self.stir_score_bar.config.title = "Tillage Intensity:"
+        self.stir_score_bar.config.thresholds = [100, 200, 400]
+        self.stir_score_bar.config.labels = ["Light", "Medium", "Intense", "Very Intense"]
+        self.stir_score_bar.config.min_value = 0
+        self.stir_score_bar.config.max_value = 500
+        self.stir_score_bar.set_value(268, "Intense")
+        results_layout.addWidget(self.stir_score_bar)
+        
+        results_frame.layout.addLayout(results_layout)
+        main_layout.addWidget(results_frame)
     
     def add_initial_scenarios(self):
-        """Add initial placeholder scenarios."""
-        # Add two example scenarios
-        scenario1 = STIRScenarioTab("Scenario 1", self)
+        """Add initial scenario."""
+        # Add one initial scenario
+        scenario1 = STIRScenarioTabPage(self, "Scenario 1")
+        scenario1.scenario_changed.connect(self.on_scenario_changed)
         self.tab_widget.addTab(scenario1, "Scenario 1")
         self.scenario_tabs["Scenario 1"] = scenario1
-        
-        scenario2 = STIRScenarioTab("Scenario 2", self)
-        self.tab_widget.addTab(scenario2, "Scenario 2")
-        self.scenario_tabs["Scenario 2"] = scenario2
         
         # Set the first tab as current
         self.tab_widget.setCurrentIndex(0)
         self.update_ui_state()
     
+    def _on_tab_double_clicked(self, tab_index):
+        """Handle double-click on a tab to trigger rename."""
+        self.tab_widget.setCurrentIndex(tab_index)
+        self.rename_current_scenario()
+    
+    def generate_unique_name(self, base_name):
+        """Generate a unique scenario name based on the given base name."""
+        if base_name not in self.scenario_tabs:
+            return base_name
+            
+        counter = 1
+        while f"{base_name} ({counter})" in self.scenario_tabs:
+            counter += 1
+            
+        return f"{base_name} ({counter})"
+    
+    def get_current_scenario_page(self):
+        """Get the current scenario page and its index."""
+        index = self.tab_widget.currentIndex()
+        if index < 0:
+            return None, -1
+        return self.tab_widget.widget(index), index
+    
     def new_scenario(self):
         """Create a new STIR scenario."""
         # Generate unique name
         base_name = "New Scenario"
-        counter = 1
-        while f"{base_name} {counter}" in self.scenario_tabs:
-            counter += 1
-        
-        scenario_name = f"{base_name} {counter}"
+        unique_name = self.generate_unique_name(base_name)
         
         # Create new tab
-        new_scenario = STIRScenarioTab(scenario_name, self)
-        tab_index = self.tab_widget.addTab(new_scenario, scenario_name)
-        self.scenario_tabs[scenario_name] = new_scenario
+        new_scenario = STIRScenarioTabPage(self, unique_name)
+        new_scenario.scenario_changed.connect(self.on_scenario_changed)
+        tab_index = self.tab_widget.addTab(new_scenario, unique_name)
+        self.scenario_tabs[unique_name] = new_scenario
         
         # Switch to the new tab
         self.tab_widget.setCurrentIndex(tab_index)
         self.update_ui_state()
-        print(f"Created new STIR scenario: {scenario_name}")
     
-    def duplicate_current_scenario(self):
-        """Duplicate the current STIR scenario."""
-        current_index = self.tab_widget.currentIndex()
-        if current_index < 0:
+    def clone_current_scenario(self):
+        """Clone the current STIR scenario."""
+        page, _ = self.get_current_scenario_page()
+        if not page:
             return
         
-        current_name = self.tab_widget.tabText(current_index)
+        # Generate unique name for clone
+        base_name = f"{page.get_scenario_name()} Copy"
+        unique_name = self.generate_unique_name(base_name)
         
-        # Generate unique name for duplicate
-        base_name = f"{current_name} Copy"
-        counter = 1
-        while f"{base_name} {counter}" in self.scenario_tabs:
-            counter += 1
+        # Create clone
+        clone_scenario = STIRScenarioTabPage(self, unique_name)
+        clone_scenario.scenario_changed.connect(self.on_scenario_changed)
         
-        duplicate_name = f"{base_name} {counter}"
+        # Copy operations data
+        operations_data = page.get_operations_data()
+        clone_scenario.set_operations_data(operations_data)
         
-        # Create duplicate tab
-        duplicate_scenario = STIRScenarioTab(duplicate_name, self)
-        tab_index = self.tab_widget.addTab(duplicate_scenario, duplicate_name)
-        self.scenario_tabs[duplicate_name] = duplicate_scenario
+        # Add to tab widget
+        tab_index = self.tab_widget.addTab(clone_scenario, unique_name)
+        self.scenario_tabs[unique_name] = clone_scenario
         
-        # Switch to the duplicate tab
+        # Switch to the clone tab
         self.tab_widget.setCurrentIndex(tab_index)
         self.update_ui_state()
-        print(f"Duplicated STIR scenario: {duplicate_name}")
+    
+    def rename_current_scenario(self):
+        """Rename the current scenario tab."""
+        page, index = self.get_current_scenario_page()
+        if not page:
+            return
+        
+        old_name = page.get_scenario_name()
+        
+        while True:
+            # Show dialog to get new name
+            new_name, ok = QInputDialog.getText(
+                self, "Rename Scenario", "Enter new scenario name:", 
+                text=old_name
+            )
+            
+            if not ok or new_name == old_name:
+                return
+                
+            # Check if name already exists
+            if new_name in self.scenario_tabs and new_name != old_name:
+                QMessageBox.warning(
+                    self, "Name Already Exists", 
+                    "Scenario names must be unique.",
+                    QMessageBox.Ok
+                )
+                continue
+                
+            # Valid name - update scenario
+            page.set_scenario_name(new_name)
+            
+            # Update tab text
+            self.tab_widget.setTabText(index, new_name)
+            
+            # Update dictionary
+            self.scenario_tabs[new_name] = self.scenario_tabs.pop(old_name)
+            self.update_ui_state()
+            break
+    
+    def delete_current_scenario(self):
+        """Delete the current scenario tab with confirmation."""
+        page, index = self.get_current_scenario_page()
+        if index < 0:
+            return
+        
+        scenario_name = page.get_scenario_name()
+        
+        # Confirm deletion
+        result = QMessageBox.question(
+            self, "Confirm Deletion",
+            f"Are you sure you want to remove this scenario?\n\n'{scenario_name}'",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        
+        if result == QMessageBox.Yes:
+            # Handle deletion
+            if self.tab_widget.count() <= 1:
+                # Last tab - remove it and create a new blank one
+                self.tab_widget.removeTab(index)
+                del self.scenario_tabs[scenario_name]
+                
+                # Create a new blank scenario
+                self.new_scenario()
+            else:
+                # Normal deletion - just remove the tab
+                self.tab_widget.removeTab(index)
+                del self.scenario_tabs[scenario_name]
+                
+            self.update_ui_state()
     
     def compare_scenarios(self):
         """Compare STIR scenarios."""
-        print("Compare STIR scenarios - coming soon!")
-        # This would navigate to a comparison page similar to EIQ
+        # This would navigate to a STIR comparison page
+        QMessageBox.information(
+            self, "Compare Scenarios", 
+            "STIR scenarios comparison page - coming soon!"
+        )
     
     def export_scenarios(self):
         """Export STIR scenarios."""
-        print("Export STIR scenarios - coming soon!")
         # This would export scenarios to Excel
+        QMessageBox.information(
+            self, "Export Scenarios", 
+            "STIR scenarios export functionality - coming soon!"
+        )
+    
+    def on_scenario_changed(self, scenario_page):
+        """Handle changes to a scenario."""
+        self.update_ui_state()
     
     def on_tab_changed(self, index):
         """Handle tab change events."""
         self.update_ui_state()
+    
+    def _on_tab_moved(self, index):
+        """Handle tab reordering to keep internal data structures in sync."""
+        # Rebuild the scenario_tabs dictionary to match the new tab order
+        new_scenario_tabs = {}
+        
+        for i in range(self.tab_widget.count()):
+            tab_page = self.tab_widget.widget(i)
+            scenario_name = tab_page.get_scenario_name()
+            new_scenario_tabs[scenario_name] = tab_page
+        
+        # Update our data structure
+        self.scenario_tabs = new_scenario_tabs
     
     def update_ui_state(self):
         """Update UI state based on current tabs."""
         has_tabs = self.tab_widget.count() > 0
         
         # Enable/disable buttons based on tab availability
-        self.action_buttons["Duplicate Current"].setEnabled(has_tabs)
+        self.action_buttons["Clone Current"].setEnabled(has_tabs)
+        self.action_buttons["Rename Current"].setEnabled(has_tabs)
+        self.action_buttons["Delete"].setEnabled(has_tabs)
         self.action_buttons["Compare Scenarios"].setEnabled(has_tabs and self.tab_widget.count() > 1)
         self.action_buttons["Export"].setEnabled(has_tabs)
+        
+        # Update scenario info display
+        page, _ = self.get_current_scenario_page()
+        if not page:
+            scenario_name = "No scenario selected"
+            total_stir = 0
+            operations_count = 0
+            validation_status = ""
+        else:
+            scenario_name = page.get_scenario_name()
+            total_stir = page.get_total_stir()
+            operations_count = page.get_operations_count()
+            
+            # Add validation status
+            if page.has_validation_issues():
+                validation_status = " (⚠ There are validation issues!)"
+            else:
+                validation_status = ""
+        
+        # Update combined title
+        self.scenario_info_title.setText(
+            f"{scenario_name}: {operations_count} operations | "
+            f"Total STIR: {total_stir}{validation_status}"
+        )
+        
+        # Update scorebar
+        if total_stir > 0:
+            if total_stir < 100:
+                intensity = "Light"
+            elif total_stir < 200:
+                intensity = "Medium"
+            elif total_stir < 400:
+                intensity = "Intense"
+            else:
+                intensity = "Very Intense"
+            
+            self.stir_score_bar.set_value(total_stir, intensity)
+        else:
+            self.stir_score_bar.set_value(0, "No operations")
