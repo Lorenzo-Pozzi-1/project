@@ -18,6 +18,7 @@ a1Y4W000004CvjMUAS,Canada,,Adjuvant,,28% UAN,BASF,Adjuvant,Liquid,0.1,0.809,L/ac
 a1YOF000000JqkT2AS,Canada,,Adjuvant,,AGTIV REACH,Taurs,Adjuvant,Liquid,237,237,ml/ha,ml/ha,,,
 a1Y4W000002lrzZUAQ,Canada,,Adjuvant,,Ammonium Sulfate,,Adjuvant,Liquid,1,99,L/acre,L/acre,,,
 a1Y4W000003eV3wUAE,Canada,,Adjuvant,,AMMONIUM SULPHATE UTILITY MODIFIER,Bayer Crop Science,Adjuvant,Liquid,10,10,L/ha,L/ha,,,
+a1YOF000000jX9V2AU,Canada,,Adjuvant,,AMS - Ammonium Sulphate Utility Modifier,,Adjuvant,Liquid,500,1000,ml/acre,ml/acre,,,
 a1Y4W000002w8FnUAI,Canada,,Adjuvant,,ENVITA Microbial Inoculant,Azotic Technologies Ltd.,Foliar,Liquid,0.15,0.73,L/ha,L/ha,,,
 a1Y4W000002w8FnUAI,Canada,,Adjuvant,,ENVITA Microbial Inoculant,Azotic Technologies Ltd.,Furrow,Liquid,23,23,L/ha,L/ha,,,
 a1Y4W000002w8FnUAI,Canada,,Adjuvant,,ENVITA Microbial Inoculant,Azotic Technologies Ltd.,Seed,Liquid,13,17,ml/cwt,ml/cwt,,,
@@ -27,11 +28,14 @@ a1YOF000000iRUL2A2,Canada,,Adjuvant,,INTERLOCK ADJUVANT,WinField united,Adjuvant
 a1YOF000000i5gj2AA,Canada,,Adjuvant,,RHIZOVITAL 42,ABiTEP GmbH,Adjuvant,Liquid,20,20,ml/100kg,ml/100kg,,,
 a1YOF000000ig5B2AQ,Canada,,Adjuvant,,Super sta-Dry,CanGrow Crop Solutions,Adjuvant,Dry,,,,,,,
 a1Y4W000003eUGfUAM,Canada,,Adjuvant,,TRANSIT-S,ATP Nutrition Ltd.,Adjuvant,Liquid,0.2,5,L/ha,L/ha,,,
+a1YOF000000jxGr2AI,Canada,,Biological,,MEGAFOL,Valagro,Adjuvant,Liquid,0.15,3,L/ha,L/ha,,,
 a1YOF000000i5gj2AA,Canada,,Biological,,RHIZOVITAL 42,ABiTEP GmbH,Furrow,Liquid,0.5,0.5,L/ha,L/ha,,,
 a1Y4W000004Cv94UAC,United States,,Adjuvant,,6% SOLIDHUMIC ACID,,Adjuvant,Liquid,1,99,lb/acre,lb/acre,,,
 a1Y4W000002ltHcUAI,United States,,Adjuvant,,ACCOMPLISH MAX,Loveland Products,Adjuvant,Liquid,2,8,pt/acre,pt/acre,,,
 a1Y4W000004CvaeUAC,United States,,Adjuvant,,ACCUDROP,"Winfield Solutions, LLC",Adjuvant,Liquid,3,3,fl oz/acre,fl oz/acre,,,
 a1YOF000000Vfuv2AC,United States,,Adjuvant,,ACTAMASTER,Loveland,Adjuvant,Dry,17,17,Lb100G,Lb100G,,,
+a1YOF000000j7Oj2AI,United States,,Adjuvant,,ACTAMASTER,Loveland Products inc,Adjuvant,Dry,8.5,17,lb/acre,lb/acre,,,
+a1YOF000000jMcH2AU,United States,,Adjuvant,,ACTAMASTER SOLUBLE CRYSTAL SPRAY ADJUVANT,Loveland Products,Adjuvant,Liquid,8.5,17,Lb100G,Lb100G,,,
 a1Y4W000004CulvUAC,United States,,Adjuvant,,Ad-Max 90,RJ Simplot,Adjuvant,Dry,2,64,oz/acre,oz/acre,,,
 a1Y4W000002luIOUAY,United States,,Adjuvant,,AGRI-SC,Four Star Services INC,Adjuvant,Liquid,6,10,fl oz/acre,fl oz/acre,,,
 a1Y4W000004Cv6UUAS,United States,,Adjuvant,,AGROTAIN,KOCH,Adjuvant,Liquid,1,2,gal/t,gal/t,,,
@@ -59,6 +63,9 @@ a1Y4W000004CujLUAS,United States,,Adjuvant,,GUNSMOKE,Loveland,Adjuvant,Liquid,0.
 a1YOF0000003cAP2AY,United States,,Adjuvant,,HELL-FIRE HERBICIDE ACTIVATOR,Helena Chemical Company,Adjuvant,Liquid,16,128,FO100G,FO100G,,,
 a1Y4W000004CwIwUAK,United States,,Adjuvant,,HY-STOP,Loveland Porducts Inc,Adjuvant,Dry,8,32,oz/acre,oz/acre,,,
 a1YOF000000biBl2AI,United States,,Adjuvant,,INDUCE,Helena Chemical Company,Adjuvant,Liquid,16,64,FO100G,FO100G,,,
+a1YOF000000j7N72AI,United States,,Adjuvant,,INFUSE,Loveland Products,Foliar,Liquid,6,16,oz/acre,oz/acre,,,
+a1YOF000000j7N72AI,United States,,Adjuvant,,INFUSE,Loveland Products,Ground,Liquid,1,4,pt/acre,pt/acre,,,
+a1YOF000000j5LJ2AY,United States,,Adjuvant,,INFUSE,"LOVELAND PRODUCTS, INC.",Adjuvant,Liquid,1,4,pt/acre,pt/acre,,,
 a1YOF0000003qoT2AQ,United States,,Adjuvant,,INVADE,"INNVICTIS® CROP CARE, LLC",Adjuvant,Liquid,1.5,2,pt/acre,pt/acre,,,
 a1YOF0000000uYT2AY,United States,,Adjuvant,,INVADE CNL,"INNVICTIS® CROP CARE, LLC",Foliar,Liquid,1.25,1.5,pt/acre,pt/acre,,,
 a1Y4W000004CxFgUAK,United States,,Adjuvant,,JACKHAMMER,CNS,Adjuvant,Liquid,1,4,pt/acre,pt/acre,,,
@@ -66,9 +73,12 @@ a1Y4W000004CwKxUAK,United States,,Adjuvant,,JUSTIFIED,,Adjuvant,Liquid,0.5,6.5,f
 a1Y4W000004Cv99UAC,United States,,Adjuvant,,KICKER,"INNVICTIS® CROP CARE, LLC",Foliar,Liquid,1,3,qt/acre,qt/acre,,,
 a1Y4W000004CxKMUA0,United States,,Adjuvant,,LEVEL 7,"nfield Solutions, LLC",Adjuvant,Liquid,4,32,fl oz/acre,fl oz/acre,,,
 a1Y4W000004Cx73UAC,United States,,Adjuvant,,LIBERATE,Loveland Products,Adjuvant,Liquid,0.5,8,pt/acre,pt/acre,,,
+a1YOF000000j7QL2AY,United States,,Adjuvant,,MARITIME,Loveland Products,Adjuvant,Liquid,1,4,qt/acre,qt/acre,,,
 a1Y4W000002lt01UAA,United States,,Adjuvant,,MasterLock,Winfield,Adjuvant,Liquid,1,99,fl oz/acre,fl oz/acre,,,
 a1Y4W000002lTWmUAM,United States,,Adjuvant,,MELOCON WG,Certis USA LLC,Ground,Dry,0.5,9,lb/acre,lb/acre,,4,
 a1Y4W000002luITUAY,United States,,Adjuvant,,Menefee Humate,OMRI,Adjuvant,Dry,100,250,lb/acre,lb/acre,,,
+a1YOF000000j7LV2AY,United States,,Adjuvant,,METAGROW F,Sustainable Growing Solutions,Adjuvant,Liquid,2,4,gal/acre,gal/acre,,,
+a1YOF000000j7LV2AY,United States,,Adjuvant,,METAGROW F,Sustainable Growing Solutions,Adjuvant,Liquid,16,128,fl oz/cwt,fl oz/cwt,,,
 a1Y4W000004CvftUAC,United States,,Adjuvant,,MSO,Alligare LLC,Adjuvant,Liquid,0.75,6,qt/acre,pt/acre,,,
 a1YOF000000Vt532AC,United States,,Adjuvant,,MSO CONCENTRATE,Loveland Products,Adjuvant,Liquid,1,2,pt/acre,pt/acre,,,
 a1YOF0000001yyD2AQ,United States,,Adjuvant,,NanoPro,Aqua-Yield,Adjuvant,Liquid,,4,,oz/acre,,,
@@ -243,6 +253,7 @@ a1Y4W000004CvzuUAC,United States,,Field Fungicide,100-1614,ORONDIS GOLD,Syngenta
 a1Y4W000002lTRtUAM,United States,,Seed Treatment,100-1628,VIBRANCE ULTRA POTATO,Syngenta Crop Protection,Seed Treatment - Liquid,Liquid,0.5,0.5,fl oz/cwt,fl oz/cwt,,,
 a1YOF0000000yvR2AQ,United States,,Field Herbicide - Pre-emergence,100-1652,GRAMOXONE SL 3.0,Syngenta,Broadcast,Liquid,0.7,1.3,pt/acre,pt/acre,,,
 a1YOF0000000yvR2AQ,United States,,Field Herbicide - Pre-plant,100-1652,GRAMOXONE SL 3.0,Syngenta,Broadcast,Liquid,0.7,1.3,pt/acre,pt/acre,,,
+a1YOF000000jAZV2A2,United States,,Field Fungicide,100-1737,ORONDIS GOLD DC,Syngenta,Furrow,Liquid,27.8,27.8,fl oz/acre,fl oz/acre,,48,14
 a1Y4W000002lTWhUAM,United States,,Seed Treatment,100-758,MAXIM 4FS,Syngenta Crop Protection,Seed Treatment - Liquid,Liquid,0.08,0.08,fl oz/cwt,fl oz/cwt,,12,
 a1Y4W000002lTZJUA2,United States,,Field Fungicide,100-803,RIDOMIL GOLD MZ,Syngenta Crop Protection,Foliar,Dry,2.5,2.5,lb/acre,lb/acre,,48,14
 a1Y4W000002lTZMUA2,United States,,Field Fungicide,100-804,RIDOMIL GOLD/COPPER,Syngenta Crop Protection,Foliar,Dry,2,2,lb/acre,lb/acre,,48,14
@@ -493,6 +504,7 @@ a1Y4W000002lfHqUAI,Canada,,Adjuvant,24950,ACTIVATE PLUS,Winfield Solutions LLC,A
 a1Y4W000002lTjJUAU,Canada,,Field Insecticide,24984,MATADOR 120EC,"Syngenta Canada, Inc.",Air,Liquid,83,83,ml/ha,ml/ha,7,12,7
 a1Y4W000002lTjJUAU,Canada,,Field Insecticide,24984,MATADOR 120EC,"Syngenta Canada, Inc.",Foliar,Liquid,83,125,ml/ha,ml/ha,7,12,7
 a1Y4W000002lThVUAU,Canada,,Fumigant,25103,BUSAN 1236,"Buckman Laboratories of Canada, Ltd.",Fumigation,Liquid,365,695,L/ha,L/ha,,120,
+a1Y4W000002lTkRUAU,Canada,,Field Herbicide - Pre-plant,25344,ROUNDUP TRANSORB,Bayer Cropscience Inc.,Ground,Liquid,0.75,3.5,L/ha,L/ha,,12,
 a1Y4W000002lTeaUAE,Canada,,Field Fungicide,25397,PENNCOZEB 75DF,"UPL NA, INC.",Foliar,Dry,1.1,2.25,kg/ha,kg/ha,,12,3
 a1Y4W000002lTi8UAE,,New Brunswick,Field Insecticide,25573,DECIS FLOWABLE,Bayer Cropscience Inc.,Foliar,Liquid,100,250,ml/ha,ml/ha,,12,1
 a1Y4W000002lTi2UAE,Canada,,Field Insecticide,25651,CYGON 480 AG,FMC of Canada Limited,Foliar,Liquid,0.55,1,L/ha,L/ha,,12,7
@@ -647,6 +659,7 @@ a1Y4W000003eUANUA2,Canada,,Adjuvant,28327,PRO-SURF II A NON-IONIC LIQUID WETTING
 a1YOF000000OR772AG,Canada,,Adjuvant,28385,MSO CONCENTRATE WITH LECI-TECH,Loveland Products Inc.,Adjuvant,Liquid,1,1,%,%,,,
 a1Y4W000002lTgzUAE,Canada,,Field Insecticide,28407,ACTARA 240SC,"Syngenta Canada, Inc.",Foliar,Liquid,100,109,ml/ha,ml/ha,,12,7
 a1Y4W000002lTgzUAE,Canada,,Field Insecticide,28407,ACTARA 240SC,"Syngenta Canada, Inc.",Furrow,Liquid,3.4,4.4,ml/100m,ml/100m,,12,7
+a1Y4W000002lTgzUAE,Canada,,Seed Treatment,28407,ACTARA 240SC,"Syngenta Canada, Inc.",Seed Treatment - Liquid,Liquid,24.4,24.4,ml/100kg,ml/100kg,,12,7
 a1Y4W000002lTgzUAE,Canada,,Seed Treatment,28407,ACTARA 240SC,"Syngenta Canada, Inc.",Seed Treatment - Liquid,Liquid,380,488,ml/ha,ml/ha,,12,7
 a1Y4W000002lTh0UAE,Canada,,Field Insecticide,28408,ACTARA 25WG,"Syngenta Canada, Inc.",Foliar,Dry,105,105,g/ha,g/ha,,12,7
 a1Y4W000002lTkEUAU,Canada,,Field Fungicide,28474,RIDOMIL GOLD 480SL,"Syngenta Canada, Inc.",Foliar,Liquid,0.208,0.208,L/ha,L/ha,14,12,14
@@ -764,6 +777,18 @@ a1Y4W000002lTeQUAU,Canada,,Field Insecticide,30895,EXIREL,FMC CORPORATION,Foliar
 a1Y4W000002lTjSUAU,Canada,,Nematicide,30900,MINECTO DUO 40WG,"Syngenta Canada, Inc.",Furrow,Dry,440,700,g/ha,g/ha,,12,
 a1Y4W000002lTjnUAE,Canada,,Field Herbicide - Pre-emergence,30947,OUTLOOK,BASF Canada Inc.,Ground,Liquid,756,963,ml/ha,ml/ha,,24,40
 a1Y4W000002lTeIUAU,Canada,,Seed Treatment,31024,CRUISER MAXX POTATO EXTREME,"Syngenta Canada, Inc.",Seed Treatment - Liquid,Liquid,20,20,ml/100kg,ml/100kg,,,
+a1YOF000000MBzJ2AW,,Alberta,Field Herbicide - Post-emergence,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Foliar,Dry,375,375,g/ha,g/ha,,12,60
+a1YOF000000MBzJ2AW,,Alberta,Field Herbicide - Pre-emergence,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Ground,Dry,550,1500,g/ha,g/ha,,,60
+a1YOF000000MBzJ2AW,,Manitoba,Field Herbicide - Post-emergence,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Foliar,Dry,375,375,g/ha,g/ha,,12,60
+a1YOF000000MBzJ2AW,,Manitoba,Field Herbicide - Pre-emergence,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Ground,Dry,550,1500,g/ha,g/ha,,,60
+a1YOF000000MBzJ2AW,,New Brunswick,Field Herbicide - Post-emergence,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Foliar,Dry,550,1500,g/ha,g/ha,,12,60
+a1YOF000000MBzJ2AW,,New Brunswick,Field Herbicide - Pre-emergence,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Ground,Dry,550,1500,g/ha,g/ha,,12,60
+a1YOF000000MBzJ2AW,,New Brunswick,Field Herbicide - Pre-plant,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Ground,Dry,550,1500,g/ha,g/ha,,12,60
+a1YOF000000MBzJ2AW,,Prince Edward Island,Field Herbicide - Post-emergence,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Foliar,Dry,550,1500,g/ha,g/ha,,12,60
+a1YOF000000MBzJ2AW,,Prince Edward Island,Field Herbicide - Pre-emergence,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Ground,Dry,550,1500,g/ha,g/ha,,12,60
+a1YOF000000MBzJ2AW,,Prince Edward Island,Field Herbicide - Pre-plant,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Ground,Dry,550,1500,g/ha,g/ha,,12,60
+a1YOF000000MBzJ2AW,,Saskatchewan,Field Herbicide - Post-emergence,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Foliar,Dry,375,375,g/ha,g/ha,,12,60
+a1YOF000000MBzJ2AW,,Saskatchewan,Field Herbicide - Pre-emergence,31334,TRICOR 75WSB,UPL AgroSolutions Canada Inc.,Ground,Dry,550,1500,g/ha,g/ha,,,60
 a1Y4W000002lTiCUAU,Canada,,Desiccant,31406,DESSICASH DESICCANT,Sharda Cropchem Limited,Foliar,Liquid,1.25,3.5,L/ha,L/ha,4,24,
 a1Y4W000002lTemUAE,Canada,,Field Insecticide,31452,SIVANTO,Bayer Cropscience Inc.,Foliar,Liquid,500,1000,ml/ha,ml/ha,,12,7
 a1Y4W000002lTknUAE,Canada,,Field Herbicide - Pre-plant,31493,SHARDA GLYPHOSATE 360,Sharda Cropchem Limited,Ground,Liquid,0.75,12,L/ha,L/ha,,12,
@@ -796,7 +821,7 @@ a1Y4W000002lTeqUAE,Canada,,Field Fungicide - 36inch Spacing,32108,VELUM PRIME,Ba
 a1Y4W000004CwFsUAK,Canada,,Field Herbicide - Pre-plant,32181,CRUSH'R 480,Albaugh LLC,Ground,Liquid,0.56,9,L/ha,L/ha,,12,
 a1Y4W000002lTirUAE,Canada,,Field Herbicide - Pre-plant,32228,GUARDSMAN GLYPHOSATE,Univar Canada Ltd,Ground,Liquid,0.5,2.33,L/ha,L/ha,,12,
 a1Y4W000002lThHUAU,Canada,,Field Fungicide,32263,AZOSHY 250 SC,Sharda Cropchem Limited,Foliar,Liquid,500,800,ml/ha,ml/ha,7,12,1
-a1Y4W000002lThHUAU,Canada,,Field Fungicide - 36inch Spacing,32263,AZOSHY 250 SC,Sharda Cropchem Limited,Furrow,Liquid,4,6,ml/100m,ml/100m,,12,1
+a1Y4W000002lThHUAU,Canada,,Field Fungicide,32263,AZOSHY 250 SC,Sharda Cropchem Limited,Furrow,Liquid,4,6,ml/100m,ml/100m,,12,1
 a1Y4W000002lfI2UAI,Canada,,Seed Treatment,32270,HGW86 200SC,FMC CORPORATION,Seed Treatment - Liquid,Liquid,45,45,ml/100kg,ml/100kg,,12,
 a1Y4W000002lThiUAE,Canada,,Field Herbicide - Post-emergence,32334,CLETHODIM 240,Albaugh LLC,Foliar,Liquid,0.125,0.38,L/ha,L/ha,,12,60
 a1Y4W000002lTldUAE,Canada,,Field Fungicide,32363,ZING,Gowan Company L.L.C.,Foliar,Liquid,2.19,2.4,L/ha,L/ha,,12,7
@@ -824,7 +849,7 @@ a1Y4W000002lTkOUAU,Canada,,Field Herbicide - Post-emergence,32932,RIMSULFURON 25
 a1Y4W000002lTkoUAE,Canada,,Field Herbicide - Post-emergence,32932,SHARDA RIMSULFURON 25% WDG,Sharda Cropchem Limited,Foliar,Dry,60,60,g/ha,g/ha,,12,30
 a1YOF000000N0VZ2A0,Canada,,Field Herbicide - Post-emergence,32933,SHARDA RIMSULFURON 25% WSB HERBICIDE,Sharda Cropchem Limited,Foliar,Dry,60,60,g/ha,g/ha,,12,30
 a1Y4W000002lTjkUAE,Canada,,Field Fungicide - 34inch Spacing,32937,ORONDIS GOLD B 480SL,"Syngenta Canada, Inc.",Furrow,Liquid,4,4,ml/100m,ml/100m,,12,
-a1Y4W000002lTjkUAE,Canada,,Field Fungicide - 36inch Spacing,32937,ORONDIS GOLD B 480SL,"Syngenta Canada, Inc.",Furrow,Liquid,4,4,mg/100m,ml/100m,,12,
+a1Y4W000002lTjkUAE,Canada,,Field Fungicide - 36inch Spacing,32937,ORONDIS GOLD B 480SL,"Syngenta Canada, Inc.",Furrow,Liquid,4,4,ml/100m,ml/100m,,12,
 a1Y4W000002lTjTUAU,Canada,,Field Insecticide,33023,MINECTO PRO,"Syngenta Canada, Inc.",Foliar,Liquid,370,670,ml/ha,ml/ha,,12,14
 a1Y4W000002lu8OUAQ,Canada,,Field Fungicide,33081,QUASH SC FUNGICIDE,"Valent Canada, Inc",Foliar,Liquid,182,292,ml/ha,ml/ha,,12,8
 a1Y4W000002lTesUAE,Canada,,Seed Treatment,33171,VIBRANCE ULTRA POTATO,"Syngenta Canada, Inc.",Seed Treatment - Liquid,Liquid,32,32,ml/100kg,ml/100kg,,,
@@ -865,6 +890,8 @@ a1Y4W000002ltSjUAI,Canada,,Field Insecticide,33666,CIMEGRA,BASF Canada Inc,Furro
 a1Y4W000004CynLUAS,Canada,,Desiccant,33686,BELOUKHA,Belchim Crop Protection Canada Inc.,Foliar,Liquid,12,16,L/ha,L/ha,7,,1
 a1Y4W000002lTi6UAE,Canada,,Field Insecticide,33700,DECIS 100EC INSECTICIDE,Bayer Cropscience Inc.,Foliar,Liquid,50,125,ml/ha,ml/ha,,12,1
 a1Y4W000002lTlRUAU,Canada,,Field Insecticide,33711,VAYEGO 200 SC,Bayer Cropscience Inc.,Foliar,Liquid,100,150,ml/ha,ml/ha,,12,14
+a1YOF000000j5oL2AQ,Canada,,Desiccant,33716,REVENGE HERBICIDE,"NewAgco, Inc.",Foliar,Liquid,233,350,ml/ha,ml/ha,,,7
+a1YOF000000j5oL2AQ,Canada,,Field Herbicide - Pre-plant,33716,REVENGE HERBICIDE,"NewAgco, Inc.",Ground,Liquid,73,177,ml/ha,ml/ha,,,
 a1Y4W000002lty9UAA,Canada,,Field Herbicide - Post-emergence,33721,ADVANTAGE CLETHODIM 240,Advantage Crop Production,Foliar,Liquid,0.38,0.38,L/ha,L/ha,,12,60
 a1Y4W000002lTiVUAU,Canada,,Field Fungicide,33729,EMISSARIUS FUNGICIDE,PARIJAT INDUSTRIES (INDIA) PVT. LTD.,Foliar,Liquid,500,800,ml/ha,ml/ha,,12,1
 a1Y4W000002lTl0UAE,,Alberta,Field Herbicide - Pre-emergence,33753,STRIM MTZ HERBICIDE,UPL NA INC.,Ground,Liquid,2.9,3.9,L/ha,L/ha,,12,60
@@ -879,6 +906,16 @@ a1Y4W000002lTlGUAU,,Manitoba,Field Herbicide - Post-emergence,33911,TRICOR LQ,UP
 a1Y4W000002lTlGUAU,,New Brunswick,Field Herbicide - Post-emergence,33911,TRICOR LQ,UPL NA INC.,Ground,Liquid,850,2.25,ml/ha,L/ha,,12,90
 a1Y4W000002lTlGUAU,,New Brunswick,Field Herbicide - Pre-emergence,33911,TRICOR LQ,UPL NA INC.,Ground,Liquid,850,2.25,ml/ha,L/ha,,12,60
 a1Y4W000002lTk1UAE,Canada,,Field Fungicide,33928,PREACH FUNGICIDE,Sharda Cropchem Limited,Foliar,Liquid,0.45,0.67,L/ha,L/ha,,12,3
+a1YOF000000j5Rl2AI,,Alberta,Field Herbicide - Pre-emergence,33932,METRIX DF HERBICIDE,Sharda Cropchem Limited,Ground,Dry,375,550,g/ha,g/ha,,,60
+a1YOF000000j5Rl2AI,,Alberta,Field Herbicide - Pre-plant,33932,METRIX DF HERBICIDE,Sharda Cropchem Limited,Ground,Dry,375,550,g/ha,g/ha,,,60
+a1YOF000000j5Rl2AI,,Manitoba,Field Herbicide - Pre-emergence,33932,METRIX DF HERBICIDE,Sharda Cropchem Limited,Ground,Dry,375,550,g/ha,g/ha,,,60
+a1YOF000000j5Rl2AI,,Manitoba,Field Herbicide - Pre-plant,33932,METRIX DF HERBICIDE,Sharda Cropchem Limited,Ground,Dry,375,550,g/ha,g/ha,,,60
+a1YOF000000j5Rl2AI,,New Brunswick,Field Herbicide - Pre-emergence,33932,METRIX DF HERBICIDE,Sharda Cropchem Limited,Ground,Dry,550,1000,g/ha,g/ha,,,60
+a1YOF000000j5Rl2AI,,New Brunswick,Field Herbicide - Pre-plant,33932,METRIX DF HERBICIDE,Sharda Cropchem Limited,Ground,Dry,750,1500,g/ha,g/ha,,,60
+a1YOF000000j5Rl2AI,,Prince Edward Island,Field Herbicide - Pre-emergence,33932,METRIX DF HERBICIDE,Sharda Cropchem Limited,Ground,Dry,550,1000,g/ha,g/ha,,,60
+a1YOF000000j5Rl2AI,,Prince Edward Island,Field Herbicide - Pre-plant,33932,METRIX DF HERBICIDE,Sharda Cropchem Limited,Ground,Dry,750,1500,g/ha,g/ha,,,60
+a1YOF000000j5Rl2AI,,Saskatchewan,Field Herbicide - Pre-emergence,33932,METRIX DF HERBICIDE,Sharda Cropchem Limited,Ground,Dry,375,550,g/ha,g/ha,,,60
+a1YOF000000j5Rl2AI,,Saskatchewan,Field Herbicide - Pre-plant,33932,METRIX DF HERBICIDE,Sharda Cropchem Limited,Ground,Dry,375,550,g/ha,g/ha,,,60
 a1Y4W000004CxoMUAS,Canada,,Field Fungicide,33955,PROPULSE,Bayer Cropscience Inc.,Foliar,Liquid,750,750,ml/ha,ml/ha,10,24,14
 a1Y4W000002lTizUAE,Canada,,Desiccant,33956,INSTEP HERBICIDE,Rotam Ltd,Foliar,Liquid,350,350,ml/ha,ml/ha,,12,7
 a1Y4W000002lTizUAE,Canada,,Field Herbicide - Pre-plant,33956,INSTEP HERBICIDE,Rotam Ltd,Ground,Liquid,117,117,ml/ha,ml/ha,,12,7
@@ -970,6 +1007,7 @@ a1YOF000000N0FR2A0,Canada,,Field Fungicide,34864,FBN Pyraclostrobin 250 EC,"Farm
 a1Y4W000003eUAmUAM,Canada,,Field Fungicide,34871,VELUM RISE,Bayer Cropscience Inc.,Furrow,Liquid,1,1,L/ha,L/ha,,12,
 a1YOF000000NMkb2AG,Canada,,Field Fungicide,35050,VANTANA 35050,Adama Agricultural Solutions Canada LTD.,Foliar,Liquid,0.4,0.6,L/ha,L/ha,,24,14
 a1YOF000000eVDB2A2,Canada,,Field Fungicide,35176,ORONDIS GOLD DC FUNGICIDE,,Furrow,Liquid,18,18,ml/100m,ml/100m,,12,
+a1YOF000000k2d72AA,Canada,,Adjuvant,35232,SIDEKICH NT,NORAC CONCEPTS INC,Adjuvant,Liquid,0.25,2.5,L/ha,L/ha,,,
 a1Y4W000002lTWKUA2,United States,,Field Insecticide,352-342,LANNATE SP,"TESSENDERLO KERLEY, INC.",Foliar,Dry,0.5,1,lb/acre,lb/acre,,48,6
 a1Y4W000002lTWJUA2,United States,,Field Insecticide,352-384,LANNATE LV INSECTICIDE,"Innvictis Crop Care, LLC",Chemigation,Liquid,1.5,3,pt/acre,pt/acre,,48,6
 a1Y4W000002lTWJUA2,United States,,Field Insecticide,352-384,LANNATE LV INSECTICIDE,"Innvictis Crop Care, LLC",Foliar,Liquid,1.5,3,pt/acre,pt/acre,,48,6
@@ -1822,7 +1860,7 @@ a1Y4W000002lsXOUAY,,Wisconsin,Field Fungicide,89333-1-5905,OMNI BRAND MANCOZEB 7
 a1Y4W000004CvqmUAC,United States,,Adjuvant,89391-50008,VOYAGER 90/10,"INNVICTIS™ CROP CARE, LLC",Adjuvant,Liquid,1,4,pt/acre,pt/acre,,,
 a1Y4W000002luAyUAI,United States,,Adjuvant,89391-50024,GAUNTLET,Innvictus Crop Care,Adjuvant,Liquid,2,10,fl oz/acre,fl oz/acre,,,0
 a1Y4W000004CxogUAC,United States,,Adjuvant,89459-33,PBO-8 SYNERGIST,McLaughlin Gormley King Company,Adjuvant,Liquid,8,8,fl oz/acre,fl oz/acre,,,
-a1Y4W000002lTVtUAM,United States,,Rodenticide,90930-1,HOT SAUCE ANIMAL REPELLENT,Miller Chemical & Fertilizer Corp.,Ground,Liquid,5,800,FO100G,FO100G,,4,14
+a1Y4W000002lTVtUAM,United States,,Rodenticide,90930-1,HOT SAUCE ANIMAL REPELLENT,Miller Chemical & Fertilizer Corp.,Ground,Liquid,6,8,fl oz/acre,fl oz/acre,,4,14
 a1YOF000000g53J2AQ,United States,,Field Insecticide,91234-104,BATALLION 2EC,"Atticus, LLC",Foliar,Liquid,6.4,6.4,fl oz/acre,fl oz/acre,,12,21
 a1YOF000000g53J2AQ,United States,,Field Insecticide,91234-104,BATALLION 2EC,"Atticus, LLC",Furrow,Liquid,19.2,19.2,fl oz/acre,fl oz/acre,,,
 a1YOF000000g53J2AQ,United States,,Field Insecticide,91234-104,BATALLION 2EC,"Atticus, LLC",Lay-by,Liquid,3.2,9.6,fl oz/acre,fl oz/acre,,12,
@@ -1838,6 +1876,8 @@ a1YOF0000002SeX2AU,,Washington,Field Fungicide,91234-246,ORBUS ESQ,Atticus LLC,F
 a1YOF0000002SeX2AU,,Wisconsin,Field Fungicide,91234-246,ORBUS ESQ,Atticus LLC,Foliar,Liquid,9,14.5,fl oz/acre,fl oz/acre,7,48,14
 a1YOF000000g54v2AA,United States,,Field Insecticide,91234-252,ENTERIK 0.7 SC,"Atticus, LLC",Foliar,Liquid,1.75,3.5,fl oz/acre,fl oz/acre,,12,14
 a1YOF0000002sif2AA,United States,,Field Insecticide,91234-273,CORTES MAXX,"Atticus, LLC",Foliar,Liquid,1.28,4,fl oz/acre,fl oz/acre,4,12,1
+a1YOF000000jDPJ2A2,United States,,Field Insecticide,91234-279,A1101.04,"Atticus, LLC",Foliar,Liquid,3,10,fl oz/acre,fl oz/acre,,,7
+a1YOF000000jio52AA,United States,,Field Insecticide,91234-279,FALCONDOR SC,,Foliar,Liquid,3,10,fl oz/acre,fl oz/acre,,4,7
 a1YOF000000ZNEf2AO,United States,,Field Insecticide,91234-292,CRYPTONYX 360,Atticus LLC,Foliar,Liquid,2.8,2.8,fl oz/acre,fl oz/acre,,12,7
 a1YOF0000000zEn2AI,United States,,Field Insecticide,91234-51,ENTERIK .15LV,"Atticus, LLC",Foliar,Liquid,8,16,fl oz/acre,fl oz/acre,,12,14
 a1Y4W000002lTbZUAU,,Washington,Field Herbicide,91234-52-89391,VISOR S-MOC HERBICIDE,"Innvictis Crop Care, LLC",Soil Incorporated,Liquid,1,2,pt/acre,pt/acre,,24,60
