@@ -23,6 +23,8 @@ from eiq_calculator_page.page_eiq_calculator import EiqCalculatorPage
 from season_planner_page.page_scenarios_manager import ScenariosManagerPage
 from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage
 from user_manual.service_open_user_manual import open_user_manual
+from STIR.page_STIR_calculator import STIRCalculatorPage
+
 
 class MainWindow(QMainWindow):
     """
@@ -106,6 +108,10 @@ class MainWindow(QMainWindow):
         # Create and add the STIR placeholder page (index 6)
         self.stir_placeholder_page = STIRPlaceholderPage(self)
         self.stacked_widget.addWidget(self.stir_placeholder_page)
+        
+        # Create and add the STIR calculator page (index 7)
+        self.stir_calculator_page = STIRCalculatorPage(self)
+        self.stacked_widget.addWidget(self.stir_calculator_page)
 
     def _create_yellow_bar(self):
         """Create the yellow bar at the bottom with user manual and links."""

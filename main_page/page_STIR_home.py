@@ -96,26 +96,26 @@ class STIRPlaceholderPage(QWidget):
         # Add some spacing
         main_layout.addStretch(1)
         
-        # Coming soon message
-        coming_soon_frame = ContentFrame()
-        coming_soon_layout = QVBoxLayout()
+        # Feature buttons section
+        buttons_frame = ContentFrame()
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setSpacing(get_spacing_large())
         
-        coming_soon_label = QLabel("🚧 Coming Soon! 🚧")
-        coming_soon_label.setAlignment(Qt.AlignCenter)
-        coming_soon_label.setFont(get_subtitle_font())
-        coming_soon_layout.addWidget(coming_soon_label)
+        # STIR Calculator button
+        calculator_button = create_button(
+            text="STIR Calculator",
+            description="Calculate Soil Tillage Intensity Ratings\nCompare different tillage practices",
+            style="feature",
+            callback=self.navigate_to_stir_calculator,
+            parent=self
+        )
+        buttons_layout.addWidget(calculator_button, 1)  # Add stretch factor of 1
         
-        description_label = QLabel("The STIR feature is currently under development.\nThis will allow you to assess soil tillage intensity.")
-        description_label.setAlignment(Qt.AlignCenter)
-        description_label.setFont(get_large_font())
-        description_label.setWordWrap(True)
-        coming_soon_layout.addWidget(description_label)
-        
-        coming_soon_frame.layout.addLayout(coming_soon_layout)
-        main_layout.addWidget(coming_soon_frame)
+        buttons_frame.layout.addLayout(buttons_layout)
+        main_layout.addWidget(buttons_frame)
         
         # Add some spacing
-        main_layout.addSpacing(get_spacing_large())
+        main_layout.addStretch(1)
         
         # Info frame about STIR
         info_frame = ContentFrame()
@@ -130,14 +130,9 @@ class STIRPlaceholderPage(QWidget):
         
         # STIR description
         info_text = QLabel(
-            "STIR (Soil Tillage Intensity Rating) is a decision-support tool that evaluates "
-            "the intensity of soil tillage practices and their effects on agricultural systems.<br><br>"
-            "STIR values help assess:<br>"
-            "• Soil disturbance levels from tillage operations<br>"
-            "• Impact on soil health and structure<br>"
-            "• Conservation tillage benefits<br><br>"
-            "<b>Higher STIR values -> More soil disturbance</b>"
-            "<br><br>STIR = (speed * 0.5) * (tillage type * 3.25) * (average depth * 1) * (surface soil disturbance * 1)"
+            "STIR (Soil Tillage Intensity Rating) evaluates the intensity of soil tillage practices<br>"
+            "<b>Higher STIR values → More soil disturbance</b><br>"
+            "STIR is a product of speed, tillage type, average depth, and surface soil disturbance"
         )
         info_text.setWordWrap(True)
         info_text.setFont(get_large_font())
@@ -146,10 +141,11 @@ class STIRPlaceholderPage(QWidget):
         
         info_frame.layout.addLayout(info_layout)
         main_layout.addWidget(info_frame)
-        
-        # Add more spacing at the bottom
-        main_layout.addStretch(1)
     
+    def navigate_to_stir_calculator(self):
+        """Navigate to the STIR calculator page."""
+        self.parent.navigate_to_page(7)  # STIR calculator page will be at index 7
+        
     def go_back_to_feature_selection(self):
         """Navigate back to the feature selection page."""
         self.parent.navigate_to_page(0)  # Feature selection page is at index 0

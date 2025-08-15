@@ -154,39 +154,29 @@ class HomePage(QWidget):
         info_layout = QVBoxLayout()
                 
         # EIQ info title
-        info_title = QLabel("Environmental Impact Quotients (EIQ) in a nutshell")
+        info_title = QLabel("About EIQ")
         info_title.setFont(get_subtitle_font())
         info_title.setAlignment(Qt.AlignCenter)
         info_layout.addWidget(info_title)
         
         # EIQ description with concise information
         info_text = QLabel(
-            "EIQ scores are a tool to asses and compare pesticides' use impacts.<br>"
-            "<b>Higher scores →  Higher impacts</b>.<br><br>"
-            "Each Active Ingredient has an EIQ value, but we compare products based on the <b>Field Use EIQ</b>, where:<br>"
-            "<b>Field Use EIQ = Active Ingredient EIQ x Active Ingredient concentration x Product Application Rate</b><br>"
-            "EIQs evaluate the risk posed by an active ingredient to non-target beings:<br>"
-            "Farm worker risk &nbsp;&nbsp;&nbsp; Consumer risk &nbsp;&nbsp;&nbsp; Ecological risk"
+            (
+                "Environmental Impact Quotient (EIQ) scores are a tool to assess and compare pesticides' use impacts.<br>"
+                "<b>Higher Scores →  Higher Impacts</b><br><br>"
+                "Each Active Ingredient has an EIQ value, representing the risk it poses to the environment and humans.<br>"
+                "We compare products based on their <b>Field Use EIQ</b>, where:<br>"
+                "<b>Field Use EIQ = Active Ingredient EIQ x Active Ingredient concentration x Product Application Rate</b><br><br>"
+                '<a href="https://cals.cornell.edu/integrated-pest-management/risk-assessment/eiq">Learn more</a><br><br>'
+                "Always double check product labels and SDS before using a product. This app is not a substitute for professional advice."
+            )
         )
-
+        info_text.setTextFormat(Qt.RichText)
+        info_text.setOpenExternalLinks(True)
         info_text.setWordWrap(True)
         info_text.setFont(get_large_font())
         info_text.setAlignment(Qt.AlignCenter)
         info_layout.addWidget(info_text)
-        
-        # Cornell NYSIPM link
-        cornell_link_text = QLabel('Learn more on the <a href="https://cals.cornell.edu/integrated-pest-management/risk-assessment/eiq">Cornell IPM website</a>')
-        cornell_link_text.setFont(get_large_font())
-        cornell_link_text.setAlignment(Qt.AlignCenter)
-        cornell_link_text.setOpenExternalLinks(True)
-        cornell_link_text.setTextFormat(Qt.RichText)
-        info_layout.addWidget(cornell_link_text)
-
-        # Warning text
-        warning_text = QLabel("Always double check product labels and SDS before using a product. This app is an aide, not a substitute for professional advice.") 
-        warning_text.setFont(get_large_font())
-        warning_text.setAlignment(Qt.AlignCenter)
-        info_layout.addWidget(warning_text)
 
         info_frame.layout.addLayout(info_layout)
         main_layout.addWidget(info_frame)
