@@ -97,10 +97,10 @@ class ApplicationValidator:
             return ValidationResult(ValidationState.INVALID_PRODUCT, issues, False)
 
         # 2. Skip validation for adjuvants - they don't contribute to EIQ
-        if self._is_adjuvant(product):
+        if self._is_adjuvant_or_biological(product):
             issues.append(ValidationIssue(
                 field="status",
-                message="Adjuvant product - excluded from EIQ calculations",
+                message="Adjuvant (or biological, US only) product - excluded from EIQ calculations",
                 severity="info"
             ))
             return ValidationResult(ValidationState.VALID, issues, True)
@@ -322,22 +322,27 @@ class ApplicationValidator:
             QMessageBox.warning(None, "Error", f"Error in ApplicationValidator._find_product() method: {e}")
             return None
     
-    def _is_adjuvant(self, product) -> bool:
+    def _is_adjuvant_or_biological(self, product) -> bool:
         """
-        Check if the product is an adjuvant.
-        
-        Adjuvants are identified by a specific product type or category.
-        
+        Check if a product is an adjuvant or biological based on product type or application method.
+
         Args:
             product: Product object to check
             
         Returns:
-            True if the product is an adjuvant, False otherwise
+            bool: True if product is an adjuvant or biological, False otherwise
         """
-        try:
-            # Example check: if product type is 'Adjuvant', return True
-            # This logic should be replaced with the actual criteria for adjuvants
-            return product.product_type == "Adjuvant"
-        except Exception as e:
-            QMessageBox.warning(None, "Error", f"Error in ApplicationValidator._is_adjuvant() method: {e}")
+        if not product:
             return False
+        
+        # Check product type
+        if hasattr(product, 'product_type') and product.product_type:
+            if product.product_type.lower() == "adjuvant" or product.product_type.lower() == "biological":
+                return True
+                
+        # Check application method
+        if hasattr(product, 'application_method') and product.application_method:
+            if product.application_method.lower() == "adjuvant":
+                return True
+                
+        return False

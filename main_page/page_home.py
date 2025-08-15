@@ -216,8 +216,8 @@ class HomePage(QWidget):
         self.parent.navigate_to_page(5)
 
     def show_learning_materials(self):
-        """Show the learning materials dialog with EIQ and STIR information."""
-        self.parent.show_learning_materials_dialog()
+        """Show the learning materials in the system browser."""
+        self.parent.show_learning_materials()
     
     def set_country_region(self, country, region):
         """Set the country and region in the preferences row."""

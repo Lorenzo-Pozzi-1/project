@@ -231,10 +231,10 @@
     <div class="container">
         <!-- Navigation Sidebar -->
         <nav class="nav-sidebar">
-            <div class="nav-title">🎓 EIQ & STIR<span>.</span></div>
-            
-            <a href="#eiq" class="nav-link active">🧪 Environmental Impact Quotient</a>
-            <a href="#stir" class="nav-link">🌊 Surface Water Risk Tool</a>
+            <div class="nav-title">🎓 Learning Materials<span>.</span></div>
+
+            <a href="#eiq" class="nav-link active">🧪 EIQ</a>
+            <a href="#stir" class="nav-link">🚜 STIR</a>
         </nav>
 
         <!-- Main Content -->
@@ -245,7 +245,12 @@
                 <h1>🧪 Environmental Impact Quotient (EIQ)<span>.</span></h1>
                 
                 <div class="definition-box">
-                    <strong>EIQ</strong> is a numerical score that quantifies the total environmental impact of a pesticide application. Developed at Cornell University, it considers worker safety, consumer exposure, and ecological effects in a single value.
+                    <strong>EIQ</strong> scores are used to quantify the environmental impact of pesticides application. Higher scores = higher impacts<br>
+                    It condenses in a single value information about toxicity and exposure risk of farm workers, consumers, and ecological components.<br>
+                    An EIQ score is calculated for each active ingredient based on factors like its toxicity, persistence, and potential for leaching. These values are calcualted by Cornell UNiversity<br>
+                    To compare control products applications however, we use the <strong>Field Use EIQ Score</strong>: this allows to account fo rthings such as multiple active ingredients, different active ingredient concentrations, and different application rates.<br>
+                    Summing up all the scores for the applications of a season, the full crop protection plan can be evaluated, and different plans can be compared.
+                    
                 </div>
 
                 <h2>What EIQ Measures</h2>
@@ -258,26 +263,24 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Farmworker Impact</strong></td>
-                            <td>Applicator and field worker exposure risk</td>
+                            <td><strong>Farm workers</strong></td>
+                            <td>Toxicity to and exposure of applicators and field workers</td>
                         </tr>
                         <tr>
-                            <td><strong>Consumer Impact</strong></td>
-                            <td>Food residue risk to end consumers</td>
+                            <td><strong>Consumers</strong></td>
+                            <td>Toxicity to and exposure of consumers through food residues and water contamination</td>
                         </tr>
                         <tr>
-                            <td><strong>Ecological Impact</strong></td>
-                            <td>Risk to non-target species and environment</td>
+                            <td><strong>Environment</strong></td>
+                            <td>Toxicity to and exposure of several non-target species, surface and ground waters contamination</td>
                         </tr>
                     </tbody>
                 </table>
 
-                <h2>How EIQ is Calculated</h2>
+                <h2>How Field Use EIQ scores are Calculated</h2>
                 <div class="formula-box">
-                    Field Use EIQ = (Base EIQ × Application Rate) / (LD50 × 1000)
+                    Field Use EIQ = Active Ingredient EIQ × Active Ingredient Concentration × Control Product Application Rate
                 </div>
-
-                <p><strong>Base EIQ</strong> is calculated from 11 toxicological and environmental fate parameters including chronic toxicity, persistence, leaching potential, and toxicity to fish, birds, and beneficial insects.</p>
 
                 <h2>Score Interpretation</h2>
                 <table class="key-table">
@@ -292,153 +295,128 @@
                         <tr>
                             <td><span class="score-range score-low">< 20</span></td>
                             <td>Lower impact</td>
-                            <td>Copper fungicides, biologicals</td>
+                            <td>Biologicals, modern targeted chemistries, etc.</td>
                         </tr>
                         <tr>
                             <td><span class="score-range score-medium">20-50</span></td>
                             <td>Moderate impact</td>
-                            <td>Modern fungicides, selective insecticides</td>
+                            <td>Average fungicides, herbicides, and insecticides, etc.</td>
                         </tr>
                         <tr>
                             <td><span class="score-range score-high">50-100</span></td>
                             <td>Higher impact</td>
-                            <td>Broad-spectrum insecticides</td>
+                            <td>Old and/or broad spectrum chemistries, high application rates, etc.</td>
                         </tr>
                         <tr>
                             <td><span class="score-range score-high">> 100</span></td>
                             <td>Very high impact</td>
-                            <td>Older chemistry, high rates</td>
+                            <td>Highly toxic products, fumigants, very high application rates, etc.</td>
                         </tr>
                     </tbody>
                 </table>
-
+                
                 <div class="critical-box">
-                    <h4>💡 Key Points for Potato Production</h4>
+                    <h4>🥔 Key Points for Potato Production</h4>
                     <ul style="padding-left: 20px;">
-                        <li>Compare products within the same category (fungicide to fungicide)</li>
-                        <li>Consider application frequency—6 sprays = 6x seasonal impact</li>
-                        <li>Lower application rates can offset higher base EIQ values</li>
-                        <li>Set seasonal EIQ targets for your operation (e.g., < 200 total)</li>
-                        <li>EIQ is comparative, not an absolute safety measure</li>
+                        <li>Add</li>
+                        <li>takeaways</li>
+                        <li>here</li>
+                        <li>as</li>
+                        <li>needed</li>
                     </ul>
                 </div>
             </section>
 
             <!-- STIR Page -->
             <section id="stir" class="section">
-                <h1>🌊 Surface Water Tool for Pesticide Risk (STIR)<span>.</span></h1>
+                <h1>🚜 Soil Tillage Intensity Rating (STIR)<span>.</span></h1>
                 
                 <div class="definition-box">
-                    <strong>STIR</strong> is a USDA risk assessment model that specifically evaluates pesticide contamination potential to surface water through runoff and drift. It focuses exclusively on aquatic ecosystem protection.
+                    The <strong>STIR</strong> quantifies the intensity of tillage operations. This affects their impact on erosion potential, soil organic matter preservation, and thus overall health and fertility. Higher STIR scores = higher soil disturbance.<br>
+                    
                 </div>
 
                 <h2>What STIR Measures</h2>
                 <table class="key-table">
                     <thead>
                         <tr>
-                            <th>Risk Factor</th>
+                            <th>Factor</th>
                             <th>Assessment Focus</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Runoff Potential</strong></td>
-                            <td>Surface water contamination via field runoff</td>
+                            <td><strong>Tillage type</strong></td>
+                            <td>Inversion, lifting, mixing, compression, etc.</td>
                         </tr>
                         <tr>
-                            <td><strong>Leaching Potential</strong></td>
-                            <td>Groundwater to surface water movement</td>
+                            <td><strong>Speed</strong></td>
+                            <td>The faster an implement runs through the soil, the more it disturbs</td>
                         </tr>
                         <tr>
-                            <td><strong>Aquatic Toxicity</strong></td>
-                            <td>Direct harm to fish and aquatic organisms</td>
+                            <td><strong>Working depth</strong></td>
+                            <td>The deeper an implement works, the more soil it disturbs</td>
                         </tr>
                         <tr>
-                            <td><strong>Environmental Persistence</strong></td>
-                            <td>Duration of active contamination risk</td>
+                            <td><strong>Surface area disturbed</strong></td>
+                            <td>An implement working on a limited area disturbs less soil (e.g. strip tillage)</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <h2>How STIR is Calculated</h2>
                 <div class="formula-box">
-                    STIR = Predicted Environmental Concentration / Aquatic Toxicity Threshold
+                    STIR = (tillage type x 3.25) x (speed x 0.5) x (depth) x (surface area disturbed)
                 </div>
 
-                <p><strong>PEC</strong> considers application rate, solubility, soil binding, persistence, and volatility. <strong>Toxicity threshold</strong> is based on effects to fish, invertebrates, and aquatic plants.</p>
+                <p>the STIR is calcualted and summed for each operation executed in a full crop rotation, then divided by the number of years of the ortation to get the average yearly STIR. this is important as soil disturbace has to be kept as minimal as possible throughouth multiple years in order to deliver any benefit.</p>
 
-                <h2>Risk Level Interpretation</h2>
+                <h2>STIR Value Interpretation</h2>
+                <p>!!!!!ADJUST THIS SECTION WHEN IT'S CLEARER WHAT THE VALUES ARE!!!!!</p>
                 <table class="key-table">
                     <thead>
                         <tr>
                             <th>STIR Value</th>
-                            <th>Risk Level</th>
-                            <th>Management Response</th>
+                            <th>Tillage Intensity</th>
+                            <th>Typical Potato Systems</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="score-range score-low">< 0.1</span></td>
-                            <td>Low risk</td>
-                            <td>Standard practices acceptable</td>
+                            <td><span class="score-range score-low">< 30</span></td>
+                            <td>Low intensity</td>
+                            <td>No-till, strip-till systems</td>
                         </tr>
                         <tr>
-                            <td><span class="score-range score-medium">0.1 - 1.0</span></td>
-                            <td>Moderate risk</td>
-                            <td>Consider timing, buffers</td>
+                            <td><span class="score-range score-medium">30-60</span></td>
+                            <td>Moderate intensity</td>
+                            <td>Reduced tillage, chisel plow systems</td>
                         </tr>
                         <tr>
-                            <td><span class="score-range score-high">1.0 - 10</span></td>
-                            <td>High risk</td>
-                            <td>Implement risk mitigation</td>
+                            <td><span class="score-range score-high">60-100</span></td>
+                            <td>High intensity</td>
+                            <td>Conventional tillage with moldboard plow</td>
                         </tr>
                         <tr>
-                            <td><span class="score-range score-high">> 10</span></td>
-                            <td>Very high risk</td>
-                            <td>Consider alternatives</td>
+                            <td><span class="score-range score-high">> 100</span></td>
+                            <td>Very high intensity</td>
+                            <td>Intensive cultivation, multiple passes</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div class="critical-box">
-                    <h4>⚠️ Key Points for Potato Production</h4>
+                    <h4>🥔 Key Points for Potato Production</h4>
                     <ul style="padding-left: 20px;">
-                        <li>Critical for fields near streams, rivers, or wetlands</li>
-                        <li>Avoid high-STIR applications before rainfall (>10mm in 24hr)</li>
-                        <li>Use vegetated buffer zones to reduce runoff risk</li>
-                        <li>STIR values influence EPA registration decisions</li>
-                        <li>Site-specific conditions (slope, soil) affect actual risk</li>
-                        <li>Prioritize low-STIR products for sensitive locations</li>
+                        <li>Add</li>
+                        <li>takeaways</li>
+                        <li>here</li>
+                        <li>as</li>
+                        <li>needed</li>
                     </ul>
                 </div>
 
-                <h2>EIQ vs STIR: When to Use Each</h2>
-                <table class="key-table">
-                    <thead>
-                        <tr>
-                            <th>Use EIQ When...</th>
-                            <th>Use STIR When...</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Overall sustainability assessment</td>
-                            <td>Fields near water bodies</td>
-                        </tr>
-                        <tr>
-                            <td>Comparing broad environmental impact</td>
-                            <td>Regulatory compliance focus</td>
-                        </tr>
-                        <tr>
-                            <td>Season-long program optimization</td>
-                            <td>Site-specific risk management</td>
-                        </tr>
-                        <tr>
-                            <td>Certification requirements</td>
-                            <td>Aquatic habitat protection</td>
-                        </tr>
-                    </tbody>
-                </table>
+                
             </section>
         </main>
     </div>

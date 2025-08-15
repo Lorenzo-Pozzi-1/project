@@ -24,6 +24,7 @@ from season_planner_page.page_scenarios_manager import ScenariosManagerPage
 from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage
 from user_manual.service_open_user_manual import open_user_manual
 from STIR.page_STIR_calculator import STIRCalculatorPage
+from main_page.service_open_learning_materials import open_learning_materials
 
 
 class MainWindow(QMainWindow):
@@ -153,11 +154,9 @@ class MainWindow(QMainWindow):
         """Open the user manual in the system browser."""
         open_user_manual(self)
 
-    def show_learning_materials_dialog(self):
-        """Show the learning materials dialog."""
-        from main_page.page_learning_materials import LearningMaterialsDialog
-        dialog = LearningMaterialsDialog(self)
-        dialog.exec()
+    def show_learning_materials(self):
+        """Show the learning materials."""
+        open_learning_materials(self)
 
     def connect_signals(self):
         """Connect all signals to their respective handlers."""

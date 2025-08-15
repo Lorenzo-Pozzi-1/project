@@ -355,7 +355,7 @@ class ApplicationTableModel(QAbstractTableModel):
                 # Check if product is an adjuvant first
                 if app.product_name:
                     product = self._find_product(app.product_name)
-                    if product and self._is_adjuvant(product):
+                    if product and self._is_adjuvant_or_biological(product):
                         return "n/a"
                 
                 # Show calculated EIQ if it exists, regardless of validation state (except INVALID_PRODUCT)
@@ -376,22 +376,22 @@ class ApplicationTableModel(QAbstractTableModel):
             QMessageBox.warning(None, "Error", f"Error in ApplicationTableModel._get_cell_data() method: {e}")
             return ""
 
-    def _is_adjuvant(self, product) -> bool:
+    def _is_adjuvant_or_biological(self, product) -> bool:
         """
-        Check if a product is an adjuvant based on product type or application method.
-        
+        Check if a product is an adjuvant or biological based on product type or application method.
+
         Args:
             product: Product object to check
             
         Returns:
-            bool: True if product is an adjuvant, False otherwise
+            bool: True if product is an adjuvant or biological, False otherwise
         """
         if not product:
             return False
         
         # Check product type
         if hasattr(product, 'product_type') and product.product_type:
-            if product.product_type.lower() == "adjuvant":
+            if product.product_type.lower() == "adjuvant" or product.product_type.lower() == "biological":
                 return True
                 
         # Check application method
