@@ -20,7 +20,7 @@ from common.styles import (
     get_large_font, get_medium_font, 
     get_subtitle_font, get_title_font
 )
-from common.utils import resource_path
+from common.utils import resource_path, open_learning_materials
 from common.widgets.header_frame_buttons import ContentFrame, create_button
 from main_page.widget_preferences_row import PreferencesRow
 
@@ -162,12 +162,12 @@ class HomePage(QWidget):
             },
             {
                 "title": "EIQ Season Planner",
-                "description": "Plan applications, Compare scenarios\nImport and work from previous years plans",
+                "description": "Plan applications, Compare scenarios",
                 "callback": lambda: self.parent.navigate_to_page(2)
             },
             {
                 "title": "EIQ Calculator",
-                "description": "Calculate Environmental Impact Quotients\nCompare EIQ of different applications",
+                "description": "Calculate Environmental Impact Quotients",
                 "callback": lambda: self.parent.navigate_to_page(3)
             }
         ]
@@ -177,7 +177,7 @@ class HomePage(QWidget):
         return [
             {
                 "title": "STIR Calculator",
-                "description": "Calculate Soil Tillage Intensity Ratings\nCompare different tillage practices",
+                "description": "Calculate Soil Tillage Intensity Ratings",
                 "callback": self.navigate_to_stir_calculator
             }
         ]
@@ -200,9 +200,8 @@ class HomePage(QWidget):
         
         learning_button = create_button(
             text="Learning Materials",
-            description="Learn about EIQ and STIR methodologies\nUnderstand regenerative agriculture practices",
-            style="feature",
-            callback=self.show_learning_materials,
+            style="yellow",
+            callback=self.on_learning_materials_clicked,
             parent=self
         )
         learning_layout.addWidget(learning_button)
@@ -215,10 +214,10 @@ class HomePage(QWidget):
         """Navigate directly to the STIR calculator page."""
         self.parent.navigate_to_page(5)
 
-    def show_learning_materials(self):
-        """Show the learning materials in the system browser."""
-        self.parent.show_learning_materials()
-    
+    def on_learning_materials_clicked(self):
+        """Handle learning materials button click."""
+        open_learning_materials(self)
+
     def set_country_region(self, country, region):
         """Set the country and region in the preferences row."""
         self.preferences_row.set_country_region(country, region)

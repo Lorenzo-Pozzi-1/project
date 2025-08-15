@@ -14,7 +14,7 @@ from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLay
 from PySide6.QtCore import Signal, Qt
 
 from common.styles import YELLOW_BAR_STYLE
-from common.utils import load_config
+from common.utils import load_config, open_user_manual, open_learning_materials
 from common.widgets.header_frame_buttons import create_button
 from data.repository_product import ProductRepository
 from main_page.page_home import HomePage
@@ -22,9 +22,7 @@ from products_page.page_products import ProductsPage
 from eiq_calculator_page.page_eiq_calculator import EiqCalculatorPage
 from season_planner_page.page_scenarios_manager import ScenariosManagerPage
 from season_planner_page.page_sceanrios_comparison import ScenariosComparisonPage
-from user_manual.service_open_user_manual import open_user_manual
 from STIR.page_STIR_calculator import STIRCalculatorPage
-from main_page.service_open_learning_materials import open_learning_materials
 
 
 class MainWindow(QMainWindow):
@@ -155,7 +153,7 @@ class MainWindow(QMainWindow):
         open_user_manual(self)
 
     def show_learning_materials(self):
-        """Show the learning materials."""
+        """Open the learning materials in the system browser."""
         open_learning_materials(self)
 
     def connect_signals(self):

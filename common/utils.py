@@ -236,3 +236,77 @@ def get_regen_ag_class(eiq_value) -> str:
             return "Onboarding"
         else:
             return "Out of range"
+
+def open_user_manual(parent=None):
+    """Open the user manual in the system's default web browser."""
+    return open_html_in_browser(
+        html_file_path="user_manual/user_manual.html",
+        temp_prefix="pesticides_manual_",
+        parent=parent,
+        error_title="User Manual Error"
+    )
+
+def open_learning_materials(parent=None):
+    """Open the learning materials in the system's default web browser."""
+    return open_html_in_browser(
+        html_file_path="main_page/learning_materials.html",
+        temp_prefix="eiq_stir_materials_",
+        parent=parent,
+        error_title="Learning Materials Error"
+    )
+
+def open_html_in_browser(html_file_path, temp_prefix, parent=None, error_title="Error"):
+    """
+    Generic function to open an HTML file in the system's default web browser.
+    
+    Args:
+        html_file_path (str): Relative path to the HTML file
+        temp_prefix (str): Prefix for temporary directory
+        parent: Parent widget for error dialogs
+        error_title (str): Title for error dialogs
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    import webbrowser
+    import tempfile
+    import shutil
+    
+    try:
+        # Get the HTML file path
+        file_path = resource_path(html_file_path)
+        
+        if not os.path.exists(file_path):
+            show_generic_error_message(parent, f"{os.path.basename(html_file_path)} file not found.", error_title)
+            return False
+            
+        # Get the directory to copy associated assets
+        source_dir = os.path.dirname(file_path)
+        
+        # Create a temporary directory
+        temp_dir = tempfile.mkdtemp(prefix=temp_prefix)
+        
+        # Copy the entire directory to temp location
+        # This ensures CSS, JS, images, and other assets are included
+        temp_content_dir = os.path.join(temp_dir, "content")
+        shutil.copytree(source_dir, temp_content_dir)
+        
+        # Path to the copied HTML file
+        temp_html_path = os.path.join(temp_content_dir, os.path.basename(html_file_path))
+        
+        # Open in browser
+        webbrowser.open(f"file://{temp_html_path}")
+        
+        return True
+        
+    except Exception as e:
+        show_generic_error_message(parent, f"Failed to open {os.path.basename(html_file_path)}: {str(e)}", error_title)
+        return False
+
+def show_generic_error_message(parent, message, title="Error"):
+    """Generic error message dialog."""
+    msg_box = QMessageBox(parent)
+    msg_box.setIcon(QMessageBox.Critical)
+    msg_box.setWindowTitle(title)
+    msg_box.setText(message)
+    msg_box.exec()
