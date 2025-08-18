@@ -1,5 +1,5 @@
 """
-STIR Operations Table Widget
+STIR Table Widget
 
 A table widget for displaying and managing STIR operations grouped by operation_group.
 Shows operations with their parameters and calculated STIR values.

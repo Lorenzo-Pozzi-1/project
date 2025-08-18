@@ -40,7 +40,7 @@ class Operation:
             speed_uom: Unit of measure for speed (e.g., "km/h", "mph")
             surface_area_disturbed: Percentage of surface area disturbed (0-100)
             number_of_passes: Number of times the operation is performed
-            tillage_type_factor: Tillage intensity factor (1.0=Inversion+mixing, 0.8=Mixing+inversion, 
+            tillage_type_factor: Tillage intensity factor (1.0=Inversion+mixing, 0.8=Mixing+someinversion, 
                                0.7=Mixing only, 0.4=Lifting+fracturing, 0.15=Compression)
             stir_value: Calculated STIR value (if None, will be calculated)
         """
@@ -54,6 +54,37 @@ class Operation:
         self.number_of_passes = number_of_passes
         self.tillage_type_factor = tillage_type_factor
         self.stir_value = stir_value
+    
+    def load_machine_defaults(self, machine_name: str) -> bool:
+        """
+        Load default parameters from a machine.
+        
+        Args:
+            machine_name: Name of the machine to load defaults from
+            
+        Returns:
+            bool: True if machine found and defaults loaded, False otherwise
+        """
+        try:
+            from .repository_machine import MachineRepository
+            
+            repo = MachineRepository.get_instance()
+            machine = repo.get_machine_by_name(machine_name)
+            
+            if machine:
+                self.machine_name = machine.name
+                self.depth = machine.depth
+                self.depth_uom = machine.depth_uom
+                self.speed = machine.speed
+                self.speed_uom = machine.speed_uom
+                self.surface_area_disturbed = machine.surface_area_disturbed
+                self.tillage_type_factor = machine.tillage_type_factor
+                return True
+            
+            return False
+            
+        except Exception:
+            return False
     
     def calculate_stir(self) -> float:
         """
