@@ -91,7 +91,7 @@ class Operation:
         Calculate the STIR value for this operation.
         
         Based on the formula from learning materials:
-        STIR = (tillage type factor x 3.25) x (speed x 0.5) x (depth) x (surface area disturbed)
+        STIR = (tillage type factor x 3.25) x (speed [km/h] x 0.5) x (depth [cm]) x (surface area disturbed [%])
         
         Returns:
             Calculated STIR value

@@ -7,7 +7,7 @@ Shows operations with their parameters and calculated STIR values.
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, 
-    QHeaderView, QLabel, QMessageBox
+    QHeaderView, QLabel, QMessageBox, QComboBox, QStyledItemDelegate
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
@@ -17,7 +17,43 @@ from collections import defaultdict
 from common.styles import GENERIC_TABLE_STYLE, get_medium_font, get_subtitle_font
 from common.widgets.header_frame_buttons import ContentFrame, create_button
 from .model_operation import Operation
+from .repository_machine import MachineRepository
 
+class MachineSelectionDelegate(QStyledItemDelegate):
+    """Custom delegate for machine selection with QComboBox."""
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.machine_repo = MachineRepository.get_instance()
+    
+    def createEditor(self, parent, option, index):
+        """Create a QComboBox editor with available machines."""
+        editor = QComboBox(parent)
+        editor.setEditable(False)
+        
+        # Add empty option
+        editor.addItem("")
+        
+        # Add all available machines
+        machines = self.machine_repo.get_all_machines()
+        for machine in machines:
+            editor.addItem(machine.name)
+        
+        return editor
+    
+    def setEditorData(self, editor, index):
+        """Set the current data in the editor."""
+        current_text = index.model().data(index, Qt.EditRole) or ""
+        editor.setCurrentText(current_text)
+    
+    def setModelData(self, editor, model, index):
+        """Set the model data from the editor."""
+        selected_machine = editor.currentText()
+        model.setData(index, selected_machine, Qt.EditRole)
+    
+    def updateEditorGeometry(self, editor, option, index):
+        """Update the editor geometry."""
+        editor.setGeometry(option.rect)
 
 class STIROperationsTableWidget(QWidget):
     """
@@ -35,6 +71,7 @@ class STIROperationsTableWidget(QWidget):
         """Initialize the STIR operations table widget."""
         super().__init__(parent)
         self.operations = []  # List of Operation objects
+        self.machine_repo = MachineRepository.get_instance()
         self.header_labels = [
             "Group", "Machine", "Depth", "Speed", 
             "Area Disturbed", "N of Passes", "STIR", "Total"
@@ -69,12 +106,64 @@ class STIROperationsTableWidget(QWidget):
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setSelectionMode(QTableWidget.SingleSelection)
         
-        # Edit triggers - make most columns read-only for display
-        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        # Edit triggers - allow editing for machine column
+        self.table.setEditTriggers(QTableWidget.DoubleClicked | QTableWidget.EditKeyPressed)
+        
+        # Set up delegates
+        self.machine_delegate = MachineSelectionDelegate(self)
+        self.table.setItemDelegateForColumn(1, self.machine_delegate)  # Machine column
+        
+        # Connect cell changed signal
+        self.table.cellChanged.connect(self._on_cell_changed)
         
         # Headers
         self._configure_headers()
-    
+
+    def _on_cell_changed(self, row: int, column: int):
+        """Handle cell value changes."""
+        if column == 1:  # Machine column
+            # Find the operation index from the displayed table row
+            operation_index = self._get_operation_index_from_row(row)
+            if operation_index >= 0 and operation_index < len(self.operations):
+                operation = self.operations[operation_index]
+                new_machine_name = self.table.item(row, column).text()
+                
+                # Update operation with new machine
+                if new_machine_name:
+                    machine = self.machine_repo.get_machine_by_name(new_machine_name)
+                    if machine:
+                        # Update operation with machine parameters
+                        operation.machine_name = machine.name
+                        operation.depth = machine.depth
+                        operation.depth_uom = machine.depth_uom
+                        operation.speed = machine.speed
+                        operation.speed_uom = machine.speed_uom
+                        operation.surface_area_disturbed = machine.surface_area_disturbed
+                        operation.tillage_type_factor = machine.tillage_type_factor
+                        
+                        # Recalculate STIR value
+                        operation.calculate_stir()
+                        
+                        # Refresh the table display (disconnect signal to prevent recursion)
+                        self.table.cellChanged.disconnect(self._on_cell_changed)
+                        self._populate_table()
+                        self.table.cellChanged.connect(self._on_cell_changed)
+                        self._emit_signals()
+                else:
+                    # Clear machine data if empty selection
+                    operation.machine_name = ""
+                    operation.depth = 0.0
+                    operation.speed = 0.0
+                    operation.surface_area_disturbed = 100.0
+                    operation.tillage_type_factor = 0.7
+                    operation.calculate_stir()
+                    
+                    # Refresh the table display (disconnect signal to prevent recursion)
+                    self.table.cellChanged.disconnect(self._on_cell_changed)
+                    self._populate_table()
+                    self.table.cellChanged.connect(self._on_cell_changed)
+                    self._emit_signals()
+
     def _configure_headers(self):
         """Configure table headers."""
         header = self.table.horizontalHeader()
@@ -103,7 +192,7 @@ class STIROperationsTableWidget(QWidget):
         self.add_button = create_button(
             text="Add Operation",
             style="white",
-            callback=self.add_operation
+            callback=lambda: self.add_operation()  # Use lambda to ignore the boolean signal
         )
         layout.addWidget(self.add_button)
         
@@ -111,7 +200,7 @@ class STIROperationsTableWidget(QWidget):
         self.remove_button = create_button(
             text="Remove Selected",
             style="white",
-            callback=self.remove_selected_operation
+            callback=lambda: self.remove_selected_operation()  # Use lambda to ignore the boolean signal
         )
         layout.addWidget(self.remove_button)
         
@@ -132,14 +221,12 @@ class STIROperationsTableWidget(QWidget):
         """Add a new operation to the table."""
         if operation is None:
             # Create a new empty operation
-            from .model_operation import Operation  # Ensure Operation is imported
             operation = Operation()
         
         # Ensure we're adding an Operation object
         if not isinstance(operation, Operation):
             # Log warning and create new operation instead
             print(f"Warning: Expected Operation object, got {type(operation)}. Creating new operation.")
-            from .model_operation import Operation
             operation = Operation()
         
         self.operations.append(operation)
@@ -272,44 +359,44 @@ class STIROperationsTableWidget(QWidget):
     def _add_operation_row(self, row: int, operation: Operation):
         """Add a regular operation row."""
         # Group (indented for visual hierarchy)
-        group_item = QTableWidgetItem(f"  {operation.machine_name or 'Unknown Machine'}")
+        group_item = QTableWidgetItem(f"  {operation.operation_group or 'Ungrouped'}")
         group_item.setFlags(group_item.flags() & ~Qt.ItemIsEditable)
         self.table.setItem(row, 0, group_item)
         
-        # Machine (already in group column, so this could be operation type or leave empty)
-        machine_item = QTableWidgetItem(operation.operation_type or "")
-        machine_item.setFlags(machine_item.flags() & ~Qt.ItemIsEditable)
+        # Machine (editable)
+        machine_item = QTableWidgetItem(operation.machine_name or "")
+        machine_item.setFlags(machine_item.flags() | Qt.ItemIsEditable)
         self.table.setItem(row, 1, machine_item)
         
-        # Depth
+        # Depth (read-only, updated from machine selection)
         depth_text = f"{operation.depth or 0:.1f}" if operation.depth is not None else "0.0"
         depth_item = QTableWidgetItem(depth_text)
         depth_item.setFlags(depth_item.flags() & ~Qt.ItemIsEditable)
         depth_item.setTextAlignment(Qt.AlignCenter)
         self.table.setItem(row, 2, depth_item)
         
-        # Speed
+        # Speed (read-only, updated from machine selection)
         speed_text = f"{operation.speed or 0:.1f}" if operation.speed is not None else "0.0"
         speed_item = QTableWidgetItem(speed_text)
         speed_item.setFlags(speed_item.flags() & ~Qt.ItemIsEditable)
         speed_item.setTextAlignment(Qt.AlignCenter)
         self.table.setItem(row, 3, speed_item)
         
-        # Area Disturbed
-        area_text = f"{operation.area_disturbed or 0:.0f}%" if operation.area_disturbed is not None else "0%"
+        # Area Disturbed (read-only, updated from machine selection)
+        area_text = f"{operation.surface_area_disturbed or 0:.0f}%" if operation.surface_area_disturbed is not None else "0%"
         area_item = QTableWidgetItem(area_text)
         area_item.setFlags(area_item.flags() & ~Qt.ItemIsEditable)
         area_item.setTextAlignment(Qt.AlignCenter)
         self.table.setItem(row, 4, area_item)
         
-        # Number of Passes
+        # Number of Passes (read-only for now, could be made editable later)
         passes_text = f"{operation.number_of_passes or 1}" if operation.number_of_passes is not None else "1"
         passes_item = QTableWidgetItem(passes_text)
         passes_item.setFlags(passes_item.flags() & ~Qt.ItemIsEditable)
         passes_item.setTextAlignment(Qt.AlignCenter)
         self.table.setItem(row, 5, passes_item)
         
-        # STIR Value
+        # STIR Value (read-only, calculated)
         stir_text = f"{operation.stir_value or 0:.1f}" if operation.stir_value is not None else "0.0"
         stir_item = QTableWidgetItem(stir_text)
         stir_item.setFlags(stir_item.flags() & ~Qt.ItemIsEditable)
