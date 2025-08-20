@@ -1,13 +1,12 @@
-﻿name,depth,depth_uom,speed,speed_uom,surface_area_disturbed,tillage_type_factor
-Bedformer,32,cm,6,km/h,100,0.8
-Cambridge Roll ,2,cm,6,km/h,100,0.2
-Chisel Plough,23,cm,8,km/h,100,0.7
-Deep Cultivator,23,cm,8,km/h,100,0.7
-Disk ripper,25,cm,8,km/h,100,0.7
-Fumigant Shank Rig,23,cm,8,km/h,100,0.7
-Moldboard Plough,30,cm,6,km/h,100,1
-Potato harvester,30,cm,6,km/h,100,1
-Potato Planter,20,cm,9,km/h,50,0.8
-Power Harrow,13,cm,6,km/h,100,0.8
-Rotavator,10,cm,10,km/h,100,0.8
-Tandem Disk Harrow,5,cm,15,km/h,100,0.7
+﻿name,depth,depth_uom,speed,speed_uom,surface_area_disturbed,tillage_type_factor,picture
+Hiller,32,cm,6,km/h,100,0.8,hiller.png
+Cambridge Roller,2,cm,6,km/h,100,0.2,cambridge_roller.png
+Chisel Plow,23,cm,8,km/h,100,0.7,chisel_plow.png
+Deep Cultivator,23,cm,8,km/h,100,0.7,deep_cultivator.png
+Fumigant Shank Rig,23,cm,8,km/h,100,0.7,fumigation_shank_rig.png
+Moldboard Plow,30,cm,6,km/h,100,1,moldboard_plow.png
+Potato Harvester,30,cm,6,km/h,100,1,potato_harvester.png
+Potato Planter,20,cm,9,km/h,50,0.8,potato_planter.png
+Power Harrow,13,cm,6,km/h,100,0.8,power_harrow.png
+Rotavator,10,cm,10,km/h,100,0.8,rotavator.png
+Tandem Disk Harrow,5,cm,15,km/h,100,0.7,tandem_disc_harrow.png
