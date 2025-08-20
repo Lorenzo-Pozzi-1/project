@@ -460,3 +460,35 @@ class STIROperationsTableModel(QAbstractTableModel):
             top_left = self.index(0, 2)
             bottom_right = self.index(len(self._row_data) - 1, 3)
             self.dataChanged.emit(top_left, bottom_right, [Qt.DisplayRole])
+    
+    def is_group_boundary(self, row: int) -> bool:
+        """Check if this row is the first row of a new group (needs divider above)."""
+        if row <= 0 or row >= len(self._row_data):
+            return False
+        
+        # Get current and previous row info
+        current_row_info = self._row_data[row]
+        previous_row_info = self._row_data[row - 1]
+        
+        # Both must be operation rows
+        if (current_row_info.get("type") != self.ROW_TYPE_OPERATION or 
+            previous_row_info.get("type") != self.ROW_TYPE_OPERATION):
+            return False
+        
+        # Check if groups are different
+        current_operation = current_row_info.get("operation")
+        previous_operation = previous_row_info.get("operation")
+        
+        if not current_operation or not previous_operation:
+            return False
+        
+        current_group = current_operation.operation_group or "pre-plant"
+        previous_group = previous_operation.operation_group or "pre-plant"
+        
+        # Clean up group names
+        if " (" in current_group:
+            current_group = current_group.split(" (")[0]
+        if " (" in previous_group:
+            previous_group = previous_group.split(" (")[0]
+        
+        return current_group != previous_group

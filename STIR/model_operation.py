@@ -26,7 +26,7 @@ class Operation:
                  speed_uom: str = "km/h",
                  surface_area_disturbed: float = 100.0,  # Percentage (0-100)
                  number_of_passes: int = 1,
-                 tillage_type_factor: float = 0.7,  # Tillage intensity factor
+                 tillage_type_factor: float = 0.0,  # Tillage intensity factor
                  stir_value: Optional[float] = None):
         """
         Initialize an Operation.
@@ -214,7 +214,7 @@ class Operation:
             speed_uom=data.get('speed_uom', 'km/h'),
             surface_area_disturbed=data.get('surface_area_disturbed', 100.0),
             number_of_passes=data.get('number_of_passes', 1),
-            tillage_type_factor=data.get('tillage_type_factor', 0.7),
+            tillage_type_factor=data.get('tillage_type_factor', 0.0),
             stir_value=data.get('stir_value')
         )
     

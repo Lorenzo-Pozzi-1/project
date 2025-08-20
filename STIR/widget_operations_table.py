@@ -18,6 +18,7 @@ from .models.operations_table_model import STIROperationsTableModel
 from .delegates.machine_delegate import MachineSelectionDelegate
 from .delegates.group_delegate import GroupSelectionDelegate
 from .delegates.numeric_delegate import NumericDelegate
+from .delegates.group_divider_delegate import GroupDividerDelegate
 
 
 class STIROperationsTableWidget(QWidget):
@@ -79,17 +80,48 @@ class STIROperationsTableWidget(QWidget):
         # Edit triggers
         self.table.setEditTriggers(QTableView.DoubleClicked | QTableView.EditKeyPressed)
         
-        # Set up delegates
+        # Set up base delegates
         self.group_delegate = GroupSelectionDelegate(self)
         self.machine_delegate = MachineSelectionDelegate(self)
         self.numeric_delegate = NumericDelegate(self)
+        self.divider_delegate = GroupDividerDelegate(self)
         
-        self.table.setItemDelegateForColumn(0, self.group_delegate)  # Group column
-        self.table.setItemDelegateForColumn(1, self.machine_delegate)  # Machine column
-        self.table.setItemDelegateForColumn(2, self.numeric_delegate)  # Depth column
-        self.table.setItemDelegateForColumn(3, self.numeric_delegate)  # Speed column
-        self.table.setItemDelegateForColumn(4, self.numeric_delegate)  # Area Disturbed column
-        self.table.setItemDelegateForColumn(5, self.numeric_delegate)  # Number of Passes column
+        # Create composite delegates that include divider functionality
+        class GroupDividerComposite(GroupSelectionDelegate):
+            def __init__(self, parent=None):
+                super().__init__(parent)
+                self.divider = GroupDividerDelegate(parent)
+            
+            def paint(self, painter, option, index):
+                super().paint(painter, option, index)
+                self.divider.paint(painter, option, index)
+        
+        class MachineDividerComposite(MachineSelectionDelegate):
+            def __init__(self, parent=None):
+                super().__init__(parent)
+                self.divider = GroupDividerDelegate(parent)
+            
+            def paint(self, painter, option, index):
+                super().paint(painter, option, index)
+                self.divider.paint(painter, option, index)
+                
+        class NumericDividerComposite(NumericDelegate):
+            def __init__(self, parent=None):
+                super().__init__(parent)
+                self.divider = GroupDividerDelegate(parent)
+            
+            def paint(self, painter, option, index):
+                super().paint(painter, option, index)
+                self.divider.paint(painter, option, index)
+        
+        # Apply composite delegates to all columns
+        self.table.setItemDelegateForColumn(0, GroupDividerComposite(self))  # Group column
+        self.table.setItemDelegateForColumn(1, MachineDividerComposite(self))  # Machine column
+        self.table.setItemDelegateForColumn(2, NumericDividerComposite(self))  # Depth column
+        self.table.setItemDelegateForColumn(3, NumericDividerComposite(self))  # Speed column
+        self.table.setItemDelegateForColumn(4, NumericDividerComposite(self))  # Area Disturbed column
+        self.table.setItemDelegateForColumn(5, NumericDividerComposite(self))  # Number of Passes column
+        self.table.setItemDelegateForColumn(6, self.divider_delegate)  # STIR column
         
         # Headers
         self._configure_headers()

@@ -23,7 +23,7 @@ class Machine:
                  speed: float = 0.0,
                  speed_uom: str = "km/h",
                  surface_area_disturbed: float = 100.0,
-                 tillage_type_factor: float = 0.7):
+                 tillage_type_factor: float = 0.0):
         """
         Initialize a Machine.
         
@@ -81,7 +81,7 @@ class Machine:
             speed=data.get("speed", 0.0),
             speed_uom=data.get("speed_uom", "km/h"),
             surface_area_disturbed=data.get("surface_area_disturbed", 100.0),
-            tillage_type_factor=data.get("tillage_type_factor", 0.7)
+            tillage_type_factor=data.get("tillage_type_factor", 0.0)
         )
     
     def create_default_operation(self, operation_group: str = "pre-plant"):

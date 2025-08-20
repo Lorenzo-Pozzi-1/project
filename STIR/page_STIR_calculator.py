@@ -389,7 +389,6 @@ class STIRCalculatorPage(QWidget):
         
         # Enable/disable buttons based on tab availability
         self.action_buttons["Clone Current"].setEnabled(has_tabs)
-        self.action_buttons["Rename Current"].setEnabled(has_tabs)
         self.action_buttons["Delete"].setEnabled(has_tabs)
         self.action_buttons["Compare Scenarios"].setEnabled(has_tabs and self.tab_widget.count() > 1)
         self.action_buttons["Export"].setEnabled(has_tabs)
