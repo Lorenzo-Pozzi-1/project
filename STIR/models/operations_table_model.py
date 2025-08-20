@@ -42,10 +42,14 @@ class STIROperationsTableModel(QAbstractTableModel):
         self._row_data: List[Dict] = []  # Maps display rows to data
         self._machine_repo = MachineRepository.get_instance()
         
+        # Display UOM settings
+        self.display_depth_uom = "inch"
+        self.display_speed_uom = "mph"
+        
         # Column definitions
         self._columns = [
             "Group", "Machine", "Depth", "Speed", 
-            "Area Disturbed", "N of Passes", "STIR", "Total"
+            "Area Disturbed", "N of Passes", "STIR"
         ]
     
     # --- QAbstractTableModel Interface ---
@@ -66,7 +70,13 @@ class STIROperationsTableModel(QAbstractTableModel):
         """Return header data for the table."""
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal and 0 <= section < len(self._columns):
-                return self._columns[section]
+                header_text = self._columns[section]
+                # Add UOM labels to depth and speed columns
+                if section == 2:  # Depth column
+                    header_text = f"Depth ({self.display_depth_uom})"
+                elif section == 3:  # Speed column
+                    header_text = f"Speed ({self.display_speed_uom})"
+                return header_text
             elif orientation == Qt.Vertical:
                 return str(section + 1)
         return None
@@ -79,9 +89,8 @@ class STIROperationsTableModel(QAbstractTableModel):
         row_info = self._row_data[index.row()]
         row_type = row_info.get("type")
         
-        if row_type == self.ROW_TYPE_HEADER:
-            return self._get_header_data(index, role, row_info)
-        elif row_type == self.ROW_TYPE_OPERATION:
+        # Only handle operation rows now (no headers)
+        if row_type == self.ROW_TYPE_OPERATION:
             return self._get_operation_data(index, role, row_info)
         
         return None
@@ -140,8 +149,22 @@ class STIROperationsTableModel(QAbstractTableModel):
                     return True
                     
             elif column == 2:  # Depth
-                new_depth = float(value)
-                if new_depth != operation.depth:
+                # Convert from display UOM to operation's stored UOM
+                display_depth = float(value)
+                
+                # Convert display value to cm (standard), then to operation's UOM
+                if self.display_depth_uom.lower() == 'inch':
+                    depth_cm = display_depth * 2.54
+                else:
+                    depth_cm = display_depth
+                
+                # Convert cm to operation's stored UOM
+                if operation.depth_uom.lower() == 'inch':
+                    new_depth = depth_cm / 2.54
+                else:
+                    new_depth = depth_cm
+                
+                if abs(new_depth - (operation.depth or 0)) > 0.01:  # Small tolerance for float comparison
                     operation.depth = new_depth
                     operation.calculate_stir()
                     self.dataChanged.emit(index, index, [Qt.DisplayRole])
@@ -149,8 +172,22 @@ class STIROperationsTableModel(QAbstractTableModel):
                     return True
                     
             elif column == 3:  # Speed
-                new_speed = float(value)
-                if new_speed != operation.speed:
+                # Convert from display UOM to operation's stored UOM
+                display_speed = float(value)
+                
+                # Convert display value to km/h (standard), then to operation's UOM
+                if self.display_speed_uom.lower() == 'mph':
+                    speed_kmh = display_speed * 1.60934
+                else:
+                    speed_kmh = display_speed
+                
+                # Convert km/h to operation's stored UOM
+                if operation.speed_uom.lower() == 'mph':
+                    new_speed = speed_kmh / 1.60934
+                else:
+                    new_speed = speed_kmh
+                
+                if abs(new_speed - (operation.speed or 0)) > 0.01:  # Small tolerance for float comparison
                     operation.speed = new_speed
                     operation.calculate_stir()
                     self.dataChanged.emit(index, index, [Qt.DisplayRole])
@@ -194,14 +231,12 @@ class STIROperationsTableModel(QAbstractTableModel):
         row_info = self._row_data[index.row()]
         row_type = row_info.get("type")
         
-        if row_type == self.ROW_TYPE_HEADER:
-            # Header rows are not editable or selectable
-            return Qt.ItemIsEnabled
-        elif row_type == self.ROW_TYPE_OPERATION:
+        # Only operation rows exist now
+        if row_type == self.ROW_TYPE_OPERATION:
             # Operation rows can be edited for certain columns
             base_flags = Qt.ItemIsEnabled | Qt.ItemIsSelectable
             
-            # Columns 0-5 are editable, 6-7 are read-only
+            # Columns 0-5 are editable, 6 is read-only
             if index.column() <= 5:
                 base_flags |= Qt.ItemIsEditable
             
@@ -286,18 +321,6 @@ class STIROperationsTableModel(QAbstractTableModel):
         total = sum(op.stir_value for op in self._operations if op.stir_value is not None)
         return math.ceil(total)
     
-    def is_header_row(self, display_row: int) -> bool:
-        """Check if a display row is a group header."""
-        if 0 <= display_row < len(self._row_data):
-            return self._row_data[display_row].get("type") == self.ROW_TYPE_HEADER
-        return False
-    
-    def get_header_span(self, display_row: int) -> tuple[int, int]:
-        """Get the column span for a header row. Returns (start_col, span_count)."""
-        if self.is_header_row(display_row):
-            return (0, 7)  # Spans columns 0-6
-        return (0, 1)
-    
     def clear_operations(self):
         """Clear all operations from the table."""
         self.beginResetModel()
@@ -331,21 +354,11 @@ class STIROperationsTableModel(QAbstractTableModel):
             if group not in sorted_groups:
                 sorted_groups.append(group)
         
-        # Build display rows
+        # Build display rows - operations only, no headers
         for group_name in sorted_groups:
             operations_in_group = grouped_operations[group_name]
             
-            # Add group header
-            group_total = sum(op.stir_value or 0 for op in operations_in_group)
-            header_info = {
-                "type": self.ROW_TYPE_HEADER,
-                "group_name": group_name,
-                "operation_count": len(operations_in_group),
-                "group_total": group_total
-            }
-            self._row_data.append(header_info)
-            
-            # Add operations in this group
+            # Add operations directly without group header
             for operation in operations_in_group:
                 operation_index = self._operations.index(operation)
                 operation_info = {
@@ -373,35 +386,6 @@ class STIROperationsTableModel(QAbstractTableModel):
         
         return dict(grouped)
     
-    def _get_header_data(self, index: QModelIndex, role: int, row_info: Dict) -> Any:
-        """Get data for a group header row."""
-        column = index.column()
-        
-        if role == Qt.DisplayRole:
-            if column == 0:
-                # Group name with count (spans multiple columns)
-                group_name = row_info.get("group_name", "")
-                count = row_info.get("operation_count", 0)
-                return f"{group_name} ({count} operation{'s' if count != 1 else ''})"
-            elif column == 7:
-                # Total column
-                group_total = row_info.get("group_total", 0)
-                return str(math.ceil(group_total))
-            else:
-                return ""
-        
-        elif role == Qt.FontRole:
-            # Bold font for headers
-            return get_medium_font(bold=True)
-        
-        elif role == Qt.TextAlignmentRole:
-            if column == 7:
-                return Qt.AlignCenter
-            else:
-                return Qt.AlignLeft | Qt.AlignVCenter
-        
-        return None
-    
     def _get_operation_data(self, index: QModelIndex, role: int, row_info: Dict) -> Any:
         """Get data for an operation row."""
         operation = row_info.get("operation")
@@ -421,10 +405,20 @@ class STIROperationsTableModel(QAbstractTableModel):
                 return operation.machine_name or ""
             
             elif column == 2:  # Depth
-                return f"{operation.depth or 0:.1f}" if operation.depth is not None else "0.0"
+                # Display depth in the selected UOM
+                if operation.depth is not None:
+                    display_value = operation.get_depth_in_unit(self.display_depth_uom)
+                    return f"{display_value:.1f}"
+                else:
+                    return "0.0"
             
             elif column == 3:  # Speed
-                return f"{operation.speed or 0:.1f}" if operation.speed is not None else "0.0"
+                # Display speed in the selected UOM
+                if operation.speed is not None:
+                    display_value = operation.get_speed_in_unit(self.display_speed_uom)
+                    return f"{display_value:.1f}"
+                else:
+                    return "0.0"
             
             elif column == 4:  # Area Disturbed
                 if role == Qt.EditRole:
@@ -438,9 +432,6 @@ class STIROperationsTableModel(QAbstractTableModel):
             elif column == 6:  # STIR Value
                 stir_value = operation.stir_value or 0
                 return str(math.ceil(stir_value))
-            
-            elif column == 7:  # Total (empty for operations)
-                return ""
         
         elif role == Qt.TextAlignmentRole:
             if column == 0:  # Group column
@@ -455,3 +446,17 @@ class STIROperationsTableModel(QAbstractTableModel):
         total_stir = self.get_total_stir()
         self.operations_changed.emit()
         self.stir_changed.emit(total_stir)
+    
+    def set_display_uom(self, depth_uom, speed_uom):
+        """Set display UOM settings and refresh headers."""
+        self.display_depth_uom = depth_uom
+        self.display_speed_uom = speed_uom
+        
+        # Emit header data changed to update column headers
+        self.headerDataChanged.emit(Qt.Horizontal, 2, 3)
+        
+        # Refresh all data to update display values
+        if self._row_data:
+            top_left = self.index(0, 2)
+            bottom_right = self.index(len(self._row_data) - 1, 3)
+            self.dataChanged.emit(top_left, bottom_right, [Qt.DisplayRole])

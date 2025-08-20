@@ -20,9 +20,9 @@ l,volume,liquid,1,l
 L,volume,liquid,1,l
 ml,volume,liquid,0.001,l
 100gal,volume,liquid,378.541,l
+cm,length,no,0.01,m
 m,length,no,1,m
 100m,length,no,100,m
+inch,length,no,0.0254,m
 ft,length,no,0.3048,m
 1000ft,length,no,304.8,m
-cm,length,no,0.01,m
-inch,length,no,0.0254,m

@@ -25,7 +25,7 @@ class STIROperationsTableWidget(QWidget):
     Table widget for displaying STIR operations grouped by operation_group using Model/View architecture.
     
     Displays operations with columns: Group, Machine, Depth, Speed, Area Disturbed, 
-    N of Passes, STIR, and Total.
+    N of Passes, and STIR.
     """
     
     # Signals
@@ -35,6 +35,10 @@ class STIROperationsTableWidget(QWidget):
     def __init__(self, parent=None):
         """Initialize the STIR operations table widget."""
         super().__init__(parent)
+        
+        # Default display UOM settings
+        self.display_depth_uom = "inch"
+        self.display_speed_uom = "mph"
         
         # Create model and view
         self.model = STIROperationsTableModel(self)
@@ -89,9 +93,6 @@ class STIROperationsTableWidget(QWidget):
         
         # Headers
         self._configure_headers()
-        
-        # Connect to model reset to update spans
-        self.model.modelReset.connect(self._update_spans)
     
     def _configure_headers(self):
         """Configure table headers."""
@@ -112,17 +113,6 @@ class STIROperationsTableWidget(QWidget):
         # Set all columns to stretch equally
         for col in range(self.model.columnCount()):
             header.setSectionResizeMode(col, QHeaderView.Stretch)
-    
-    def _update_spans(self):
-        """Update cell spans for group headers after model changes."""
-        # Clear existing spans
-        self.table.clearSpans()
-        
-        # Set spans for header rows
-        for row in range(self.model.rowCount()):
-            if self.model.is_header_row(row):
-                start_col, span_count = self.model.get_header_span(row)
-                self.table.setSpan(row, start_col, 1, span_count)
     
     def _create_button_layout(self) -> QHBoxLayout:
         """Create the button layout for operations management."""
@@ -215,3 +205,18 @@ class STIROperationsTableWidget(QWidget):
         display_row = self.model.get_display_row_from_operation_index(operation_index)
         if display_row >= 0:
             self.table.selectRow(display_row)
+    
+    def set_display_uom(self, depth_uom, speed_uom):
+        """Set the display UOM for the table."""
+        self.display_depth_uom = depth_uom
+        self.display_speed_uom = speed_uom
+        
+        # Pass UOM settings to the model
+        self.model.set_display_uom(depth_uom, speed_uom)
+    
+    def get_display_uom(self):
+        """Get current display UOM settings."""
+        return {
+            'depth_uom': self.display_depth_uom,
+            'speed_uom': self.display_speed_uom
+        }

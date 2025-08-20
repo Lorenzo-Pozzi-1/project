@@ -32,6 +32,10 @@ class STIRScenarioTabPage(QWidget):
         self.total_stir_value = 0  # Default value
         self.operations = []  # List to store operations
         
+        # Default UOM display settings
+        self.display_depth_uom = "inch"
+        self.display_speed_uom = "mph"
+        
         # Create operations table widget
         self.operations_table = None
         
@@ -150,3 +154,19 @@ class STIRScenarioTabPage(QWidget):
         self.operations = []
         self.total_stir_value = 0
         self.scenario_changed.emit(self)
+    
+    def set_display_uom(self, depth_uom, speed_uom):
+        """Set the display UOM settings for this scenario."""
+        self.display_depth_uom = depth_uom
+        self.display_speed_uom = speed_uom
+        
+        # Update the operations table to refresh display with new UOM
+        if self.operations_table:
+            self.operations_table.set_display_uom(depth_uom, speed_uom)
+    
+    def get_display_uom(self):
+        """Get current display UOM settings."""
+        return {
+            'depth_uom': self.display_depth_uom,
+            'speed_uom': self.display_speed_uom
+        }

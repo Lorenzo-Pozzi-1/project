@@ -59,11 +59,7 @@ class NumericDelegate(QStyledItemDelegate):
             editor.setDecimals(1)
             editor.setValue(0.0)
             
-            # Add appropriate suffix
-            if column_type == "depth":
-                editor.setSuffix(" cm")
-            elif column_type == "speed":
-                editor.setSuffix(" km/h")
+            # No suffix needed since UOM is now in column header
         
         else:
             # Fallback to default editor
@@ -97,11 +93,9 @@ class NumericDelegate(QStyledItemDelegate):
                 editor.setValue(100.0)
                 
         elif column_type in ["depth", "speed"]:
-            # Parse decimal value (remove any units)
+            # Parse decimal value
             try:
-                # Remove common units
-                value_str = current_text.replace("cm", "").replace("km/h", "").strip()
-                value = float(value_str) if value_str else 0.0
+                value = float(current_text) if current_text else 0.0
                 editor.setValue(value)
             except ValueError:
                 editor.setValue(0.0)
@@ -122,7 +116,7 @@ class NumericDelegate(QStyledItemDelegate):
             model.setData(index, f"{value:.0f}%", Qt.EditRole)
             
         elif column_type in ["depth", "speed"]:
-            # Decimal value (store without units in model for now)
+            # Decimal value
             value = editor.value()
             model.setData(index, f"{value:.1f}", Qt.EditRole)
     

@@ -130,6 +130,30 @@ class Operation:
             # Default to km/h
             return self.speed
     
+    def get_depth_in_unit(self, target_uom: str) -> float:
+        """Get depth converted to the specified unit."""
+        depth_cm = self._convert_depth_to_cm()
+        
+        if target_uom.lower() == 'inch':
+            return depth_cm / 2.54
+        elif target_uom.lower() == 'cm':
+            return depth_cm
+        else:
+            # Default to cm
+            return depth_cm
+    
+    def get_speed_in_unit(self, target_uom: str) -> float:
+        """Get speed converted to the specified unit."""
+        speed_kmh = self._convert_speed_to_kmh()
+        
+        if target_uom.lower() == 'mph':
+            return speed_kmh / 1.60934
+        elif target_uom.lower() == 'km/h':
+            return speed_kmh
+        else:
+            # Default to km/h
+            return speed_kmh
+    
     def clone(self) -> 'Operation':
         """
         Create a copy of this operation.

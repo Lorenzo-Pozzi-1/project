@@ -7,7 +7,7 @@ tabbed interface for managing STIR scenarios similar to the EIQ season planner.
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, 
-    QMessageBox, QInputDialog, QTabBar
+    QMessageBox, QInputDialog, QTabBar, QComboBox
 )
 from PySide6.QtCore import Qt, Signal
 
@@ -49,6 +49,11 @@ class STIRCalculatorPage(QWidget):
         super().__init__(parent)
         self.parent = parent
         self.scenario_tabs = {}  # Dictionary to track scenario tabs
+        
+        # Default UOM preferences (inch and mph as requested)
+        self.depth_uom = "inch"
+        self.speed_uom = "mph"
+        
         self.setup_ui()
         self.add_initial_scenarios()
     
@@ -68,11 +73,41 @@ class STIRCalculatorPage(QWidget):
         buttons_frame = ContentFrame()
         buttons_layout = QHBoxLayout()
         
+        # Add UOM selection controls
+        uom_layout = QHBoxLayout()
+        
+        # Depth UOM selector
+        depth_label = QLabel("Depth:")
+        self.depth_uom_combo = QComboBox()
+        self.depth_uom_combo.addItems(["inch", "cm"])
+        self.depth_uom_combo.setCurrentText(self.depth_uom)
+        self.depth_uom_combo.currentTextChanged.connect(self.on_depth_uom_changed)
+        
+        # Speed UOM selector
+        speed_label = QLabel("Speed:")
+        self.speed_uom_combo = QComboBox()
+        self.speed_uom_combo.addItems(["mph", "km/h"])
+        self.speed_uom_combo.setCurrentText(self.speed_uom)
+        self.speed_uom_combo.currentTextChanged.connect(self.on_speed_uom_changed)
+        
+        uom_layout.addWidget(depth_label)
+        uom_layout.addWidget(self.depth_uom_combo)
+        uom_layout.addWidget(QLabel(""))  # Spacer
+        uom_layout.addWidget(speed_label)
+        uom_layout.addWidget(self.speed_uom_combo)
+        uom_layout.addStretch()
+        
+        buttons_layout.addLayout(uom_layout)
+        
+        # Add separator
+        separator = QLabel("|")
+        separator.setStyleSheet("color: #ccc; font-size: 16px; margin: 0 10px;")
+        buttons_layout.addWidget(separator)
+        
         # Create action buttons
         buttons = {
             "New Scenario": ("yellow", self.new_scenario),
             "Clone Current": ("white", self.clone_current_scenario),
-            "Rename Current": ("white", self.rename_current_scenario),
             "Delete": ("white", self.delete_current_scenario),
             "Compare Scenarios": ("yellow", self.compare_scenarios),
             "Export": ("special", self.export_scenarios)
@@ -133,11 +168,37 @@ class STIRCalculatorPage(QWidget):
         results_frame.layout.addLayout(results_layout)
         main_layout.addWidget(results_frame)
     
+    def on_depth_uom_changed(self, new_uom):
+        """Handle depth UOM change."""
+        self.depth_uom = new_uom
+        self.update_all_scenarios_uom()
+    
+    def on_speed_uom_changed(self, new_uom):
+        """Handle speed UOM change."""
+        self.speed_uom = new_uom
+        self.update_all_scenarios_uom()
+    
+    def update_all_scenarios_uom(self):
+        """Update UOM settings for all scenarios."""
+        for scenario_page in self.scenario_tabs.values():
+            scenario_page.set_display_uom(self.depth_uom, self.speed_uom)
+    
+    def get_current_uom_settings(self):
+        """Get current UOM settings."""
+        return {
+            'depth_uom': self.depth_uom,
+            'speed_uom': self.speed_uom
+        }
+    
     def add_initial_scenarios(self):
         """Add initial scenario."""
         # Add one initial scenario
         scenario1 = STIRScenarioTabPage(self, "Scenario 1")
         scenario1.scenario_changed.connect(self.on_scenario_changed)
+        
+        # Set initial UOM settings
+        scenario1.set_display_uom(self.depth_uom, self.speed_uom)
+        
         self.tab_widget.addTab(scenario1, "Scenario 1")
         self.scenario_tabs["Scenario 1"] = scenario1
         
@@ -148,71 +209,9 @@ class STIRCalculatorPage(QWidget):
     def _on_tab_double_clicked(self, tab_index):
         """Handle double-click on a tab to trigger rename."""
         self.tab_widget.setCurrentIndex(tab_index)
-        self.rename_current_scenario()
-    
-    def generate_unique_name(self, base_name):
-        """Generate a unique scenario name based on the given base name."""
-        if base_name not in self.scenario_tabs:
-            return base_name
-            
-        counter = 1
-        while f"{base_name} ({counter})" in self.scenario_tabs:
-            counter += 1
-            
-        return f"{base_name} ({counter})"
-    
-    def get_current_scenario_page(self):
-        """Get the current scenario page and its index."""
-        index = self.tab_widget.currentIndex()
-        if index < 0:
-            return None, -1
-        return self.tab_widget.widget(index), index
-    
-    def new_scenario(self):
-        """Create a new STIR scenario."""
-        # Generate unique name
-        base_name = "New Scenario"
-        unique_name = self.generate_unique_name(base_name)
         
-        # Create new tab
-        new_scenario = STIRScenarioTabPage(self, unique_name)
-        new_scenario.scenario_changed.connect(self.on_scenario_changed)
-        tab_index = self.tab_widget.addTab(new_scenario, unique_name)
-        self.scenario_tabs[unique_name] = new_scenario
-        
-        # Switch to the new tab
-        self.tab_widget.setCurrentIndex(tab_index)
-        self.update_ui_state()
-    
-    def clone_current_scenario(self):
-        """Clone the current STIR scenario."""
-        page, _ = self.get_current_scenario_page()
-        if not page:
-            return
-        
-        # Generate unique name for clone
-        base_name = f"{page.get_scenario_name()} Copy"
-        unique_name = self.generate_unique_name(base_name)
-        
-        # Create clone
-        clone_scenario = STIRScenarioTabPage(self, unique_name)
-        clone_scenario.scenario_changed.connect(self.on_scenario_changed)
-        
-        # Copy operations data
-        operations_data = page.get_operations_data()
-        clone_scenario.set_operations_data(operations_data)
-        
-        # Add to tab widget
-        tab_index = self.tab_widget.addTab(clone_scenario, unique_name)
-        self.scenario_tabs[unique_name] = clone_scenario
-        
-        # Switch to the clone tab
-        self.tab_widget.setCurrentIndex(tab_index)
-        self.update_ui_state()
-    
-    def rename_current_scenario(self):
-        """Rename the current scenario tab."""
-        page, index = self.get_current_scenario_page()
+        # Get the current scenario page
+        page = self.tab_widget.widget(tab_index)
         if not page:
             return
         
@@ -241,12 +240,79 @@ class STIRCalculatorPage(QWidget):
             page.set_scenario_name(new_name)
             
             # Update tab text
-            self.tab_widget.setTabText(index, new_name)
+            self.tab_widget.setTabText(tab_index, new_name)
             
             # Update dictionary
             self.scenario_tabs[new_name] = self.scenario_tabs.pop(old_name)
             self.update_ui_state()
             break
+    
+    def generate_unique_name(self, base_name):
+        """Generate a unique scenario name based on the given base name."""
+        if base_name not in self.scenario_tabs:
+            return base_name
+            
+        counter = 1
+        while f"{base_name} ({counter})" in self.scenario_tabs:
+            counter += 1
+            
+        return f"{base_name} ({counter})"
+    
+    def get_current_scenario_page(self):
+        """Get the current scenario page and its index."""
+        index = self.tab_widget.currentIndex()
+        if index < 0:
+            return None, -1
+        return self.tab_widget.widget(index), index
+    
+    def new_scenario(self):
+        """Create a new STIR scenario."""
+        # Generate unique name
+        base_name = "New Scenario"
+        unique_name = self.generate_unique_name(base_name)
+        
+        # Create new tab
+        new_scenario = STIRScenarioTabPage(self, unique_name)
+        new_scenario.scenario_changed.connect(self.on_scenario_changed)
+        
+        # Set current UOM settings for the new scenario
+        new_scenario.set_display_uom(self.depth_uom, self.speed_uom)
+        
+        tab_index = self.tab_widget.addTab(new_scenario, unique_name)
+        self.scenario_tabs[unique_name] = new_scenario
+        
+        # Switch to the new tab
+        self.tab_widget.setCurrentIndex(tab_index)
+        self.update_ui_state()
+    
+    def clone_current_scenario(self):
+        """Clone the current STIR scenario."""
+        page, _ = self.get_current_scenario_page()
+        if not page:
+            return
+        
+        # Generate unique name for clone
+        base_name = f"{page.get_scenario_name()} Copy"
+        unique_name = self.generate_unique_name(base_name)
+        
+        # Create clone
+        clone_scenario = STIRScenarioTabPage(self, unique_name)
+        clone_scenario.scenario_changed.connect(self.on_scenario_changed)
+        
+        # Set UOM settings for the clone
+        clone_scenario.set_display_uom(self.depth_uom, self.speed_uom)
+        
+        # Copy operations data
+        operations_data = page.get_operations_data()
+        clone_scenario.set_operations_data(operations_data)
+        
+        # Add to tab widget
+        tab_index = self.tab_widget.addTab(clone_scenario, unique_name)
+        self.scenario_tabs[unique_name] = clone_scenario
+        
+        # Switch to the clone tab
+        self.tab_widget.setCurrentIndex(tab_index)
+        self.update_ui_state()
     
     def delete_current_scenario(self):
         """Delete the current scenario tab with confirmation."""
