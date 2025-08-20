@@ -16,7 +16,7 @@ from common.styles import get_subtitle_font
 from common.widgets.header_frame_buttons import ContentFrame, create_button, HeaderWithHomeButton
 from common.widgets.scorebar import ScoreBar
 from .tab_scenario import STIRScenarioTabPage
-from common.utils import get_config, save_config, set_preference, get_preference
+from common.utils import set_preference, get_preference
 
 
 class CustomSTIRTabBar(QTabBar):

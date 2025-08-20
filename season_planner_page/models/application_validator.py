@@ -225,10 +225,10 @@ class ApplicationValidator:
         # Convert application rate to label UOM for comparison
         try:
             from data.repository_UOM import UOMRepository, CompositeUOM
-            from common.utils import get_config
+            from common.utils import get_preferences_manager
             
             uom_repo = UOMRepository.get_instance()
-            user_preferences = get_config("user_preferences", {})
+            user_preferences = get_preferences_manager().get_section("user_preferences", {})
             
             # Only convert if UOMs are different
             if app_rate_uom != label_rate_uom:

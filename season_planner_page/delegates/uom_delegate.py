@@ -7,7 +7,7 @@ with automatic rate conversion functionality.
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QStyledItemDelegate, QApplication, QDialog, QMessageBox
-from common.utils import get_config
+from common.utils import get_preferences_manager
 from common.widgets.uom_selector import UOMSelectionDialog, UOM_CATEGORIES
 from common.widgets.tracer import calculation_tracer
 from data.repository_UOM import UOMRepository, CompositeUOM
@@ -169,7 +169,7 @@ class UOMDelegate(QStyledItemDelegate):
         try:
             # Get UOM repository and user preferences
             uom_repo = UOMRepository.get_instance()
-            user_preferences = get_config("user_preferences", {})
+            user_preferences = get_preferences_manager().get_section("user_preferences", {})
             
             # Create composite UOM objects
             from_composite = CompositeUOM(from_uom)

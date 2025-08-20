@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QMessageBox
 from typing import List, Any, Optional
 from data.model_application import Application
 from data.repository_product import ProductRepository
-from common.utils import get_config
+from common.utils import get_preferences_manager
 from .application_validator import ApplicationValidator, ValidationState
 from .applications_eiq_calculator import ApplicationEIQCalculator
 
@@ -75,7 +75,7 @@ class ApplicationTableModel(QAbstractTableModel):
         
         # Service classes
         self._validator = ApplicationValidator()
-        self._eiq_calculator = ApplicationEIQCalculator(get_config("user_preferences", {}))
+        self._eiq_calculator = ApplicationEIQCalculator(get_preferences_manager().get_section("user_preferences", {}))
         
         # Repository references
         self._products_repo = ProductRepository.get_instance()

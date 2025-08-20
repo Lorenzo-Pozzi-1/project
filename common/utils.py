@@ -47,9 +47,30 @@ class PreferencesManager:
         if self._initialized:
             return
         self._config_cache = None
+        self._cache_dirty = False  # Track if cache has unsaved changes
         self._initialized = True
     
+    def _get_current_config(self):
+        """Get the current configuration (from cache if dirty, otherwise fresh from disk)."""
+        if self._cache_dirty and self._config_cache is not None:
+            return self._config_cache
+        else:
+            config = self._load_fresh_config()
+            self._config_cache = config.copy()
+            self._cache_dirty = False
+            return config
+    
     def _load_fresh_config(self):
+        """Load the configuration from disk, bypassing any cache."""
+        try:
+            config_path = get_config_file_path()
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as file:
+                    return json.load(file)
+            else:
+                return DEFAULT_CONFIG.copy()
+        except (IOError, OSError, json.JSONDecodeError):
+            return DEFAULT_CONFIG.copy()
         """Load the configuration from disk, bypassing any cache."""
         try:
             config_path = get_config_file_path()
@@ -73,7 +94,7 @@ class PreferencesManager:
         Returns:
             The preference value or default
         """
-        config = self._load_fresh_config()
+        config = self._get_current_config()
         section_data = config.get(section, {})
         return section_data.get(key, default)
     
@@ -88,7 +109,7 @@ class PreferencesManager:
         Returns:
             dict: The section data or default
         """
-        config = self._load_fresh_config()
+        config = self._get_current_config()
         return config.get(section, default if default is not None else {})
     
     def set_preference(self, section, key, value, auto_save=False):
@@ -104,12 +125,14 @@ class PreferencesManager:
         Returns:
             bool: True if successful (when auto_save=True)
         """
-        config = self._load_fresh_config()
+        config = self._get_current_config()
         
         if section not in config:
             config[section] = {}
         
         config[section][key] = value
+        self._config_cache = config
+        self._cache_dirty = True
         
         if auto_save:
             return self._save_config(config)
@@ -127,8 +150,12 @@ class PreferencesManager:
         Returns:
             bool: True if successful (when auto_save=True)
         """
-        config = self._load_fresh_config()
+        config = self._get_current_config()
         config[section] = data.copy()
+        
+        # Store in cache and mark as dirty
+        self._config_cache = config
+        self._cache_dirty = True
         
         if auto_save:
             return self._save_config(config)
@@ -141,8 +168,11 @@ class PreferencesManager:
         Returns:
             bool: True if successful, False otherwise
         """
-        config = self._load_fresh_config()
-        return self._save_config(config)
+        config = self._get_current_config()
+        result = self._save_config(config)
+        if result:
+            self._cache_dirty = False  # Mark cache as clean after successful save
+        return result
     
     def _save_config(self, config):
         """
@@ -164,6 +194,10 @@ class PreferencesManager:
             
             with open(config_path, 'w') as file:
                 json.dump(config, file, indent=4)
+            
+            # Update cache after successful save
+            self._config_cache = config.copy()
+            self._cache_dirty = False
             return True
         except (IOError, OSError) as e:
             QMessageBox.warning(None, "Error", f"Error saving config to {config_path}: {e}")
@@ -178,6 +212,10 @@ class PreferencesManager:
                 with open(fallback_path, 'w') as file:
                     json.dump(config, file, indent=4)
                 QMessageBox.warning(None, "Warning", f"Config saved to fallback location: {fallback_path}")
+                
+                # Update cache after successful fallback save
+                self._config_cache = config.copy()
+                self._cache_dirty = False
                 return True
             except Exception as fallback_error:
                 QMessageBox.critical(None, "Critical Error", f"Failed to save config: {fallback_error}")
@@ -286,44 +324,8 @@ def load_config():
             return DEFAULT_CONFIG
     else:
         # Create default config file
-        save_config(DEFAULT_CONFIG)
+        _preferences_manager._save_config(DEFAULT_CONFIG)
         return DEFAULT_CONFIG
-
-def save_config(config):
-    """
-    Save configuration to file.
-    
-    LEGACY FUNCTION: For backward compatibility.
-    New code should use the PreferencesManager or helper functions.
-    
-    Args:
-        config (dict): The configuration to save
-    
-    Returns:
-        bool: True if successful, False otherwise
-    """
-    return _preferences_manager._save_config(config)
-
-def get_config(key, default=None):
-    """
-    Get a configuration value.
-    
-    LEGACY FUNCTION: For backward compatibility.
-    New code should use get_preference() or get_preferences_manager().get_section().
-    
-    Args:
-        key (str): The configuration key (section name) or None for entire config
-        default: The default value if the key doesn't exist
-    
-    Returns:
-        The configuration value or default
-    """
-    if key is None:
-        # Return entire configuration (for backward compatibility)
-        return _preferences_manager._load_fresh_config()
-    else:
-        # Return specific section
-        return _preferences_manager.get_section(key, default)
 
 def resource_path(relative_path):
     """Get absolute path to resource, works for dev and for PyInstaller"""

@@ -11,7 +11,7 @@ from PySide6.QtGui import QBrush, QColor
 
 from common.constants import get_spacing_xlarge
 from common.styles import GENERIC_TABLE_STYLE, get_medium_font
-from common.utils import get_config, get_eiq_color
+from common.utils import get_preferences_manager, get_eiq_color
 from common.calculations.layer_1_interface import eiq_calculator
 from common.widgets.tracer import calculation_tracer
 
@@ -154,7 +154,7 @@ class ComparisonTable(QTableWidget):
                 return 0
             
             # Get user preferences for UOM conversions
-            user_preferences = get_config("user_preferences", {})
+            user_preferences = get_preferences_manager().get_section("user_preferences", {})
             
             # Calculate Field EIQ
             calculation_tracer.log(f"\n\n====================================================================")

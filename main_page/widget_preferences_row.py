@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QComboBox, QDoubleSp
 from PySide6.QtCore import Qt, Signal
 from common.constants import get_spacing_xlarge
 from common.styles import get_medium_font
-from common.utils import get_config, save_config
+from common.utils import get_preferences_manager, get_preference
 from common.widgets.uom_selector import SmartUOMSelector
 from common.widgets.header_frame_buttons import create_button
 
@@ -209,24 +209,45 @@ class PreferencesRow(QWidget):
             
     def load_preferences(self):
         """Load existing preferences from config."""
-        config = get_config("user_preferences", {})
+        self.initializing = True  # Prevent change signals from marking unsaved changes
         
-        # Load field parameters
-        row_spacing = config.get("default_row_spacing", 34.0)
-        row_spacing_unit = config.get("default_row_spacing_unit", "inch")
+        preferences_manager = get_preferences_manager()
         
-        # Updated to use setCurrentText instead of index-based approach
+        # Load country and region
+        country = get_preference("user_preferences", "default_country", "Canada")
+        region = get_preference("user_preferences", "default_region", "New Brunswick")
+        
+        # Set country first
+        index = self.country_combo.findText(country)
+        if index >= 0:
+            self.country_combo.setCurrentIndex(index)
+        
+        # Update regions for selected country
+        self.update_regions_dropdown()
+        
+        # Set region
+        index = self.region_combo.findText(region)
+        if index >= 0:
+            self.region_combo.setCurrentIndex(index)
+        
+        # Load field parameters  
+        row_spacing = get_preference("user_preferences", "default_row_spacing", 34.0)
+        row_spacing_unit = get_preference("user_preferences", "default_row_spacing_unit", "inch")
+        
+        # Updated to use setCurrentText
         self.row_spacing_unit.setCurrentText(row_spacing_unit)
         self.row_spacing_spin.setValue(row_spacing)
         
         # Load seeding rate with unit
-        seeding_rate = config.get("default_seeding_rate", 20)
-        seeding_rate_unit = config.get("default_seeding_rate_unit", "cwt/acre")
+        seeding_rate = get_preference("user_preferences", "default_seeding_rate", 20)
+        seeding_rate_unit = get_preference("user_preferences", "default_seeding_rate_unit", "cwt/acre")
         
-        # Updated to use setCurrentText instead of index-based approach
+        # Updated to use setCurrentText
         self.seeding_rate_unit.setCurrentText(seeding_rate_unit)
         self.seeding_rate_spin.setValue(seeding_rate)
 
+        self.initializing = False  # Re-enable change tracking
+        
         # After loading, reset the unsaved changes flag and update button
         self.has_unsaved_changes = False
         self.update_save_button_state()
@@ -252,20 +273,23 @@ class PreferencesRow(QWidget):
     
     def save_preferences(self):
         """Save preferences to config."""
-        config = get_config("user_preferences", {})
+        preferences_manager = get_preferences_manager()
         
-        # Update configuration values - currentText() method works the same
-        config["default_country"] = self.country_combo.currentText()
-        config["default_region"] = self.region_combo.currentText()
-        config["default_row_spacing"] = self.row_spacing_spin.value()
-        config["default_row_spacing_unit"] = self.row_spacing_unit.currentText()
-        config["default_seeding_rate"] = self.seeding_rate_spin.value()
-        config["default_seeding_rate_unit"] = self.seeding_rate_unit.currentText()
+        # Create updated configuration values
+        config = {
+            "default_country": self.country_combo.currentText(),
+            "default_region": self.region_combo.currentText(), 
+            "default_row_spacing": self.row_spacing_spin.value(),
+            "default_row_spacing_unit": self.row_spacing_unit.currentText(),
+            "default_seeding_rate": self.seeding_rate_spin.value(),
+            "default_seeding_rate_unit": self.seeding_rate_unit.currentText()
+        }
         
-        # Save to global config
-        updated_config = get_config(None, {})
-        updated_config["user_preferences"] = config
-        save_config(updated_config)
+        # Set the entire user_preferences section without auto-save
+        preferences_manager.set_section("user_preferences", config, auto_save=False)
+        
+        # Manual save (deliberate action as requested)
+        preferences_manager.save()
         
         # Show confirmation dialog
         self.show_confirmation_dialog()

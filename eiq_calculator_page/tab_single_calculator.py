@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QHeaderView, Q
 from PySide6.QtCore import Qt
 from common.constants import get_medium_text_size
 from common.styles import GENERIC_TABLE_STYLE
-from common.utils import get_config
+from common.utils import get_preferences_manager
 from common.widgets.header_frame_buttons import ContentFrame
 from data.repository_product import ProductRepository
 from common.widgets.product_selection import ProductSelectionWidget
@@ -306,7 +306,7 @@ class SingleProductCalculatorTab(QWidget):
                 return
             
             # Get user preferences for UOM conversions
-            user_preferences = get_config("user_preferences", {})
+            user_preferences = get_preferences_manager().get_section("user_preferences", {})
             
             # Calculate Field EIQ with user preferences
             calculation_tracer.log(f"\n\n====================================================================")

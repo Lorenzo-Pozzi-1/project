@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QScrollArea, QVBoxLay
 from common.calculations.layer_1_interface import eiq_calculator
 from common.constants import get_margin_medium, get_spacing_large
 from common.styles import get_subtitle_font
-from common.utils import get_config
+from common.utils import get_preferences_manager
 from common.widgets.header_frame_buttons import ContentFrame, create_button
 from common.widgets.tracer import calculation_tracer
 from eiq_calculator_page.widgets_results_display import EiqComparisonTable
@@ -179,7 +179,7 @@ class ProductComparisonCalculatorTab(QWidget):
         
         try:
             # Get user preferences for UOM conversions
-            user_preferences = get_config("user_preferences", {})
+            user_preferences = get_preferences_manager().get_section("user_preferences", {})
             
             # Calculate field use EIQ for the product
             calculation_tracer.log(f"\n\n====================================================================")

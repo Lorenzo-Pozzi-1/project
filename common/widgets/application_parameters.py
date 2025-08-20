@@ -7,7 +7,7 @@ This module provides widgets for entering application rate, units, and other par
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDoubleSpinBox, QFormLayout, QLabel, QMessageBox
 from PySide6.QtCore import Signal, Property
 from common.styles import get_medium_font, get_small_font
-from common.utils import get_config
+from common.utils import get_preferences_manager
 from common.widgets.header_frame_buttons import ContentFrame
 from common.widgets.uom_selector import SmartUOMSelector
 from common.widgets.tracer import calculation_tracer
@@ -126,7 +126,7 @@ class ApplicationRateWidget(QWidget):
             to_composite = CompositeUOM(to_uom)
             
             # Get user preferences for complex conversions
-            user_preferences = get_config("user_preferences", {})
+            user_preferences = get_preferences_manager().get_section("user_preferences", {})
             
             # Perform conversion
             converted_value = uom_repo.convert_composite_uom(
