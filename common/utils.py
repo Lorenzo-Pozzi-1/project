@@ -24,6 +24,215 @@ DEFAULT_CONFIG = {
     }
 }
 
+
+class PreferencesManager:
+    """
+    Centralized preferences manager that handles safe section-based updates.
+    
+    This prevents different parts of the application from overwriting each other's
+    preferences when saving to the JSON file.
+    """
+    
+    _instance = None
+    
+    def __new__(cls):
+        """Singleton pattern to ensure only one instance exists."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+    
+    def __init__(self):
+        """Initialize the preferences manager."""
+        if self._initialized:
+            return
+        self._config_cache = None
+        self._initialized = True
+    
+    def _load_fresh_config(self):
+        """Load the configuration from disk, bypassing any cache."""
+        try:
+            config_path = get_config_file_path()
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as file:
+                    return json.load(file)
+            else:
+                return DEFAULT_CONFIG.copy()
+        except (IOError, OSError, json.JSONDecodeError):
+            return DEFAULT_CONFIG.copy()
+    
+    def get_preference(self, section, key, default=None):
+        """
+        Get a specific preference value.
+        
+        Args:
+            section (str): The preference section (e.g., 'user_preferences', 'STIR_preferences')
+            key (str): The preference key
+            default: The default value if not found
+            
+        Returns:
+            The preference value or default
+        """
+        config = self._load_fresh_config()
+        section_data = config.get(section, {})
+        return section_data.get(key, default)
+    
+    def get_section(self, section, default=None):
+        """
+        Get an entire preference section.
+        
+        Args:
+            section (str): The preference section name
+            default: The default value if section doesn't exist
+            
+        Returns:
+            dict: The section data or default
+        """
+        config = self._load_fresh_config()
+        return config.get(section, default if default is not None else {})
+    
+    def set_preference(self, section, key, value, auto_save=False):
+        """
+        Set a specific preference value.
+        
+        Args:
+            section (str): The preference section
+            key (str): The preference key
+            value: The value to set
+            auto_save (bool): Whether to automatically save to disk
+            
+        Returns:
+            bool: True if successful (when auto_save=True)
+        """
+        config = self._load_fresh_config()
+        
+        if section not in config:
+            config[section] = {}
+        
+        config[section][key] = value
+        
+        if auto_save:
+            return self._save_config(config)
+        return True
+    
+    def set_section(self, section, data, auto_save=False):
+        """
+        Set an entire preference section.
+        
+        Args:
+            section (str): The preference section name
+            data (dict): The section data
+            auto_save (bool): Whether to automatically save to disk
+            
+        Returns:
+            bool: True if successful (when auto_save=True)
+        """
+        config = self._load_fresh_config()
+        config[section] = data.copy()
+        
+        if auto_save:
+            return self._save_config(config)
+        return True
+    
+    def save(self):
+        """
+        Manually save the current configuration to disk.
+        
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        config = self._load_fresh_config()
+        return self._save_config(config)
+    
+    def _save_config(self, config):
+        """
+        Internal method to save configuration to disk.
+        
+        Args:
+            config (dict): The configuration to save
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            config_path = get_config_file_path()
+            
+            # Ensure the directory exists
+            config_dir = os.path.dirname(config_path)
+            if config_dir:
+                os.makedirs(config_dir, exist_ok=True)
+            
+            with open(config_path, 'w') as file:
+                json.dump(config, file, indent=4)
+            return True
+        except (IOError, OSError) as e:
+            QMessageBox.warning(None, "Error", f"Error saving config to {config_path}: {e}")
+            
+            # Fallback: try saving to a temp directory
+            try:
+                import tempfile
+                temp_dir = tempfile.gettempdir()
+                fallback_path = os.path.join(temp_dir, "mccain_pesticides_config.json")
+                QMessageBox.warning(None, "Warning", f"Trying fallback location: {fallback_path}")
+                
+                with open(fallback_path, 'w') as file:
+                    json.dump(config, file, indent=4)
+                QMessageBox.warning(None, "Warning", f"Config saved to fallback location: {fallback_path}")
+                return True
+            except Exception as fallback_error:
+                QMessageBox.critical(None, "Critical Error", f"Failed to save config: {fallback_error}")
+                return False
+
+
+# Global instance
+_preferences_manager = PreferencesManager()
+
+
+def get_preferences_manager():
+    """Get the global preferences manager instance."""
+    return _preferences_manager
+
+
+def set_preference(section, key, value, auto_save=False):
+    """
+    Helper function to set a preference using the preferences manager.
+    
+    Args:
+        section (str): The preference section (e.g., 'user_preferences', 'STIR_preferences')
+        key (str): The preference key
+        value: The value to set
+        auto_save (bool): Whether to automatically save to disk
+        
+    Returns:
+        bool: True if successful (when auto_save=True)
+    """
+    return _preferences_manager.set_preference(section, key, value, auto_save)
+
+
+def get_preference(section, key, default=None):
+    """
+    Helper function to get a preference using the preferences manager.
+    
+    Args:
+        section (str): The preference section
+        key (str): The preference key
+        default: The default value if not found
+        
+    Returns:
+        The preference value or default
+    """
+    return _preferences_manager.get_preference(section, key, default)
+
+
+def save_preferences():
+    """
+    Helper function to manually save all preferences to disk.
+    
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    return _preferences_manager.save()
+
 def get_config_file_path():
     """
     Get the appropriate path for the config file.
@@ -84,54 +293,37 @@ def save_config(config):
     """
     Save configuration to file.
     
+    LEGACY FUNCTION: For backward compatibility.
+    New code should use the PreferencesManager or helper functions.
+    
     Args:
         config (dict): The configuration to save
     
     Returns:
         bool: True if successful, False otherwise
     """
-    try:
-        config_path = get_config_file_path()
-        
-        # Ensure the directory exists
-        config_dir = os.path.dirname(config_path)
-        if config_dir:  # Only create if there's actually a directory part
-            os.makedirs(config_dir, exist_ok=True)
-        
-        with open(config_path, 'w') as file:
-            json.dump(config, file, indent=4)
-        return True
-    except (IOError, OSError) as e:
-        QMessageBox.warning(None, "Error", f"Error saving config to {config_path}: {e}")
-
-        # Fallback: try saving to a temp directory
-        try:
-            import tempfile
-            temp_dir = tempfile.gettempdir()
-            fallback_path = os.path.join(temp_dir, "mccain_pesticides_config.json")
-            QMessageBox.warning(None, "Warning", f"Trying fallback location: {fallback_path}")
-            
-            with open(fallback_path, 'w') as file:
-                json.dump(config, file, indent=4)
-            QMessageBox.warning(None, "Warning", f"Config saved to fallback location: {fallback_path}")
-            return True
-        except Exception as fallback_error:
-            QMessageBox.critical(None, "Critical Error", f"Failed to save config: {fallback_error}")
-            return False
+    return _preferences_manager._save_config(config)
 
 def get_config(key, default=None):
     """
     Get a configuration value.
     
+    LEGACY FUNCTION: For backward compatibility.
+    New code should use get_preference() or get_preferences_manager().get_section().
+    
     Args:
-        key (str): The configuration key
+        key (str): The configuration key (section name) or None for entire config
         default: The default value if the key doesn't exist
     
     Returns:
         The configuration value or default
     """
-    config = load_config()
-    return config.get(key, default)
+    if key is None:
+        # Return entire configuration (for backward compatibility)
+        return _preferences_manager._load_fresh_config()
+    else:
+        # Return specific section
+        return _preferences_manager.get_section(key, default)
 
 def resource_path(relative_path):
     """Get absolute path to resource, works for dev and for PyInstaller"""

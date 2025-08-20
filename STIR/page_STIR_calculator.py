@@ -16,6 +16,7 @@ from common.styles import get_subtitle_font
 from common.widgets.header_frame_buttons import ContentFrame, create_button, HeaderWithHomeButton
 from common.widgets.scorebar import ScoreBar
 from .tab_scenario import STIRScenarioTabPage
+from common.utils import get_config, save_config, set_preference, get_preference
 
 
 class CustomSTIRTabBar(QTabBar):
@@ -48,11 +49,11 @@ class STIRCalculatorPage(QWidget):
         """Initialize the STIR calculator page."""
         super().__init__(parent)
         self.parent = parent
-        self.scenario_tabs = {}  # Dictionary to track scenario tabs
+        self.scenario_tabs = {}
         
-        # Default UOM preferences (inch and mph as requested)
-        self.depth_uom = "inch"
-        self.speed_uom = "mph"
+        # Load STIR preferences
+        self.depth_uom = get_preference("STIR_preferences", "default_depth_uom", "inch")
+        self.speed_uom = get_preference("STIR_preferences", "default_speed_uom", "mph")
         
         self.setup_ui()
         self.add_initial_scenarios()
@@ -171,12 +172,22 @@ class STIRCalculatorPage(QWidget):
     def on_depth_uom_changed(self, new_uom):
         """Handle depth UOM change."""
         self.depth_uom = new_uom
+        # Auto-save STIR preferences (less critical, for convenience)
+        set_preference("STIR_preferences", "default_depth_uom", new_uom, auto_save=True)
         self.update_all_scenarios_uom()
-    
+
     def on_speed_uom_changed(self, new_uom):
         """Handle speed UOM change."""
         self.speed_uom = new_uom
+        # Auto-save STIR preferences (less critical, for convenience)
+        set_preference("STIR_preferences", "default_speed_uom", new_uom, auto_save=True)
         self.update_all_scenarios_uom()
+
+    def _save_stir_preferences(self):
+        """Save STIR preferences to config. (DEPRECATED - now auto-saved)"""
+        # This method is kept for backward compatibility but no longer needed
+        # since STIR preferences are now auto-saved in the UOM change handlers
+        pass
     
     def update_all_scenarios_uom(self):
         """Update UOM settings for all scenarios."""
