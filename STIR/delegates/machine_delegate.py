@@ -6,7 +6,7 @@ Provides a visual dialog for selecting machines using pictures.
 
 from PySide6.QtWidgets import QStyledItemDelegate, QPushButton, QWidget, QHBoxLayout, QDialog
 from PySide6.QtCore import Qt
-from ..machine_selection_dialog import MachineSelectionDialog
+from .machine_selection_dialog import MachineSelectionDialog
 from ..repository_machine import MachineRepository
 
 
@@ -25,22 +25,22 @@ class MachineSelectionDelegate(QStyledItemDelegate):
         layout.setContentsMargins(0, 0, 0, 0)
         
         # Create the button
-        button = QPushButton("Select Machine...", container)
+        current_text = index.model().data(index, Qt.EditRole) or ""
+        button_text = current_text if current_text else "Click to select machine"
+        
+        button = QPushButton(button_text, container)
         button.setStyleSheet("""
             QPushButton {
-                text-align: left;
+                text-align: center;
                 padding: 5px;
                 border: 1px solid #ccc;
+                background-color: white;
             }
             QPushButton:hover {
                 border: 2px solid #007ACC;
+                background-color: #f0f8ff;
             }
         """)
-        
-        # Set current machine name if available
-        current_text = index.model().data(index, Qt.EditRole) or ""
-        if current_text:
-            button.setText(current_text)
         
         # Connect button click to open dialog
         button.clicked.connect(lambda: self.open_selection_dialog(button, index))
@@ -72,15 +72,21 @@ class MachineSelectionDelegate(QStyledItemDelegate):
             if current_text:
                 editor.button.setText(current_text)
             else:
-                editor.button.setText("Select Machine...")
+                editor.button.setText("Click to select machine")
     
     def setModelData(self, editor, model, index):
         """Set the model data from the editor."""
         if hasattr(editor, 'button'):
             selected_machine = editor.button.text()
-            if selected_machine != "Select Machine...":
+            if selected_machine not in ["Click to select machine", "Select Machine..."]:
                 model.setData(index, selected_machine, Qt.EditRole)
     
     def updateEditorGeometry(self, editor, option, index):
         """Update the editor geometry."""
         editor.setGeometry(option.rect)
+    
+    def displayText(self, value, locale):
+        """Format the display text to avoid duplication."""
+        if value is None or str(value).strip() == "":
+            return ""
+        return str(value)

@@ -63,6 +63,16 @@ class ScoreBar(QWidget):
             region_colors=[QColor(GREEN), QColor(YELLOW_PRESSED), QColor(255, 152, 0), QColor(239, 68, 68)],
             gradient_stops=[0, 0.35, 1]
         ),
+        "stir": PresetConfig(
+            title="Tillage Intensity:",
+            thresholds=[100, 200, 400],
+            labels=["Light", "Medium", "Intense", "Very Intense"],
+            min_value=0,
+            max_value=500,
+            gradient_colors=[QColor(34, 197, 94), QColor(255, 235, 59), QColor(239, 68, 68)],
+            region_colors=[QColor(34, 197, 94), QColor(255, 235, 59), QColor(255, 152, 0), QColor(239, 68, 68)],
+            gradient_stops=[0, 0.4, 1]
+        ),
         "regen_ag": PresetConfig(
             title="RegenAg framework class:",
             thresholds=[LEADING, ADVANCED, ENGAGED, ONBOARDING],
@@ -81,7 +91,7 @@ class ScoreBar(QWidget):
         
         Args:
             parent: Parent widget
-            preset: "calculator" or "regen_ag" for different configurations
+            preset: "calculator", "stir", or "regen_ag" for different configurations
             
         Raises:
             ValueError: If preset is not recognized

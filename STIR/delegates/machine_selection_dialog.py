@@ -10,8 +10,8 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QScrollArea,
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
 from typing import Optional, List
-from .model_machine import Machine
-from .repository_machine import MachineRepository
+from ..model_machine import Machine
+from ..repository_machine import MachineRepository
 from common.utils import resource_path
 
 
@@ -36,7 +36,7 @@ class MachineSelectionDialog(QDialog):
         layout = QVBoxLayout(self)
         
         # Title
-        title_label = QLabel("Select a Machine by clicking on its picture:")
+        title_label = QLabel("Select a Machine:")
         title_label.setStyleSheet("font-size: 14px; font-weight: bold; margin: 10px;")
         layout.addWidget(title_label)
         
@@ -45,11 +45,14 @@ class MachineSelectionDialog(QDialog):
         scroll_area.setWidgetResizable(True)
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_area.setStyleSheet("QScrollArea { border: none; background-color: transparent; }")
         
         # Widget to contain the grid
         scroll_widget = QWidget()
+        scroll_widget.setStyleSheet("background-color: transparent;")
         grid_layout = QGridLayout(scroll_widget)
-        grid_layout.setSpacing(15)
+        grid_layout.setSpacing(20)
+        grid_layout.setContentsMargins(15, 15, 15, 15)
         
         # Load machines and create picture buttons
         machines = self.machine_repo.get_all_machines()
@@ -71,63 +74,82 @@ class MachineSelectionDialog(QDialog):
             row = i // columns
             col = i % columns
             
-            # Create a frame for each machine
-            machine_frame = QFrame()
-            machine_frame.setFrameStyle(QFrame.Box)
-            machine_frame.setLineWidth(2)
+            # Create a card-style button for each machine
+            machine_card = QPushButton()
+            machine_card.setFixedSize(200, 180)
+            machine_card.clicked.connect(lambda checked, name=machine.name: self.select_machine(name))
             
-            # Highlight if this is the currently selected machine
-            if machine.name == self.selected_machine_name:
-                machine_frame.setStyleSheet("QFrame { border: 3px solid #007ACC; }")
-            else:
-                machine_frame.setStyleSheet("QFrame { border: 1px solid #ccc; }")
+            # Create the card layout
+            card_layout = QVBoxLayout(machine_card)
+            card_layout.setContentsMargins(10, 10, 10, 10)
+            card_layout.setSpacing(8)
             
-            frame_layout = QVBoxLayout(machine_frame)
-            frame_layout.setContentsMargins(10, 10, 10, 10)
-            
-            # Machine picture button
-            picture_button = QPushButton()
-            picture_button.setFixedSize(180, 140)
-            picture_button.clicked.connect(lambda checked, name=machine.name: self.select_machine(name))
+            # Image container
+            image_label = QLabel()
+            image_label.setFixedSize(160, 120)
+            image_label.setAlignment(Qt.AlignCenter)
+            image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px;")
             
             # Load and set the picture
             if machine.picture:
                 image_path = resource_path(f"STIR/images/{machine.picture}")
                 pixmap = QPixmap(image_path)
                 if not pixmap.isNull():
-                    # Scale pixmap to fit button while maintaining aspect ratio
-                    scaled_pixmap = pixmap.scaled(170, 130, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                    picture_button.setIcon(scaled_pixmap)
-                    picture_button.setIconSize(scaled_pixmap.size())
+                    # Scale pixmap to fit label while maintaining aspect ratio
+                    scaled_pixmap = pixmap.scaled(150, 110, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                    image_label.setPixmap(scaled_pixmap)
                 else:
-                    picture_button.setText("No Image")
+                    image_label.setText("No Image\nAvailable")
+                    image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px; color: #666; font-size: 10px;")
             else:
-                picture_button.setText("No Image")
-            
-            picture_button.setStyleSheet("""
-                QPushButton {
-                    border: 1px solid #ccc;
-                    background-color: white;
-                }
-                QPushButton:hover {
-                    border: 2px solid #007ACC;
-                    background-color: #f0f8ff;
-                }
-                QPushButton:pressed {
-                    background-color: #e0e8ff;
-                }
-            """)
-            
-            frame_layout.addWidget(picture_button)
+                image_label.setText("No Image\nAvailable")
+                image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px; color: #666; font-size: 10px;")
+
+            card_layout.addWidget(image_label)
             
             # Machine name label
             name_label = QLabel(machine.name)
             name_label.setAlignment(Qt.AlignCenter)
             name_label.setWordWrap(True)
-            name_label.setStyleSheet("font-weight: bold; margin-top: 5px;")
-            frame_layout.addWidget(name_label)
+            name_label.setStyleSheet("font-weight: bold; font-size: 11px; color: #333; background: transparent;")
+            card_layout.addWidget(name_label)
             
-            grid_layout.addWidget(machine_frame, row, col)
+            # Card styling based on selection state
+            if machine.name == self.selected_machine_name:
+                machine_card.setStyleSheet("""
+                    QPushButton {
+                        background-color: #e3f2fd;
+                        border: 2px solid #1976d2;
+                        border-radius: 8px;
+                        padding: 0px;
+                    }
+                    QPushButton:hover {
+                        background-color: #bbdefb;
+                        border: 2px solid #1565c0;
+                    }
+                    QPushButton:pressed {
+                        background-color: #90caf9;
+                    }
+                """)
+            else:
+                machine_card.setStyleSheet("""
+                    QPushButton {
+                        background-color: white;
+                        border: 1px solid #e0e0e0;
+                        border-radius: 8px;
+                        padding: 0px;
+                    }
+                    QPushButton:hover {
+                        background-color: #f5f5f5;
+                        border: 2px solid #1976d2;
+                        transform: translateY(-2px);
+                    }
+                    QPushButton:pressed {
+                        background-color: #eeeeee;
+                    }
+                """)
+            
+            grid_layout.addWidget(machine_card, row, col)
     
     def select_machine(self, machine_name: str):
         """Handle machine selection and close dialog."""

@@ -92,7 +92,8 @@ class MachineRepository:
                             speed_uom=row.get('speed_uom', 'km/h').strip(),
                             surface_area_disturbed=float(row.get('surface_area_disturbed', 100)),
                             tillage_type_factor=float(row.get('tillage_type_factor', 0.7)),
-                            picture=row.get('picture', '').strip()
+                            picture=row.get('picture', '').strip(),
+                            rotates=str(row.get('rotates', 'FALSE')).upper() == 'TRUE'
                         )
                         self._all_machines.append(machine)
                         

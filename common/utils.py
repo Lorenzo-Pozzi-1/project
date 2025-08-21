@@ -334,31 +334,6 @@ def resource_path(relative_path):
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
-
-class WheelProtectionFilter(QObject):
-    """Prevents widgets from changing values when scrolling without clicking first."""
-    
-    def __init__(self) -> None:
-        super().__init__()
-        self.clicked_widgets = set()  # Track which widgets have been clicked
-
-    def eventFilter(self, obj: QObject, event: QEvent) -> bool:
-        # Track widgets that have been clicked
-        if event.type() in (QEvent.MouseButtonPress, QEvent.KeyPress):
-            self.clicked_widgets.add(obj)
-        
-        # Block wheel events for widgets that haven't been clicked
-        elif event.type() == QEvent.Wheel and obj not in self.clicked_widgets:
-            return True  # Block the event
-        
-        # Reset clicked state when dropdown closes or focus is lost
-        elif event.type() == QEvent.Hide and hasattr(obj, 'view'):
-            self.clicked_widgets.discard(obj)
-        elif event.type() == QEvent.FocusOut:
-            self.clicked_widgets.discard(obj)
-        
-        # Let other events pass through
-        return super().eventFilter(obj, event)
     
 # ----------------------
 # EIQ UTILITY FUNCTIONS

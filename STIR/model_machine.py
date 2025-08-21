@@ -24,7 +24,8 @@ class Machine:
                  speed_uom: str = "km/h",
                  surface_area_disturbed: float = 100.0,
                  tillage_type_factor: float = 0.0,
-                 picture: str = ""):
+                 picture: str = "",
+                 rotates: bool = False):
         """
         Initialize a Machine.
         
@@ -39,6 +40,7 @@ class Machine:
                                0.8=Mixing+some inversion, 0.7=Mixing only, 0.4=Lifting+fracturing, 
                                0.15=Compression)
             picture: Filename of the machine picture (e.g., "hiller.png")
+            rotates: Whether the machine has rotating/powered components (True/False)
         """
         self.name = name
         self.depth = depth
@@ -48,6 +50,7 @@ class Machine:
         self.surface_area_disturbed = surface_area_disturbed
         self.tillage_type_factor = tillage_type_factor
         self.picture = picture
+        self.rotates = rotates
     
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -64,7 +67,8 @@ class Machine:
             "speed_uom": self.speed_uom,
             "surface_area_disturbed": self.surface_area_disturbed,
             "tillage_type_factor": self.tillage_type_factor,
-            "picture": self.picture
+            "picture": self.picture,
+            "rotates": self.rotates
         }
     
     @classmethod
@@ -86,7 +90,8 @@ class Machine:
             speed_uom=data.get("speed_uom", "km/h"),
             surface_area_disturbed=data.get("surface_area_disturbed", 100.0),
             tillage_type_factor=data.get("tillage_type_factor", 0.0),
-            picture=data.get("picture", "")
+            picture=data.get("picture", ""),
+            rotates=data.get("rotates", False)
         )
     
     def create_default_operation(self, operation_group: str = "pre-plant"):
@@ -109,7 +114,8 @@ class Machine:
             speed=self.speed,
             speed_uom=self.speed_uom,
             surface_area_disturbed=self.surface_area_disturbed,
-            tillage_type_factor=self.tillage_type_factor
+            tillage_type_factor=self.tillage_type_factor,
+            machine_rotates=self.rotates
         )
     
     def __str__(self) -> str:

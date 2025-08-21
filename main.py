@@ -9,7 +9,7 @@ It initializes the application, sets up the main window, and starts the event lo
 import os, sys
 from PySide6.QtCore import QDir, QTimer
 from PySide6.QtWidgets import QApplication, QComboBox, QDoubleSpinBox
-from common.utils import WheelProtectionFilter, load_config
+from common.utils import load_config
 from data.repository_AI import AIRepository
 from data.repository_product import ProductRepository
 from main_page.window_main import MainWindow
@@ -33,17 +33,6 @@ def main() -> int:
     app.setStyle("Fusion")
     app.setApplicationName("EIQ & STIR App")
     
-    # Block scroll-to-change-value for QComboBox and QDoubleSpinBox (uncomment if wanted)
-    # scroll_filter = WheelProtectionFilter()
-    # for widget_class in [QComboBox, QDoubleSpinBox]:
-    #     original_init = widget_class.__init__
-    #     def create_filtered_init(orig_init):
-    #         def filtered_init(self, *args, **kwargs):
-    #             orig_init(self, *args, **kwargs)
-    #             self.installEventFilter(scroll_filter)
-    #         return filtered_init
-    #     widget_class.__init__ = create_filtered_init(original_init)
-
     # Load application configuration
     config = load_config()
     

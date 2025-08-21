@@ -27,6 +27,7 @@ class Operation:
                  surface_area_disturbed: float = 100.0,  # Percentage (0-100)
                  number_of_passes: int = 1,
                  tillage_type_factor: float = 0.0,  # Tillage intensity factor
+                 machine_rotates: bool = False,  # Whether machine has rotating components
                  stir_value: Optional[float] = None):
         """
         Initialize an Operation.
@@ -42,6 +43,7 @@ class Operation:
             number_of_passes: Number of times the operation is performed
             tillage_type_factor: Tillage intensity factor (1.0=Inversion+mixing, 0.8=Mixing+someinversion, 
                                0.7=Mixing only, 0.4=Lifting+fracturing, 0.15=Compression)
+            machine_rotates: Whether the machine has rotating/powered components (True/False)
             stir_value: Calculated STIR value (if None, will be calculated)
         """
         self.operation_group = operation_group
@@ -53,6 +55,7 @@ class Operation:
         self.surface_area_disturbed = surface_area_disturbed
         self.number_of_passes = number_of_passes
         self.tillage_type_factor = tillage_type_factor
+        self.machine_rotates = machine_rotates
         self.stir_value = stir_value
     
     def load_machine_defaults(self, machine_name: str) -> bool:
@@ -79,6 +82,7 @@ class Operation:
                 self.speed_uom = machine.speed_uom
                 self.surface_area_disturbed = machine.surface_area_disturbed
                 self.tillage_type_factor = machine.tillage_type_factor
+                self.machine_rotates = machine.rotates
                 return True
             
             return False
@@ -90,8 +94,11 @@ class Operation:
         """
         Calculate the STIR value for this operation.
         
-        Based on the formula from learning materials:
-        STIR = (tillage type factor x 3.25) x (speed [km/h] x 0.5) x (depth [cm]) x (surface area disturbed [%])
+        Uses different formulas based on whether the machine rotates:
+        - For rotating machines: STIR = (tillage type factor x 3.25) x (speed [km/h] x 0.5) x (depth [cm]) x (surface area disturbed [%])
+        - For non-rotating machines: STIR = (tillage type factor x 3.25) x (speed [km/h] x 0.5) x (depth [cm]) x (surface area disturbed [%])
+        
+        Note: Currently using the same formula for both - will be updated with specific formulas later.
         
         Returns:
             Calculated STIR value
@@ -101,8 +108,13 @@ class Operation:
         speed_kmh = self._convert_speed_to_kmh()
         surface_fraction = self.surface_area_disturbed / 100.0
         
-        # Calculate STIR using the formula with provided tillage type factor
-        stir = (self.tillage_type_factor * 3.25) * (speed_kmh * 0.5) * depth_cm * surface_fraction
+        # Calculate STIR using different formulas based on machine rotation
+        if self.machine_rotates:
+            # Formula for rotating machines (placeholder - same as current)
+            stir = (self.tillage_type_factor * 3.25) * (speed_kmh * 0.5) * depth_cm * surface_fraction
+        else:
+            # Formula for non-rotating machines (placeholder - same as current)
+            stir = (self.tillage_type_factor * 3.25) * (speed_kmh * 0.5) * depth_cm * surface_fraction
         
         # Apply number of passes
         total_stir = stir * self.number_of_passes
@@ -191,6 +203,7 @@ class Operation:
             'surface_area_disturbed': self.surface_area_disturbed,
             'number_of_passes': self.number_of_passes,
             'tillage_type_factor': self.tillage_type_factor,
+            'machine_rotates': self.machine_rotates,
             'stir_value': self.stir_value
         }
     
@@ -215,6 +228,7 @@ class Operation:
             surface_area_disturbed=data.get('surface_area_disturbed', 100.0),
             number_of_passes=data.get('number_of_passes', 1),
             tillage_type_factor=data.get('tillage_type_factor', 0.0),
+            machine_rotates=data.get('machine_rotates', False),
             stir_value=data.get('stir_value')
         )
     

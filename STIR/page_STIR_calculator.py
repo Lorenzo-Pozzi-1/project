@@ -76,7 +76,8 @@ class STIRCalculatorPage(QWidget):
         
         # Add UOM selection controls
         uom_layout = QHBoxLayout()
-        
+        uom_layout.addStretch()
+
         # Depth UOM selector
         depth_label = QLabel("Depth:")
         self.depth_uom_combo = QComboBox()
@@ -93,10 +94,8 @@ class STIRCalculatorPage(QWidget):
         
         uom_layout.addWidget(depth_label)
         uom_layout.addWidget(self.depth_uom_combo)
-        uom_layout.addWidget(QLabel(""))  # Spacer
         uom_layout.addWidget(speed_label)
         uom_layout.addWidget(self.speed_uom_combo)
-        uom_layout.addStretch()
         
         buttons_layout.addLayout(uom_layout)
         
@@ -156,13 +155,8 @@ class STIRCalculatorPage(QWidget):
         )
         results_layout.addWidget(self.scenario_info_title)
         
-        # Create score bar for STIR intensity
-        self.stir_score_bar = ScoreBar(preset="calculator")
-        self.stir_score_bar.config.title = "Tillage Intensity:"
-        self.stir_score_bar.config.thresholds = [100, 200, 400]
-        self.stir_score_bar.config.labels = ["Light", "Medium", "Intense", "Very Intense"]
-        self.stir_score_bar.config.min_value = 0
-        self.stir_score_bar.config.max_value = 500
+        # Create score bar for STIR intensity using the new "stir" preset
+        self.stir_score_bar = ScoreBar(preset="stir")
         self.stir_score_bar.set_value(268, "Intense")
         results_layout.addWidget(self.stir_score_bar)
         
@@ -204,15 +198,15 @@ class STIRCalculatorPage(QWidget):
     def add_initial_scenarios(self):
         """Add initial scenario."""
         # Add one initial scenario
-        scenario1 = STIRScenarioTabPage(self, "Scenario 1")
+        scenario1 = STIRScenarioTabPage(self, "New Scenario")
         scenario1.scenario_changed.connect(self.on_scenario_changed)
         
         # Set initial UOM settings
         scenario1.set_display_uom(self.depth_uom, self.speed_uom)
-        
-        self.tab_widget.addTab(scenario1, "Scenario 1")
-        self.scenario_tabs["Scenario 1"] = scenario1
-        
+
+        self.tab_widget.addTab(scenario1, "New Scenario")
+        self.scenario_tabs["New Scenario"] = scenario1
+
         # Set the first tab as current
         self.tab_widget.setCurrentIndex(0)
         self.update_ui_state()
@@ -410,22 +404,15 @@ class STIRCalculatorPage(QWidget):
             scenario_name = "No scenario selected"
             total_stir = 0
             operations_count = 0
-            validation_status = ""
         else:
             scenario_name = page.get_scenario_name()
             total_stir = page.get_total_stir()
             operations_count = page.get_operations_count()
-            
-            # Add validation status
-            if page.has_validation_issues():
-                validation_status = " (⚠ There are validation issues!)"
-            else:
-                validation_status = ""
-        
+                    
         # Update combined title
         self.scenario_info_title.setText(
             f"{scenario_name}: {operations_count} operations | "
-            f"Total STIR: {total_stir}{validation_status}"
+            f"Total STIR: {total_stir}"
         )
         
         # Update scorebar
