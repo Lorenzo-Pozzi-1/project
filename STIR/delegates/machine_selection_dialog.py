@@ -8,10 +8,11 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QScrollArea,
                                QWidget, QPushButton, QLabel, QGridLayout, 
                                QDialogButtonBox, QFrame)
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QFont
 from typing import Optional, List
 from ..model_machine import Machine
 from ..repository_machine import MachineRepository
+from .custom_machine_dialog import CustomMachineDialog
 from common.utils import resource_path
 
 
@@ -70,9 +71,15 @@ class MachineSelectionDialog(QDialog):
         """Create clickable picture buttons for each machine."""
         columns = 3  # Number of columns in the grid
         
+        # First, create the custom machine card (top-left position)
+        self.create_custom_machine_card(grid_layout, 0, 0)
+        
+        # Then create regular machine cards, starting from position 1
         for i, machine in enumerate(machines):
-            row = i // columns
-            col = i % columns
+            # Offset by 1 to account for custom machine card
+            position = i + 1
+            row = position // columns
+            col = position % columns
             
             # Create a card-style button for each machine
             machine_card = QPushButton()
@@ -92,7 +99,7 @@ class MachineSelectionDialog(QDialog):
             
             # Load and set the picture
             if machine.picture:
-                image_path = resource_path(f"STIR/images/{machine.picture}")
+                image_path = resource_path(f"STIR/images/machines/{machine.picture}")
                 pixmap = QPixmap(image_path)
                 if not pixmap.isNull():
                     # Scale pixmap to fit label while maintaining aspect ratio
@@ -160,3 +167,69 @@ class MachineSelectionDialog(QDialog):
     def get_selected_machine(self) -> str:
         """Get the selected machine name."""
         return self.selected_machine_name
+    
+    def create_custom_machine_card(self, grid_layout: QGridLayout, row: int, col: int):
+        """Create the custom machine card with plus icon."""
+        # Create a card-style button for custom machine
+        custom_card = QPushButton()
+        custom_card.setFixedSize(200, 180)
+        custom_card.clicked.connect(self.open_custom_machine_dialog)
+        
+        # Create the card layout
+        card_layout = QVBoxLayout(custom_card)
+        card_layout.setContentsMargins(10, 10, 10, 10)
+        card_layout.setSpacing(8)
+        
+        # Plus icon container
+        icon_label = QLabel("+")
+        icon_label.setFixedSize(160, 120)
+        icon_label.setAlignment(Qt.AlignCenter)
+        icon_label.setStyleSheet("""
+            background-color: #ffffff; 
+            border-radius: 4px; 
+            font-size: 48px; 
+            font-weight: bold; 
+            color: #1976d2;
+        """)
+        card_layout.addWidget(icon_label)
+        
+        # Custom machine label
+        name_label = QLabel("Add Custom Machine")
+        name_label.setAlignment(Qt.AlignCenter)
+        name_label.setWordWrap(True)
+        name_label.setStyleSheet("font-weight: bold; font-size: 11px; color: #333; background: transparent;")
+        card_layout.addWidget(name_label)
+        
+        # Card styling
+        custom_card.setStyleSheet("""
+            QPushButton {
+                background-color: white;
+                border: 2px dashed #1976d2;
+                border-radius: 8px;
+                padding: 0px;
+            }
+            QPushButton:hover {
+                background-color: #f5f5f5;
+                border: 2px solid #1976d2;
+                transform: translateY(-2px);
+            }
+            QPushButton:pressed {
+                background-color: #eeeeee;
+            }
+        """)
+        
+        grid_layout.addWidget(custom_card, row, col)
+    
+    def open_custom_machine_dialog(self):
+        """Open the custom machine creation dialog."""
+        custom_dialog = CustomMachineDialog(self)
+        custom_dialog.machine_created.connect(self.on_custom_machine_created)
+        custom_dialog.exec()
+    
+    def on_custom_machine_created(self, machine: Machine):
+        """Handle when a custom machine is created."""
+        # For now, just select the new custom machine and close
+        # In the future, we might want to refresh the machine list
+        self.selected_machine_name = machine.name
+        self.machine_selected.emit(machine.name)
+        self.accept()

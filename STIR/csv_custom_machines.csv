@@ -1,0 +1,2 @@
+name,rotates,depth,depth_uom,speed,speed_uom,surface_area_disturbed,tillage_type_factor,picture,implements
+testatatomica,FALSE,15.0,cm,10.0,km/h,100.0,0.7,custom_machine.png,Harrow Disc:0.7|Coulter Disc:0.15|Chisel:0.4

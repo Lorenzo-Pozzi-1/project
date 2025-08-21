@@ -6,6 +6,7 @@ machine data, with CSV loading and caching for performance optimization.
 """
 
 import csv
+import os
 from PySide6.QtWidgets import QMessageBox
 from typing import List, Optional
 from .model_machine import Machine
@@ -74,7 +75,32 @@ class MachineRepository:
         try:
             self._all_machines = []
             
-            with open(self.csv_file, 'r', encoding='utf-8-sig') as file:  # Handle BOM
+            # Load standard machines
+            self._load_machines_from_file(self.csv_file)
+            
+            # Load custom machines
+            custom_machines_csv = resource_path("STIR/csv_custom_machines.csv")
+            self._load_machines_from_file(custom_machines_csv, is_custom=True)
+                        
+        except Exception as e:
+            QMessageBox.critical(
+                None,
+                "Error Loading Machines",
+                f"An error occurred while loading machines: {str(e)}"
+            )
+            self._all_machines = []
+    
+    def _load_machines_from_file(self, file_path: str, is_custom: bool = False):
+        """Load machines from a specific CSV file."""
+        try:
+            if not os.path.exists(file_path):
+                if is_custom:
+                    # Custom machines file doesn't exist yet, that's OK
+                    return
+                else:
+                    raise FileNotFoundError(f"Could not find machines file: {file_path}")
+            
+            with open(file_path, 'r', encoding='utf-8-sig') as file:  # Handle BOM
                 reader = csv.DictReader(file)
                 
                 for row in reader:
@@ -104,20 +130,14 @@ class MachineRepository:
                         continue
                         
         except FileNotFoundError:
-            QMessageBox.critical(
-                None,
-                "File Not Found",
-                f"Could not find machines file: {self.csv_file}"
-            )
-            self._all_machines = []
-            
+            if not is_custom:
+                QMessageBox.critical(
+                    None,
+                    "File Not Found",
+                    f"Could not find machines file: {file_path}"
+                )
         except Exception as e:
-            QMessageBox.critical(
-                None,
-                "Error Loading Machines",
-                f"An error occurred while loading machines: {str(e)}"
-            )
-            self._all_machines = []
+            print(f"Error loading machines from {file_path}: {str(e)}")
     
     def reload_data(self):
         """Force reload of machine data from CSV."""
