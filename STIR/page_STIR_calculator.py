@@ -74,6 +74,16 @@ class STIRCalculatorPage(QWidget):
         buttons_frame = ContentFrame()
         buttons_layout = QHBoxLayout()
         
+        # Add custom machine management button
+        manage_button = create_button(text="Manage custom machines", style='special', 
+                                    callback=self.open_custom_machine_manager)
+        buttons_layout.addWidget(manage_button)
+        
+        # Add separator
+        separator1 = QLabel("|")
+        separator1.setStyleSheet("color: #ccc; font-size: 16px; margin: 0 10px;")
+        buttons_layout.addWidget(separator1)
+        
         # Add UOM selection controls
         uom_layout = QHBoxLayout()
         uom_layout.addStretch()
@@ -429,3 +439,10 @@ class STIRCalculatorPage(QWidget):
             self.stir_score_bar.set_value(total_stir, intensity)
         else:
             self.stir_score_bar.set_value(0, "No operations")
+    
+    def open_custom_machine_manager(self):
+        """Open the custom machine management dialog."""
+        from .delegates.custom_machine_manager_dialog import CustomMachineManagerDialog
+        
+        dialog = CustomMachineManagerDialog(self)
+        dialog.exec()

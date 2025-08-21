@@ -6,13 +6,13 @@ Provides a visual dialog for selecting machines by their pictures.
 
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QScrollArea, 
                                QWidget, QPushButton, QLabel, QGridLayout, 
-                               QDialogButtonBox, QFrame)
+                               QDialogButtonBox, QFrame, QTabWidget)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QFont
 from typing import Optional, List
 from ..model_machine import Machine
 from ..repository_machine import MachineRepository
-from .custom_machine_dialog import CustomMachineDialog
+from .custom_machine_creation_dialog import CustomMachineDialog
 from common.utils import resource_path
 
 
@@ -41,6 +41,28 @@ class MachineSelectionDialog(QDialog):
         title_label.setStyleSheet("font-size: 14px; font-weight: bold; margin: 10px;")
         layout.addWidget(title_label)
         
+        # Create tab widget
+        self.tab_widget = QTabWidget()
+        layout.addWidget(self.tab_widget)
+        
+        # Create tabs
+        self.create_standard_machines_tab()
+        self.create_custom_machines_tab()
+        
+        # Button box
+        button_box = QDialogButtonBox(QDialogButtonBox.Cancel)
+        button_box.rejected.connect(self.reject)
+        layout.addWidget(button_box)
+    
+    def create_standard_machines_tab(self):
+        """Create the standard machines tab."""
+        # Create tab widget
+        standard_tab = QWidget()
+        self.tab_widget.addTab(standard_tab, "Standard Machines")
+        
+        # Layout for the tab
+        tab_layout = QVBoxLayout(standard_tab)
+        
         # Scroll area for machine grid
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
@@ -55,31 +77,62 @@ class MachineSelectionDialog(QDialog):
         grid_layout.setSpacing(20)
         grid_layout.setContentsMargins(15, 15, 15, 15)
         
-        # Load machines and create picture buttons
+        # Load standard machines and create picture buttons
         machines = self.machine_repo.get_all_machines()
-        self.create_machine_buttons(grid_layout, machines)
+        standard_machines = [m for m in machines if not self.is_custom_machine(m)]
+        self.create_machine_buttons(grid_layout, standard_machines)
         
         scroll_area.setWidget(scroll_widget)
-        layout.addWidget(scroll_area)
+        tab_layout.addWidget(scroll_area)
+    
+    def create_custom_machines_tab(self):
+        """Create the custom machines tab."""
+        # Create tab widget
+        custom_tab = QWidget()
+        self.tab_widget.addTab(custom_tab, "Custom Machines")
         
-        # Button box
-        button_box = QDialogButtonBox(QDialogButtonBox.Cancel)
-        button_box.rejected.connect(self.reject)
-        layout.addWidget(button_box)
+        # Layout for the tab
+        tab_layout = QVBoxLayout(custom_tab)
         
-    def create_machine_buttons(self, grid_layout: QGridLayout, machines: List[Machine]):
-        """Create clickable picture buttons for each machine."""
-        columns = 3  # Number of columns in the grid
+        # Scroll area for machine grid
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_area.setStyleSheet("QScrollArea { border: none; background-color: transparent; }")
+        
+        # Widget to contain the grid
+        scroll_widget = QWidget()
+        scroll_widget.setStyleSheet("background-color: transparent;")
+        grid_layout = QGridLayout(scroll_widget)
+        grid_layout.setSpacing(20)
+        grid_layout.setContentsMargins(15, 15, 15, 15)
         
         # First, create the custom machine card (top-left position)
         self.create_custom_machine_card(grid_layout, 0, 0)
         
-        # Then create regular machine cards, starting from position 1
+        # Load custom machines and create picture buttons
+        machines = self.machine_repo.get_all_machines()
+        custom_machines = [m for m in machines if self.is_custom_machine(m)]
+        self.create_custom_machine_buttons(grid_layout, custom_machines)
+        
+        scroll_area.setWidget(scroll_widget)
+        tab_layout.addWidget(scroll_area)
+    
+    def is_custom_machine(self, machine: Machine) -> bool:
+        """Check if a machine is a custom machine."""
+        # For now, we can identify custom machines by checking if they have 'custom' in the name
+        # or by checking if they exist in the custom machines CSV
+        # This is a simple heuristic - in the future we might add a flag to the Machine model
+        return "custom" in machine.name.lower() or machine.picture == "custom_machine.png"
+        
+    def create_machine_buttons(self, grid_layout: QGridLayout, machines: List[Machine]):
+        """Create clickable picture buttons for standard machines."""
+        columns = 3  # Number of columns in the grid
+        
         for i, machine in enumerate(machines):
-            # Offset by 1 to account for custom machine card
-            position = i + 1
-            row = position // columns
-            col = position % columns
+            row = i // columns
+            col = i % columns
             
             # Create a card-style button for each machine
             machine_card = QPushButton()
@@ -111,6 +164,82 @@ class MachineSelectionDialog(QDialog):
             else:
                 image_label.setText("No Image\nAvailable")
                 image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px; color: #666; font-size: 10px;")
+
+            card_layout.addWidget(image_label)
+            
+            # Machine name label
+            name_label = QLabel(machine.name)
+            name_label.setAlignment(Qt.AlignCenter)
+            name_label.setWordWrap(True)
+            name_label.setStyleSheet("font-weight: bold; font-size: 11px; color: #333; background: transparent;")
+            card_layout.addWidget(name_label)
+            
+            # Card styling based on selection state
+            if machine.name == self.selected_machine_name:
+                machine_card.setStyleSheet("""
+                    QPushButton {
+                        background-color: #e3f2fd;
+                        border: 2px solid #1976d2;
+                        border-radius: 8px;
+                        padding: 0px;
+                    }
+                    QPushButton:hover {
+                        background-color: #bbdefb;
+                        border: 2px solid #1565c0;
+                    }
+                    QPushButton:pressed {
+                        background-color: #90caf9;
+                    }
+                """)
+            else:
+                machine_card.setStyleSheet("""
+                    QPushButton {
+                        background-color: white;
+                        border: 1px solid #e0e0e0;
+                        border-radius: 8px;
+                        padding: 0px;
+                    }
+                    QPushButton:hover {
+                        background-color: #f5f5f5;
+                        border: 2px solid #1976d2;
+                        transform: translateY(-2px);
+                    }
+                    QPushButton:pressed {
+                        background-color: #eeeeee;
+                    }
+                """)
+            
+            grid_layout.addWidget(machine_card, row, col)
+    
+    def create_custom_machine_buttons(self, grid_layout: QGridLayout, custom_machines: List[Machine]):
+        """Create clickable picture buttons for custom machines (starting after the 'Add Custom' card)."""
+        columns = 3  # Number of columns in the grid
+        
+        for i, machine in enumerate(custom_machines):
+            # Offset by 1 to account for the "Add Custom Machine" card
+            position = i + 1
+            row = position // columns
+            col = position % columns
+            
+            # Create a card-style button for each custom machine
+            machine_card = QPushButton()
+            machine_card.setFixedSize(200, 180)
+            machine_card.clicked.connect(lambda checked, name=machine.name: self.select_machine(name))
+            
+            # Create the card layout
+            card_layout = QVBoxLayout(machine_card)
+            card_layout.setContentsMargins(10, 10, 10, 10)
+            card_layout.setSpacing(8)
+            
+            # Image container (custom machines might not have images yet)
+            image_label = QLabel()
+            image_label.setFixedSize(160, 120)
+            image_label.setAlignment(Qt.AlignCenter)
+            image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px;")
+            
+            # For now, custom machines show a placeholder
+            image_label.setText("Custom\nMachine")
+            image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px; color: #666; font-size: 10px; font-weight: bold;")
 
             card_layout.addWidget(image_label)
             
@@ -228,8 +357,60 @@ class MachineSelectionDialog(QDialog):
     
     def on_custom_machine_created(self, machine: Machine):
         """Handle when a custom machine is created."""
-        # For now, just select the new custom machine and close
-        # In the future, we might want to refresh the machine list
+        # Refresh the machine repository to include the new custom machine
+        self.machine_repo.reload_data()
+        
+        # Switch to custom machines tab and refresh it
+        self.tab_widget.setCurrentIndex(1)  # Switch to custom machines tab
+        
+        # Refresh the custom machines tab
+        self.refresh_custom_machines_tab()
+        
+        # Select the new custom machine and close
         self.selected_machine_name = machine.name
         self.machine_selected.emit(machine.name)
         self.accept()
+    
+    def refresh_custom_machines_tab(self):
+        """Refresh the custom machines tab content."""
+        # Get the custom machines tab widget
+        custom_tab = self.tab_widget.widget(1)
+        
+        # Clear the current layout
+        layout = custom_tab.layout()
+        if layout:
+            # Remove all widgets from the layout
+            for i in reversed(range(layout.count())): 
+                child = layout.itemAt(i)
+                if child:
+                    widget = child.widget()
+                    if widget:
+                        widget.setParent(None)
+        
+        # Recreate the custom machines tab content
+        tab_layout = QVBoxLayout(custom_tab)
+        
+        # Scroll area for machine grid
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_area.setStyleSheet("QScrollArea { border: none; background-color: transparent; }")
+        
+        # Widget to contain the grid
+        scroll_widget = QWidget()
+        scroll_widget.setStyleSheet("background-color: transparent;")
+        grid_layout = QGridLayout(scroll_widget)
+        grid_layout.setSpacing(20)
+        grid_layout.setContentsMargins(15, 15, 15, 15)
+        
+        # First, create the custom machine card (top-left position)
+        self.create_custom_machine_card(grid_layout, 0, 0)
+        
+        # Load custom machines and create picture buttons
+        machines = self.machine_repo.get_all_machines()
+        custom_machines = [m for m in machines if self.is_custom_machine(m)]
+        self.create_custom_machine_buttons(grid_layout, custom_machines)
+        
+        scroll_area.setWidget(scroll_widget)
+        tab_layout.addWidget(scroll_area)

@@ -19,21 +19,28 @@ from common.utils import resource_path
 
 
 class CustomMachineDialog(QDialog):
-    """Dialog for creating custom machines by combining implements."""
+    """Dialog for creating or editing custom machines by combining implements."""
     
-    machine_created = Signal(Machine)  # Emits the created custom machine
+    machine_created = Signal(Machine)  # Emits the created/edited custom machine
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, machine_to_edit: Machine = None):
         super().__init__(parent)
         self.implements = []
         self.selected_implements = []  # List of tuples: (implement_name, tillage_factor)
+        self.machine_to_edit = machine_to_edit
+        self.is_editing = machine_to_edit is not None
         
-        self.setWindowTitle("Create Custom Machine")
+        title = "Edit Custom Machine" if self.is_editing else "Create Custom Machine"
+        self.setWindowTitle(title)
         self.setModal(True)
         self.resize(600, 500)
         
         self.load_implements()
         self.setup_ui()
+        
+        # Pre-populate fields if editing
+        if self.is_editing:
+            self.populate_edit_fields()
         
     def load_implements(self):
         """Load available implements from CSV."""
@@ -45,7 +52,8 @@ class CustomMachineDialog(QDialog):
         layout = QVBoxLayout(self)
         
         # Title
-        title_label = QLabel("Create Custom Machine")
+        title_text = "Edit Custom Machine" if self.is_editing else "Create Custom Machine"
+        title_label = QLabel(title_text)
         title_label.setStyleSheet("font-size: 16px; font-weight: bold; margin: 10px;")
         layout.addWidget(title_label)
         
@@ -267,3 +275,51 @@ class CustomMachineDialog(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to save custom machine: {str(e)}")
             return False
+    
+    def populate_edit_fields(self):
+        """Populate dialog fields when editing an existing machine."""
+        if not self.machine_to_edit:
+            return
+            
+        # Set basic machine parameters
+        self.name_edit.setText(self.machine_to_edit.name)
+        self.speed_spinbox.setValue(self.machine_to_edit.speed)
+        self.depth_spinbox.setValue(self.machine_to_edit.depth)
+        self.surface_area_spinbox.setValue(int(self.machine_to_edit.surface_area_disturbed))
+        
+        # Try to load implements from the machine's CSV record
+        # This is a simplified approach - in practice, you might want to
+        # parse the implements string from the CSV
+        try:
+            # For now, we'll just set a default implement based on the tillage factor
+            # Users can modify the implements as needed
+            default_implement = "Harrow Disc"  # Default choice
+            tillage_factor = self.machine_to_edit.tillage_type_factor
+            
+            self.selected_implements.append((default_implement, tillage_factor))
+            
+            # Add to table
+            row = self.implements_table.rowCount()
+            self.implements_table.insertRow(row)
+            
+            # Find the tillage description for the factor
+            tillage_description = f"{tillage_factor} = Custom"
+            for factor, description in TILLAGE_TYPE_OPTIONS:
+                if factor == tillage_factor:
+                    tillage_description = description
+                    break
+            
+            # Add to table
+            self.implements_table.setItem(row, 0, QTableWidgetItem(default_implement))
+            self.implements_table.setItem(row, 1, QTableWidgetItem(tillage_description))
+            
+            # Remove button
+            remove_button = QPushButton("Remove")
+            remove_button.clicked.connect(lambda: self.remove_implement(row))
+            self.implements_table.setCellWidget(row, 2, remove_button)
+            
+            # Update calculated tillage factor
+            self.update_tillage_factor()
+            
+        except Exception as e:
+            print(f"Warning: Could not populate implements for editing: {e}")
