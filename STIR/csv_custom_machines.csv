@@ -1,5 +1,6 @@
-name,rotates,depth,depth_uom,speed,speed_uom,surface_area_disturbed,tillage_type_factor,picture,implements
-testatatomica,FALSE,15.0,cm,10.0,km/h,100.0,0.7,testatatomica.jpg,Harrow Disc:0.7|Coulter Disc:0.15|Chisel:0.4
-test 2,FALSE,33.0,cm,8.0,km/h,100.0,1.0,custom_machine.png,Coulter Disc:1.0
-test 3,FALSE,15.0,cm,8.0,km/h,84.0,1.0,custom_machine.png,Chisel:0.8|Coulter Disc:1.0
-Tyler,FALSE,10.0,cm,11.0,km/h,93.0,0.4,custom_machine.png,Coulter Disc:0.15|Chisel:0.4
+name,rotates,depth,depth_uom,speed,speed_uom,surface_area_disturbed,tillage_type_factor,picture
+joy,FALSE,15.0,cm,8.0,km/h,100.0,0.7,joy.jpg
+testtatata,FALSE,15.0,cm,8.0,km/h,100.0,1.0,testtatata.jpg
+test edit delete,FALSE,20.0,cm,8.0,km/h,100.0,0.7,test_edit_delete.JPG
+great plains pro max,FALSE,11.0,cm,12.0,km/h,100.0,0.8,great_plains_pro_max.jpg
+test nuova,FALSE,15.0,cm,8.0,km/h,100.0,1.0,test_nuova.png

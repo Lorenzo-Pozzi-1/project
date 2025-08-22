@@ -1,0 +1,5 @@
+name,rotates,depth,depth_uom,speed,speed_uom,surface_area_disturbed,tillage_type_factor,picture,implements
+joy,FALSE,15.0,cm,8.0,km/h,100.0,0.7,joy.jpg,Coulter Disc:0.7
+testtatata,FALSE,15.0,cm,8.0,km/h,100.0,1.0,testtatata.jpg,Coulter Disc:1.0
+test edit delete,FALSE,20.0,cm,8.0,km/h,100.0,0.7,test_edit_delete.JPG,Coulter Disc:0.7
+great plains pro max,FALSE,11.0,cm,12.0,km/h,100.0,0.8,great_plains_pro_max.jpg,Coulter Disc:0.15|Harrow Disc:0.7|Chisel:0.8

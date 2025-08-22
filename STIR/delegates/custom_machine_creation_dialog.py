@@ -1,51 +1,43 @@
 """
 Custom Machine Creation Dialog.
 
-Provides a dialog for creating custom machines by combining implements
-and specifying operational parameters.
+Provides a dialog for creating custom machines with simple tillage factor selection
 """
 
 import csv
 import os
+import shutil
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QFormLayout,
-                               QLineEdit, QDoubleSpinBox, QComboBox, QPushButton,
-                               QTableWidget, QTableWidgetItem, QHeaderView,
-                               QDialogButtonBox, QLabel, QMessageBox, QSpinBox)
+                               QLineEdit, QDoubleSpinBox, QPushButton,
+                               QDialogButtonBox, QLabel, QMessageBox, QSpinBox,
+                               QFileDialog, QSlider)
 from PySide6.QtCore import Qt, Signal
 from typing import List, Tuple
-from ..model_implement import Implement, TILLAGE_TYPE_OPTIONS, load_implements_from_csv
 from ..model_machine import Machine
 from common.utils import resource_path
 
 
 class CustomMachineDialog(QDialog):
-    """Dialog for creating or editing custom machines by combining implements."""
+    """Dialog for creating or editing custom machines with simple tillage factor selection."""
     
     machine_created = Signal(Machine)  # Emits the created/edited custom machine
     
     def __init__(self, parent=None, machine_to_edit: Machine = None):
         super().__init__(parent)
-        self.implements = []
-        self.selected_implements = []  # List of tuples: (implement_name, tillage_factor)
         self.machine_to_edit = machine_to_edit
         self.is_editing = machine_to_edit is not None
+        self.picture_cleared = False  # Flag to track if picture was intentionally cleared
         
         title = "Edit Custom Machine" if self.is_editing else "Create Custom Machine"
         self.setWindowTitle(title)
         self.setModal(True)
-        self.resize(600, 500)
+        self.resize(500, 400)
         
-        self.load_implements()
         self.setup_ui()
         
         # Pre-populate fields if editing
         if self.is_editing:
             self.populate_edit_fields()
-        
-    def load_implements(self):
-        """Load available implements from CSV."""
-        implements_csv = resource_path("STIR/csv_implements.csv")
-        self.implements = load_implements_from_csv(implements_csv)
         
     def setup_ui(self):
         """Set up the dialog user interface."""
@@ -88,123 +80,75 @@ class CustomMachineDialog(QDialog):
         self.surface_area_spinbox.setSuffix(" %")
         form_layout.addRow("Surface Area Disturbed:", self.surface_area_spinbox)
         
+        # Tillage factor slider
+        tillage_layout = QHBoxLayout()
+        self.tillage_slider = QSlider(Qt.Horizontal)
+        self.tillage_slider.setRange(10, 100)  # 0.1 to 1.0 as integers (10 to 100)
+        self.tillage_slider.setValue(70)  # Default to 0.7
+        self.tillage_slider.setTickPosition(QSlider.TicksBelow)
+        self.tillage_slider.setTickInterval(10)
+        self.tillage_slider.valueChanged.connect(self.update_tillage_display)
+        tillage_layout.addWidget(self.tillage_slider)
+        
+        self.tillage_value_label = QLabel("0.7")
+        self.tillage_value_label.setStyleSheet("font-weight: bold; color: #1976d2; min-width: 30px;")
+        tillage_layout.addWidget(self.tillage_value_label)
+        
+        form_layout.addRow("Tillage Factor:", tillage_layout)
+        
+        # Picture selection
+        picture_layout = QHBoxLayout()
+        self.picture_path = ""  # Store the selected picture path
+        self.picture_label = QLabel("No picture selected")
+        self.picture_label.setStyleSheet("color: #666; font-style: italic;")
+        picture_layout.addWidget(self.picture_label)
+        
+        self.browse_button = QPushButton("Browse...")
+        self.browse_button.clicked.connect(self.browse_picture)
+        picture_layout.addWidget(self.browse_button)
+        
+        self.clear_button = QPushButton("Clear")
+        self.clear_button.clicked.connect(self.clear_picture)
+        picture_layout.addWidget(self.clear_button)
+        
+        form_layout.addRow("Picture:", picture_layout)
+        
         layout.addLayout(form_layout)
-        
-        # Implements section
-        implements_label = QLabel("Select Implements:")
-        implements_label.setStyleSheet("font-size: 14px; font-weight: bold; margin-top: 20px;")
-        layout.addWidget(implements_label)
-        
-        # Add implement controls
-        add_layout = QHBoxLayout()
-        
-        self.implement_combo = QComboBox()
-        self.implement_combo.addItem("Select an implement...")
-        for implement in self.implements:
-            self.implement_combo.addItem(implement.name)
-        add_layout.addWidget(self.implement_combo)
-        
-        self.tillage_combo = QComboBox()
-        for factor, description in TILLAGE_TYPE_OPTIONS:
-            self.tillage_combo.addItem(description, factor)
-        add_layout.addWidget(self.tillage_combo)
-        
-        add_button = QPushButton("Add Implement")
-        add_button.clicked.connect(self.add_implement)
-        add_layout.addWidget(add_button)
-        
-        layout.addLayout(add_layout)
-        
-        # Implements table
-        self.implements_table = QTableWidget()
-        self.implements_table.setColumnCount(3)
-        self.implements_table.setHorizontalHeaderLabels(["Implement", "Tillage Type", "Remove"])
-        self.implements_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.implements_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.implements_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        self.implements_table.setMaximumHeight(200)
-        layout.addWidget(self.implements_table)
-        
-        # Calculated tillage factor display
-        self.tillage_factor_label = QLabel("Calculated Tillage Factor: 0.0")
-        self.tillage_factor_label.setStyleSheet("font-weight: bold; color: #1976d2; margin: 10px;")
-        layout.addWidget(self.tillage_factor_label)
         
         # Button box
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         button_box.accepted.connect(self.accept_custom_machine)
         button_box.rejected.connect(self.reject)
         layout.addWidget(button_box)
-        
-    def add_implement(self):
-        """Add selected implement to the table."""
-        implement_index = self.implement_combo.currentIndex()
-        if implement_index <= 0:  # "Select an implement..." is at index 0
-            QMessageBox.warning(self, "Warning", "Please select an implement.")
-            return
-            
-        implement_name = self.implement_combo.currentText()
-        tillage_factor = self.tillage_combo.currentData()
-        tillage_description = self.tillage_combo.currentText()
-        
-        # Check if implement already added
-        for selected_implement, _ in self.selected_implements:
-            if selected_implement == implement_name:
-                QMessageBox.warning(self, "Warning", f"'{implement_name}' is already added.")
-                return
-        
-        # Add to selected implements
-        self.selected_implements.append((implement_name, tillage_factor))
-        
-        # Add row to table
-        row = self.implements_table.rowCount()
-        self.implements_table.insertRow(row)
-        
-        # Implement name
-        self.implements_table.setItem(row, 0, QTableWidgetItem(implement_name))
-        
-        # Tillage type
-        self.implements_table.setItem(row, 1, QTableWidgetItem(tillage_description))
-        
-        # Remove button
-        remove_button = QPushButton("Remove")
-        remove_button.clicked.connect(lambda: self.remove_implement(row))
-        self.implements_table.setCellWidget(row, 2, remove_button)
-        
-        # Update calculated tillage factor
-        self.update_tillage_factor()
-        
-        # Reset combo boxes
-        self.implement_combo.setCurrentIndex(0)
-        self.tillage_combo.setCurrentIndex(0)
-        
-    def remove_implement(self, row: int):
-        """Remove implement from the table."""
-        if 0 <= row < len(self.selected_implements):
-            # Remove from selected implements
-            del self.selected_implements[row]
-            
-            # Remove from table
-            self.implements_table.removeRow(row)
-            
-            # Update all remove button connections (row indices changed)
-            for i in range(self.implements_table.rowCount()):
-                remove_button = self.implements_table.cellWidget(i, 2)
-                if remove_button:
-                    remove_button.clicked.disconnect()
-                    remove_button.clicked.connect(lambda checked, r=i: self.remove_implement(r))
-            
-            # Update calculated tillage factor
-            self.update_tillage_factor()
     
-    def update_tillage_factor(self):
-        """Update the calculated tillage factor display."""
-        if not self.selected_implements:
-            max_factor = 0.0
-        else:
-            max_factor = max(factor for _, factor in self.selected_implements)
+    def update_tillage_display(self):
+        """Update the tillage factor display when slider changes."""
+        value = self.tillage_slider.value() / 100.0  # Convert from integer to decimal
+        self.tillage_value_label.setText(f"{value:.1f}")
         
-        self.tillage_factor_label.setText(f"Calculated Tillage Factor: {max_factor}")
+    def browse_picture(self):
+        """Browse for a picture file."""
+        file_dialog = QFileDialog(self)
+        file_dialog.setNameFilter("Image files (*.png *.jpg *.jpeg *.bmp *.gif)")
+        file_dialog.setFileMode(QFileDialog.ExistingFile)
+        file_dialog.setWindowTitle("Select Machine Picture")
+        
+        if file_dialog.exec():
+            selected_files = file_dialog.selectedFiles()
+            if selected_files:
+                self.picture_path = selected_files[0]
+                self.picture_cleared = False  # Reset the cleared flag
+                # Show just the filename in the label
+                filename = os.path.basename(self.picture_path)
+                self.picture_label.setText(f"Selected: {filename}")
+                self.picture_label.setStyleSheet("color: #2196f3; font-weight: bold;")
+    
+    def clear_picture(self):
+        """Clear the selected picture."""
+        self.picture_path = ""
+        self.picture_cleared = True  # Flag to indicate picture was intentionally cleared
+        self.picture_label.setText("No picture selected")
+        self.picture_label.setStyleSheet("color: #666; font-style: italic;")
     
     def accept_custom_machine(self):
         """Validate inputs and create custom machine."""
@@ -214,13 +158,11 @@ class CustomMachineDialog(QDialog):
             QMessageBox.warning(self, "Warning", "Please enter a machine name.")
             return
             
-        # Validate implements
-        if not self.selected_implements:
-            QMessageBox.warning(self, "Warning", "Please add at least one implement.")
-            return
-            
-        # Calculate tillage factor (highest from selected implements)
-        max_tillage_factor = max(factor for _, factor in self.selected_implements)
+        # Get tillage factor from slider
+        tillage_factor = self.tillage_slider.value() / 100.0
+        
+        # Handle picture selection and copying
+        picture_name = self.handle_picture_for_machine(machine_name)
         
         # Create custom machine
         custom_machine = Machine(
@@ -230,8 +172,8 @@ class CustomMachineDialog(QDialog):
             speed=self.speed_spinbox.value(),
             speed_uom="km/h",
             surface_area_disturbed=float(self.surface_area_spinbox.value()),
-            tillage_type_factor=max_tillage_factor,
-            picture="custom_machine.png",  # Placeholder for now
+            tillage_type_factor=tillage_factor,
+            picture=picture_name,
             rotates=False  # Default for custom machines
         )
         
@@ -239,7 +181,74 @@ class CustomMachineDialog(QDialog):
         if self.save_custom_machine(custom_machine):
             self.machine_created.emit(custom_machine)
             self.accept()
+    
+    def handle_picture_for_machine(self, machine_name: str) -> str:
+        """Handle picture selection and copying for the machine."""
+        # Generate safe filename base
+        safe_name = "".join(c for c in machine_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
+        safe_name = safe_name.replace(' ', '_')  # Replace spaces with underscores
         
+        # If picture was intentionally cleared
+        if self.picture_cleared:
+            # Remove existing picture file if editing
+            if self.is_editing and self.machine_to_edit.picture:
+                old_picture_path = resource_path(f"STIR/images/custom_machines/{self.machine_to_edit.picture}")
+                if os.path.exists(old_picture_path):
+                    try:
+                        os.remove(old_picture_path)
+                        print(f"Removed picture file: {self.machine_to_edit.picture}")
+                    except Exception as e:
+                        print(f"Warning: Could not remove picture file: {e}")
+            
+            # Return default placeholder filename (no actual file will exist)
+            return f"{safe_name}.png"
+        
+        # If user selected a new picture
+        elif self.picture_path:
+            try:
+                # Get file extension from selected picture
+                _, ext = os.path.splitext(self.picture_path)
+                if not ext.lower() in ['.png', '.jpg', '.jpeg', '.bmp', '.gif']:
+                    QMessageBox.warning(self, "Invalid File", "Please select a valid image file.")
+                    return f"{safe_name}.png"  # Default fallback
+                
+                # Create new filename
+                new_filename = f"{safe_name}{ext}"
+                
+                # Destination path
+                dest_path = resource_path(f"STIR/images/custom_machines/{new_filename}")
+                
+                # Ensure custom machines directory exists
+                dest_dir = os.path.dirname(dest_path)
+                os.makedirs(dest_dir, exist_ok=True)
+                
+                # Remove old picture if editing and it exists
+                if self.is_editing and self.machine_to_edit.picture:
+                    old_picture_path = resource_path(f"STIR/images/custom_machines/{self.machine_to_edit.picture}")
+                    if os.path.exists(old_picture_path) and old_picture_path != dest_path:
+                        try:
+                            os.remove(old_picture_path)
+                        except Exception as e:
+                            print(f"Warning: Could not remove old picture file: {e}")
+                
+                # Copy new picture
+                shutil.copy2(self.picture_path, dest_path)
+                
+                return new_filename
+                
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to copy image: {str(e)}")
+                return f"{safe_name}.png"  # Default fallback
+        
+        # No new picture and not cleared - keep existing or use default
+        else:
+            if self.is_editing and self.machine_to_edit.picture:
+                # Keep existing picture
+                return self.machine_to_edit.picture
+            else:
+                # Use default name for new machines
+                return f"{safe_name}.png"
+    
     def save_custom_machine(self, machine: Machine) -> bool:
         """Save custom machine to CSV file."""
         try:
@@ -250,13 +259,11 @@ class CustomMachineDialog(QDialog):
                 with open(custom_machines_csv, 'w', newline='', encoding='utf-8') as file:
                     writer = csv.writer(file)
                     writer.writerow(['name', 'rotates', 'depth', 'depth_uom', 'speed', 'speed_uom', 
-                                   'surface_area_disturbed', 'tillage_type_factor', 'picture', 
-                                   'implements'])
+                                   'surface_area_disturbed', 'tillage_type_factor', 'picture'])
             
             # Append custom machine
             with open(custom_machines_csv, 'a', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
-                implements_str = "|".join([f"{name}:{factor}" for name, factor in self.selected_implements])
                 writer.writerow([
                     machine.name,
                     'FALSE',  # Custom machines default to non-rotating
@@ -266,8 +273,7 @@ class CustomMachineDialog(QDialog):
                     machine.speed_uom,
                     machine.surface_area_disturbed,
                     machine.tillage_type_factor,
-                    machine.picture,
-                    implements_str
+                    machine.picture
                 ])
             
             return True
@@ -287,39 +293,20 @@ class CustomMachineDialog(QDialog):
         self.depth_spinbox.setValue(self.machine_to_edit.depth)
         self.surface_area_spinbox.setValue(int(self.machine_to_edit.surface_area_disturbed))
         
-        # Try to load implements from the machine's CSV record
-        # This is a simplified approach - in practice, you might want to
-        # parse the implements string from the CSV
-        try:
-            # For now, we'll just set a default implement based on the tillage factor
-            # Users can modify the implements as needed
-            default_implement = "Harrow Disc"  # Default choice
-            tillage_factor = self.machine_to_edit.tillage_type_factor
-            
-            self.selected_implements.append((default_implement, tillage_factor))
-            
-            # Add to table
-            row = self.implements_table.rowCount()
-            self.implements_table.insertRow(row)
-            
-            # Find the tillage description for the factor
-            tillage_description = f"{tillage_factor} = Custom"
-            for factor, description in TILLAGE_TYPE_OPTIONS:
-                if factor == tillage_factor:
-                    tillage_description = description
-                    break
-            
-            # Add to table
-            self.implements_table.setItem(row, 0, QTableWidgetItem(default_implement))
-            self.implements_table.setItem(row, 1, QTableWidgetItem(tillage_description))
-            
-            # Remove button
-            remove_button = QPushButton("Remove")
-            remove_button.clicked.connect(lambda: self.remove_implement(row))
-            self.implements_table.setCellWidget(row, 2, remove_button)
-            
-            # Update calculated tillage factor
-            self.update_tillage_factor()
-            
-        except Exception as e:
-            print(f"Warning: Could not populate implements for editing: {e}")
+        # Set tillage factor in slider
+        tillage_value = int(self.machine_to_edit.tillage_type_factor * 100)  # Convert to integer
+        self.tillage_slider.setValue(tillage_value)
+        self.update_tillage_display()  # Update the display label
+        
+        # Set picture information
+        if self.machine_to_edit.picture:
+            picture_path = resource_path(f"STIR/images/custom_machines/{self.machine_to_edit.picture}")
+            if os.path.exists(picture_path):
+                self.picture_label.setText(f"Current: {self.machine_to_edit.picture}")
+                self.picture_label.setStyleSheet("color: #2196f3; font-weight: bold;")
+            else:
+                self.picture_label.setText(f"Missing: {self.machine_to_edit.picture}")
+                self.picture_label.setStyleSheet("color: #f44336; font-weight: bold;")
+        else:
+            self.picture_label.setText("No picture assigned")
+            self.picture_label.setStyleSheet("color: #666; font-style: italic;")

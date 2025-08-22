@@ -80,6 +80,10 @@ class MachineSelectionDialog(QDialog):
         # Load standard machines and create picture buttons
         machines = self.machine_repo.get_all_machines()
         standard_machines = [m for m in machines if not self.is_custom_machine(m)]
+        
+        # Sort standard machines alphabetically by name
+        standard_machines.sort(key=lambda machine: machine.name.lower())
+        
         self.create_machine_buttons(grid_layout, standard_machines)
         
         scroll_area.setWidget(scroll_widget)
@@ -114,25 +118,60 @@ class MachineSelectionDialog(QDialog):
         # Load custom machines and create picture buttons
         machines = self.machine_repo.get_all_machines()
         custom_machines = [m for m in machines if self.is_custom_machine(m)]
-        self.create_custom_machine_buttons(grid_layout, custom_machines)
+        
+        # Sort custom machines alphabetically by name
+        custom_machines.sort(key=lambda machine: machine.name.lower())
+        
+        self.create_machine_buttons(grid_layout, custom_machines, starting_position=1)
         
         scroll_area.setWidget(scroll_widget)
         tab_layout.addWidget(scroll_area)
     
     def is_custom_machine(self, machine: Machine) -> bool:
         """Check if a machine is a custom machine."""
-        # For now, we can identify custom machines by checking if they have 'custom' in the name
-        # or by checking if they exist in the custom machines CSV
-        # This is a simple heuristic - in the future we might add a flag to the Machine model
+        import csv
+        import os
+        from common.utils import resource_path
+        
+        # Check if machine exists in custom machines CSV
+        custom_machines_csv = resource_path("STIR/csv_custom_machines.csv")
+        if os.path.exists(custom_machines_csv):
+            try:
+                with open(custom_machines_csv, 'r', encoding='utf-8-sig') as file:
+                    reader = csv.DictReader(file)
+                    for row in reader:
+                        if row.get('name', '').strip() == machine.name:
+                            return True
+            except Exception:
+                # If there's an error reading the file, fall back to heuristic
+                pass
+        
+        # If not found in custom machines CSV, check if it exists in standard machines CSV
+        # If it's not in standard machines either, it might be a custom machine
+        standard_machines_csv = resource_path("STIR/csv_machines.csv")
+        if os.path.exists(standard_machines_csv):
+            try:
+                with open(standard_machines_csv, 'r', encoding='utf-8-sig') as file:
+                    reader = csv.DictReader(file)
+                    for row in reader:
+                        if row.get('name', '').strip() == machine.name:
+                            return False  # Found in standard machines, so it's not custom
+            except Exception:
+                # If there's an error reading the file, fall back to heuristic
+                pass
+        
+        # Fallback heuristic if CSV reading fails
         return "custom" in machine.name.lower() or machine.picture == "custom_machine.png"
         
-    def create_machine_buttons(self, grid_layout: QGridLayout, machines: List[Machine]):
-        """Create clickable picture buttons for standard machines."""
+    def create_machine_buttons(self, grid_layout: QGridLayout, machines: List[Machine], starting_position: int = 0):
+        """Create clickable picture buttons for machines."""
         columns = 3  # Number of columns in the grid
         
         for i, machine in enumerate(machines):
-            row = i // columns
-            col = i % columns
+            # Calculate position considering the starting position offset
+            position = i + starting_position
+            row = position // columns
+            col = position % columns
             
             # Create a card-style button for each machine
             machine_card = QPushButton()
@@ -151,95 +190,29 @@ class MachineSelectionDialog(QDialog):
             image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px;")
             
             # Load and set the picture
+            image_loaded = False
             if machine.picture:
-                image_path = resource_path(f"STIR/images/machines/{machine.picture}")
+                # Determine image path based on machine type
+                if self.is_custom_machine(machine):
+                    image_path = resource_path(f"STIR/images/custom_machines/{machine.picture}")
+                else:
+                    image_path = resource_path(f"STIR/images/machines/{machine.picture}")
+                
                 pixmap = QPixmap(image_path)
                 if not pixmap.isNull():
                     # Scale pixmap to fit label while maintaining aspect ratio
                     scaled_pixmap = pixmap.scaled(150, 110, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                     image_label.setPixmap(scaled_pixmap)
+                    image_loaded = True
+            
+            # If no image could be loaded, show appropriate placeholder
+            if not image_loaded:
+                if self.is_custom_machine(machine):
+                    image_label.setText("Custom\nMachine")
+                    image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px; color: #666; font-size: 10px; font-weight: bold;")
                 else:
                     image_label.setText("No Image\nAvailable")
                     image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px; color: #666; font-size: 10px;")
-            else:
-                image_label.setText("No Image\nAvailable")
-                image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px; color: #666; font-size: 10px;")
-
-            card_layout.addWidget(image_label)
-            
-            # Machine name label
-            name_label = QLabel(machine.name)
-            name_label.setAlignment(Qt.AlignCenter)
-            name_label.setWordWrap(True)
-            name_label.setStyleSheet("font-weight: bold; font-size: 11px; color: #333; background: transparent;")
-            card_layout.addWidget(name_label)
-            
-            # Card styling based on selection state
-            if machine.name == self.selected_machine_name:
-                machine_card.setStyleSheet("""
-                    QPushButton {
-                        background-color: #e3f2fd;
-                        border: 2px solid #1976d2;
-                        border-radius: 8px;
-                        padding: 0px;
-                    }
-                    QPushButton:hover {
-                        background-color: #bbdefb;
-                        border: 2px solid #1565c0;
-                    }
-                    QPushButton:pressed {
-                        background-color: #90caf9;
-                    }
-                """)
-            else:
-                machine_card.setStyleSheet("""
-                    QPushButton {
-                        background-color: white;
-                        border: 1px solid #e0e0e0;
-                        border-radius: 8px;
-                        padding: 0px;
-                    }
-                    QPushButton:hover {
-                        background-color: #f5f5f5;
-                        border: 2px solid #1976d2;
-                        transform: translateY(-2px);
-                    }
-                    QPushButton:pressed {
-                        background-color: #eeeeee;
-                    }
-                """)
-            
-            grid_layout.addWidget(machine_card, row, col)
-    
-    def create_custom_machine_buttons(self, grid_layout: QGridLayout, custom_machines: List[Machine]):
-        """Create clickable picture buttons for custom machines (starting after the 'Add Custom' card)."""
-        columns = 3  # Number of columns in the grid
-        
-        for i, machine in enumerate(custom_machines):
-            # Offset by 1 to account for the "Add Custom Machine" card
-            position = i + 1
-            row = position // columns
-            col = position % columns
-            
-            # Create a card-style button for each custom machine
-            machine_card = QPushButton()
-            machine_card.setFixedSize(200, 180)
-            machine_card.clicked.connect(lambda checked, name=machine.name: self.select_machine(name))
-            
-            # Create the card layout
-            card_layout = QVBoxLayout(machine_card)
-            card_layout.setContentsMargins(10, 10, 10, 10)
-            card_layout.setSpacing(8)
-            
-            # Image container (custom machines might not have images yet)
-            image_label = QLabel()
-            image_label.setFixedSize(160, 120)
-            image_label.setAlignment(Qt.AlignCenter)
-            image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px;")
-            
-            # For now, custom machines show a placeholder
-            image_label.setText("Custom\nMachine")
-            image_label.setStyleSheet("background-color: #ffffff; border-radius: 4px; color: #666; font-size: 10px; font-weight: bold;")
 
             card_layout.addWidget(image_label)
             
@@ -410,7 +383,7 @@ class MachineSelectionDialog(QDialog):
         # Load custom machines and create picture buttons
         machines = self.machine_repo.get_all_machines()
         custom_machines = [m for m in machines if self.is_custom_machine(m)]
-        self.create_custom_machine_buttons(grid_layout, custom_machines)
+        self.create_machine_buttons(grid_layout, custom_machines, starting_position=1)
         
         scroll_area.setWidget(scroll_widget)
         tab_layout.addWidget(scroll_area)
