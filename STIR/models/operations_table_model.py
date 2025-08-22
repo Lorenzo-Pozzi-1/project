@@ -321,14 +321,6 @@ class STIROperationsTableModel(QAbstractTableModel):
         total = sum(op.stir_value for op in self._operations if op.stir_value is not None)
         return math.ceil(total)
     
-    def clear_operations(self):
-        """Clear all operations from the table."""
-        self.beginResetModel()
-        self._operations.clear()
-        self._rebuild_display_data()
-        self.endResetModel()
-        self._emit_signals()
-    
     # --- Private Methods ---
     
     def _rebuild_display_data(self):

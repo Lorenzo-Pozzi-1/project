@@ -10,7 +10,7 @@ import shutil
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QFormLayout,
                                QLineEdit, QDoubleSpinBox, QPushButton,
                                QDialogButtonBox, QLabel, QMessageBox, QSpinBox,
-                               QFileDialog, QSlider, QCheckBox, QComboBox)
+                               QFileDialog, QSlider, QCheckBox, QComboBox, QPlainTextEdit)
 from PySide6.QtCore import Qt, Signal
 from typing import List, Tuple
 from ..model_machine import Machine
@@ -46,7 +46,7 @@ class CustomMachineDialog(QDialog):
         # Title
         title_text = "Edit Custom Machine" if self.is_editing else "Create Custom Machine"
         title_label = QLabel(title_text)
-        title_label.setStyleSheet("font-size: 16px; font-weight: bold; margin: 10px;")
+        title_label.setStyleSheet("font-size: 16px; font-weight: bold; margin: 5px 0px;")
         layout.addWidget(title_label)
         
         # Machine parameters form
@@ -56,11 +56,11 @@ class CustomMachineDialog(QDialog):
         self.name_edit = QLineEdit()
         self.name_edit.setPlaceholderText("Enter custom machine name")
         form_layout.addRow("Machine Name:", self.name_edit)
-        
-        # Rotates checkbox
-        self.rotates_checkbox = QCheckBox("Machine has rotating/powered components")
-        form_layout.addRow("Rotates:", self.rotates_checkbox)
-        
+
+        # PTO operated checkbox
+        self.rotates_checkbox = QCheckBox("Machine is PTO operated")
+        form_layout.addRow("PTO Operated:", self.rotates_checkbox)
+
         # Working depth with unit selection
         depth_layout = QHBoxLayout()
         self.depth_spinbox = QDoubleSpinBox()
@@ -98,19 +98,33 @@ class CustomMachineDialog(QDialog):
         self.surface_area_spinbox.setSuffix(" %")
         form_layout.addRow("Surface Area Disturbed:", self.surface_area_spinbox)
         
-        # Tillage factor slider
+        # Tillage factor with help button
         tillage_layout = QHBoxLayout()
-        self.tillage_slider = QSlider(Qt.Horizontal)
-        self.tillage_slider.setRange(10, 100)  # 0.1 to 1.0 as integers (10 to 100)
-        self.tillage_slider.setValue(70)  # Default to 0.7
-        self.tillage_slider.setTickPosition(QSlider.TicksBelow)
-        self.tillage_slider.setTickInterval(10)
-        self.tillage_slider.valueChanged.connect(self.update_tillage_display)
-        tillage_layout.addWidget(self.tillage_slider)
+        self.tillage_spinbox = QDoubleSpinBox()
+        self.tillage_spinbox.setRange(0.01, 1.0)
+        self.tillage_spinbox.setValue(0.70)  # Default to 0.7
+        self.tillage_spinbox.setSingleStep(0.05)  # 0.05 increments
+        self.tillage_spinbox.setDecimals(2)  # 2 decimal places
+        tillage_layout.addWidget(self.tillage_spinbox)
         
-        self.tillage_value_label = QLabel("0.7")
-        self.tillage_value_label.setStyleSheet("font-weight: bold; color: #1976d2; min-width: 30px;")
-        tillage_layout.addWidget(self.tillage_value_label)
+        # Help button with dialog
+        help_button = QPushButton("?")
+        help_button.setFixedSize(20, 20)
+        help_button.setStyleSheet("""
+            QPushButton {
+                background-color: #2196f3;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-weight: bold;
+                font-size: 10px;
+            }
+            QPushButton:hover {
+                background-color: #1976d2;
+            }
+        """)
+        help_button.clicked.connect(self.show_tillage_factor_help)
+        tillage_layout.addWidget(help_button)
         
         form_layout.addRow("Tillage Factor:", tillage_layout)
         
@@ -131,6 +145,12 @@ class CustomMachineDialog(QDialog):
         
         form_layout.addRow("Picture:", picture_layout)
         
+        # Notes section
+        self.notes_edit = QPlainTextEdit()
+        self.notes_edit.setPlaceholderText("Enter any notes about this machine (optional)")
+        self.notes_edit.setMaximumHeight(80)  # Limit height to keep dialog reasonable
+        form_layout.addRow("Notes:", self.notes_edit)
+        
         layout.addLayout(form_layout)
         
         # Button box
@@ -139,11 +159,43 @@ class CustomMachineDialog(QDialog):
         button_box.rejected.connect(self.reject)
         layout.addWidget(button_box)
     
-    def update_tillage_display(self):
-        """Update the tillage factor display when slider changes."""
-        value = self.tillage_slider.value() / 100.0  # Convert from integer to decimal
-        self.tillage_value_label.setText(f"{value:.1f}")
+    def show_tillage_factor_help(self):
+        """Show a dialog with tillage factor information."""
+        help_text = """Tillage Factor Values:
+
+• 1.0 = Inversion + mixing
+• 0.8 = Mixing + some inversion  
+• 0.7 = Mixing only
+• 0.4 = Lifting + fracturing
+• 0.15 = Compression
+
+These are given by the USDA. 
+If your machine has multiple sub-modules or implements, 
+assign the tillage factor that best describes the overall 
+effect of the machine as a whole.
+"""
         
+        QMessageBox.information(self, "Tillage Factor Guide", help_text)
+    
+    def is_machine_name_unique(self, machine_name: str) -> bool:
+        """Check if the machine name is unique across all machines (standard and custom)."""
+        from ..repository_machine import MachineRepository
+        
+        # Get all machines from repository
+        machine_repo = MachineRepository.get_instance()
+        all_machines = machine_repo.get_all_machines()
+        
+        # Check against all existing machines
+        for machine in all_machines:
+            # If editing, skip the machine we're currently editing
+            if self.is_editing and self.machine_to_edit and machine.name == self.machine_to_edit.name:
+                continue
+            # Check for name collision
+            if machine.name.lower() == machine_name.lower():
+                return False
+        
+        return True
+    
     def browse_picture(self):
         """Browse for a picture file."""
         file_dialog = QFileDialog(self)
@@ -175,9 +227,18 @@ class CustomMachineDialog(QDialog):
         if not machine_name:
             QMessageBox.warning(self, "Warning", "Please enter a machine name.")
             return
+        
+        # Check for name uniqueness BEFORE saving
+        if not self.is_machine_name_unique(machine_name):
+            QMessageBox.warning(
+                self, 
+                "Duplicate Machine Name", 
+                "Machine names must be unique, you may add the brand, model, or any other identification information that is intuitive to you to differentiate this machine."
+            )
+            return
             
-        # Get tillage factor from slider
-        tillage_factor = self.tillage_slider.value() / 100.0
+        # Get tillage factor from spinbox
+        tillage_factor = self.tillage_spinbox.value()
         
         # Handle picture selection and copying
         picture_name = self.handle_picture_for_machine(machine_name)
@@ -277,7 +338,10 @@ class CustomMachineDialog(QDialog):
                 with open(custom_machines_csv, 'w', newline='', encoding='utf-8') as file:
                     writer = csv.writer(file)
                     writer.writerow(['name', 'rotates', 'depth', 'depth_uom', 'speed', 'speed_uom', 
-                                   'surface_area_disturbed', 'tillage_type_factor', 'picture'])
+                                   'surface_area_disturbed', 'tillage_type_factor', 'picture', 'notes'])
+            
+            # Get notes from the text edit
+            notes_text = self.notes_edit.toPlainText().strip()
             
             # Append custom machine
             with open(custom_machines_csv, 'a', newline='', encoding='utf-8') as file:
@@ -291,7 +355,8 @@ class CustomMachineDialog(QDialog):
                     machine.speed_uom,
                     machine.surface_area_disturbed,
                     machine.tillage_type_factor,
-                    machine.picture
+                    machine.picture,
+                    notes_text
                 ])
             
             return True
@@ -320,10 +385,8 @@ class CustomMachineDialog(QDialog):
         # Set surface area disturbed
         self.surface_area_spinbox.setValue(int(self.machine_to_edit.surface_area_disturbed))
         
-        # Set tillage factor in slider
-        tillage_value = int(self.machine_to_edit.tillage_type_factor * 100)  # Convert to integer
-        self.tillage_slider.setValue(tillage_value)
-        self.update_tillage_display()  # Update the display label
+        # Set tillage factor in spinbox
+        self.tillage_spinbox.setValue(self.machine_to_edit.tillage_type_factor)
         
         # Set picture information
         if self.machine_to_edit.picture:
@@ -337,3 +400,30 @@ class CustomMachineDialog(QDialog):
         else:
             self.picture_label.setText("No picture assigned")
             self.picture_label.setStyleSheet("color: #666; font-style: italic;")
+        
+        # Load notes from CSV
+        notes_text = self.get_machine_notes_from_csv()
+        self.notes_edit.setPlainText(notes_text)
+    
+    def get_machine_notes_from_csv(self) -> str:
+        """Get notes for the machine being edited from CSV."""
+        if not self.machine_to_edit:
+            return ""
+        
+        try:
+            custom_machines_csv = resource_path("STIR/csv_custom_machines.csv")
+            
+            if not os.path.exists(custom_machines_csv):
+                return ""
+            
+            with open(custom_machines_csv, 'r', encoding='utf-8-sig') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    if row.get('name', '').strip() == self.machine_to_edit.name:
+                        return row.get('notes', '').strip()
+            
+            return ""
+            
+        except Exception as e:
+            print(f"Error reading notes from CSV: {e}")
+            return ""

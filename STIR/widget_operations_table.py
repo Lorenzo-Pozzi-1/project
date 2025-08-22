@@ -228,10 +228,6 @@ class STIROperationsTableWidget(QWidget):
         """Calculate the total STIR value for all operations (rounded up to next integer)."""
         return self.model.get_total_stir()
     
-    def clear_operations(self):
-        """Clear all operations from the table."""
-        self.model.clear_operations()
-    
     def _select_operation_by_index(self, operation_index: int):
         """Select the table row corresponding to the given operation index."""
         display_row = self.model.get_display_row_from_operation_index(operation_index)

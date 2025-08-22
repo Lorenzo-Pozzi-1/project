@@ -75,7 +75,7 @@ class STIRCalculatorPage(QWidget):
         buttons_layout = QHBoxLayout()
         
         # Add custom machine management button
-        manage_button = create_button(text="Manage custom machines", style='special', 
+        manage_button = create_button(text="My machines", style='white', 
                                     callback=self.open_custom_machine_manager)
         buttons_layout.addWidget(manage_button)
         
@@ -86,7 +86,6 @@ class STIRCalculatorPage(QWidget):
         
         # Add UOM selection controls
         uom_layout = QHBoxLayout()
-        uom_layout.addStretch()
 
         # Depth UOM selector
         depth_label = QLabel("Depth:")
@@ -427,11 +426,11 @@ class STIRCalculatorPage(QWidget):
         
         # Update scorebar
         if total_stir > 0:
-            if total_stir < 100:
+            if total_stir < 200:
                 intensity = "Light"
-            elif total_stir < 200:
-                intensity = "Medium"
             elif total_stir < 400:
+                intensity = "Medium"
+            elif total_stir < 600:
                 intensity = "Intense"
             else:
                 intensity = "Very Intense"

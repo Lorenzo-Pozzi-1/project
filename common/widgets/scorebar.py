@@ -65,10 +65,10 @@ class ScoreBar(QWidget):
         ),
         "stir": PresetConfig(
             title="Tillage Intensity:",
-            thresholds=[100, 200, 400],
+            thresholds=[200, 400, 600],
             labels=["Light", "Medium", "Intense", "Very Intense"],
             min_value=0,
-            max_value=500,
+            max_value=1000,
             gradient_colors=[QColor(34, 197, 94), QColor(255, 235, 59), QColor(239, 68, 68)],
             region_colors=[QColor(34, 197, 94), QColor(255, 235, 59), QColor(255, 152, 0), QColor(239, 68, 68)],
             gradient_stops=[0, 0.4, 1]

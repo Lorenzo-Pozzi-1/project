@@ -10,7 +10,7 @@ import shutil
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QScrollArea,
                                QWidget, QPushButton, QLabel, QGridLayout,
                                QDialogButtonBox, QFileDialog, QMessageBox,
-                               QFrame)
+                               QFrame, QSizePolicy)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
 from typing import List
@@ -33,19 +33,17 @@ class CustomMachineCard(QFrame):
         
     def setup_ui(self):
         """Set up the card UI."""
-        self.setFrameStyle(QFrame.Box)
+        self.setFrameStyle(QFrame.NoFrame)
         self.setStyleSheet("""
             QFrame {
-                border: 1px solid #e0e0e0;
+                border: none;
                 border-radius: 8px;
                 background-color: white;
                 margin: 5px;
             }
-            QFrame:hover {
-                border: 2px solid #1976d2;
-            }
         """)
-        self.setFixedSize(420, 180)  # Wider and shorter for horizontal layout
+        self.setMinimumHeight(220)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         
         # Main horizontal layout
         main_layout = QHBoxLayout(self)
@@ -54,9 +52,9 @@ class CustomMachineCard(QFrame):
         
         # Image section (left side)
         image_label = QLabel()
-        image_label.setFixedSize(140, 120)  # Smaller image size for horizontal layout
+        image_label.setFixedSize(200, 160)  # Larger image size
         image_label.setAlignment(Qt.AlignCenter)
-        image_label.setStyleSheet("border: 1px solid #ddd; border-radius: 4px; background-color: #f9f9f9;")
+        image_label.setStyleSheet("border: none; border-radius: 4px; background-color: #f9f9f9;")
         
         # Try to load machine image
         if self.machine.picture:
@@ -65,7 +63,7 @@ class CustomMachineCard(QFrame):
             if os.path.exists(custom_image_path):
                 pixmap = QPixmap(custom_image_path)
                 if not pixmap.isNull():
-                    scaled_pixmap = pixmap.scaled(130, 110, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                    scaled_pixmap = pixmap.scaled(190, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                     image_label.setPixmap(scaled_pixmap)
                 else:
                     image_label.setText("Missing\npicture")
@@ -76,26 +74,31 @@ class CustomMachineCard(QFrame):
             
         main_layout.addWidget(image_label)
         
-        # Details section (right side)
+        # Right side container with two columns
+        right_container = QHBoxLayout()
+        right_container.setSpacing(15)
+        
+        # Left column: Machine details
         details_layout = QVBoxLayout()
-        details_layout.setSpacing(8)
+        details_layout.setSpacing(4)
         
         # Machine name
         name_label = QLabel(self.machine.name)
         name_label.setAlignment(Qt.AlignLeft)
-        name_label.setStyleSheet("font-weight: bold; font-size: 16px; color: #333; margin-bottom: 5px;")
+        name_label.setStyleSheet("font-weight: bold; font-size: 20px; color: #333; margin-bottom:4px;")
         name_label.setWordWrap(True)
         details_layout.addWidget(name_label)
         
         # Machine details in a formatted way
         details_text = f"""<b>Speed:</b> {self.machine.speed} {self.machine.speed_uom}<br>
 <b>Depth:</b> {self.machine.depth} {self.machine.depth_uom}<br>
+<b>PTO operated:</b> {'Yes' if self.machine.rotates else 'No'}<br>
 <b>Surface Area Disturbed:</b> {self.machine.surface_area_disturbed}%<br>
 <b>Tillage Factor:</b> {self.machine.tillage_type_factor}"""
         
         details_label = QLabel(details_text)
         details_label.setAlignment(Qt.AlignLeft)
-        details_label.setStyleSheet("font-size: 12px; color: #666; line-height: 1.4;")
+        details_label.setStyleSheet("font-size: 14px; color: #666; line-height: 1.5;")
         details_label.setWordWrap(True)
         details_layout.addWidget(details_label)
         
@@ -113,9 +116,9 @@ class CustomMachineCard(QFrame):
                 color: white;
                 border: none;
                 border-radius: 4px;
-                padding: 6px 10px;
+                padding: 8px 14px;
                 font-weight: bold;
-                font-size: 11px;
+                font-size: 13px;
             }
             QPushButton:hover {
                 background-color: #1976d2;
@@ -130,9 +133,9 @@ class CustomMachineCard(QFrame):
                 color: white;
                 border: none;
                 border-radius: 4px;
-                padding: 6px 10px;
+                padding: 8px 14px;
                 font-weight: bold;
-                font-size: 11px;
+                font-size: 13px;
             }
             QPushButton:hover {
                 background-color: #d32f2f;
@@ -145,7 +148,57 @@ class CustomMachineCard(QFrame):
         buttons_layout.addStretch()  # Push buttons to the left
         
         details_layout.addLayout(buttons_layout)
-        main_layout.addLayout(details_layout)
+        
+        # Add details column to right container
+        right_container.addLayout(details_layout)
+        
+        # Right column: Notes section
+        notes_layout = QVBoxLayout()
+        notes_layout.setSpacing(4)
+        
+        # Notes header
+        notes_header = QLabel("Notes")
+        notes_header.setStyleSheet("font-weight: bold; font-size: 16px; color: #333; margin-bottom: 4px;")
+        notes_layout.addWidget(notes_header)
+        
+        # Notes content (read from CSV)
+        notes_text = self.get_machine_notes()
+        notes_label = QLabel(notes_text if notes_text else "No notes")
+        notes_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        notes_label.setStyleSheet("font-size: 13px; color: #666; line-height: 1.4; background-color: #f9f9f9; padding: 8px; border-radius: 4px;")
+        notes_label.setWordWrap(True)
+        notes_label.setMaximumHeight(140)  # Limit height to match details section
+        notes_layout.addWidget(notes_label)
+        
+        # Add stretch to align with details column
+        notes_layout.addStretch()
+        
+        # Add notes column to right container
+        right_container.addLayout(notes_layout)
+        
+        # Add the complete right container to main layout
+        main_layout.addLayout(right_container)
+    
+    def get_machine_notes(self) -> str:
+        """Get notes for this machine from the custom machines CSV."""
+        try:
+            import csv
+            custom_machines_csv = resource_path("STIR/csv_custom_machines.csv")
+            
+            if not os.path.exists(custom_machines_csv):
+                return ""
+            
+            with open(custom_machines_csv, 'r', encoding='utf-8-sig') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    if row.get('name', '').strip() == self.machine.name:
+                        return row.get('notes', '').strip()
+            
+            return ""
+            
+        except Exception as e:
+            print(f"Error reading notes from CSV: {e}")
+            return ""
 
 
 class CustomMachineManagerDialog(QDialog):
@@ -192,19 +245,19 @@ class CustomMachineManagerDialog(QDialog):
         layout.addWidget(add_button)
         
         # Scroll area for machine cards
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setStyleSheet("QScrollArea { border: none; background-color: transparent; }")
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setStyleSheet("QScrollArea { border: none; background-color: transparent; }")
         
         # Widget to contain the cards in vertical layout
         self.scroll_widget = QWidget()
         self.scroll_widget.setStyleSheet("background-color: transparent;")
         self.cards_layout = QVBoxLayout(self.scroll_widget)
-        self.cards_layout.setSpacing(10)
+        self.cards_layout.setSpacing(5)
         self.cards_layout.setContentsMargins(15, 15, 15, 15)
         
-        scroll_area.setWidget(self.scroll_widget)
-        layout.addWidget(scroll_area)
+        self.scroll_area.setWidget(self.scroll_widget)
+        layout.addWidget(self.scroll_area)
         
         # Button box
         button_box = QDialogButtonBox(QDialogButtonBox.Close)
@@ -246,6 +299,9 @@ class CustomMachineManagerDialog(QDialog):
         
         # Add stretch at the end to push cards to the top
         self.cards_layout.addStretch()
+        
+        # Reset scroll position to top
+        self.scroll_area.verticalScrollBar().setValue(0)
     
     def is_custom_machine(self, machine: Machine) -> bool:
         """Check if a machine is a custom machine."""
@@ -301,8 +357,7 @@ class CustomMachineManagerDialog(QDialog):
         reply = QMessageBox.question(
             self,
             "Delete Custom Machine",
-            f"Are you sure you want to delete '{machine.name}'?\\n\\n"
-            f"This will remove any operations using this machine from all scenarios.\\n"
+            f"Are you sure you want to delete '{machine.name}'?\n\n"
             f"This action cannot be undone.",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
@@ -322,8 +377,6 @@ class CustomMachineManagerDialog(QDialog):
                 # Refresh repository and UI
                 self.machine_repo.reload_data()
                 self.refresh_machines()
-                
-                QMessageBox.information(self, "Success", f"Machine '{machine.name}' has been deleted.")
             else:
                 QMessageBox.critical(self, "Error", f"Failed to delete machine '{machine.name}'.")
     
@@ -421,7 +474,7 @@ class CustomMachineManagerDialog(QDialog):
                 with open(custom_machines_csv, 'w', newline='', encoding='utf-8') as file:
                     writer = csv.writer(file)
                     writer.writerow(['name', 'rotates', 'depth', 'depth_uom', 'speed', 'speed_uom', 
-                                   'surface_area_disturbed', 'tillage_type_factor', 'picture'])
+                                   'surface_area_disturbed', 'tillage_type_factor', 'picture', 'notes'])
             
             # Append the machine
             with open(custom_machines_csv, 'a', newline='', encoding='utf-8') as file:
@@ -435,7 +488,8 @@ class CustomMachineManagerDialog(QDialog):
                     machine_data['speed_uom'],
                     machine_data['surface_area_disturbed'],
                     machine_data['tillage_type_factor'],
-                    machine_data['picture']
+                    machine_data['picture'],
+                    machine_data.get('notes', '')  # Include notes, default to empty string
                 ])
             
             return True

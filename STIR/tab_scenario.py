@@ -147,14 +147,6 @@ class STIRScenarioTabPage(QWidget):
         if self.operations_table:
             self.operations_table.add_operation(operation)
     
-    def clear_operations(self):
-        """Clear all operations from this scenario."""
-        if self.operations_table:
-            self.operations_table.clear_operations()
-        self.operations = []
-        self.total_stir_value = 0
-        self.scenario_changed.emit(self)
-    
     def set_display_uom(self, depth_uom, speed_uom):
         """Set the display UOM settings for this scenario."""
         self.display_depth_uom = depth_uom

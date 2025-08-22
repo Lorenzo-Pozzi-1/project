@@ -1,7 +1,2 @@
-name,rotates,depth,depth_uom,speed,speed_uom,surface_area_disturbed,tillage_type_factor,picture
-joy,FALSE,15.0,cm,8.0,km/h,100.0,0.7,joy.jpg
-testtatata,FALSE,15.0,cm,8.0,km/h,100.0,1.0,testtatata.jpg
-test edit delete,FALSE,20.0,cm,8.0,km/h,100.0,0.7,test_edit_delete.JPG
-great plains pro max,FALSE,11.0,cm,12.0,km/h,100.0,0.8,great_plains_pro_max.jpg
-test nuova,FALSE,15.0,cm,8.0,km/h,100.0,1.0,test_nuova.png
-test dopo aggiornamento dialog,TRUE,10.0,in,10.0,mph,10.0,0.1,test_dopo_aggiornamento_dialog.JPG
+name,rotates,depth,depth_uom,speed,speed_uom,surface_area_disturbed,tillage_type_factor,picture,notes
+test,FALSE,6.0,in,5.0,mph,100.0,0.7,test.png,

@@ -1,6 +1,6 @@
 {
     "STIR_preferences": {
-        "default_depth_uom": "cm",
+        "default_depth_uom": "inch",
         "default_speed_uom": "mph"
     },
     "user_preferences": {
