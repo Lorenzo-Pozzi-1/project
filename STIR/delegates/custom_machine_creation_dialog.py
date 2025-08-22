@@ -7,6 +7,7 @@ Provides a dialog for creating custom machines with simple tillage factor select
 import csv
 import os
 import shutil
+import tempfile
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QFormLayout,
                                QLineEdit, QDoubleSpinBox, QPushButton,
                                QDialogButtonBox, QLabel, QMessageBox, QSpinBox,
@@ -333,36 +334,115 @@ effect of the machine as a whole.
         try:
             custom_machines_csv = resource_path("STIR/csv_custom_machines.csv")
             
-            # Create file with headers if it doesn't exist
-            if not os.path.exists(custom_machines_csv):
-                with open(custom_machines_csv, 'w', newline='', encoding='utf-8') as file:
-                    writer = csv.writer(file)
-                    writer.writerow(['name', 'rotates', 'depth', 'depth_uom', 'speed', 'speed_uom', 
-                                   'surface_area_disturbed', 'tillage_type_factor', 'picture', 'notes'])
-            
             # Get notes from the text edit
             notes_text = self.notes_edit.toPlainText().strip()
             
-            # Append custom machine
-            with open(custom_machines_csv, 'a', newline='', encoding='utf-8') as file:
-                writer = csv.writer(file)
-                writer.writerow([
-                    machine.name,
-                    'TRUE' if machine.rotates else 'FALSE',
-                    machine.depth,
-                    machine.depth_uom,
-                    machine.speed,
-                    machine.speed_uom,
-                    machine.surface_area_disturbed,
-                    machine.tillage_type_factor,
-                    machine.picture,
-                    notes_text
-                ])
-            
-            return True
-            
+            if self.is_editing:
+                # Update existing machine in CSV
+                return self.update_machine_in_csv(machine, notes_text)
+            else:
+                # Create file with headers if it doesn't exist
+                if not os.path.exists(custom_machines_csv):
+                    with open(custom_machines_csv, 'w', newline='', encoding='utf-8') as file:
+                        writer = csv.writer(file)
+                        writer.writerow(['name', 'rotates', 'depth', 'depth_uom', 'speed', 'speed_uom', 
+                                       'surface_area_disturbed', 'tillage_type_factor', 'picture', 'notes'])
+                
+                # Append new custom machine
+                with open(custom_machines_csv, 'a', newline='', encoding='utf-8') as file:
+                    writer = csv.writer(file)
+                    writer.writerow([
+                        machine.name,
+                        'TRUE' if machine.rotates else 'FALSE',
+                        machine.depth,
+                        machine.depth_uom,
+                        machine.speed,
+                        machine.speed_uom,
+                        machine.surface_area_disturbed,
+                        machine.tillage_type_factor,
+                        machine.picture,
+                        notes_text
+                    ])
+                
+                return True
+                
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to save custom machine: {str(e)}")
+            return False
+
+    def update_machine_in_csv(self, machine: Machine, notes_text: str) -> bool:
+        """Update an existing machine in the CSV file."""
+        try:
+            custom_machines_csv = resource_path("STIR/csv_custom_machines.csv")
+            
+            if not os.path.exists(custom_machines_csv):
+                return False
+            
+            # First, let's try a direct approach - read all data, modify, and write back
+            all_rows = []
+            updated = False
+            
+            # Read all existing data
+            with open(custom_machines_csv, 'r', encoding='utf-8-sig') as input_file:
+                reader = csv.DictReader(input_file)
+                fieldnames = list(reader.fieldnames) if reader.fieldnames else []
+                
+                # Ensure notes column exists
+                if 'notes' not in fieldnames:
+                    fieldnames.append('notes')
+                
+                for row in reader:
+                    current_name = row.get('name', '').strip()
+                    
+                    if current_name == self.machine_to_edit.name:
+                        # Update all fields with new values
+                        row['name'] = machine.name
+                        row['rotates'] = 'TRUE' if machine.rotates else 'FALSE'
+                        row['depth'] = str(machine.depth)
+                        row['depth_uom'] = machine.depth_uom
+                        row['speed'] = str(machine.speed)
+                        row['speed_uom'] = machine.speed_uom
+                        row['surface_area_disturbed'] = str(machine.surface_area_disturbed)
+                        row['tillage_type_factor'] = str(machine.tillage_type_factor)
+                        row['picture'] = machine.picture
+                        row['notes'] = notes_text
+                        updated = True
+                    else:
+                        # Ensure notes field exists in existing rows
+                        if 'notes' not in row:
+                            row['notes'] = ''
+                    
+                    all_rows.append(row)
+            
+            if not updated:
+                return False
+            
+            # Write all data back to the original file
+            with open(custom_machines_csv, 'w', newline='', encoding='utf-8') as output_file:
+                writer = csv.DictWriter(output_file, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(all_rows)
+            
+            # Verify the update by reading the file again
+            with open(custom_machines_csv, 'r', encoding='utf-8-sig') as verify_file:
+                reader = csv.DictReader(verify_file)
+                for row in reader:
+                    if row.get('name', '').strip() == machine.name:
+                        actual_notes = row.get('notes', '')
+                        return actual_notes == notes_text
+            
+            return True
+                
+        except Exception as e:
+            print(f"Error updating machine in CSV: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+            try:
+                if 'temp_file' in locals():
+                    os.unlink(temp_file.name)
+            except:
+                pass
             return False
     
     def populate_edit_fields(self):

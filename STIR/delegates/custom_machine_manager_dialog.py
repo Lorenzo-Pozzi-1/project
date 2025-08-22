@@ -428,6 +428,9 @@ class CustomMachineManagerDialog(QDialog):
     
     def on_machine_edited(self, old_machine: Machine, new_machine: Machine):
         """Handle when a machine is edited."""
+        # Get the notes from the CSV for the old machine
+        old_machine_notes = self.get_machine_notes_from_csv(old_machine.name)
+        
         # Create a temporary object with all the machine details
         temp_machine_data = {
             'name': new_machine.name,
@@ -438,7 +441,8 @@ class CustomMachineManagerDialog(QDialog):
             'surface_area_disturbed': new_machine.surface_area_disturbed,
             'tillage_type_factor': new_machine.tillage_type_factor,
             'picture': new_machine.picture,
-            'rotates': new_machine.rotates
+            'rotates': new_machine.rotates,
+            'notes': old_machine_notes  # Preserve the notes!
         }
         
         # Check if machine name changed and handle picture renaming
@@ -672,3 +676,24 @@ class CustomMachineManagerDialog(QDialog):
             except:
                 pass
             return False
+
+    def get_machine_notes_from_csv(self, machine_name: str) -> str:
+        """Get notes for a machine from the CSV file."""
+        try:
+            import csv
+            custom_machines_csv = resource_path("STIR/csv_custom_machines.csv")
+            
+            if not os.path.exists(custom_machines_csv):
+                return ""
+            
+            with open(custom_machines_csv, 'r', encoding='utf-8-sig') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    if row.get('name', '').strip() == machine_name:
+                        return row.get('notes', '').strip()
+            
+            return ""
+            
+        except Exception as e:
+            print(f"Error reading notes from CSV: {e}")
+            return ""
