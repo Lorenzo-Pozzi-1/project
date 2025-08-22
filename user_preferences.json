@@ -1,7 +1,7 @@
 {
     "STIR_preferences": {
         "default_depth_uom": "cm",
-        "default_speed_uom": "km/h"
+        "default_speed_uom": "mph"
     },
     "user_preferences": {
         "default_country": "Canada",

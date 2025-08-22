@@ -385,7 +385,7 @@ class CustomMachineManagerDialog(QDialog):
             'surface_area_disturbed': new_machine.surface_area_disturbed,
             'tillage_type_factor': new_machine.tillage_type_factor,
             'picture': new_machine.picture,
-            'rotates': False  # Custom machines default to non-rotating
+            'rotates': new_machine.rotates
         }
         
         # Check if machine name changed and handle picture renaming
@@ -428,7 +428,7 @@ class CustomMachineManagerDialog(QDialog):
                 writer = csv.writer(file)
                 writer.writerow([
                     machine_data['name'],
-                    'FALSE',  # rotates
+                    'TRUE' if machine_data['rotates'] else 'FALSE',
                     machine_data['depth'],
                     machine_data['depth_uom'],
                     machine_data['speed'],
@@ -455,7 +455,8 @@ class CustomMachineManagerDialog(QDialog):
                 'speed_uom': old_machine.speed_uom,
                 'surface_area_disturbed': old_machine.surface_area_disturbed,
                 'tillage_type_factor': old_machine.tillage_type_factor,
-                'picture': old_machine.picture
+                'picture': old_machine.picture,
+                'rotates': old_machine.rotates
             }
             
             if self.add_machine_to_csv(restore_data):

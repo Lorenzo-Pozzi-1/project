@@ -10,8 +10,8 @@ from typing import Dict, Any
 
 class Machine:
     """
-    Represents a tillage machine/implement for STIR calculations.
-    
+    Represents a tillage machine for STIR calculations.
+
     Stores information about a machine including its default operational
     parameters that can be used to initialize operations.
     """
@@ -30,7 +30,7 @@ class Machine:
         Initialize a Machine.
         
         Args:
-            name: Name of the machine/implement
+            name: Name of the machine
             depth: Default working depth
             depth_uom: Unit of measure for depth (e.g., "cm", "in")
             speed: Default operating speed

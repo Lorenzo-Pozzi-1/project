@@ -34,7 +34,7 @@ class Operation:
         
         Args:
             operation_group: Type of operation ("pre-plant", "in-season", "harvest")
-            machine_name: Name of the machine/implement used
+            machine_name: Name of the machine
             depth: Working depth of the operation
             depth_uom: Unit of measure for depth (e.g., "cm", "in")
             speed: Operating speed

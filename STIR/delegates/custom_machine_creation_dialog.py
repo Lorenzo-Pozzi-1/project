@@ -10,7 +10,7 @@ import shutil
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QFormLayout,
                                QLineEdit, QDoubleSpinBox, QPushButton,
                                QDialogButtonBox, QLabel, QMessageBox, QSpinBox,
-                               QFileDialog, QSlider)
+                               QFileDialog, QSlider, QCheckBox, QComboBox)
 from PySide6.QtCore import Qt, Signal
 from typing import List, Tuple
 from ..model_machine import Machine
@@ -31,7 +31,7 @@ class CustomMachineDialog(QDialog):
         title = "Edit Custom Machine" if self.is_editing else "Create Custom Machine"
         self.setWindowTitle(title)
         self.setModal(True)
-        self.resize(500, 400)
+        self.resize(550, 500)  # Increased size to accommodate new fields
         
         self.setup_ui()
         
@@ -57,21 +57,39 @@ class CustomMachineDialog(QDialog):
         self.name_edit.setPlaceholderText("Enter custom machine name")
         form_layout.addRow("Machine Name:", self.name_edit)
         
-        # Speed
-        self.speed_spinbox = QDoubleSpinBox()
-        self.speed_spinbox.setRange(0.1, 50.0)
-        self.speed_spinbox.setValue(8.0)
-        self.speed_spinbox.setSuffix(" km/h")
-        self.speed_spinbox.setDecimals(1)
-        form_layout.addRow("Operating Speed:", self.speed_spinbox)
+        # Rotates checkbox
+        self.rotates_checkbox = QCheckBox("Machine has rotating/powered components")
+        form_layout.addRow("Rotates:", self.rotates_checkbox)
         
-        # Working depth
+        # Working depth with unit selection
+        depth_layout = QHBoxLayout()
         self.depth_spinbox = QDoubleSpinBox()
-        self.depth_spinbox.setRange(0.1, 100.0)
-        self.depth_spinbox.setValue(15.0)
-        self.depth_spinbox.setSuffix(" cm")
+        self.depth_spinbox.setRange(0.1, 1000.0)
+        self.depth_spinbox.setValue(6.0)  # Default to 6 inches
         self.depth_spinbox.setDecimals(1)
-        form_layout.addRow("Working Depth:", self.depth_spinbox)
+        depth_layout.addWidget(self.depth_spinbox)
+        
+        self.depth_uom_combo = QComboBox()
+        self.depth_uom_combo.addItems(["in", "cm"])
+        self.depth_uom_combo.setCurrentText("in")  # Default to inches
+        depth_layout.addWidget(self.depth_uom_combo)
+        
+        form_layout.addRow("Working Depth:", depth_layout)
+        
+        # Operating speed with unit selection
+        speed_layout = QHBoxLayout()
+        self.speed_spinbox = QDoubleSpinBox()
+        self.speed_spinbox.setRange(0.1, 100.0)
+        self.speed_spinbox.setValue(5.0)  # Default to 5 mph
+        self.speed_spinbox.setDecimals(1)
+        speed_layout.addWidget(self.speed_spinbox)
+        
+        self.speed_uom_combo = QComboBox()
+        self.speed_uom_combo.addItems(["mph", "km/h"])
+        self.speed_uom_combo.setCurrentText("mph")  # Default to mph
+        speed_layout.addWidget(self.speed_uom_combo)
+        
+        form_layout.addRow("Operating Speed:", speed_layout)
         
         # Surface area disturbed
         self.surface_area_spinbox = QSpinBox()
@@ -168,13 +186,13 @@ class CustomMachineDialog(QDialog):
         custom_machine = Machine(
             name=machine_name,
             depth=self.depth_spinbox.value(),
-            depth_uom="cm",
+            depth_uom=self.depth_uom_combo.currentText(),
             speed=self.speed_spinbox.value(),
-            speed_uom="km/h",
+            speed_uom=self.speed_uom_combo.currentText(),
             surface_area_disturbed=float(self.surface_area_spinbox.value()),
             tillage_type_factor=tillage_factor,
             picture=picture_name,
-            rotates=False  # Default for custom machines
+            rotates=self.rotates_checkbox.isChecked()
         )
         
         # Save to custom machines CSV
@@ -266,7 +284,7 @@ class CustomMachineDialog(QDialog):
                 writer = csv.writer(file)
                 writer.writerow([
                     machine.name,
-                    'FALSE',  # Custom machines default to non-rotating
+                    'TRUE' if machine.rotates else 'FALSE',
                     machine.depth,
                     machine.depth_uom,
                     machine.speed,
@@ -289,8 +307,17 @@ class CustomMachineDialog(QDialog):
             
         # Set basic machine parameters
         self.name_edit.setText(self.machine_to_edit.name)
-        self.speed_spinbox.setValue(self.machine_to_edit.speed)
+        self.rotates_checkbox.setChecked(self.machine_to_edit.rotates)
+        
+        # Set depth and depth unit
         self.depth_spinbox.setValue(self.machine_to_edit.depth)
+        self.depth_uom_combo.setCurrentText(self.machine_to_edit.depth_uom)
+        
+        # Set speed and speed unit
+        self.speed_spinbox.setValue(self.machine_to_edit.speed)
+        self.speed_uom_combo.setCurrentText(self.machine_to_edit.speed_uom)
+        
+        # Set surface area disturbed
         self.surface_area_spinbox.setValue(int(self.machine_to_edit.surface_area_disturbed))
         
         # Set tillage factor in slider
