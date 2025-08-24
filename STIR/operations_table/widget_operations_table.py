@@ -14,7 +14,7 @@ from typing import List, Optional
 from common.styles import GENERIC_TABLE_STYLE, get_medium_font
 from common.widgets.header_frame_buttons import create_button
 from ..data.model_operation import Operation
-from .operations_table_model import STIROperationsTableModel
+from .model_operations_table import STIROperationsTableModel
 from .delegates.machine_delegate import MachineSelectionDelegate
 from .delegates.group_delegate import GroupSelectionDelegate
 from .delegates.numeric_delegate import NumericDelegate

@@ -14,7 +14,7 @@ from ..data.model_machine import Machine
 from ..data.model_custom_machine import CustomMachine
 from ..data.repository_machine import MachineRepository
 from ..data.repository_custom_machine import CustomMachineRepository
-from .new_custom_machine_dialog import NewCustomMachineDialog
+from .custom_machine_editor_dialog import NewCustomMachineDialog
 from common.utils import resource_path
 
 

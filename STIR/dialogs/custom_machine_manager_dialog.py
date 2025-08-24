@@ -16,7 +16,7 @@ from PySide6.QtGui import QPixmap
 from typing import List
 from ..data.model_custom_machine import CustomMachine
 from ..data.repository_custom_machine import CustomMachineRepository
-from .new_custom_machine_dialog import NewCustomMachineDialog
+from .custom_machine_editor_dialog import NewCustomMachineDialog
 from common.utils import resource_path
 
 
