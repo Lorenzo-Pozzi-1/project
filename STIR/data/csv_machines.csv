@@ -1,0 +1,12 @@
+﻿name,rotates,depth,depth_uom,speed,speed_uom,surface_area_disturbed,tillage_type_factor,picture
+Hiller,FALSE,32,cm,6,km/h,100,0.8,hiller.png
+Cambridge Roller,FALSE,2,cm,6,km/h,100,0.2,cambridge_roller.png
+Chisel Plow,FALSE,23,cm,8,km/h,100,0.7,chisel_plow.png
+Deep Cultivator,FALSE,23,cm,8,km/h,100,0.7,deep_cultivator.png
+Fumigant Shank Rig,FALSE,23,cm,8,km/h,100,0.7,fumigation_shank_rig.png
+Moldboard Plow,FALSE,30,cm,6,km/h,100,1,moldboard_plow.png
+Potato Harvester,TRUE,30,cm,6,km/h,100,1,potato_harvester.png
+Potato Planter,FALSE,20,cm,9,km/h,50,0.8,potato_planter.png
+Power Harrow,TRUE,13,cm,6,km/h,100,0.8,power_harrow.png
+Rotavator,TRUE,10,cm,10,km/h,100,0.8,rotavator.png
+Tandem Disk Harrow,FALSE,5,cm,15,km/h,100,0.7,tandem_disc_harrow.png

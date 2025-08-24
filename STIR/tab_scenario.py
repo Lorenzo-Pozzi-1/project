@@ -6,7 +6,7 @@ from PySide6.QtCore import Signal
 from common.constants import get_margin_large, get_spacing_medium
 from common.styles import get_subtitle_font
 from common.widgets.header_frame_buttons import ContentFrame
-from .widget_operations_table import STIROperationsTableWidget
+from .operations_table.widget_operations_table import STIROperationsTableWidget
 
 
 class STIRScenarioTabPage(QWidget):

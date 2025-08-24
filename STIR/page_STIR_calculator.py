@@ -441,7 +441,7 @@ class STIRCalculatorPage(QWidget):
     
     def open_custom_machine_manager(self):
         """Open the custom machine management dialog."""
-        from .delegates.custom_machine_manager_dialog import CustomMachineManagerDialog
+        from .dialogs.custom_machine_manager_dialog import CustomMachineManagerDialog
         
         dialog = CustomMachineManagerDialog(self)
         dialog.exec()
