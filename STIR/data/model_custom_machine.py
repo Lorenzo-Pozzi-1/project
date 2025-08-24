@@ -221,7 +221,7 @@ class CustomMachine:
                 
                 # Convert string values to appropriate types
                 try:
-                    name = str(name_val).strip()
+                    tool_name = str(name_val).strip()
                     rotates = str(rotates_val).upper() == "TRUE"
                     depth = float(depth_val)
                     depth_uom = data.get(f"{tool_prefix}depth_uom", "cm")
@@ -229,7 +229,7 @@ class CustomMachine:
                     tillage_type_factor = float(data.get(f"{tool_prefix}tillage_type_factor", 0.0))
                     
                     tool = CustomMachineTool(
-                        name=name,
+                        name=tool_name,
                         rotates=rotates,
                         depth=depth,
                         depth_uom=depth_uom,
