@@ -68,10 +68,7 @@ class CustomMachineTool:
     
     def is_empty(self) -> bool:
         """Check if this tool has any meaningful data."""
-        return (not self.name.strip() and 
-                self.depth == 0.0 and 
-                self.surface_area_disturbed == 100.0 and 
-                self.tillage_type_factor == 0.0)
+        return not self.name.strip()
 
 
 class CustomMachine:
@@ -215,16 +212,16 @@ class CustomMachine:
                 rotates_val = data.get(rotates_key)
                 depth_val = data.get(depth_key)
                 
-                # Skip empty tool slots
-                if not name_val or rotates_val == "" or depth_val == "":
+                # Skip empty tool slots - check if essential fields are missing
+                if not name_val or str(depth_val).strip() == "":
                     continue
                 
                 # Convert string values to appropriate types
                 try:
                     tool_name = str(name_val).strip()
-                    rotates = str(rotates_val).upper() == "TRUE"
+                    rotates = str(rotates_val).strip().upper() == "TRUE"
                     depth = float(depth_val)
-                    depth_uom = data.get(f"{tool_prefix}depth_uom", "cm")
+                    depth_uom = str(data.get(f"{tool_prefix}depth_uom", "cm")).strip()
                     surface_area_disturbed = float(data.get(f"{tool_prefix}surface_area_disturbed", 100.0))
                     tillage_type_factor = float(data.get(f"{tool_prefix}tillage_type_factor", 0.0))
                     

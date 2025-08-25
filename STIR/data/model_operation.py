@@ -108,24 +108,47 @@ class Operation:
             return self.calculate_custom_machine_stir()
         
         # Standard machine calculation
-        # Convert units to standard values if needed
-        depth_cm = self._convert_depth_to_cm()
-        speed_kmh = self._convert_speed_to_kmh()
-        surface_fraction = self.surface_area_disturbed / 100.0
-        
-        # Calculate STIR using different formulas based on machine rotation
-        if self.machine_rotates:
-            # Formula for rotating machines (placeholder - same as current)
-            stir = (self.tillage_type_factor * 3.25) * (speed_kmh * 0.5) * depth_cm * surface_fraction
-        else:
-            # Formula for non-rotating machines (placeholder - same as current)
-            stir = (self.tillage_type_factor * 3.25) * (speed_kmh * 0.5) * depth_cm * surface_fraction
+        stir = self._calculate_single_tool_stir(
+            depth_cm=self._convert_depth_to_cm(),
+            speed_kmh=self._convert_speed_to_kmh(),
+            surface_area_disturbed=self.surface_area_disturbed,
+            tillage_type_factor=self.tillage_type_factor,
+            rotates=self.machine_rotates
+        )
         
         # Apply number of passes
         total_stir = stir * self.number_of_passes
         
         self.stir_value = round(total_stir)
         return self.stir_value
+    
+    def _calculate_single_tool_stir(self, depth_cm: float, speed_kmh: float, 
+                                   surface_area_disturbed: float, tillage_type_factor: float, 
+                                   rotates: bool) -> float:
+        """
+        Calculate STIR for a single tool/machine with given parameters.
+        
+        Args:
+            depth_cm: Working depth in centimeters
+            speed_kmh: Operating speed in km/h
+            surface_area_disturbed: Percentage of surface area disturbed (0-100)
+            tillage_type_factor: Tillage intensity factor
+            rotates: Whether the tool/machine has rotating/powered components
+            
+        Returns:
+            STIR value for the single tool/machine
+        """
+        surface_fraction = surface_area_disturbed / 100.0
+        
+        # Calculate STIR using different formulas based on machine rotation
+        if rotates:
+            # Formula for rotating machines (PTO-powered)
+            stir = (tillage_type_factor * 3.25) * ((11 - speed_kmh) * 0.5) * depth_cm * surface_fraction
+        else:
+            # Formula for non-rotating machines
+            stir = (tillage_type_factor * 3.25) * (speed_kmh * 0.5) * depth_cm * surface_fraction
+        
+        return stir
     
     def _convert_depth_to_cm(self) -> float:
         """Convert depth to centimeters."""
@@ -236,6 +259,8 @@ class Operation:
                     self.tillage_type_factor = tools[0].tillage_type_factor
                     self.machine_rotates = any(tool.rotates for tool in tools)
                 
+                # Calculate STIR with the loaded custom machine data
+                self.calculate_stir()
                 return True
             
             return False
@@ -271,6 +296,7 @@ class Operation:
     def calculate_custom_machine_stir(self) -> float:
         """
         Calculate STIR for custom machine by summing STIR from all tools.
+        Uses the same formula logic as standard machines for consistency.
         
         Returns:
             Total STIR value for the custom machine
@@ -292,9 +318,15 @@ class Operation:
             if tool_depth_cm <= 0:
                 continue
             
-            # Calculate STIR for this tool
-            surface_fraction = tool.surface_area_disturbed / 100.0
-            tool_stir = (tool.tillage_type_factor * 3.25) * (speed_kmh * 0.5) * tool_depth_cm * surface_fraction
+            # Calculate STIR for this tool using the shared formula
+            tool_stir = self._calculate_single_tool_stir(
+                depth_cm=tool_depth_cm,
+                speed_kmh=speed_kmh,
+                surface_area_disturbed=tool.surface_area_disturbed,
+                tillage_type_factor=tool.tillage_type_factor,
+                rotates=tool.rotates
+            )
+            
             total_stir += tool_stir
         
         # Apply number of passes

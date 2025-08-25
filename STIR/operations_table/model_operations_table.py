@@ -149,7 +149,9 @@ class STIROperationsTableModel(QAbstractTableModel):
                             custom_machine = self._custom_machine_repo.get_machine_by_name(new_machine_name)
                             if custom_machine:
                                 # Load custom machine into operation
-                                operation.load_custom_machine_defaults(custom_machine)
+                                operation.load_custom_machine_defaults(custom_machine.name)
+                                # Calculate STIR for the custom machine
+                                operation.calculate_stir()
                             else:
                                 # Unknown machine name
                                 operation.machine_name = new_machine_name
