@@ -75,12 +75,8 @@ class MachineRepository:
         try:
             self._all_machines = []
             
-            # Load standard machines
+            # Load only standard machines
             self._load_machines_from_file(self.csv_file)
-            
-            # Load custom machines
-            custom_machines_csv = resource_path("STIR/data/csv_custom_machines.csv")
-            self._load_machines_from_file(custom_machines_csv, is_custom=True)
                         
         except Exception as e:
             QMessageBox.critical(
@@ -90,15 +86,11 @@ class MachineRepository:
             )
             self._all_machines = []
     
-    def _load_machines_from_file(self, file_path: str, is_custom: bool = False):
+    def _load_machines_from_file(self, file_path: str):
         """Load machines from a specific CSV file."""
         try:
             if not os.path.exists(file_path):
-                if is_custom:
-                    # Custom machines file doesn't exist yet, that's OK
-                    return
-                else:
-                    raise FileNotFoundError(f"Could not find machines file: {file_path}")
+                raise FileNotFoundError(f"Could not find machines file: {file_path}")
             
             with open(file_path, 'r', encoding='utf-8-sig') as file:  # Handle BOM
                 reader = csv.DictReader(file)
@@ -130,12 +122,11 @@ class MachineRepository:
                         continue
                         
         except FileNotFoundError:
-            if not is_custom:
-                QMessageBox.critical(
-                    None,
-                    "File Not Found",
-                    f"Could not find machines file: {file_path}"
-                )
+            QMessageBox.critical(
+                None,
+                "File Not Found",
+                f"Could not find machines file: {file_path}"
+            )
         except Exception as e:
             print(f"Error loading machines from {file_path}: {str(e)}")
     

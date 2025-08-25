@@ -236,6 +236,10 @@ class MachineSelectionDialog(QDialog):
         """Get the selected machine name."""
         return self.selected_machine_name
     
+    def is_custom_machine(self, machine) -> bool:
+        """Check if a machine is a custom machine."""
+        return isinstance(machine, CustomMachine)
+    
     def create_custom_machine_card(self, grid_layout: QGridLayout, row: int, col: int):
         """Create the custom machine card with plus icon."""
         # Create a card-style button for custom machine
