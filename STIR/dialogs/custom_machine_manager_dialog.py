@@ -98,14 +98,18 @@ class CustomMachineCard(QFrame):
             areas = [tool.surface_area_disturbed for tool in active_tools]
             tool_names = [tool.name for tool in active_tools]
             
-            max_depth = max(depths)
+            # Find the tool with maximum depth to get its unit
+            max_depth_tool = max(active_tools, key=lambda tool: tool.depth)
+            max_depth = max_depth_tool.depth
+            max_depth_uom = max_depth_tool.depth_uom
+            
             max_area = max(areas)
             has_pto = any(tool.rotates for tool in active_tools)
             avg_tillage_factor = sum(tool.tillage_type_factor for tool in active_tools) / len(active_tools)
             
             details_text = f"""<b>Speed:</b> {self.machine.speed} {self.machine.speed_uom}<br>
 <b>Tools:</b> {', '.join(tool_names[:3])}{'...' if len(tool_names) > 3 else ''}<br>
-<b>Max Depth:</b> {max_depth} cm<br>
+<b>Max Depth:</b> {max_depth} {max_depth_uom}<br>
 <b>Max Area Disturbed:</b> {max_area}%<br>
 <b>PTO operated:</b> {'Yes' if has_pto else 'No'}<br>
 <b>Avg Tillage Factor:</b> {avg_tillage_factor:.2f}"""
