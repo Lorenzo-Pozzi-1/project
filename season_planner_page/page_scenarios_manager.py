@@ -308,9 +308,11 @@ class ScenariosManagerPage(QWidget):
             total_eiq = page.get_total_field_eiq()
             applications_count = page.get_applications_count()
             
-            # Add validation status
+            # Add validation status with priority
             if page.has_validation_issues():
-                validation_status = " (⚠ There are invalid or incomplete applications!)"
+                validation_status = " (⚠️ There are invalid or incomplete applications!)"
+            elif page.has_rate_issues():
+                validation_status = " (⚠️ Check Application Rates)"
             else:
                 validation_status = ""
         

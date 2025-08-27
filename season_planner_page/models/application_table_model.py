@@ -412,6 +412,8 @@ class ApplicationTableModel(QAbstractTableModel):
         if validation.state == ValidationState.INVALID_PRODUCT:
             return QColor("#ffebee")  # Light red
         elif validation.state == ValidationState.INVALID_DATA:
+            return QColor("#fff3e0")  # Light orange
+        elif validation.state == ValidationState.RATE_ISSUES:
             return QColor("#fff9c4")  # Light yellow
         elif validation.state == ValidationState.INCOMPLETE:
             return QColor("#f3e5f5")  # Light purple

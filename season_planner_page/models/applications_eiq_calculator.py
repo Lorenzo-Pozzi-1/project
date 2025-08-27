@@ -53,8 +53,8 @@ class ApplicationEIQCalculator:
             # Get validation state to determine calculation method
             validation = self._validator.validate_application(app)
             
-            if validation.state in [ValidationState.VALID, ValidationState.INVALID_DATA]:
-                # Standard EIQ calculation with complete AI data (include INVALID_DATA)
+            if validation.state in [ValidationState.VALID, ValidationState.RATE_ISSUES, ValidationState.INVALID_DATA]:
+                # Standard EIQ calculation with complete AI data (include RATE_ISSUES and INVALID_DATA)
                 ai_data = product.get_ai_data()
                 if ai_data:
                     return eiq_calculator.calculate_product_field_eiq(
@@ -107,14 +107,14 @@ class ApplicationEIQCalculator:
         """
         Calculate EIQ for all applications using a two-pass approach.
         
-        Pass 1: Calculate EIQ for VALID and INVALID_DATA applications (complete AI data)
+        Pass 1: Calculate EIQ for VALID, RATE_ISSUES and INVALID_DATA applications (complete AI data)
         Pass 2: Calculate estimated EIQ for VALID_ESTIMATED applications
         """
         try:
-            # Pass 1: Calculate EIQ for VALID and INVALID_DATA applications
+            # Pass 1: Calculate EIQ for VALID, RATE_ISSUES and INVALID_DATA applications
             for app in applications:
                 validation = self._validator.validate_application(app)
-                if validation.state in [ValidationState.VALID, ValidationState.INVALID_DATA]:
+                if validation.state in [ValidationState.VALID, ValidationState.RATE_ISSUES, ValidationState.INVALID_DATA]:
                     app.field_eiq = self.calculate_application_eiq(app)
                 else:
                     app.field_eiq = 0.0
@@ -174,7 +174,7 @@ class ApplicationEIQCalculator:
     def _calculate_average_eiq_for_estimation(self, applications: List[Application]) -> float:
         """
         Calculate average EIQ from applications that have valid EIQ calculations.
-        Includes applications with ValidationState.VALID and ValidationState.INVALID_DATA.
+        Includes applications with ValidationState.VALID, ValidationState.RATE_ISSUES and ValidationState.INVALID_DATA.
         Excludes fumigations (applications with EIQ >= 1000) from the average calculation.
         """
         try:
@@ -191,8 +191,8 @@ class ApplicationEIQCalculator:
                 # Get validation state to determine if this should be included in average
                 validation = self._validator.validate_application(app)
                 
-                # Include VALID and INVALID_DATA applications in the average
-                if validation.state in [ValidationState.VALID, ValidationState.INVALID_DATA]:
+                # Include VALID, RATE_ISSUES and INVALID_DATA applications in the average
+                if validation.state in [ValidationState.VALID, ValidationState.RATE_ISSUES, ValidationState.INVALID_DATA]:
                     ai_data = product.get_ai_data()
                     if ai_data:
                         try:

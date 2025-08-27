@@ -17,6 +17,7 @@ class ValidationState(Enum):
     """Clear validation states for applications."""
     VALID = "valid"
     VALID_ESTIMATED = "valid_estimated"  # Valid but using estimated EIQ
+    RATE_ISSUES = "rate_issues"  # Valid but rate outside label recommendations
     INVALID_PRODUCT = "invalid_product"
     INVALID_DATA = "invalid_data"
     INCOMPLETE = "incomplete"
@@ -72,8 +73,9 @@ class ApplicationValidator:
         1. Check product existence (INVALID_PRODUCT)
         2. Skip validation for adjuvants (they don't contribute to EIQ)
         3. Check for missing required fields (INCOMPLETE)
-        4. Validate data ranges and rate against label limits (INVALID_DATA)
-        5. Check EIQ calculation capability and AI data completeness (VALID/VALID_ESTIMATED)
+        4. Validate data ranges (INVALID_DATA)
+        5. Validate rate against label limits (RATE_ISSUES)
+        6. Check EIQ calculation capability and AI data completeness (VALID/VALID_ESTIMATED)
         """
         issues = []
         
@@ -120,7 +122,7 @@ class ApplicationValidator:
             ))
             return ValidationResult(ValidationState.INCOMPLETE, issues, False)
 
-        # 4. INVALID_DATA STATE: Validate data ranges and rate against label limits
+        # 4. INVALID_DATA STATE: Validate data ranges
         if app.rate is not None and app.rate < 0:
             issues.append(ValidationIssue(
                 field="rate",
@@ -135,16 +137,21 @@ class ApplicationValidator:
                 severity="error"
             ))
         
-        # Validate application rate against label limits using confirmed product
-        if app.rate is not None:
-            label_issue = self._validate_rate_against_label(app.rate, app.rate_uom, product)
-            if label_issue:
-                issues.append(label_issue)
-        
-        if issues:
+        # Check for invalid data issues first (excluding rate validation)
+        data_issues = [issue for issue in issues if issue.severity == "error"]
+        if data_issues:
             return ValidationResult(ValidationState.INVALID_DATA, issues, False)
         
-        # 5. VALID/VALID_ESTIMATED STATE: Check EIQ calculation capability
+        # 5. RATE_ISSUES STATE: Validate application rate against label limits
+        rate_issue = None
+        if app.rate is not None:
+            rate_issue = self._validate_rate_against_label(app.rate, app.rate_uom, product)
+            if rate_issue:
+                issues.append(rate_issue)
+                # Return RATE_ISSUES state but still allow EIQ calculation
+                return ValidationResult(ValidationState.RATE_ISSUES, issues, True)
+
+        # 6. VALID/VALID_ESTIMATED STATE: Check EIQ calculation capability
         can_calculate_eiq = (
             app.product_name and app.product_name.strip() and
             app.rate and app.rate > 0 and
@@ -252,7 +259,7 @@ class ApplicationValidator:
             return ValidationIssue(
                 field="rate",
                 message=f"Application rate ({converted_app_rate:.2f} {label_rate_uom}) exceeds label maximum ({max_rate} {label_rate_uom}) by >10%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
-                severity="error"
+                severity="info"
             )
         
         # Condition 2: Min rate exists and app.rate <= min * 0.8
@@ -260,7 +267,7 @@ class ApplicationValidator:
             return ValidationIssue(
                 field="rate",
                 message=f"Application rate ({converted_app_rate:.2f} {label_rate_uom}) is below label minimum ({min_rate} {label_rate_uom}) by >20%\nWARNING: the field EIQ for this product is still included in the total season EIQ calculation.",
-                severity="error"
+                severity="info"
             )
         
         # Condition 3: Min rate doesn't exist and app.rate <= max * 0.25
@@ -268,7 +275,7 @@ class ApplicationValidator:
             return ValidationIssue(
                 field="rate",
                 message=f"Application min rate is not available from the label and \n({converted_app_rate:.2f} {label_rate_uom}) is much lower (less than 1/4th) than the label maximum ({max_rate} {label_rate_uom})",
-                severity="error"
+                severity="info"
             )
         
         return None
@@ -278,6 +285,7 @@ class ApplicationValidator:
         summary = {
             ValidationState.VALID: 0,
             ValidationState.VALID_ESTIMATED: 0,
+            ValidationState.RATE_ISSUES: 0,
             ValidationState.INVALID_PRODUCT: 0,
             ValidationState.INVALID_DATA: 0,
             ValidationState.INCOMPLETE: 0
@@ -286,14 +294,15 @@ class ApplicationValidator:
         for app in applications:
             validation = self.validate_application(app)
             summary[validation.state] += 1
-        
+
         return summary
-    
+
     def format_validation_status(self, validation: ValidationResult) -> str:
         """Format validation status for display with issue count."""
         status_map = {
             ValidationState.VALID: "✓ Valid",
             ValidationState.VALID_ESTIMATED: "✓ Valid (Est.)",
+            ValidationState.RATE_ISSUES: "⚠ Check Rate",
             ValidationState.INVALID_PRODUCT: "✗ Invalid Product", 
             ValidationState.INVALID_DATA: "⚠ Invalid Data",
             ValidationState.INCOMPLETE: "◯ Incomplete"

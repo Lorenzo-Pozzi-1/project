@@ -182,16 +182,36 @@ class ScenarioTabPage(QWidget):
         try:
             summary = self.get_validation_summary()
             
-            issue_count = (
+            # Count critical issues (excluding rate issues)
+            critical_issue_count = (
                 summary.get(ValidationState.INVALID_PRODUCT, 0) +
                 summary.get(ValidationState.INVALID_DATA, 0) +
                 summary.get(ValidationState.INCOMPLETE, 0)
             )
             
-            return issue_count > 0
+            return critical_issue_count > 0
             
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Error checking validation issues: {e}")
+            return False
+    
+    def has_rate_issues(self) -> bool:
+        """Check if this scenario has only rate issues (no critical issues)."""
+        try:
+            summary = self.get_validation_summary()
+            
+            # Check if we have rate issues but no critical issues
+            rate_issues = summary.get(ValidationState.RATE_ISSUES, 0)
+            critical_issues = (
+                summary.get(ValidationState.INVALID_PRODUCT, 0) +
+                summary.get(ValidationState.INVALID_DATA, 0) +
+                summary.get(ValidationState.INCOMPLETE, 0)
+            )
+            
+            return rate_issues > 0 and critical_issues == 0
+            
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Error checking rate issues: {e}")
             return False
     
     def get_applications_count(self) -> int:
