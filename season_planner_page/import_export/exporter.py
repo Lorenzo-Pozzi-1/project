@@ -133,7 +133,7 @@ class ScenarioDataWriter:
         """Write complete scenario data to worksheet."""
         current_row = 1
         current_row = self._write_metadata(worksheet, scenario, current_row)
-        current_row = self._write_headers(worksheet, current_row)
+        current_row = self._write_headers(worksheet, current_row, scenario)
         self._write_applications(worksheet, scenario.applications or [], current_row)
     
     def _write_metadata(self, worksheet, scenario, start_row: int) -> int:
@@ -162,17 +162,35 @@ class ScenarioDataWriter:
         return current_row + 1  # +1 for separator row
     
     def _calculate_total_field_eiq(self, scenario) -> float:
-        """Calculate total Field EIQ for all applications in the scenario."""
-        total_eiq = 0.0
-        if hasattr(scenario, 'applications') and scenario.applications:
-            for app in scenario.applications:
-                field_eiq = getattr(app, 'field_eiq', None)
-                if field_eiq is not None:
-                    try:
-                        total_eiq += float(field_eiq)
-                    except (ValueError, TypeError):
-                        pass  # Skip invalid values
-        return round(total_eiq, 2)
+        """Calculate area-weighted Field EIQ for all applications in the scenario."""
+        try:
+            if hasattr(scenario, 'get_total_eiq'):
+                # Use scenario's area-weighted calculation method
+                return round(scenario.get_total_eiq(), 2)
+            else:
+                # Fallback to simple sum for scenarios without the method
+                total_eiq = 0.0
+                if hasattr(scenario, 'applications') and scenario.applications:
+                    for app in scenario.applications:
+                        field_eiq = getattr(app, 'field_eiq', None)
+                        if field_eiq is not None:
+                            try:
+                                total_eiq += float(field_eiq)
+                            except (ValueError, TypeError):
+                                pass  # Skip invalid values
+                return round(total_eiq, 2)
+        except Exception:
+            # Fallback to simple sum if area-weighted calculation fails
+            total_eiq = 0.0
+            if hasattr(scenario, 'applications') and scenario.applications:
+                for app in scenario.applications:
+                    field_eiq = getattr(app, 'field_eiq', None)
+                    if field_eiq is not None:
+                        try:
+                            total_eiq += float(field_eiq)
+                        except (ValueError, TypeError):
+                            pass  # Skip invalid values
+            return round(total_eiq, 2)
     
     def _get_metadata_items(self, scenario) -> List[Tuple[str, Any]]:
         """Get metadata items for scenario."""
@@ -192,9 +210,21 @@ class ScenarioDataWriter:
         area_value = self.converter.to_float(field_area, field_area)
         return f"{area_value} {field_area_uom}"
     
-    def _write_headers(self, worksheet, start_row: int) -> int:
-        """Write column headers."""
-        for col_idx, header in enumerate(self.config.COLUMNS, 1):
+    def _write_headers(self, worksheet, start_row: int, scenario) -> int:
+        """Write column headers with dynamic area UOM."""
+        # Get field area UOM for dynamic header
+        field_area_uom = getattr(scenario, 'field_area_uom', 'acre') or 'acre'
+        
+        # Create dynamic column headers
+        headers = []
+        for header in self.config.COLUMNS:
+            if header == "Area":
+                headers.append(f"Area ({field_area_uom})")
+            else:
+                headers.append(header)
+        
+        # Write headers to worksheet
+        for col_idx, header in enumerate(headers, 1):
             worksheet.cell(row=start_row, column=col_idx, value=header)
         
         self.header_row_num = start_row

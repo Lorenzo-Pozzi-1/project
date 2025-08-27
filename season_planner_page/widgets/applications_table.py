@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableView, QHeaderView, 
     QAbstractItemView, QMessageBox
 )
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QShowEvent
 from typing import List
 import traceback
@@ -127,7 +127,8 @@ class ApplicationsTableWidget(QWidget):
             "Reorder": 80,
             "App #": 60,
             "Rate": 80,
-            "Area": 80,
+            "Rate UOM": 100,
+            "Area": 100,
             "Field EIQ": 90,
             "Status": 120
         }
@@ -306,8 +307,20 @@ class ApplicationsTableWidget(QWidget):
         self.model.set_applications([])
     
     def set_field_area(self, area: float, uom: str):
-        """Set default field area for new applications."""
+        """Set default field area for new applications and update constraints."""
+        # Update model
         self.model.set_field_area(area, uom)
+        
+        # Update area delegate constraints
+        if 'area' in self.delegates:
+            self.delegates['area'].set_field_area_constraints(area, uom)
+        
+        # Trigger header refresh to update "Area (uom)" display
+        area_column = self.model._col_index("Area")
+        self.model.headerDataChanged.emit(Qt.Horizontal, area_column, area_column)
+        
+        # Trigger full table refresh to update any area values in different UOM
+        self.model.layoutChanged.emit()
     
     def get_total_field_eiq(self) -> float:
         """Calculate and return total Field EIQ for all applications."""

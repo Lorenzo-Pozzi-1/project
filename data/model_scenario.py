@@ -45,7 +45,7 @@ class Scenario:
         self.crop_year = crop_year if crop_year is not None else date.today().year
         self.grower_name = grower_name or ""
         self.field_name = field_name or ""
-        self.field_area = 0 if field_area is None else field_area  # Default to 0
+        self.field_area = 1 if field_area is None else field_area  # Default to 1
         self.field_area_uom = field_area_uom or "acre"
         self.variety = variety or ""
         
@@ -106,12 +106,48 @@ class Scenario:
     
     def get_total_eiq(self):
         """
-        Calculate the total Field EIQ for all applications in the scenario.
+        Calculate the area-weighted Field EIQ for all applications in the scenario.
         
         Returns:
-            float: Sum of all application EIQs
+            float: Area-weighted EIQ for the scenario
         """
-        return sum(app.field_eiq for app in self.applications if app.field_eiq is not None)
+        if not self.applications or self.field_area <= 0:
+            return 0.0
+        
+        # Use the standardizer to convert areas to hectares for calculation
+        try:
+            from common.calculations.layer_2_uom_std import EIQUOMStandardizer
+            standardizer = EIQUOMStandardizer()
+            
+            # Prepare application data for standardization
+            app_data = []
+            for app in self.applications:
+                app_data.append({
+                    'area': getattr(app, 'area', 0) if hasattr(app, 'area') else 0
+                })
+            
+            # Standardize areas to hectares
+            standardized_apps, field_area_ha = standardizer.standardize_scenario_areas(
+                app_data, self.field_area, self.field_area_uom
+            )
+            
+            # Calculate area-weighted EIQ using standardized areas
+            total_eiq_units = 0.0
+            for i, app in enumerate(self.applications):
+                if app.field_eiq is not None and app.field_eiq >= 0:
+                    standardized_area = standardized_apps[i]['area'] if i < len(standardized_apps) else 0
+                    total_eiq_units += app.field_eiq * standardized_area
+                    
+            return total_eiq_units / field_area_ha if field_area_ha > 0 else 0.0
+            
+        except Exception:
+            # Fallback to simple area calculation if standardization fails
+            total_eiq_units = 0.0
+            for app in self.applications:
+                if app.field_eiq is not None and app.field_eiq >= 0 and hasattr(app, 'area') and app.area is not None and app.area >= 0:
+                    total_eiq_units += app.field_eiq * app.area
+                    
+            return total_eiq_units / self.field_area if self.field_area > 0 else 0.0
     
     def to_dict(self):
         """

@@ -91,35 +91,66 @@ def calculate_field_eiq_product(standardized_ais: List[Dict],
         breakdown=breakdown
     )
 
-def calculate_field_eiq_scenario(application_eiq_values: List[float]) -> EIQResult:
+def calculate_field_eiq_scenario(application_data: List[Dict], field_area: float) -> EIQResult:
     """
-    Calculate total Field EIQ for a scenario (multiple applications).
+    Calculate area-weighted Field EIQ for a scenario (multiple applications).
     
     Args:
-        application_eiq_values: List of Field EIQ values [eiq/ha] from individual applications
+        application_data: List of dicts with 'field_eiq' and 'area' keys
+        field_area: Total field area for calculating weighted average [ha]
         
     Returns:
-        EIQResult with total scenario EIQ and breakdown by application
+        EIQResult with area-weighted scenario EIQ and breakdown by application
     """
-    if not application_eiq_values:
+    if not application_data or field_area <= 0:
         return EIQResult(field_eiq_per_ha=0.0)
     
-    valid_eiq_values = [eiq for eiq in application_eiq_values if eiq >= 0]
-    total_scenario_eiq = sum(valid_eiq_values)
+    # Calculate area-weighted EIQ
+    total_eiq_units = 0.0
+    valid_applications = []
     
-    # Log scenario calculation if multiple applications
-    if len(valid_eiq_values) > 1:
-        calculation_tracer.log_step("Scenario Total")
-        total_parts = " + ".join([f"{eiq:.1f}" for eiq in valid_eiq_values])
-        calculation_tracer.log_substep(f"Total: {total_parts} = {total_scenario_eiq:.1f} eiq/ha", level=1, is_last=True)
+    for i, app_data in enumerate(application_data):
+        field_eiq = app_data.get('field_eiq', 0)
+        area = app_data.get('area', 0)
+        
+        # Skip applications with invalid data
+        if field_eiq < 0 or area < 0:
+            continue
+            
+        # Calculate EIQ contribution: field_eiq * area
+        eiq_contribution = field_eiq * area
+        total_eiq_units += eiq_contribution
+        
+        valid_applications.append({
+            'index': i + 1,
+            'field_eiq': field_eiq,
+            'area': area,
+            'contribution': eiq_contribution
+        })
     
+    # Calculate weighted average EIQ
+    weighted_scenario_eiq = total_eiq_units / field_area if field_area > 0 else 0.0
+    
+    # Log area-weighted calculation if multiple applications
+    if len(valid_applications) > 1:
+        calculation_tracer.log_step("Area-Weighted Scenario Total")
+        for app in valid_applications:
+            calculation_tracer.log_substep(
+                f"Application {app['index']}: {app['field_eiq']:.1f} eiq/ha × {app['area']:.1f} ha = {app['contribution']:.1f} eiq·ha", 
+                level=1
+            )
+        calculation_tracer.log_substep(
+            f"Weighted Average: {total_eiq_units:.1f} eiq·ha ÷ {field_area:.1f} ha = {weighted_scenario_eiq:.1f} eiq/ha", 
+            level=1, is_last=True
+        )
+    
+    # Create breakdown for display
     breakdown = {
-        f'Application {i+1}': eiq 
-        for i, eiq in enumerate(application_eiq_values) 
-        if eiq >= 0
+        f'Application {app["index"]}': app['field_eiq']
+        for app in valid_applications
     }
     
     return EIQResult(
-        field_eiq_per_ha=total_scenario_eiq,
+        field_eiq_per_ha=weighted_scenario_eiq,
         breakdown=breakdown
     )

@@ -98,7 +98,11 @@ class ApplicationTableModel(QAbstractTableModel):
         """Return header data for the table."""
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal and 0 <= section < len(self.COLUMNS):
-                return self.COLUMNS[section]
+                # Make Area column header dynamic based on field area UOM
+                if section == self._col_index("Area"):
+                    return f"Area ({self._field_area_uom})"
+                else:
+                    return self.COLUMNS[section]
             elif orientation == Qt.Vertical:
                 return str(section + 1)
         return None
@@ -271,8 +275,8 @@ class ApplicationTableModel(QAbstractTableModel):
         self._field_area_uom = uom
     
     def get_total_field_eiq(self) -> float:
-        """Calculate total Field EIQ for all valid applications."""
-        return self._eiq_calculator.get_total_eiq(self._applications)
+        """Calculate area-weighted Field EIQ for all valid applications."""
+        return self._eiq_calculator.get_total_eiq(self._applications, self._field_area, self._field_area_uom)
     
     def get_validation_summary(self) -> dict:
         """Get a summary of validation states across all applications."""

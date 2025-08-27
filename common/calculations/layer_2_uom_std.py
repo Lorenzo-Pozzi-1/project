@@ -353,3 +353,57 @@ class EIQUOMStandardizer:
         is_weight_per_weight = (num_unit and den_unit and num_unit.category == 'weight' and den_unit.category == 'weight')
         calculation_tracer.log_substep(f"{uom.original_string} is weight/weight? {is_weight_per_weight}", level=5)
         return is_weight_per_weight
+
+    def standardize_scenario_areas(self, applications: List[Dict], field_area: float, 
+                                 field_area_uom: str, user_preferences: dict = None) -> Tuple[List[Dict], float]:
+        """
+        Convert all application areas and field area to hectares for calculation.
+        
+        Args:
+            applications: List of application dicts with 'area' in original units
+            field_area: Total field area in original units  
+            field_area_uom: Unit of measure for areas (default: acres)
+            user_preferences: User preferences for conversions
+            
+        Returns:
+            Tuple of (standardized_applications, field_area_in_ha)
+        """
+        calculation_tracer.log_step("Area Standardization")
+        
+        # Default to acres if no UOM specified (backward compatibility)
+        if not field_area_uom:
+            field_area_uom = "acre"
+            calculation_tracer.log_substep("No field area UOM specified, defaulting to acres", level=1)
+        
+        # Convert field area to hectares
+        if field_area_uom.lower() == "ha" or field_area_uom.lower() == "hectare":
+            field_area_ha = field_area
+            calculation_tracer.log_substep(f"Field area already in hectares: {field_area:.4f} ha", level=1)
+        else:
+            try:
+                field_area_ha = self.uom_repo.convert_base_unit(field_area, field_area_uom, "ha")
+                calculation_tracer.log_substep(f"Field area: {field_area:.4f} {field_area_uom} → {field_area_ha:.4f} ha", level=1)
+            except Exception as e:
+                calculation_tracer.log_substep(f"Error converting field area: {e}. Using original value.", level=1)
+                field_area_ha = field_area
+        
+        # Convert application areas to hectares
+        standardized_applications = []
+        for i, app in enumerate(applications):
+            app_copy = app.copy()
+            original_area = app.get('area', 0)
+            
+            if field_area_uom.lower() == "ha" or field_area_uom.lower() == "hectare":
+                standardized_area = original_area
+            else:
+                try:
+                    standardized_area = self.uom_repo.convert_base_unit(original_area, field_area_uom, "ha")
+                    calculation_tracer.log_substep(f"Application {i+1} area: {original_area:.4f} {field_area_uom} → {standardized_area:.4f} ha", level=2)
+                except Exception as e:
+                    calculation_tracer.log_substep(f"Error converting application {i+1} area: {e}. Using original value.", level=2)
+                    standardized_area = original_area
+            
+            app_copy['area'] = round(standardized_area, 4)  # 4 decimal precision
+            standardized_applications.append(app_copy)
+        
+        return standardized_applications, round(field_area_ha, 4)

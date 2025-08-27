@@ -128,14 +128,45 @@ class ApplicationEIQCalculator:
         except Exception as e:
             QMessageBox.warning(None, "Error", f"Error in ApplicationEIQCalculator.calculate_all_eiq_values() method: {e}")
 
-    def get_total_eiq(self, applications: List[Application]) -> float:
-        """Calculate total EIQ for all applications."""
+    def get_total_eiq(self, applications: List[Application], field_area: float = None, field_area_uom: str = "acre") -> float:
+        """Calculate area-weighted EIQ for all applications."""
         try:
-            total_eiq = 0.0
+            if not applications:
+                return 0.0
+                
+            # If no field area provided, try to calculate simple sum as fallback
+            if field_area is None or field_area <= 0:
+                total_eiq = 0.0
+                for app in applications:
+                    if app.field_eiq and app.field_eiq > 0:
+                        total_eiq += app.field_eiq
+                return total_eiq
+            
+            # Use the standardizer to convert areas to hectares
+            from common.calculations.layer_2_uom_std import EIQUOMStandardizer
+            standardizer = EIQUOMStandardizer()
+            
+            # Prepare application data for standardization
+            app_data = []
             for app in applications:
+                app_data.append({
+                    'area': getattr(app, 'area', 0) if hasattr(app, 'area') else 0
+                })
+            
+            # Standardize areas to hectares
+            standardized_apps, field_area_ha = standardizer.standardize_scenario_areas(
+                app_data, field_area, field_area_uom, self._user_preferences
+            )
+            
+            # Calculate area-weighted EIQ using standardized areas
+            total_eiq_units = 0.0
+            for i, app in enumerate(applications):
                 if app.field_eiq and app.field_eiq > 0:
-                    total_eiq += app.field_eiq
-            return total_eiq
+                    standardized_area = standardized_apps[i]['area'] if i < len(standardized_apps) else 0
+                    total_eiq_units += app.field_eiq * standardized_area
+                    
+            return total_eiq_units / field_area_ha if field_area_ha > 0 else 0.0
+            
         except Exception as e:
             QMessageBox.warning(None, "Error", f"Error calculating total EIQ: {e}")
             return 0.0

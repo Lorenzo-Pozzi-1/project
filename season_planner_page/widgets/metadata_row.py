@@ -147,7 +147,7 @@ class SeasonPlanMetadataWidget(QWidget):
             if field_area is not None:
                 self.field_area_spin.setValue(float(field_area))
             else:
-                self.field_area_spin.setValue(0)  # Safe default
+                self.field_area_spin.setValue(1)  # Safe default
                 
             if "field_area_uom" in metadata and metadata["field_area_uom"]:
                 self.field_area_uom_combo.setCurrentText(metadata["field_area_uom"])
@@ -161,7 +161,7 @@ class SeasonPlanMetadataWidget(QWidget):
             "crop_year": "",
             "grower_name": "",
             "field_name": "",
-            "field_area": 0,
+            "field_area": 1,
             "field_area_uom": "acre",
             "variety": ""
         }

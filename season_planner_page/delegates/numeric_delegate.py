@@ -103,7 +103,7 @@ class RateDelegate(NumericDelegate):
 
 
 class AreaDelegate(NumericDelegate):
-    """Area delegate."""
+    """Area delegate with field area validation and UOM support."""
     
     def __init__(self, parent=None):
         super().__init__(
@@ -113,3 +113,42 @@ class AreaDelegate(NumericDelegate):
             decimals=1,
             suffix=""
         )
+        self._field_area = 0.0
+        self._field_area_uom = "acre"
+    
+    def set_field_area_constraints(self, field_area: float, field_area_uom: str):
+        """Set field area constraints for validation."""
+        self._field_area = field_area
+        self._field_area_uom = field_area_uom
+        # Update max value to field area (with small buffer for precision)
+        if field_area > 0:
+            self.max_value = field_area + 0.1
+    
+    def createEditor(self, parent, option, index):
+        """Create editor with field area constraints."""
+        editor = super().createEditor(parent, option, index)
+        if hasattr(editor, 'setMaximum') and self._field_area > 0:
+            editor.setMaximum(self._field_area + 0.1)
+        return editor
+    
+    def setModelData(self, editor, model, index):
+        """Set model data with field area validation."""
+        try:
+            value = editor.value()
+            
+            # Validate against field area
+            if self._field_area > 0 and value > self._field_area:
+                from PySide6.QtWidgets import QMessageBox
+                QMessageBox.warning(
+                    editor, 
+                    "Invalid Area", 
+                    f"Application area ({value:.1f} {self._field_area_uom}) cannot exceed field area ({self._field_area:.1f} {self._field_area_uom})."
+                )
+                return  # Don't set invalid value
+            
+            # Set the value
+            super().setModelData(editor, model, index)
+            
+        except Exception as e:
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.warning(editor, "Error", f"Error setting area: {e}")

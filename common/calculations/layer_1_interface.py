@@ -87,23 +87,32 @@ class EIQCalculator:
     
     def calculate_scenario_field_eiq(self,
                                    applications: List[Dict],
+                                   field_area: float,
+                                   field_area_uom: str = "acre",
                                    user_preferences: dict = None) -> float:
         """
-        Calculate total Field EIQ for a scenario (multiple applications).
+        Calculate area-weighted Field EIQ for a scenario (multiple applications).
         
         Args:
-            applications: List of application dicts with product and rate info
+            applications: List of application dicts with product, rate, and area info
+            field_area: Total field area for calculating weighted average
+            field_area_uom: Unit of measure for field and application areas
             user_preferences: User preferences for UOM conversions
             
         Returns:
-            Total scenario Field EIQ [eiq/ha]
+            Area-weighted scenario Field EIQ [eiq/ha]
         """
         try:
-            calculation_tracer.log_header(f"SCENARIO EIQ CALCULATION ({len(applications)} applications)")
+            calculation_tracer.log_header(f"AREA-WEIGHTED SCENARIO EIQ CALCULATION ({len(applications)} applications)")
             
-            application_eiq_values = []
+            # Step 1: Standardize all areas to hectares
+            standardized_apps, field_area_ha = self.standardizer.standardize_scenario_areas(
+                applications, field_area, field_area_uom, user_preferences
+            )
             
-            for i, app in enumerate(applications):
+            application_data = []
+            
+            for i, app in enumerate(standardized_apps):
                 calculation_tracer.log_step(f"Application {i+1}")
                 
                 # Extract application data
@@ -127,13 +136,22 @@ class EIQCalculator:
                     user_preferences=user_preferences
                 )
                 
-                application_eiq_values.append(app_eiq)
+                # Get standardized application area (now in hectares)
+                app_area_ha = app.get('area', 0)
+                
+                application_data.append({
+                    'field_eiq': app_eiq,
+                    'area': app_area_ha
+                })
+                
                 calculation_tracer.log_result(f"Application {i+1} EIQ", f"{app_eiq:.1f}", "eiq/ha", level=1)
+                calculation_tracer.log_result(f"Application {i+1} Area (standardized)", f"{app_area_ha:.4f}", "ha", level=1)
                 calculation_tracer.add_blank_line()
             
-            # Sum all application EIQs
-            scenario_result = calculate_field_eiq_scenario(application_eiq_values)
-            calculation_tracer.log_result("Total Scenario EIQ", f"{scenario_result.field_eiq_per_ha:.1f}", "eiq/ha")
+            # Calculate area-weighted scenario EIQ
+            scenario_result = calculate_field_eiq_scenario(application_data, field_area_ha)
+            calculation_tracer.log_result("Field Area (standardized)", f"{field_area_ha:.4f}", "ha")
+            calculation_tracer.log_result("Area-Weighted Scenario EIQ", f"{scenario_result.field_eiq_per_ha:.1f}", "eiq/ha")
             calculation_tracer.calculation_complete()
             return scenario_result.field_eiq_per_ha
             
