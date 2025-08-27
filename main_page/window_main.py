@@ -168,14 +168,13 @@ class MainWindow(QMainWindow):
 
     def navigate_to_page(self, page_index):
         """Navigate to a specific page in the stacked widget."""
-        # Updated page indices after removing feature selection page:
         # 0: Unified Home Page
         # 1: Products Page  
-        # 2: Season Planner (was 3)
-        # 3: EIQ Calculator (was 4)
-        # 4: Scenarios Comparison (was 5)
-        # 5: Reserved (was 6)
-        # 6: STIR Calculator (was 7)
+        # 2: Season Planner
+        # 3: EIQ Calculator
+        # 4: Scenarios Comparison
+        # 5: Reserved
+        # 6: STIR Calculator
         
         # If we're currently on the unified home page (index 0), check for unsaved preferences
         if self.stacked_widget.currentIndex() == 0 and self.home_page.preferences_row.has_unsaved_changes:

@@ -131,7 +131,7 @@ class ScenariosComparisonPage(QWidget):
             self.score_bar.set_scenarios(scenarios_data)
     
     def go_back(self):
-        """Navigate back to the scenarios manager page."""
+        """Navigate back to the season planner page."""
         if self.parent:
-            # Navigate back to scenarios manager page (index 3)
-            self.parent.navigate_to_page(3)
+            # Navigate back to season planner page (index 2)
+            self.parent.navigate_to_page(2)

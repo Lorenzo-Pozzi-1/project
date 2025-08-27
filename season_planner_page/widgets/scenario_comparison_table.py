@@ -208,7 +208,6 @@ class ScenarioComparisonTable(QWidget):
             self.table.setRowCount(total_rows)
             
             current_row = 0
-            total_eiq = 0
             
             # Sort product types for consistent display order
             sorted_types = sorted(grouped_apps.keys())
@@ -226,8 +225,10 @@ class ScenarioComparisonTable(QWidget):
                 # Add applications in this type
                 for app in sorted_apps:
                     self._add_application_row(current_row, app)
-                    total_eiq += app.field_eiq or 0
                     current_row += 1
+            
+            # Use scenario's area-weighted EIQ calculation
+            total_eiq = self.scenario.get_total_eiq()
             
             # Get regenerative agriculture framework class
             regen_class = get_regen_ag_class(total_eiq)
@@ -253,7 +254,10 @@ class ScenarioComparisonTable(QWidget):
             eiq_item.setTextAlignment(Qt.AlignCenter)
             self.table.setItem(0, 2, eiq_item)
             
-            self.total_label.setText("Total Field Use EIQ: 0.0 → Leading")
+            # Use scenario's area-weighted EIQ calculation (should be 0.0 for no applications)
+            total_eiq = self.scenario.get_total_eiq()
+            regen_class = get_regen_ag_class(total_eiq)
+            self.total_label.setText(f"Field Use EIQ: {total_eiq:.1f} → {regen_class}")
         
         # Resize rows to content
         self.table.resizeRowsToContents()
