@@ -346,6 +346,7 @@
                 <a href="#products" class="nav-link">Product List & Comparison</a>
                 <a href="#calculator" class="nav-link">EIQ Calculator</a>
                 <a href="#planner" class="nav-link">Season Planner</a>
+                <a href="#stir_page" class="nav-link">STIR Calculator</a>
             </div>
 
             <!-- Learning Materials Section -->
@@ -399,7 +400,7 @@
                 </div>
             </section>
 
-            <!-- Products Page -->
+            <!-- EIQ Products Page -->
             <section id="products" class="section">
                 <h1>🗃️ Products List and Comparison<span>.</span></h1>
                 
@@ -460,7 +461,7 @@
 
             </section>
 
-            <!-- Calculator Page -->
+            <!-- EIQ Calculator Page -->
             <section id="calculator" class="section">
                 <h1>🧮 EIQ Calculator<span>.</span></h1>
                 
@@ -524,7 +525,7 @@
                 </div>
             </section>
 
-            <!-- Season Planner -->
+            <!-- EIQ Season Planner -->
             <section id="planner" class="section">
                 <h1>📅 Season Planner Page<span>.</span></h1>
                 <p>The Season Planner allows you to create spray plans from scratch, or starting from the plan of a previous year. 
@@ -641,6 +642,106 @@
                     back and forth between views to see what you can do to reduce the EIQ score, or improve/adapt the plan to your grower's needs.</p>
                 
                 <img src="import_5.png" alt="Scenario import 5" class="screenshot">
+            </section>
+
+            <!-- STIR calculator page -->
+            <section id="stir_page" class="section">
+                <h1>🌱 Soil Tillage Intensity Rating (STIR)<span>.</span></h1>
+                <p>This page allows you to calculate STIR values for individual tillage operations and full seasonal scenarios.</p>
+                
+                <img src="stir_1.png" alt="STIR Calculator Page Screenshot" class="screenshot">
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>1. 🗂️ Scenarios tabs</h4>
+                        <p>Just like in Excel, you can drag to reorder, and double click to rename them!</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>2. 🚀 Custom machines manager</h4>
+                        <p>Click it to open the Custom Machines Manager dialog. From here you can view, create, edit, and delete custom machines.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>3. 📏 Unit of measure selector</h4>
+                        <p>Set em' and forget em'! Select you favourite units of measure for tillage operations speed and depth, they will be automatically applied to the whole page.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>4. 🎮 Scenario action buttons</h4>
+                        <p>Use them to manage the scenarios:</p>
+                        <ul style="margin-top: 10px; padding-left: 20px; border-left: 2px solid #fee000; list-style: none;">
+                            <li><strong>New Scenario:</strong> Create a new, blank scenario tab.</li>
+                            <li><strong>Clone Current:</strong> Create a copy of the current scenario.</li>
+                            <li><strong>Delete:</strong> Delete the current scenario.</li>
+                            <li><strong>Compare Scenarios:</strong> Switch views to the comparison page for all the existing scenario tabs (NOT IMPLEMENTED YET).</li>
+                            <li><strong>Export:</strong> Export an Excel version of your scenarios: each tab will become an individual worksheet in the Excel (NOT IMPLEMENTED YET).</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>5. 📋 Operations Table</h4>
+                        <p>This is the container for all the operations: each row represents one and carries its information. 
+                            As you add tillage operations and select their group (pre-plant, in season, and harvest) they will automatically group and reorder.
+                            When you double click on a "Machine" cell to select a piece of equipment, the Machine selection Dialog will open up, and when you select a machine its data auto-populates the operation row.
+                            ATTENTION: THE CURRENT MACHINE LIST IS A PLACEHOLDER AND YOU SHOULD CREATE YOUR OWN MACHINES UNTIL THE MANAGEMENT PROVIDES AN UPDATE WITH THE PROPER LIST FOR NA.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>6. 🎮 Operations Actions Buttons</h4>
+                        <p>Use them to insert or remove operation rows. Rows will always be added right below the one you have selected.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>7. 📊 Results</h4>
+                        <p>This section will tell you the name, number of operations, and STIR for the current scenario. (THE THRESHOLD VALUES IN THIS SCOREBAR ARE MEANINGLESS PLACEHOLDERS FOR THIS PROOF OF CONCEPT, THEY NEED TO BE SPECIFIED)<br>
+                            <span style="color: red; font-weight: bold;">
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <h2>Machine selection dialog</h2>
+                <p>This dialog will open when you double click on a "Machine" cell of an operation row. It allows you to select a machine for the current operation.</p>
+                <img src="stir_2.png" alt="Machine Selection Dialog Screenshot" class="screenshot">
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>1. 🗂️ Standard / Custom machines tabs</h4>
+                        <p>Use them to navigate between the standard and custom machines lists.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>2. 🚜 Machines buttons</h4>
+                        <p>Click one to select the machine.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>3. ✏️ Create custom machine button</h4>
+                        <p>Click it to launch the custom machine creation dialog and add a custom machine. You can access this function also from the custom machines manager dialog.</p>
+                    </div>
+                </div>
+
+                <h2>Custom machines creation/editor dialog</h2>
+                <p>This dialog will open when you click the "Create custom machine" button from the machines selection dialog or the custom machines manager dialog. 
+                    It allows you to define a new custom machine or edit an existing one. You can specify the general machine features, and specify all the tools it carries.
+                </p>
+                <img src="stir_3.png" alt="Custom Machines Creation / Editor Dialog Screenshot" class="screenshot">
+                <p><strong>MAKE SURE TO ALWAYS SPECIFY A VALUE FOR ALL OF THE FIELDS!</strong></p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>1. 🚜 Whole machine specs</h4>
+                        <p>Specify the features that apply to the overall machine, make sure to snap a picture and add it!</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>2. 🪛 Tools manager</h4>
+                        <p>Use the buttons to add or remove tools, drag and drop the tabs to reorder them.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>3. 🔍 Individual tool specs</h4>
+                        <p>Specify the features that apply to each individual tool, Make sure to specify all of them! 
+                            The surface area disturbed refers to how much of the area is disturbed by this individual tool, 
+                            including that covered with thrown soil. The values for tillage factor are given by the USDA, 
+                            and you can check them by clicking on the blue question mark!</p>
+                    </div>
+                </div>
+
+                <h2> Custom machines manager dialog</h2>
+
             </section>
 
             <!-- EIQ Page -->
