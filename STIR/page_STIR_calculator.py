@@ -426,9 +426,9 @@ class STIRCalculatorPage(QWidget):
         
         # Update scorebar
         if total_stir > 0:
-            if total_stir < 200:
+            if total_stir < 100:
                 intensity = "Light"
-            elif total_stir < 400:
+            elif total_stir < 300:
                 intensity = "Medium"
             elif total_stir < 600:
                 intensity = "Intense"
