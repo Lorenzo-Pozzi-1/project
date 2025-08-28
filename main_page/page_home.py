@@ -1,7 +1,7 @@
 """
-Unified Home Page for the LORENZO POZZI EIQ & STIR App
+Home Page for the LORENZO POZZI EIQ & STIR App
 
-This module defines the UnifiedHomePage class which serves as the main navigation
+This module defines the HomePage class which serves as the main navigation
 screen for both EIQ and STIR features.
 """
 
@@ -20,7 +20,7 @@ from common.styles import (
     get_large_font, get_medium_font, 
     get_subtitle_font, get_title_font
 )
-from common.utils import resource_path, open_learning_materials
+from common.utils import resource_path
 from common.widgets.header_frame_buttons import ContentFrame, create_button
 from main_page.widget_preferences_row import PreferencesRow
 
@@ -58,7 +58,6 @@ class HomePage(QWidget):
         main_layout.addWidget(self._create_preferences_section())
         main_layout.addWidget(self._create_tools_section())
         main_layout.addStretch(1)
-        main_layout.addWidget(self._create_learning_section())
     
     def _create_header_section(self):
         """Create the header section with logos and title."""
@@ -191,32 +190,11 @@ class HomePage(QWidget):
             callback=config["callback"],
             parent=self
         )
-    
-    def _create_learning_section(self):
-        """Create the learning materials section."""
-        learning_frame = ContentFrame()
-        learning_layout = QHBoxLayout()
-        learning_layout.setAlignment(Qt.AlignCenter)
         
-        learning_button = create_button(
-            text="Learning Materials",
-            style="yellow",
-            callback=self.on_learning_materials_clicked,
-            parent=self
-        )
-        learning_layout.addWidget(learning_button)
-        
-        learning_frame.layout.addLayout(learning_layout)
-        return learning_frame
-    
     # Public interface methods
     def navigate_to_stir_calculator(self):
         """Navigate directly to the STIR calculator page."""
         self.parent.navigate_to_page(5)
-
-    def on_learning_materials_clicked(self):
-        """Handle learning materials button click."""
-        open_learning_materials(self)
 
     def set_country_region(self, country, region):
         """Set the country and region in the preferences row."""

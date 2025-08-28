@@ -415,15 +415,6 @@ def open_user_manual(parent=None):
         error_title="User Manual Error"
     )
 
-def open_learning_materials(parent=None):
-    """Open the learning materials in the system's default web browser."""
-    return open_html_in_browser(
-        html_file_path="main_page/learning_materials.html",
-        temp_prefix="eiq_stir_materials_",
-        parent=parent,
-        error_title="Learning Materials Error"
-    )
-
 def open_html_in_browser(html_file_path, temp_prefix, parent=None, error_title="Error"):
     """
     Generic function to open an HTML file in the system's default web browser.

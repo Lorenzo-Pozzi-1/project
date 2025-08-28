@@ -1,11 +1,5 @@
 """
-Updated Main application window for the EIQ & STIR App
-
-Key changes:
-- Removes the separate feature selection page
-- Uses unified home page as the main entry point
-- Adds learning materials dialog functionality
-- Simplifies navigation structure
+Main application window for the EIQ & STIR App
 """
 
 import os
@@ -14,7 +8,7 @@ from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout, QHBoxLay
 from PySide6.QtCore import Signal, Qt
 
 from common.styles import YELLOW_BAR_STYLE
-from common.utils import load_config, open_user_manual, open_learning_materials
+from common.utils import load_config, open_user_manual
 from common.widgets.header_frame_buttons import create_button
 from data.repository_product import ProductRepository
 from main_page.page_home import HomePage
@@ -151,10 +145,6 @@ class MainWindow(QMainWindow):
     def show_user_manual(self):
         """Open the user manual in the system browser."""
         open_user_manual(self)
-
-    def show_learning_materials(self):
-        """Open the learning materials in the system browser."""
-        open_learning_materials(self)
 
     def connect_signals(self):
         """Connect all signals to their respective handlers."""
