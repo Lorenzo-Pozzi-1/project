@@ -51,7 +51,7 @@ class STIROperationsTableModel(QAbstractTableModel):
         # Column definitions
         self._columns = [
             "Group", "Machine", "Depth", "Speed", 
-            "Area Disturbed", "N of Passes", "STIR"
+            "Surface Area Disturbed", "% Field Tilled", "N of Passes", "STIR"
         ]
     
     # --- QAbstractTableModel Interface ---
@@ -236,7 +236,18 @@ class STIROperationsTableModel(QAbstractTableModel):
                     self._emit_signals()
                     return True
                     
-            elif column == 5:  # Number of Passes
+            elif column == 5:  # % Field Tilled
+                # Remove % sign if present
+                value_str = str(value).replace('%', '').strip()
+                new_field_tilled = float(value_str)
+                if new_field_tilled != operation.field_tilled:
+                    operation.field_tilled = new_field_tilled
+                    operation.calculate_stir()
+                    self.dataChanged.emit(index, index, [Qt.DisplayRole])
+                    self._emit_signals()
+                    return True
+                    
+            elif column == 6:  # Number of Passes
                 new_passes = int(float(value))
                 if new_passes != operation.number_of_passes:
                     operation.number_of_passes = new_passes
@@ -273,7 +284,7 @@ class STIROperationsTableModel(QAbstractTableModel):
             is_custom = operation and operation.is_custom_machine()
             
             # Determine which columns are editable
-            if index.column() <= 5:  # Columns 0-5 are potentially editable, 6 is read-only
+            if index.column() <= 6:  # Columns 0-6 are potentially editable, 7 is read-only
                 # For custom machines, make area disturbed (column 4) read-only
                 if is_custom and index.column() == 4:
                     # Area disturbed is read-only for custom machines
@@ -486,10 +497,16 @@ class STIROperationsTableModel(QAbstractTableModel):
                     else:
                         return f"{operation.surface_area_disturbed or 0:.0f}%"
             
-            elif column == 5:  # Number of Passes
+            elif column == 5:  # % Field Tilled
+                if role == Qt.EditRole:
+                    return f"{operation.field_tilled or 100:.0f}"
+                else:
+                    return f"{operation.field_tilled or 100:.0f}%"
+            
+            elif column == 6:  # Number of Passes
                 return f"{operation.number_of_passes or 1}"
             
-            elif column == 6:  # STIR Value
+            elif column == 7:  # STIR Value
                 stir_value = operation.stir_value or 0
                 return str(math.ceil(stir_value))
         

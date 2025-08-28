@@ -26,7 +26,7 @@ class STIROperationsTableWidget(QWidget):
     Table widget for displaying STIR operations grouped by operation_group using Model/View architecture.
     
     Displays operations with columns: Group, Machine, Depth, Speed, Area Disturbed, 
-    N of Passes, and STIR.
+    % Field Tilled, N of Passes, and STIR.
     """
     
     # Signals
@@ -120,8 +120,9 @@ class STIROperationsTableWidget(QWidget):
         self.table.setItemDelegateForColumn(2, NumericDividerComposite(self))  # Depth column
         self.table.setItemDelegateForColumn(3, NumericDividerComposite(self))  # Speed column
         self.table.setItemDelegateForColumn(4, NumericDividerComposite(self))  # Area Disturbed column
-        self.table.setItemDelegateForColumn(5, NumericDividerComposite(self))  # Number of Passes column
-        self.table.setItemDelegateForColumn(6, self.divider_delegate)  # STIR column
+        self.table.setItemDelegateForColumn(5, NumericDividerComposite(self))  # % Field Tilled column
+        self.table.setItemDelegateForColumn(6, NumericDividerComposite(self))  # Number of Passes column
+        self.table.setItemDelegateForColumn(7, self.divider_delegate)  # STIR column
         
         # Headers
         self._configure_headers()

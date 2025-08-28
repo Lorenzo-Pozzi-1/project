@@ -27,7 +27,8 @@ class Operation:
                  surface_area_disturbed: float = 100.0,  # Percentage (0-100)
                  number_of_passes: int = 1,
                  tillage_type_factor: float = 0.0,  # Tillage intensity factor
-                 machine_rotates: bool = False,  # Whether machine has rotating components
+                 machine_rotates: bool = False,  # Whether machine is PTO operated
+                 field_tilled: float = 100.0,  # Percentage of field tilled (0-100)
                  stir_value: Optional[float] = None,
                  custom_machine_tools: Optional[List] = None):  # For custom machine operations
         """
@@ -45,6 +46,7 @@ class Operation:
             tillage_type_factor: Tillage intensity factor (1.0=Inversion+mixing, 0.8=Mixing+someinversion, 
                                0.7=Mixing only, 0.4=Lifting+fracturing, 0.15=Compression)
             machine_rotates: Whether the machine has rotating/powered components (True/False)
+            field_tilled: Percentage of field tilled (0-100)
             stir_value: Calculated STIR value (if None, will be calculated)
             custom_machine_tools: List of tools for custom machine operations (if None, not a custom machine)
         """
@@ -58,6 +60,7 @@ class Operation:
         self.number_of_passes = number_of_passes
         self.tillage_type_factor = tillage_type_factor
         self.machine_rotates = machine_rotates
+        self.field_tilled = field_tilled
         self.stir_value = stir_value
         self.custom_machine_tools = custom_machine_tools or []
     
@@ -113,7 +116,8 @@ class Operation:
             speed_kmh=self._convert_speed_to_kmh(),
             surface_area_disturbed=self.surface_area_disturbed,
             tillage_type_factor=self.tillage_type_factor,
-            rotates=self.machine_rotates
+            rotates=self.machine_rotates,
+            field_tilled=self.field_tilled
         )
         
         # Apply number of passes
@@ -124,7 +128,7 @@ class Operation:
     
     def _calculate_single_tool_stir(self, depth_cm: float, speed_kmh: float, 
                                    surface_area_disturbed: float, tillage_type_factor: float, 
-                                   rotates: bool) -> float:
+                                   rotates: bool, field_tilled: float = 100.0) -> float:
         """
         Calculate STIR for a single tool/machine with given parameters.
         
@@ -134,19 +138,21 @@ class Operation:
             surface_area_disturbed: Percentage of surface area disturbed (0-100)
             tillage_type_factor: Tillage intensity factor
             rotates: Whether the tool/machine has rotating/powered components
+            field_tilled: Percentage of field tilled (0-100)
             
         Returns:
             STIR value for the single tool/machine
         """
         surface_fraction = surface_area_disturbed / 100.0
+        field_tilled_fraction = field_tilled / 100.0
         
         # Calculate STIR using different formulas based on machine rotation
         if rotates:
             # Formula for rotating machines (PTO-powered)
-            stir = (tillage_type_factor * 3.25) * ((11 - speed_kmh) * 0.5) * depth_cm * surface_fraction
+            stir = (tillage_type_factor * 3.25) * ((11 - speed_kmh) * 0.5) * depth_cm * surface_fraction * field_tilled_fraction
         else:
             # Formula for non-rotating machines
-            stir = (tillage_type_factor * 3.25) * (speed_kmh * 0.5) * depth_cm * surface_fraction
+            stir = (tillage_type_factor * 3.25) * (speed_kmh * 0.5) * depth_cm * surface_fraction * field_tilled_fraction
         
         return stir
     
@@ -212,6 +218,7 @@ class Operation:
             number_of_passes=self.number_of_passes,
             tillage_type_factor=self.tillage_type_factor,
             machine_rotates=self.machine_rotates,
+            field_tilled=self.field_tilled,
             stir_value=self.stir_value,
             custom_machine_tools=self.custom_machine_tools.copy() if self.custom_machine_tools else None
         )
@@ -324,7 +331,8 @@ class Operation:
                 speed_kmh=speed_kmh,
                 surface_area_disturbed=tool.surface_area_disturbed,
                 tillage_type_factor=tool.tillage_type_factor,
-                rotates=tool.rotates
+                rotates=tool.rotates,
+                field_tilled=self.field_tilled
             )
             
             total_stir += tool_stir
@@ -393,6 +401,7 @@ class Operation:
             'number_of_passes': self.number_of_passes,
             'tillage_type_factor': self.tillage_type_factor,
             'machine_rotates': self.machine_rotates,
+            'field_tilled': self.field_tilled,
             'stir_value': self.stir_value
         }
         
@@ -431,6 +440,7 @@ class Operation:
             number_of_passes=data.get('number_of_passes', 1),
             tillage_type_factor=data.get('tillage_type_factor', 0.0),
             machine_rotates=data.get('machine_rotates', False),
+            field_tilled=data.get('field_tilled', 100.0),
             stir_value=data.get('stir_value'),
             custom_machine_tools=custom_machine_tools
         )
@@ -444,4 +454,4 @@ class Operation:
         return (f"Operation(group='{self.operation_group}', machine='{self.machine_name}', "
                 f"depth={self.depth}{self.depth_uom}, speed={self.speed}{self.speed_uom}, "
                 f"passes={self.number_of_passes}, tillage_factor={self.tillage_type_factor}, "
-                f"stir={self.stir_value})")
+                f"field_tilled={self.field_tilled}%, stir={self.stir_value})")

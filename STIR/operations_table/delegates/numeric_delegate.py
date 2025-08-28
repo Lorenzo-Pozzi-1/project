@@ -5,6 +5,7 @@ Provides specialized numeric input handling for different column types:
 - Depth: decimal values (e.g., 15.5)
 - Speed: decimal values (e.g., 8.0)
 - Area Disturbed: percentage values (0-100)
+- % Field Tilled: percentage values (0-100)
 - Number of Passes: integer values (1, 2, 3, etc.)
 """
 
@@ -21,7 +22,8 @@ class NumericDelegate(QStyledItemDelegate):
         2: "depth",          # Depth column - decimal
         3: "speed",          # Speed column - decimal  
         4: "area",           # Area Disturbed column - percentage
-        5: "passes"          # Number of Passes column - integer
+        5: "field_tilled",   # % Field Tilled column - percentage
+        6: "passes"          # Number of Passes column - integer
     }
     
     def __init__(self, parent=None):
@@ -40,8 +42,8 @@ class NumericDelegate(QStyledItemDelegate):
             editor.setSingleStep(1)
             editor.setValue(1)
             
-        elif column_type == "area":
-            # Percentage spinner for area disturbed
+        elif column_type in ["area", "field_tilled"]:
+            # Percentage spinner for area disturbed and field tilled
             editor = QDoubleSpinBox(parent)
             editor.setMinimum(0.0)
             editor.setMaximum(100.0)
@@ -83,7 +85,7 @@ class NumericDelegate(QStyledItemDelegate):
             except ValueError:
                 editor.setValue(1)
                 
-        elif column_type == "area":
+        elif column_type in ["area", "field_tilled"]:
             # Parse percentage value (remove % symbol if present)
             try:
                 value_str = current_text.replace("%", "").strip()
@@ -110,7 +112,7 @@ class NumericDelegate(QStyledItemDelegate):
             value = editor.value()
             model.setData(index, str(value), Qt.EditRole)
             
-        elif column_type == "area":
+        elif column_type in ["area", "field_tilled"]:
             # Percentage value (store without % symbol in model)
             value = editor.value()
             model.setData(index, f"{value:.0f}%", Qt.EditRole)
