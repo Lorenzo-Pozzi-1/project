@@ -106,10 +106,7 @@ class ToolTabWidget(QWidget):
         tillage_layout.addWidget(help_button)
         
         form_layout.addRow("Tillage Factor:*", tillage_layout)
-        
-        # Add some spacing
-        form_layout.addRow("", QLabel(""))
-        
+                
         # Note about mandatory fields
         note_label = QLabel("* Required fields")
         note_label.setStyleSheet("color: #666; font-style: italic; font-size: 10px;")
@@ -273,16 +270,13 @@ class NewCustomMachineDialog(QDialog):
         self.add_tool_button.clicked.connect(self.add_tool_tab)
         tool_buttons_layout.addWidget(self.add_tool_button)
         
-        self.remove_tool_button = QPushButton("Remove Current Tool")
-        self.remove_tool_button.clicked.connect(self.remove_current_tool_tab)
-        tool_buttons_layout.addWidget(self.remove_tool_button)
-        
         tool_buttons_layout.addStretch()
         layout.addLayout(tool_buttons_layout)
         
         # Tools tab widget
         self.tools_tab_widget = QTabWidget()
         self.tools_tab_widget.setTabsClosable(True)
+        self.tools_tab_widget.setMovable(True)
         self.tools_tab_widget.tabCloseRequested.connect(self.remove_tool_tab)
         layout.addWidget(self.tools_tab_widget)
         
@@ -315,16 +309,25 @@ class NewCustomMachineDialog(QDialog):
     def remove_tool_tab(self, index: int):
         """Remove a tool tab at the specified index."""
         if 0 <= index < len(self.tool_tabs):
-            self.tools_tab_widget.removeTab(index)
-            self.tool_tabs.pop(index)
-            self.update_tab_names()
-            self.update_tool_buttons()
-    
-    def remove_current_tool_tab(self):
-        """Remove the currently selected tool tab."""
-        current_index = self.tools_tab_widget.currentIndex()
-        if current_index >= 0:
-            self.remove_tool_tab(current_index)
+            # Get tool name for confirmation dialog
+            tool_widget = self.tool_tabs[index]
+            tool_data = tool_widget.get_tool_data()
+            tool_name = tool_data.name if tool_data.name else f"Tool {index + 1}"
+            
+            # Show confirmation dialog
+            reply = QMessageBox.question(
+                self,
+                "Remove Tool",
+                f"Are you sure you want to remove '{tool_name}'?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No
+            )
+            
+            if reply == QMessageBox.Yes:
+                self.tools_tab_widget.removeTab(index)
+                self.tool_tabs.pop(index)
+                self.update_tab_names()
+                self.update_tool_buttons()
     
     def update_tab_names(self):
         """Update tab names after removal."""
@@ -337,8 +340,6 @@ class NewCustomMachineDialog(QDialog):
     
     def update_tool_buttons(self):
         """Update the state of tool management buttons."""
-        has_tools = len(self.tool_tabs) > 0
-        self.remove_tool_button.setEnabled(has_tools)
         self.add_tool_button.setEnabled(len(self.tool_tabs) < 10)
     
     def populate_edit_fields(self):
